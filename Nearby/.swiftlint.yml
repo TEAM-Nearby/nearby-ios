@@ -1,0 +1,40 @@
+analyzer_rules:
+  - unused_declaration
+  - unused_import
+
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - type_body_length
+  - function_body_length
+  - cyclomatic_complexity
+  - identifier_name
+  - todo
+
+opt_in_rules:
+  - force_unwrapping
+  - empty_count
+  - contains_over_filter_is_empty
+  - fatal_error_message
+  - private_outlet
+  - redundant_self
+  - shorthand_optional_binding
+  - attributes
+  - vertical_whitespace
+  - sorted_imports
+  - mark
+  - class_delegate_protocol
+  - closure_end_indentation
+  - collection_alignment
+  - first_where
+  - last_where
+  - overridden_super_call
+  - redundant_nil_coalescing
+  - operator_usage_whitespace
+  - lower_acl_than_parent
+
+excluded:
+  - Pods
+  - Carthage
+  - Nearby/App/AppDelegate.swift
+  - Nearby/App/SceneDelegate.swift

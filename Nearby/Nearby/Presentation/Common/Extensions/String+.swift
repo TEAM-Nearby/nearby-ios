@@ -1,0 +1,18 @@
+//
+//  String+.swift
+//  Nearby
+//
+//  Created by mandoo on 7/2/26.
+//
+
+import Foundation
+
+extension String {
+    var trimmed: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var isBlank: Bool {
+        trimmed.isEmpty
+    }
+}

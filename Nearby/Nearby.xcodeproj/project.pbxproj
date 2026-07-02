@@ -26,6 +26,29 @@
 		771209E72FF423C900D688FD /* Exceptions for "Nearby" folder in "Nearby" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Presentation/Auth/Coordinator/.gitkeep,
+				Presentation/Auth/View/.gitkeep,
+				Presentation/Auth/ViewController/.gitkeep,
+				Presentation/Auth/ViewModel/.gitkeep,
+				Presentation/Common/Components/.gitkeep,
+				Presentation/Common/DesignSystem/.gitkeep,
+				Presentation/Common/Enums/.gitkeep,
+				Presentation/Companion/Coordinator/.gitkeep,
+				Presentation/Companion/View/.gitkeep,
+				Presentation/Companion/ViewController/.gitkeep,
+				Presentation/Companion/ViewModel/.gitkeep,
+				Presentation/DiningMap/Coordinator/.gitkeep,
+				Presentation/DiningMap/View/.gitkeep,
+				Presentation/DiningMap/ViewController/.gitkeep,
+				Presentation/DiningMap/ViewModel/.gitkeep,
+				Presentation/Matching/Coordinator/.gitkeep,
+				Presentation/Matching/View/.gitkeep,
+				Presentation/Matching/ViewController/.gitkeep,
+				Presentation/Matching/ViewModel/.gitkeep,
+				Presentation/MyPage/Coordinator/.gitkeep,
+				Presentation/MyPage/View/.gitkeep,
+				Presentation/MyPage/ViewController/.gitkeep,
+				Presentation/MyPage/ViewModel/.gitkeep,
 				Resource/Info.plist,
 			);
 			target = 771209D42FF423C700D688FD /* Nearby */;

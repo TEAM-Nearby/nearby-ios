@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "marker_my_location.png",
+      "filename" : "marker_my_location.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

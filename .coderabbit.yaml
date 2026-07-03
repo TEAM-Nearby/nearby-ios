@@ -1,0 +1,90 @@
+language: "ko-KR"
+
+tone_instructions: "iOS 엔지니어링 관점에서 깔끔하고 담백한 톤으로 피드백해줘. 친근함은 유지하되, 무엇이 문제이고 어떻게 수정해야 하는지 핵심 위주로 명확하게 짚어줘."
+
+reviews:
+  profile: "assertive"
+  high_level_summary: true
+  poem: false
+  review_status: true
+  changed_files_summary: true
+
+  path_filters:
+    - "!Pods/**"
+    - "!Carthage/**"
+    - "!**/*.xcassets/**"
+    - "!**/*.png"
+    - "!**/*.jpg"
+    - "!**/*.jpeg"
+    - "!**/*.gif"
+    - "!**/*.storyboard"
+    - "!**/*.xib"
+
+  path_instructions:
+    - path: "**/*.swift"
+      instructions: |
+        이 프로젝트는 UIKit 기반 iOS 프로젝트입니다.
+        아키텍처는 MVVM + Coordinator + DI Container 구조를 따릅니다.
+
+        [프로젝트 구조]
+        - AppDIContainer는 공통 네트워크, 서비스, Repository, ViewModel, ViewController 생성 책임을 가집니다.
+        - Coordinator는 화면 전환과 의존성 조립을 담당합니다.
+        - ViewController는 View와 ViewModel 사이의 바인딩, Delegate/DataSource 연결, Cell 등록, 화면 전환 트리거만 담당합니다.
+        - ViewModel은 화면 상태와 비즈니스 로직을 담당하며 ViewController나 Coordinator를 직접 참조하지 않아야 합니다.
+        - Repository는 Alamofire 또는 Network Service를 통해 Data/Network Layer를 담당합니다.
+
+        [import 규칙]
+        - import는 알파벳 순으로 정렬합니다.
+        - 기본 프레임워크를 먼저 작성하고, 한 줄 개행 후 외부 라이브러리를 작성합니다.
+        - 예: UIKit / Foundation 먼저, 이후 Alamofire / SnapKit / Then 등을 작성합니다.
+
+        [네이밍]
+        - 클래스, 구조체, enum, protocol 이름은 UpperCamelCase를 사용합니다.
+        - 함수, 변수, 상수, enum case는 lowerCamelCase를 사용합니다.
+        - 허용 약어는 ID, URL, DTO만 사용합니다.
+        - VC, img 같은 약어는 사용하지 않고 ViewController, image처럼 풀어 작성합니다.
+
+        [View / ViewController]
+        - View는 BaseView를 상속받아야 합니다.
+        - View는 UI 컴포넌트 선언, 속성 설정, 뷰 계층 설정, 레이아웃만 담당합니다.
+        - View에서는 Then의 do 메서드를 활용해 UI 컴포넌트 선언과 속성 설정을 분리합니다.
+        - View는 setStyle, setUI, setLayout을 override해서 사용합니다.
+        - ViewController는 BaseViewController를 상속받아야 합니다.
+        - ViewController에는 UI 레이아웃 코드가 과도하게 들어가지 않아야 합니다.
+        - ViewController는 비즈니스 로직 연결, 화면 전환 트리거, Cell 등록, Delegate/DataSource 지정만 담당합니다.
+        - Cell 데이터 바인딩 함수명은 configure()로 통일합니다.
+
+        [class / extension]
+        - 더 이상 상속되지 않는 클래스는 final로 선언합니다.
+        - 프로토콜 채택 시 구현은 반드시 extension으로 분리합니다.
+        - 여러 프로토콜을 하나의 extension에 몰아넣지 말고, 프로토콜마다 extension을 분리합니다.
+
+        [Coordinator]
+        - 화면 전환 코드는 Coordinator에서 처리합니다.
+        - ViewModel이 Coordinator를 직접 참조하거나 push/pop/present 같은 화면 전환을 직접 수행하면 지적해주세요.
+
+        [DI Container]
+        - ViewController, ViewModel, Repository, Service 생성 책임이 여러 곳에 흩어져 있으면 지적해주세요.
+        - 의존성 생성은 가능한 AppDIContainer 또는 관련 DI Container를 통해 관리되어야 합니다.
+
+        [개행 / 들여쓰기]
+        - 한 줄이 100자를 넘으면 파라미터 기준으로 개행을 권장합니다.
+        - 파라미터가 3개 이상이면 파라미터 기준 개행을 권장합니다.
+        - SnapKit에서 superView와의 관계는 inset, 요소 간 관계는 offset 사용을 권장합니다.
+
+        [함수]
+        - Action 함수는 주어 + 동사 + 목적어 형태로 작성합니다.
+        - @objc 함수는 backButtonDidTap()처럼 명확한 이름을 사용합니다.
+        - 하나의 함수가 너무 많은 역할을 하면 분리를 제안해주세요.
+
+        [주석 / MARK]
+        - 일반적이지 않은 함수, 변수, 여러 파일에서 사용되는 글로벌 함수나 변수에는 /// 문서화 주석을 권장합니다.
+        - MARK 주석은 위아래로 한 줄씩 띄웁니다.
+        - MARK 이름은 Properties, UI Components, Initializer, Life Cycles, Custom Methods, Methods, Action, 실제 프로토콜명을 사용합니다.
+        - 단수/복수 표현이 맞지 않는 MARK가 있으면 지적해주세요.
+
+        [SwiftLint 관점]
+        - force unwrap 사용을 지양합니다.
+        - 불필요한 self를 지양합니다.
+        - 사용하지 않는 import와 선언을 지적합니다.
+        - 불필요한 nil coalescing, 비효율적인 filter/isEmpty 사용, count 비교 등을 개선 제안해주세요.

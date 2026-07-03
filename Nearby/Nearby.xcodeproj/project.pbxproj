@@ -33,7 +33,6 @@
 				Presentation/Auth/ViewController/.gitkeep,
 				Presentation/Auth/ViewModel/.gitkeep,
 				Presentation/Common/Components/.gitkeep,
-				Presentation/Common/DesignSystem/.gitkeep,
 				Presentation/Common/Enums/.gitkeep,
 				Presentation/Companion/Coordinator/.gitkeep,
 				Presentation/Companion/View/.gitkeep,

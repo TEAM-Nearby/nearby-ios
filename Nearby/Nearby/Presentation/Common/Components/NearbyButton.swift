@@ -31,7 +31,8 @@ final class NearbyButton: UIButton {
     private func setButtonStyle(title: String) {
         backgroundColor = style.backgroundColor
         layer.cornerRadius = 16
-        titleLabel?.setFont(.b2Sb16, text: title)
+        setTitle(title, for: .normal)
         setTitleColor(style.titleColor, for: .normal)
+        titleLabel?.font = NearbyFont.b2Sb16.font
     }
 }

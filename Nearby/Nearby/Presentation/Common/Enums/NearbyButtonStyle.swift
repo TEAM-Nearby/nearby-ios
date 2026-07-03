@@ -33,7 +33,7 @@ enum NearbyButtonStyle {
         case .primary, .allowed, .selected:
             return .white
         case .disabled:
-            return .grey70
+            return .grey40
         case .rejected:
             return .grey80
         case .unselected:

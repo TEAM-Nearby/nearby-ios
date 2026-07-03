@@ -3,8 +3,6 @@ analyzer_rules:
   - unused_import
 
 disabled_rules:
-  - trailing_whitespace
-  - line_length
   - type_body_length
   - function_body_length
   - cyclomatic_complexity
@@ -32,6 +30,11 @@ opt_in_rules:
   - redundant_nil_coalescing
   - operator_usage_whitespace
   - lower_acl_than_parent
+  - final_class
+
+line_length:
+  warning: 100
+  error: 120
 
 excluded:
   - Pods

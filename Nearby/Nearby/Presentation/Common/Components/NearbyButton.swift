@@ -35,15 +35,15 @@ final class NearbyButton: UIButton {
         setTitleColor(style.titleColor, for: .normal)
         titleLabel?.font = NearbyFont.b2Sb16.font
     }
-    
-    func setSelected(_ selected: Bool) {
-        isSelected = selected
-        updateUI()
-    }
-    
+
     private func updateUI() {
         let toggleStyle: NearbyButtonStyle = isSelected ? .selected : .unselected
         backgroundColor = toggleStyle.backgroundColor
         setTitleColor(toggleStyle.titleColor, for: .normal)
+    }
+    
+    func setSelected(_ selected: Bool) {
+        isSelected = selected
+        updateUI()
     }
 }

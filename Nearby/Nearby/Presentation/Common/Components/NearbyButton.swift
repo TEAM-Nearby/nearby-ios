@@ -20,13 +20,14 @@ final class NearbyButton: UIButton {
         super.init(frame: .zero)
         
         setButtonStyle(title: title)
+        setAddTarget()
     }
-    
+
     required init?(coder: NSCoder) {
-        fatalError()
+        fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     private func setButtonStyle(title: String) {
         backgroundColor = style.backgroundColor
@@ -34,5 +35,24 @@ final class NearbyButton: UIButton {
         setTitle(title, for: .normal)
         setTitleColor(style.titleColor, for: .normal)
         titleLabel?.font = NearbyFont.b2Sb16.font
+    }
+    
+    private func setAddTarget() {
+        if style == .selected || style == .unselected {
+            addTarget(self, action: #selector(toggle), for: .touchUpInside)
+        }
+    }
+    
+    // MARK: - Action
+    
+    @objc private func toggle() {
+        isSelected.toggle()
+        updateUI()
+    }
+    
+    private func updateUI() {
+        let toggleStyle : NearbyButtonStyle = isSelected ? .selected : .unselected
+        backgroundColor = toggleStyle.backgroundColor
+        setTitleColor(toggleStyle.titleColor, for: .normal)
     }
 }

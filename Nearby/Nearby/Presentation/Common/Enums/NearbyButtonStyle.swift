@@ -49,4 +49,13 @@ enum NearbyButtonStyle {
             return 12
         }
     }
+    
+    var title: String? {
+        switch self {
+        case .allowed:  return "수락하기"
+        case .rejected: return "거절하기"
+        case .primary, .disabled, .selected, .unselected:
+            return nil
+        }
+    }
 }

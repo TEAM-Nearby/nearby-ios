@@ -8,6 +8,7 @@
 import UIKit
 
 import SnapKit
+import Then
 
 class StarRatingView: BaseView {
     
@@ -22,17 +23,21 @@ class StarRatingView: BaseView {
     // MARK: - Custom Methods
     
     override func setStyle() {
-        stackView.axis = .horizontal
-        stackView.spacing = 20
-        stackView.distribution = .fillEqually
+        stackView.do {
+            $0.axis = .horizontal
+            $0.spacing = 20
+            $0.distribution = .fillEqually
+        }
     }
     
     override func setUI() {
         addSubview(stackView)
         
         (0..<maxRating).forEach { _ in
-            let imageView = UIImageView()
-            imageView.contentMode = .scaleAspectFit
+            let imageView = UIImageView().then {
+                $0.contentMode = .scaleAspectFit
+            }
+            
             starImageViews.append(imageView)
             stackView.addArrangedSubview(imageView)
         }
@@ -57,5 +62,14 @@ class StarRatingView: BaseView {
     func setRating(_ value: Int) {
         rating = max(0, min(value, maxRating))
         updateStars()
+    }
+    
+    func rating(at point: CGPoint) -> Int {
+        let convertedPoint = convert(point, to: stackView)
+        var count = 0
+        for imageView in starImageViews where convertedPoint.x >= imageView.frame.minX {
+            count += 1
+        }
+        return count
     }
 }

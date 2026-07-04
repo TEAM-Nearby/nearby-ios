@@ -27,8 +27,7 @@ final class StarRatingInputView: StarRatingView {
     @objc
     private func tapStar(_ gesture: UITapGestureRecognizer) {
         let location = gesture.location(in: self)
-        let starWidth = bounds.width / CGFloat(maxRating)
-        let tappedStar = Int(location.x / starWidth) + 1
+        let tappedStar = rating(at: location)
         
         setRating(tappedStar)
         onRatingChanged?(rating)

@@ -20,7 +20,6 @@ final class NearbyButton: UIButton {
         super.init(frame: .zero)
         
         setButtonStyle(title: title)
-        setAddTarget()
     }
 
     required init?(coder: NSCoder) {

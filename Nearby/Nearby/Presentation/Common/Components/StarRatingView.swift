@@ -55,7 +55,7 @@ class StarRatingView: BaseView {
     private func updateStars() {
         for (index, imageView) in starImageViews.enumerated() {
             let isFilled = index < rating
-            imageView.image = UIImage(named: isFilled ? "big_star_select" : "big_star_default")
+            imageView.image = UIImage(resource: isFilled ? .bigStarSelect : .bigStarDefault)
         }
     }
     

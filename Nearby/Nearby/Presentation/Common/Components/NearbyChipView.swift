@@ -11,7 +11,7 @@ import SnapKit
 
 final class NearbyChipView: BaseView {
     
-    // MARK: - Property
+    // MARK: - Properties
     
     private let style: NearbyChipStyle
     private let horizontalInset: CGFloat
@@ -21,7 +21,7 @@ final class NearbyChipView: BaseView {
     
     private var chipTextLabel = UILabel()
     
-    // MARK: - Initializer
+    // MARK: - Initializers
     
     init(style: NearbyChipStyle, title: String, horizontalInset: CGFloat) {
         self.style = style
@@ -48,7 +48,7 @@ final class NearbyChipView: BaseView {
         layer.shadowOpacity = style.shadowOpacity
         
         if style.isSelectable {
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapChip))
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(chipDidTap))
             addGestureRecognizer(tapGesture)
         }
     }
@@ -58,7 +58,7 @@ final class NearbyChipView: BaseView {
     }
     
     override func setLayout() {
-        self.snp.makeConstraints {
+        snp.makeConstraints {
             $0.height.equalTo(style.height)
         }
         
@@ -125,8 +125,10 @@ final class NearbyChipView: BaseView {
         chipTextLabel.attributedText = attributedString
     }
     
+    // MARK: - Action
+    
     @objc
-    private func didTapChip() {
+    private func chipDidTap() {
         setSelected(!isSelected)
     }
 }

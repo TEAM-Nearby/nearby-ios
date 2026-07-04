@@ -77,7 +77,7 @@ feat/#1
 <br>
 
 ## Foldering 
-```![Uploading architecture.svg…]()<img width="16776" height="11340" alt="architecture" src="https://github.com/user-attachments/assets/d35d5de1-a74c-4b13-b658-fc077cc515b1" />
+```
 Nearby
 │
 ├── App                                

@@ -20,13 +20,14 @@ final class NearbyButton: UIButton {
         super.init(frame: .zero)
         
         setButtonStyle(title: title)
+        setAddTarget()
     }
-    
+
     required init?(coder: NSCoder) {
-        fatalError()
+        fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     private func setButtonStyle(title: String) {
         backgroundColor = style.backgroundColor

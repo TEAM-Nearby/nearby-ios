@@ -24,7 +24,7 @@ enum NearbyButtonStyle {
         case .rejected:
             return .chipBgPurple
         case .unselected:
-            return .grey80
+            return .bgSurfaceGrey0
         }
     }
     

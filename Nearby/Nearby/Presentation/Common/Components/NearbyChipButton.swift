@@ -38,6 +38,19 @@ final class NearbyChipView: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Custom Method
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        let shadowRect = bounds.offsetBy(dx: 0, dy: style.shadowOffset.height / 2)
+        
+        layer.shadowPath = UIBezierPath(
+            roundedRect: shadowRect,
+            cornerRadius: style.layerCornerRadius
+        ).cgPath
+    }
+    
     // MARK: - Methods
     
     private func setStyle() {
@@ -65,17 +78,6 @@ final class NearbyChipView: UIButton {
             $0.center.equalToSuperview()
             $0.horizontalEdges.equalToSuperview().inset(horizontalInset)
         }
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        let shadowRect = bounds.offsetBy(dx: 0, dy: style.shadowOffset.height / 2)
-        
-        layer.shadowPath = UIBezierPath(
-            roundedRect: shadowRect,
-            cornerRadius: style.layerCornerRadius
-        ).cgPath
     }
     
     private func setChipStyle(title: String) {
@@ -124,7 +126,7 @@ final class NearbyChipView: UIButton {
         chipTextLabel.attributedText = attributedString
     }
     
-    func setSelected(_ selected: Bool) {
+    private func setSelected(_ selected: Bool) {
         isSelected = selected
         updateUI()
     }

@@ -2,7 +2,7 @@
 //  AppError.swift
 //  Nearby
 //
-//  Created by mandoo on 7/1/26.
+//  Created by soomin on 7/1/26.
 //
 
 import Foundation

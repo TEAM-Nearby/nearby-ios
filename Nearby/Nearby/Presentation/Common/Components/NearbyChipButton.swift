@@ -1,35 +1,37 @@
 //
-//  NearbyChipView.swift
+//  NearbyChipButton.swift
 //  Nearby
 //
 //  Created by 장지인 on 7/4/26.
 //
 
+import SnapKit
 import UIKit
 
-import SnapKit
-
-final class NearbyChipView: BaseView {
+final class NearbyChipView: UIButton {
     
     // MARK: - Properties
     
     private let style: NearbyChipStyle
     private let horizontalInset: CGFloat
-    private var isSelected: Bool = false
     
     // MARK: - UI Component
     
     private var chipTextLabel = UILabel()
     
-    // MARK: - Initializers
+    // MARK: - Initializer
     
     init(style: NearbyChipStyle, title: String, horizontalInset: CGFloat) {
         self.style = style
         self.horizontalInset = horizontalInset
         super.init(frame: .zero)
-        
+
         isSelected = style.isSelected
+        setStyle()
+        setUI()
+        setLayout()
         setChipStyle(title: title)
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -38,7 +40,7 @@ final class NearbyChipView: BaseView {
     
     // MARK: - Methods
     
-    override func setStyle() {
+    private func setStyle() {
         clipsToBounds = false
         layer.borderWidth = 1
         layer.cornerRadius = style.layerCornerRadius
@@ -47,17 +49,14 @@ final class NearbyChipView: BaseView {
         layer.shadowRadius = style.shadowRadius
         layer.shadowOpacity = style.shadowOpacity
         
-        if style.isSelectable {
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(chipDidTap))
-            addGestureRecognizer(tapGesture)
-        }
+        isUserInteractionEnabled = style.isSelectable
     }
     
-    override func setUI() {
+    private func setUI() {
         addSubview(chipTextLabel)
     }
     
-    override func setLayout() {
+    private func setLayout() {
         snp.makeConstraints {
             $0.height.equalTo(style.height)
         }
@@ -95,11 +94,6 @@ final class NearbyChipView: BaseView {
         chipTextLabel.font = toggleStyle.font
     }
     
-    func setSelected(_ selected: Bool) {
-        isSelected = selected
-        updateUI()
-    }
-    
     private func setChipTitle(_ title: String, titleColor: UIColor) {
         guard style == .mapInfo else {
             chipTextLabel.attributedText = nil
@@ -111,6 +105,11 @@ final class NearbyChipView: BaseView {
         attributedString.addAttribute(
             .foregroundColor,
             value: titleColor,
+            range: NSRange(location: 0, length: attributedString.length)
+        )
+        attributedString.addAttribute(
+            .font,
+            value: style.font,
             range: NSRange(location: 0, length: attributedString.length)
         )
         
@@ -125,10 +124,21 @@ final class NearbyChipView: BaseView {
         chipTextLabel.attributedText = attributedString
     }
     
+    func setSelected(_ selected: Bool) {
+        isSelected = selected
+        updateUI()
+    }
+    
+    private func bind() {
+        addTarget(self, action: #selector(chipDidTap), for: .touchUpInside)
+    }
+    
     // MARK: - Action
     
     @objc
     private func chipDidTap() {
-        setSelected(!isSelected)
+        guard style.isSelectable else { return }
+        isSelected = !isSelected
+        updateUI()
     }
 }

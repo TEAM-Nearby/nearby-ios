@@ -1,0 +1,57 @@
+//
+//  AppDIContainer.swift
+//  Nearby
+//
+//  Created by soomin on 7/5/26.
+//
+
+import UIKit
+
+final class AppDIContainer {
+    
+    // MARK: - Coordinator
+    
+    func makeAppCoordinator(window: UIWindow) -> AppCoordinator {
+        AppCoordinator(window: window, diContainer: self)
+    }
+    
+    func makeMainTabCoordinator() -> MainTabCoordinator {
+        MainTabCoordinator(diContainer: self)
+    }
+    
+    // MARK: - Network
+    
+    // MARK: - Repository
+    
+    // MARK: - ViewModel
+    
+    // MARK: - ViewController
+    
+    func makeCompanionViewController() -> UIViewController {
+        makePlaceholderViewController(title: "동행 찾기")
+    }
+    
+    func makeDiningMapViewController() -> UIViewController {
+        makePlaceholderViewController(title: "혼밥 지도")
+    }
+    
+    func makeMatchingViewController() -> UIViewController {
+        makePlaceholderViewController(title: "매칭")
+    }
+    
+    func makeMeetingViewController() -> UIViewController {
+        makePlaceholderViewController(title: "만남")
+    }
+    
+    func makeMyPageViewController() -> UIViewController {
+        makePlaceholderViewController(title: "마이페이지")
+    }
+}
+
+private extension AppDIContainer {
+    func makePlaceholderViewController(title: String) -> UIViewController {
+        let viewController = UIViewController()
+        viewController.title = title
+        return viewController
+    }
+}

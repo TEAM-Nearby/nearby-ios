@@ -20,19 +20,18 @@ enum NearbyNavigationBarItem: Equatable {
 }
 
 extension NearbyNavigationBarItem {
-
     var image: UIImage? {
         switch self {
         case .back:
-            return UIImage(named: "chevron_left_icon")
+            return .chevronLeftIcon
         case .down:
-            return UIImage(named: "chevron_down_icon")
+            return .chevronDownIcon
         case .alarm:
-            return UIImage(named: "alarm_icon")
+            return .alarmIcon
         case .setting:
-            return UIImage(named: "setting_icon")
+            return .settingIcon
         case .alarmButton:
-            return UIImage(named: "ic_alarm_btn")
+            return .alarmIcon
         default:
             return nil
         }

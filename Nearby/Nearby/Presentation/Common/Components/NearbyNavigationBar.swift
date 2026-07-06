@@ -50,9 +50,11 @@ final class NearbyNavigationBar: BaseView {
         }
 
         titleLabel.do {
-            $0.font = NearbyFont.b1Sb18.font
-            $0.textColor = .black
-            $0.textAlignment = .center
+            $0.setFont(
+                .b1Sb18,
+                text: "페이지 제목",
+                textColor: .black,
+            )
         }
 
         logoLabel.do {
@@ -84,16 +86,11 @@ final class NearbyNavigationBar: BaseView {
 
     override func setUI() {
         addSubviews(
-            leftButton,
-            titleLabel,
-            logoLabel,
-            rightStackView,
-            reportButton
+            leftButton, titleLabel, logoLabel, rightStackView, reportButton
         )
 
         rightStackView.addArrangedSubviews(
-            rightFirstButton,
-            rightSecondButton
+            rightFirstButton, rightSecondButton
         )
     }
 
@@ -199,10 +196,7 @@ final class NearbyNavigationBar: BaseView {
     }
 
     private func setAddTarget() {
-        leftButton.addTarget(
-            self,
-            action: #selector(leftButtonDidTap),
-            for: .touchUpInside
+        leftButton.addTarget(self, action: #selector(leftButtonDidTap), for: .touchUpInside
         )
 
         rightFirstButton.addTarget(
@@ -224,7 +218,7 @@ final class NearbyNavigationBar: BaseView {
         )
     }
 
-    // MARK: - Action
+    // MARK: - Actions
 
     @objc
     private func leftButtonDidTap() {

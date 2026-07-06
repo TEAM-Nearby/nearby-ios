@@ -17,6 +17,7 @@ final class NearbyNavigationBar: BaseView {
     var leftButtonAction: (() -> Void)?
     var rightFirstButtonAction: (() -> Void)?
     var rightSecondButtonAction: (() -> Void)?
+    var reportButtonAction: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -201,36 +202,26 @@ final class NearbyNavigationBar: BaseView {
         leftButton.addTarget(
             self,
             action: #selector(leftButtonDidTap),
-            for: UIControl.Event.touchUpInside
+            for: .touchUpInside
         )
 
         rightFirstButton.addTarget(
             self,
             action: #selector(rightFirstButtonDidTap),
-            for: UIControl.Event.touchUpInside
+            for: .touchUpInside
         )
 
         rightSecondButton.addTarget(
             self,
             action: #selector(rightSecondButtonDidTap),
-            for: UIControl.Event.touchUpInside
+            for: .touchUpInside
         )
-
-    var leftButtonAction: (() -> Void)?
-    var rightFirstButtonAction: (() -> Void)?
-    var rightSecondButtonAction: (() -> Void)?
-    var reportButtonAction: (() -> Void)?
 
         reportButton.addTarget(
             self,
-            action: `#selector`(reportButtonDidTap),
-            for: UIControl.Event.touchUpInside
+            action: #selector(reportButtonDidTap),
+            for: .touchUpInside
         )
-
-    `@objc`
-    private func reportButtonDidTap() {
-        reportButtonAction?()
-    }
     }
 
     // MARK: - Action
@@ -248,5 +239,10 @@ final class NearbyNavigationBar: BaseView {
     @objc
     private func rightSecondButtonDidTap() {
         rightSecondButtonAction?()
+    }
+    
+    @objc
+    private func reportButtonDidTap() {
+        reportButtonAction?()
     }
 }

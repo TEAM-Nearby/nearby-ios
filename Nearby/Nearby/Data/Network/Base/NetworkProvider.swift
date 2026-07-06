@@ -10,11 +10,11 @@ import Foundation
 
 final class NetworkProvider {
     private let session: Session
-
+    
     init(session: Session = .default) {
         self.session = session
     }
-
+    
     func request<T: Decodable>(
         _ target: BaseTargetType,
         responseType: T.Type,
@@ -25,14 +25,14 @@ final class NetworkProvider {
             responseType: responseType,
             accessToken: accessToken
         )
-
+        
         guard let data = response.data else {
             throw NetworkError.decoding
         }
-
+        
         return data
     }
-
+    
     func requestEmpty(
         _ target: BaseTargetType,
         accessToken: String? = nil
@@ -55,21 +55,21 @@ private extension NetworkProvider {
         let dataResponse = await session.request(
             urlRequest
         )
-        .serializingData()
-        .response
-
+            .serializingData()
+            .response
+        
         if let error = dataResponse.error {
             throw mapAFError(error)
         }
-
+        
         guard let statusCode = dataResponse.response?.statusCode else {
             throw NetworkError.unknown
         }
-
+        
         guard let data = dataResponse.data else {
             throw NetworkError.decoding
         }
-
+        
         if (200..<300).contains(statusCode) {
             do {
                 return try JSONDecoder().decode(BaseResponseDTO<T>.self, from: data)
@@ -78,51 +78,55 @@ private extension NetworkProvider {
                 throw NetworkError.decoding
             }
         }
-
+        
         throw decodeErrorResponse(data: data, fallbackStatusCode: statusCode)
     }
-
+    
     func makeURL(path: String) throws -> URL {
         guard let url = URL(string: path, relativeTo: try AppConfig.baseURL()) else {
             throw NetworkError.invalidURL
         }
-
+        
         return url
     }
-
+    
     func makeURLRequest(target: BaseTargetType, accessToken: String?) throws -> URLRequest {
         let url = try makeURL(path: target.path)
         var request = URLRequest(url: url)
         request.method = target.method
         request.headers = target.makeHeaders(accessToken: accessToken)
-
+        
         if let queryParameters = target.queryParameters {
             request = try URLEncoding.queryString.encode(request, with: queryParameters)
         }
-
+        
         if let bodyParameters = target.bodyParameters {
             request = try JSONEncoding.default.encode(request, with: bodyParameters)
         }
-
+        
         return request
     }
-
+    
     func mapAFError(_ error: AFError) -> NetworkError {
-        if error.isSessionTaskError {
-            return .networkFail
+        if let urlError = error.underlyingError as? URLError, urlError.code == .timedOut {
+            return .timeout
         }
-
-        if error.isResponseSerializationError {
-            return .decoding
-        }
-
+        
         if error.localizedDescription.lowercased().contains("timed out") {
             return .timeout
         }
-
+        
+        if error.isSessionTaskError {
+            return .networkFail
+        }
+        
+        if error.isResponseSerializationError {
+            return .decoding
+        }
+        
         return .unknown
     }
-
+    
     func decodeErrorResponse(data: Data, fallbackStatusCode: Int) -> NetworkError {
         do {
             let response = try JSONDecoder().decode(BaseResponseDTO<EmptyResponse>.self, from: data)

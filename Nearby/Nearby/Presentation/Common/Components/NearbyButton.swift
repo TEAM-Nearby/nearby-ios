@@ -12,6 +12,7 @@ final class NearbyButton: UIButton {
     // MARK: - Property
     
     private let style: NearbyButtonStyle
+    private var gradientLayer: CAGradientLayer?
     
     // MARK: - Initializer
     
@@ -26,6 +27,13 @@ final class NearbyButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Custom Method
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer?.frame = bounds
+    }
+    
     // MARK: - Methods
     
     private func setButtonStyle(title: String) {
@@ -33,13 +41,24 @@ final class NearbyButton: UIButton {
         layer.cornerRadius = 16
         setTitle(title, for: .normal)
         setTitleColor(style.titleColor, for: .normal)
-        titleLabel?.font = NearbyFont.b2Sb16.font
+        titleLabel?.font = self.style.font.font
+        
+        if style.usesGradient {
+            setGradient()
+        }
     }
 
     private func updateUI() {
         let toggleStyle: NearbyButtonStyle = isSelected ? .selected : .unselected
         backgroundColor = toggleStyle.backgroundColor
         setTitleColor(toggleStyle.titleColor, for: .normal)
+    }
+    
+    private func setGradient() {
+        let gradient = NearbyGradient.buttonBackgroundLayer(frame: bounds)
+        gradient.cornerRadius = layer.cornerRadius
+        layer.insertSublayer(gradient, at: 0)
+        gradientLayer = gradient
     }
     
     func setSelected(_ selected: Bool) {

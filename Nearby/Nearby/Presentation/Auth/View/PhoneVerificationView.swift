@@ -61,9 +61,11 @@ final class PhoneVerificationView: BaseView {
 
         titleLabel.do {
             $0.numberOfLines = 2
-            $0.text = "더 안전한 니어바이를 위해\n휴대폰 본인인증을 진행해주세요"
-            $0.textColor = .grey80
-            $0.font = .systemFont(ofSize: 20, weight: .semibold)
+            $0.setFont(
+                .h3Sb20,
+                text: "더 안전한 니어바이를 위해\n휴대폰 본인인증을 진행해주세요",
+                textColor: .grey80
+            )
             $0.setLineSpacing(lineSpacing: 6)
         }
 
@@ -72,7 +74,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         phoneTextFieldContainerView.do {
-            $0.backgroundColor = UIColor(red: 248/255, green: 248/255, blue: 250/255, alpha: 1)
+            $0.backgroundColor = .bgSurfaceGrey0
             $0.layer.cornerRadius = 20
             $0.clipsToBounds = true
         }
@@ -98,9 +100,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         phoneErrorLabel.do {
-            $0.text = "올바른 전화번호 형식이 아니에요"
-            $0.textColor = .highlightRed
-            $0.font = .systemFont(ofSize: 16, weight: .regular)
+            $0.setFont(.b3R14, text: "올바른 전화번호 형식이 아니에요", textColor: .highlightRed)
             $0.isHidden = true
         }
 
@@ -110,7 +110,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         verificationTextFieldContainerView.do {
-            $0.backgroundColor = UIColor(red: 248/255, green: 248/255, blue: 250/255, alpha: 1)
+            $0.backgroundColor = .bgSurfaceGrey0
             $0.layer.cornerRadius = 20
             $0.clipsToBounds = true
             $0.isHidden = true
@@ -136,9 +136,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         verificationErrorLabel.do {
-            $0.text = "인증번호가 일치하지 않아요"
-            $0.textColor = .highlightRed
-            $0.font = .systemFont(ofSize: 16, weight: .regular)
+            $0.setFont(.b3R14, text: "인증번호가 일치하지 않아요", textColor: .highlightRed)
             $0.isHidden = true
         }
     }

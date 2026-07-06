@@ -27,8 +27,7 @@ final class NavigationBarTestViewController: UIViewController {
 
         navigationBar.configure(
             leftItem: .back,
-            centerItem: .title("페이지 제목"),
-            rightItems: [.alarm]
+            centerItem: .title("페이지 제목")
         )
 
         navigationBar.leftButtonAction = {

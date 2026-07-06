@@ -13,13 +13,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var appCoordinator: AppCoordinator?
     private let appDIContainer = AppDIContainer()
     
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+
         let window = UIWindow(windowScene: windowScene)
+        let viewController = NavigationBarTestViewController()
+
+        window.rootViewController = viewController
+        window.makeKeyAndVisible()
+
         self.window = window
-        
-        appCoordinator = appDIContainer.makeAppCoordinator(window: window)
-        appCoordinator?.start()
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

@@ -52,6 +52,7 @@ private extension AppDIContainer {
     func makePlaceholderViewController(title: String) -> UIViewController {
         let viewController = UIViewController()
         viewController.title = title
+        viewController.view.backgroundColor = .white
         return viewController
     }
 }

@@ -9,7 +9,7 @@ import UIKit
 
 final class AppDIContainer {
     
-    // MARK: - Coordinator
+    // MARK: - Coordinators
     
     func makeAppCoordinator(window: UIWindow) -> AppCoordinator {
         AppCoordinator(window: window, diContainer: self)
@@ -19,13 +19,13 @@ final class AppDIContainer {
         MainTabCoordinator(diContainer: self)
     }
     
-    // MARK: - Network
+    // MARK: - Networks
     
-    // MARK: - Repository
+    // MARK: - Repositories
     
-    // MARK: - ViewModel
+    // MARK: - ViewModels
     
-    // MARK: - ViewController
+    // MARK: - ViewControllers
     
     func makeCompanionViewController() -> UIViewController {
         makePlaceholderViewController(title: "동행 찾기")

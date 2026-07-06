@@ -12,10 +12,6 @@ import Then
 
 final class MeetingProfileView: BaseView {
     
-    // MARK: - Properties
-    
-    var onVerifyButtonDidTap: (() -> Void)?
-    
     // MARK: - UI Components
     
     private let contentStackView = UIStackView()

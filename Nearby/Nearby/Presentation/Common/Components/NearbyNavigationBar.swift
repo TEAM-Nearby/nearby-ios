@@ -132,16 +132,31 @@ final class NearbyNavigationBar: BaseView {
             $0.centerY.equalToSuperview()
         }
     }
+    
+    override func setAddTarget() {
+        leftButton.addTarget(self, action: #selector(leftButtonDidTap), for: .touchUpInside
+        )
 
-    func configure(
-        leftItem: NearbyNavigationBarItem = .empty,
-        centerItem: NearbyNavigationBarItem = .empty,
-        rightItems: [NearbyNavigationBarItem] = []
-    ) {
-        configureLeftItem(leftItem)
-        configureCenterItem(centerItem)
-        configureRightItems(rightItems)
+        rightFirstButton.addTarget(
+            self,
+            action: #selector(rightFirstButtonDidTap),
+            for: .touchUpInside
+        )
+
+        rightSecondButton.addTarget(
+            self,
+            action: #selector(rightSecondButtonDidTap),
+            for: .touchUpInside
+        )
+
+        reportButton.addTarget(
+            self,
+            action: #selector(reportButtonDidTap),
+            for: .touchUpInside
+        )
     }
+    
+    // MARK: - Methods
 
     private func configureLeftItem(_ item: NearbyNavigationBarItem) {
         leftButton.isHidden = item == .empty
@@ -194,28 +209,15 @@ final class NearbyNavigationBar: BaseView {
             rightSecondButton.setImage(items[1].image, for: UIControl.State.normal)
         }
     }
-
-    private func setAddTarget() {
-        leftButton.addTarget(self, action: #selector(leftButtonDidTap), for: .touchUpInside
-        )
-
-        rightFirstButton.addTarget(
-            self,
-            action: #selector(rightFirstButtonDidTap),
-            for: .touchUpInside
-        )
-
-        rightSecondButton.addTarget(
-            self,
-            action: #selector(rightSecondButtonDidTap),
-            for: .touchUpInside
-        )
-
-        reportButton.addTarget(
-            self,
-            action: #selector(reportButtonDidTap),
-            for: .touchUpInside
-        )
+    
+    func configure(
+        leftItem: NearbyNavigationBarItem = .empty,
+        centerItem: NearbyNavigationBarItem = .empty,
+        rightItems: [NearbyNavigationBarItem] = []
+    ) {
+        configureLeftItem(leftItem)
+        configureCenterItem(centerItem)
+        configureRightItems(rightItems)
     }
 
     // MARK: - Actions

@@ -7,12 +7,39 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+import SnapKit
+
+final class NavigationBarTestViewController: UIViewController {
+
+    private let navigationBar = NearbyNavigationBar()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        view.backgroundColor = .yellow
-    }
 
+        view.backgroundColor = .white
+
+        view.addSubview(navigationBar)
+
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+        }
+
+        navigationBar.configure(
+            centerItem: .logo,
+            rightItems: [.alarm, .setting]
+        )
+
+        navigationBar.leftButtonAction = {
+            print("뒤로가기 탭")
+        }
+
+        navigationBar.rightFirstButtonAction = {
+            print("알림 탭")
+        }
+
+        navigationBar.rightSecondButtonAction = {
+            print("설정 탭")
+        }
+    }
 }

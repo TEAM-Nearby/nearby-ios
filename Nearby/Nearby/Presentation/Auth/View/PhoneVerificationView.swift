@@ -48,13 +48,13 @@ final class PhoneVerificationView: BaseView {
 
         backButton.do {
             $0.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-            $0.tintColor = UIColor(red: 48/255, green: 48/255, blue: 48/255, alpha: 1)
+            $0.tintColor = .grey80
         }
 
         progressView.do {
             $0.progress = 0.5
-            $0.progressTintColor = UIColor(red: 117/255, green: 88/255, blue: 255/255, alpha: 1)
-            $0.trackTintColor = UIColor(red: 244/255, green: 241/255, blue: 255/255, alpha: 1)
+            $0.progressTintColor = .btnPrimaryBg
+            $0.trackTintColor = .chipBgPurple
             $0.layer.cornerRadius = 2
             $0.clipsToBounds = true
         }
@@ -62,7 +62,7 @@ final class PhoneVerificationView: BaseView {
         titleLabel.do {
             $0.numberOfLines = 2
             $0.text = "더 안전한 니어바이를 위해\n휴대폰 본인인증을 진행해주세요"
-            $0.textColor = UIColor(red: 36/255, green: 36/255, blue: 36/255, alpha: 1)
+            $0.textColor = .grey80
             $0.font = .systemFont(ofSize: 20, weight: .semibold)
             $0.setLineSpacing(lineSpacing: 6)
         }
@@ -99,7 +99,7 @@ final class PhoneVerificationView: BaseView {
 
         phoneErrorLabel.do {
             $0.text = "올바른 전화번호 형식이 아니에요"
-            $0.textColor = UIColor(red: 255/255, green: 31/255, blue: 49/255, alpha: 1)
+            $0.textColor = .highlightRed
             $0.font = .systemFont(ofSize: 16, weight: .regular)
             $0.isHidden = true
         }
@@ -132,12 +132,12 @@ final class PhoneVerificationView: BaseView {
 
         verificationClearButton.do {
             $0.setImage(UIImage(systemName: "xmark"), for: .normal)
-            $0.tintColor = UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
+            $0.tintColor = .grey20
         }
 
         verificationErrorLabel.do {
             $0.text = "인증번호가 일치하지 않아요"
-            $0.textColor = UIColor(red: 255/255, green: 31/255, blue: 49/255, alpha: 1)
+            $0.textColor = .highlightRed
             $0.font = .systemFont(ofSize: 16, weight: .regular)
             $0.isHidden = true
         }

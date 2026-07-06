@@ -55,7 +55,7 @@ final class PhoneVerificationView: BaseView {
             $0.progress = 0.5
             $0.progressTintColor = .btnPrimaryBg
             $0.trackTintColor = .chipBgPurple
-            $0.layer.cornerRadius = 2
+            $0.layer.cornerRadius = 5.5
             $0.clipsToBounds = true
         }
 
@@ -175,8 +175,8 @@ final class PhoneVerificationView: BaseView {
 
         progressView.snp.makeConstraints {
             $0.top.equalTo(backButton.snp.bottom).offset(42)
-            $0.leading.trailing.equalToSuperview().inset(28)
-            $0.height.equalTo(4)
+            $0.leading.trailing.equalToSuperview().inset(11)
+            $0.height.equalTo(11)
         }
 
         titleLabel.snp.makeConstraints {

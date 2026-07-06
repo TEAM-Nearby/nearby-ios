@@ -12,9 +12,7 @@ import Then
 
 final class MeetingVerificationCell: UICollectionViewCell {
 
-    // MARK: - Properties
-
-    static let identifier = "MeetingVerificationCell"
+    // MARK: - Property
 
     var onVerifyButtonDidTap: (() -> Void)?
 

@@ -9,7 +9,7 @@ import UIKit
 
 final class NearbyButton: UIButton {
     
-    // MARK: - Property
+    // MARK: - Properties
     
     private let style: NearbyButtonStyle
     private var gradientLayer: CAGradientLayer?
@@ -27,7 +27,7 @@ final class NearbyButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Custom Method
+    // MARK: - Life Cycle
     
     override func layoutSubviews() {
         super.layoutSubviews()

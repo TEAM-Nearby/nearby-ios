@@ -134,26 +134,10 @@ final class NearbyNavigationBar: BaseView {
     }
     
     override func setAddTarget() {
-        leftButton.addTarget(self, action: #selector(leftButtonDidTap), for: .touchUpInside
-        )
-
-        rightFirstButton.addTarget(
-            self,
-            action: #selector(rightFirstButtonDidTap),
-            for: .touchUpInside
-        )
-
-        rightSecondButton.addTarget(
-            self,
-            action: #selector(rightSecondButtonDidTap),
-            for: .touchUpInside
-        )
-
-        reportButton.addTarget(
-            self,
-            action: #selector(reportButtonDidTap),
-            for: .touchUpInside
-        )
+        leftButton.addTarget(self, action: #selector(leftButtonDidTap), for: .touchUpInside)
+        rightFirstButton.addTarget(self, action: #selector(rightFirstButtonDidTap), for: .touchUpInside)
+        rightSecondButton.addTarget(self, action: #selector(rightSecondButtonDidTap), for: .touchUpInside)
+        reportButton.addTarget(self, action: #selector(reportButtonDidTap), for: .touchUpInside)
     }
     
     // MARK: - Methods

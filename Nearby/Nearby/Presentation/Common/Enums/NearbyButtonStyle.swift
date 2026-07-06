@@ -14,6 +14,16 @@ enum NearbyButtonStyle {
     case rejected
     case selected
     case unselected
+    case gradient
+    
+    var usesGradient: Bool {
+        switch self {
+        case .gradient:
+            return true
+        default:
+            return false
+        }
+    }
     
     var backgroundColor: UIColor {
         switch self {
@@ -25,12 +35,14 @@ enum NearbyButtonStyle {
             return .chipBgPurple
         case .unselected:
             return .bgSurfaceGrey0
+        case .gradient:
+            return .clear
         }
     }
     
     var titleColor: UIColor {
         switch self {
-        case .primary, .allowed, .selected:
+        case .primary, .allowed, .selected, .gradient:
             return .white
         case .disabled:
             return .grey40
@@ -45,7 +57,7 @@ enum NearbyButtonStyle {
         switch self {
         case .primary, .disabled, .allowed, .rejected:
             return 17
-        case .selected, .unselected:
+        case .selected, .unselected, .gradient:
             return 12
         }
     }
@@ -54,8 +66,18 @@ enum NearbyButtonStyle {
         switch self {
         case .allowed:  return "수락하기"
         case .rejected: return "거절하기"
+        case .gradient: return "만남 인증하기"
         case .primary, .disabled, .selected, .unselected:
             return nil
+        }
+    }
+    
+    var font: NearbyFont {
+        switch self {
+        case .primary, .disabled, .allowed, .rejected, .selected, .unselected:
+            return .b2Sb16
+        case .gradient:
+            return .b3M14
         }
     }
 }

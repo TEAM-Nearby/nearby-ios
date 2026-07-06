@@ -2,7 +2,7 @@
 //  AppLogger.swift
 //  Nearby
 //
-//  Created by mandoo on 7/1/26.
+//  Created by soomin on 7/1/26.
 //
 
 import OSLog
@@ -77,7 +77,8 @@ struct AppLogger {
             
         case .error(let error, let message):
             if let message {
-                logger.error("[❌ Error] \(prefix) \(String(describing: message)) | Reason: \(error.localizedDescription)")
+                let description = error.localizedDescription
+                logger.error("[❌ Error] \(prefix) \(String(describing: message)) | Reason: \(description)")
             } else {
                 logger.error("[❌ Error] \(prefix) Reason: \(error.localizedDescription)")
             }

@@ -8,6 +8,7 @@ disabled_rules:
   - cyclomatic_complexity
   - identifier_name
   - todo
+  - required_deinit
   - trailing_whitespace
 
 opt_in_rules:

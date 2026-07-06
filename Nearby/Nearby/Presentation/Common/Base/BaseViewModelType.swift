@@ -2,7 +2,7 @@
 //  BaseViewModelType.swift
 //  Nearby
 //
-//  Created by mandoo on 7/2/26.
+//  Created by soomin on 7/2/26.
 //
 
 public protocol BaseViewModelType {

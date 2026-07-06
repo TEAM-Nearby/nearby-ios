@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  Nearby
 //
-//  Created by mandoo on 7/1/26.
+//  Created by soomin on 7/1/26.
 //
 
 import UIKit
@@ -10,15 +10,16 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    
+    var appCoordinator: AppCoordinator?
+    private let appDIContainer = AppDIContainer()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        
-        window.rootViewController = ViewController()
         self.window = window
-        window.makeKeyAndVisible()
+        
+        appCoordinator = appDIContainer.makeAppCoordinator(window: window)
+        appCoordinator?.start()
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -51,4 +52,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     
 }
-

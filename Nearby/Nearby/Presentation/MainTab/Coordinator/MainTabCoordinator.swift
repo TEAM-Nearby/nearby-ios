@@ -10,7 +10,7 @@ import UIKit
 final class MainTabCoordinator {
     weak var parentCoordinator: Coordinator?
     var childCoordinators = [Coordinator]()
-    let rootViewController = UITabBarController()
+    let rootViewController = MainTabBarController()
     private let diContainer: AppDIContainer
     
     init(diContainer: AppDIContainer) {
@@ -22,7 +22,7 @@ final class MainTabCoordinator {
 
 extension MainTabCoordinator: Coordinator {
      func start() {
-         rootViewController.viewControllers = TabItem.allCases.map {
+         rootViewController.viewControllers = NearbyTabItem.allCases.map {
              makeNavigationController(for: $0)
          }
      }
@@ -33,58 +33,21 @@ extension MainTabCoordinator: Coordinator {
  }
 
 private extension MainTabCoordinator {
-    enum TabItem: CaseIterable {
-        case companion
-        case diningMap
-        case matching
-        case meeting
-        case myPage
-        
-        var title: String {
-            switch self {
-            case .companion:
-                return "동행 찾기"
-            case .diningMap:
-                return "혼밥 지도"
-            case .matching:
-                return "매칭"
-            case .meeting:
-                return "만남"
-            case .myPage:
-                return "마이페이지"
-            }
-        }
-        
-        var image: UIImage {
-            switch self {
-            case .companion:
-                return .imgCheck
-            case .diningMap:
-                return .imgCheck
-            case .matching:
-                return .imgCheck
-            case .meeting:
-                return .imgCheck
-            case .myPage:
-                return .imgCheck
-            }
-        }
-    }
-    
-    func makeNavigationController(for item: TabItem) -> UINavigationController {
+    func makeNavigationController(for item: NearbyTabItem) -> UINavigationController {
         let viewController = makeRootViewController(for: item)
         
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationController.tabBarItem = UITabBarItem(
             title: item.title,
-            image: item.image,
-            selectedImage: nil
+            image: item.defaultImage,
+            selectedImage: item.selectedImage
         )
+        navigationController.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
         return navigationController
     }
     
-    func makeRootViewController(for item: TabItem) -> UIViewController {
+    func makeRootViewController(for item: NearbyTabItem) -> UIViewController {
         switch item {
         case .companion:
             return diContainer.makeCompanionViewController()

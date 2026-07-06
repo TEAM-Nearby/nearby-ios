@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AppCoordinator: Coordinator {
+final class AppCoordinator {
     weak var parentCoordinator: Coordinator?
     var childCoordinators = [Coordinator]()
     private let window: UIWindow
@@ -17,17 +17,21 @@ final class AppCoordinator: Coordinator {
         self.window = window
         self.diContainer = diContainer
     }
-    
-    func start() {
-        showMainTab()
-    }
-    
-    func finish() {
-        childCoordinators.removeAll()
-    }
 }
 
-private extension AppCoordinator {
+// MARK: - Coordinator
+
+extension AppCoordinator: Coordinator {
+     func start() {
+         showMainTab()
+     }
+     
+     func finish() {
+         childCoordinators.removeAll()
+     }
+    
+    // MARK: - Method
+    
     func showMainTab() {
         let mainTabCoordinator = diContainer.makeMainTabCoordinator()
         mainTabCoordinator.parentCoordinator = self
@@ -37,4 +41,4 @@ private extension AppCoordinator {
         window.rootViewController = mainTabCoordinator.rootViewController
         window.makeKeyAndVisible()
     }
-}
+ }

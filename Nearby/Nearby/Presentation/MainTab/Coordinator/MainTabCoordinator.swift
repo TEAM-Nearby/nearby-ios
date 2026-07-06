@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class MainTabCoordinator: Coordinator {
+final class MainTabCoordinator {
     weak var parentCoordinator: Coordinator?
     var childCoordinators = [Coordinator]()
     let rootViewController = UITabBarController()
@@ -16,17 +16,21 @@ final class MainTabCoordinator: Coordinator {
     init(diContainer: AppDIContainer) {
         self.diContainer = diContainer
     }
-    
-    func start() {
-        rootViewController.viewControllers = TabItem.allCases.map {
-            makeNavigationController(for: $0)
-        }
-    }
-    
-    func finish() {
-        parentCoordinator?.removeChildCoordinator(self)
-    }
 }
+
+// MARK: - Coordinator
+
+extension MainTabCoordinator: Coordinator {
+     func start() {
+         rootViewController.viewControllers = TabItem.allCases.map {
+             makeNavigationController(for: $0)
+         }
+     }
+     
+     func finish() {
+         parentCoordinator?.removeChildCoordinator(self)
+     }
+ }
 
 private extension MainTabCoordinator {
     enum TabItem: CaseIterable {

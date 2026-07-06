@@ -22,9 +22,7 @@ final class MeetingProfileView: BaseView {
     private let nameLabel = UILabel()
     private let identificationLabel = UILabel()
     
-    private let informationStackView = UIStackView()
-    private let locationLabel = UILabel()
-    private let timeLabel = UILabel()
+    private let informationLabel = UILabel()
 
     // MARK: - Custom Methods
     
@@ -39,16 +37,12 @@ final class MeetingProfileView: BaseView {
         }
         
         nameLabel.do {
-            $0.text = "정지영"
-            $0.textColor = .grey80
-            $0.font = NearbyFont.b2Sb16.font
+            $0.setFont(.b2Sb16, text: "정지영", textColor: .grey80)
             $0.textAlignment = .left
         }
         
         identificationLabel.do {
-            $0.text = "20대 여성"
-            $0.textColor = .primary50
-            $0.font = NearbyFont.b2M16.font
+            $0.setFont(.b2M16, text: "20대 여성", textColor: .primary50)
             $0.textAlignment = .left
         }
         
@@ -57,17 +51,8 @@ final class MeetingProfileView: BaseView {
             $0.spacing = 12
         }
         
-        locationLabel.do {
-            $0.text = "시우다드 콘달"
-            $0.textColor = .grey80
-            $0.font = NearbyFont.b3M14.font
-            $0.textAlignment = .left
-        }
-        
-        timeLabel.do {
-            $0.text = "· 오후 4:30"
-            $0.textColor = .grey80
-            $0.font = NearbyFont.b3M14.font
+        informationLabel.do {
+            $0.setFont(.b3M14, text: "시우다드 콘달 · 오후 4:30", textColor: .grey80)
             $0.textAlignment = .left
         }
     }
@@ -75,9 +60,8 @@ final class MeetingProfileView: BaseView {
     override func setUI() {
         addSubview(profileStackView)
         profileStackView.addArrangedSubviews(imageView, hostStackView)
-        hostStackView.addSubviews(hostIdentificationStackView, informationStackView)
+        hostStackView.addSubviews(hostIdentificationStackView, informationLabel)
         hostIdentificationStackView.addSubviews(nameLabel, identificationLabel)
-        informationStackView.addSubviews(locationLabel, timeLabel)
     }
     
     override func setLayout() {
@@ -94,7 +78,7 @@ final class MeetingProfileView: BaseView {
             $0.height.equalTo(22)
         }
         
-        informationStackView.snp.makeConstraints {
+        informationLabel.snp.makeConstraints {
             $0.top.equalTo(hostIdentificationStackView.snp.bottom).offset(4)
         }
         
@@ -105,15 +89,6 @@ final class MeetingProfileView: BaseView {
         identificationLabel.snp.makeConstraints {
             $0.top.equalTo(nameLabel.snp.top)
             $0.leading.equalTo(nameLabel.snp.trailing).offset(12)
-        }
-        
-        locationLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
-        }
-        
-        timeLabel.snp.makeConstraints {
-            $0.top.equalTo(locationLabel.snp.top)
-            $0.leading.equalTo(locationLabel.snp.trailing)
         }
     }
 }

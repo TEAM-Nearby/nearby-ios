@@ -46,16 +46,12 @@ final class ReviewProfileView: BaseView {
         }
         
         nameLabel.do {
-            $0.text = "정지영 님"
-            $0.textColor = .grey80
-            $0.font = NearbyFont.b2Sb16.font
+            $0.setFont(.b2Sb16, text: "정지영 님", textColor: .grey80)
             $0.textAlignment = .left
         }
         
         informationLabel.do {
-            $0.text = "바르셀로나 · 2026년 6월 18일"
-            $0.textColor = .grey50
-            $0.font = NearbyFont.b3M14.font
+            $0.setFont(.b3M14, text: "바르셀로나 · 2026년 6월 18일", textColor: .grey50)
             $0.textAlignment = .left
         }
         

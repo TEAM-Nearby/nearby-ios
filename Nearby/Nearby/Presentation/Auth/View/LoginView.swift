@@ -35,16 +35,16 @@ final class LoginView: BaseView {
 
         titleLabel.do {
             $0.textAlignment = .center
-            $0.setFont(.h1Sb24, text: "따로, 또 함께하는 여행", textColor: UIColor(red: 48/255, green: 48/255, blue: 48/255, alpha: 1))
+            $0.setFont(.h1Sb24, text: "따로, 또 함께하는 여행", textColor: .btnPrimaryBg)
         }
 
         subtitleLabel.do {
             $0.textAlignment = .center
-            $0.setFont(.b3M14, text: "지금 로그인하고 Nearby를 시작해보세요!", textColor: UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1))
+            $0.setFont(.b3M14, text: "지금 로그인하고 Nearby를 시작해보세요!", textColor: .grey70)
         }
 
         logoContainerView.do {
-            $0.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
+            $0.backgroundColor = .grey50
         }
 
         logoLabel.do {

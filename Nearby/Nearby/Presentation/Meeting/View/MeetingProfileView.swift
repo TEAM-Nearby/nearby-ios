@@ -78,7 +78,6 @@ final class MeetingProfileView: BaseView {
         hostStackView.addSubviews(hostIdentificationStackView, informationStackView)
         hostIdentificationStackView.addSubviews(nameLabel, identificationLabel)
         informationStackView.addSubviews(locationLabel, timeLabel)
-
     }
     
     override func setLayout() {

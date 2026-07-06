@@ -52,7 +52,6 @@
 				Presentation/Matching/ViewController/.gitkeep,
 				Presentation/Matching/ViewModel/.gitkeep,
 				Presentation/Meeting/Coordinator/.gitkeep,
-				Presentation/Meeting/View/.gitkeep,
 				Presentation/Meeting/ViewController/.gitkeep,
 				Presentation/Meeting/ViewModel/.gitkeep,
 				Presentation/MyPage/Coordinator/.gitkeep,

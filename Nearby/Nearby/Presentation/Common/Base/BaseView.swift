@@ -17,6 +17,7 @@ class BaseView: UIView {
         setStyle()
         setUI()
         setLayout()
+        setAddTarget()
         registerCells()
     }
 
@@ -29,5 +30,6 @@ class BaseView: UIView {
     func setStyle() {}
     func setUI() {}
     func setLayout() {}
+    func setAddTarget() {}
     func registerCells() {}
 }

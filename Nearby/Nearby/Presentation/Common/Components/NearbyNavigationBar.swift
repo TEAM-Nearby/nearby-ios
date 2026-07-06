@@ -217,11 +217,21 @@ final class NearbyNavigationBar: BaseView {
             for: UIControl.Event.touchUpInside
         )
 
+    var leftButtonAction: (() -> Void)?
+    var rightFirstButtonAction: (() -> Void)?
+    var rightSecondButtonAction: (() -> Void)?
+    var reportButtonAction: (() -> Void)?
+
         reportButton.addTarget(
             self,
-            action: #selector(rightFirstButtonDidTap),
+            action: `#selector`(reportButtonDidTap),
             for: UIControl.Event.touchUpInside
         )
+
+    `@objc`
+    private func reportButtonDidTap() {
+        reportButtonAction?()
+    }
     }
 
     // MARK: - Action

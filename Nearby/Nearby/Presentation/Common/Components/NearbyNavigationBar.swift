@@ -108,7 +108,6 @@ final class NearbyNavigationBar: BaseView {
         }
 
         titleLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(20)
             $0.center.equalToSuperview()
         }
 

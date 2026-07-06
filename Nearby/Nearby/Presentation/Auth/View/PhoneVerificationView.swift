@@ -71,11 +71,7 @@ final class PhoneVerificationView: BaseView {
 
         titleLabel.do {
             $0.numberOfLines = 2
-            $0.setFont(
-                .h3Sb20,
-                text: "더 안전한 니어바이를 위해\n휴대폰 본인인증을 진행해주세요",
-                textColor: .grey80
-            )
+            $0.setFont(.h3Sb20, text: "더 안전한 니어바이를 위해\n휴대폰 본인인증을 진행해주세요", textColor: .grey80)
             $0.setLineSpacing(lineSpacing: 6)
         }
 
@@ -94,18 +90,16 @@ final class PhoneVerificationView: BaseView {
             $0.keyboardType = .numberPad
             $0.borderStyle = .none
             $0.font = .systemFont(ofSize: 16, weight: .regular)
-            $0.textColor = UIColor(red: 36/255, green: 36/255, blue: 36/255, alpha: 1)
+            $0.textColor = .grey80
             $0.attributedPlaceholder = NSAttributedString(
                 string: "전화번호를 입력해주세요",
-                attributes: [
-                    .foregroundColor: UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
-                ]
+                attributes: [.foregroundColor: UIColor.grey20]
             )
         }
 
         phoneClearButton.do {
             $0.setImage(UIImage(systemName: "xmark"), for: .normal)
-            $0.tintColor = UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
+            $0.tintColor = .grey20
             $0.isHidden = true
         }
 
@@ -131,12 +125,10 @@ final class PhoneVerificationView: BaseView {
             $0.keyboardType = .numberPad
             $0.borderStyle = .none
             $0.font = .systemFont(ofSize: 16, weight: .regular)
-            $0.textColor = UIColor(red: 36/255, green: 36/255, blue: 36/255, alpha: 1)
+            $0.textColor = .grey80
             $0.attributedPlaceholder = NSAttributedString(
                 string: "인증번호를 입력해주세요",
-                attributes: [
-                    .foregroundColor: UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
-                ]
+                attributes: [.foregroundColor: UIColor.grey20]
             )
         }
 
@@ -266,7 +258,7 @@ final class PhoneVerificationView: BaseView {
 
         bottomButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(28)
-            $0.bottom.equalTo(safeAreaLayoutGuide).inset(22)
+            $0.bottom.equalTo(safeAreaLayoutGuide)
             $0.height.equalTo(56)
         }
     }
@@ -302,7 +294,7 @@ private extension UILabel {
         let attributedString = NSMutableAttributedString(
             string: title,
             attributes: [
-                .foregroundColor: UIColor(red: 36/255, green: 36/255, blue: 36/255, alpha: 1),
+                .foregroundColor: UIColor.grey80,
                 .font: UIFont.systemFont(ofSize: 18, weight: .semibold)
             ]
         )
@@ -311,7 +303,7 @@ private extension UILabel {
             NSAttributedString(
                 string: "*",
                 attributes: [
-                    .foregroundColor: UIColor(red: 255/255, green: 31/255, blue: 49/255, alpha: 1),
+                    .foregroundColor: UIColor.highlightRed,
                     .font: UIFont.systemFont(ofSize: 18, weight: .semibold)
                 ]
             )

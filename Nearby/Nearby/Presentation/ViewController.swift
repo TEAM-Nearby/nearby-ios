@@ -26,8 +26,7 @@ final class NavigationBarTestViewController: UIViewController {
         }
 
         navigationBar.configure(
-            leftItem: .back,
-            centerItem: .title("마이페이지"),
+            centerItem: .logo,
             rightItems: [.alarm, .setting]
         )
 

@@ -5,7 +5,6 @@
 //  Created by 신서연 on 7/6/26.
 //
 
-
 import UIKit
 
 enum NearbyNavigationBarItem: Equatable {

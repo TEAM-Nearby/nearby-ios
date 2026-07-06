@@ -56,7 +56,7 @@ final class NearbyNavigationBar: BaseView {
 
         logoLabel.do {
             $0.text = "Nearby 로고"
-            $0.font = NearbyFont.b2M16.font
+            $0.font = NearbyFont.b1M18.font
             $0.textColor = .black
         }
 
@@ -102,17 +102,18 @@ final class NearbyNavigationBar: BaseView {
         }
 
         leftButton.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(20)
+            $0.leading.equalToSuperview().inset(8)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(44)
         }
 
         titleLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(20)
             $0.center.equalToSuperview()
         }
 
         logoLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(32)
+            $0.leading.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
         }
 
@@ -130,7 +131,7 @@ final class NearbyNavigationBar: BaseView {
         }
 
         reportButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(32)
+            $0.trailing.equalToSuperview().inset(8)
             $0.centerY.equalToSuperview()
         }
     }

@@ -14,6 +14,8 @@ enum NearbyTabItem: Int, CaseIterable {
     case meeting
     case myPage
     
+    // MARK: - Properties
+    
     var title: String {
         switch self {
         case .companion:

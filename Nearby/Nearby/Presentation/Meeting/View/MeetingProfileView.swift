@@ -14,8 +14,6 @@ final class MeetingProfileView: BaseView {
     
     // MARK: - UI Components
     
-    private let contentStackView = UIStackView()
-    
     private let profileStackView = UIStackView()
     private let imageView = UIImageView()
     private let hostStackView = UIStackView()
@@ -38,10 +36,6 @@ final class MeetingProfileView: BaseView {
         
         imageView.do {
             $0.image = .imgProfileDefault
-        }
-        
-        hostStackView.do {
-            $0.axis = .vertical
         }
         
         nameLabel.do {
@@ -75,11 +69,6 @@ final class MeetingProfileView: BaseView {
             $0.textColor = .grey80
             $0.font = NearbyFont.b3M14.font
             $0.textAlignment = .left
-        }
-        
-        contentStackView.do {
-            $0.axis = .vertical
-            $0.spacing = 12
         }
     }
     
@@ -115,6 +104,7 @@ final class MeetingProfileView: BaseView {
         }
         
         identificationLabel.snp.makeConstraints {
+            $0.top.equalTo(nameLabel.snp.top)
             $0.leading.equalTo(nameLabel.snp.trailing).offset(12)
         }
         
@@ -123,6 +113,7 @@ final class MeetingProfileView: BaseView {
         }
         
         timeLabel.snp.makeConstraints {
+            $0.top.equalTo(locationLabel.snp.top)
             $0.leading.equalTo(locationLabel.snp.trailing)
         }
     }

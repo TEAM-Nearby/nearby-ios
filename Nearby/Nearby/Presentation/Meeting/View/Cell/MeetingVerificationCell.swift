@@ -27,7 +27,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
 
     private let verifyStackView = UIStackView()
     private let verifyTitleLabel = UILabel()
-    private let verifySubtitleLabl = UILabel()
+    private let verifySubtitleLabel = UILabel()
     private let verifyButton = NearbyButton(style: .gradient, title: "만남 인증하기")
 
     // MARK: - Initializer
@@ -75,7 +75,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
             $0.textAlignment = .left
         }
         
-        verifySubtitleLabl.do {
+        verifySubtitleLabel.do {
             $0.text = "동행자와 만나면 위치 인증으로 동행을 시작하세요"
             $0.textColor = .grey40
             $0.font = NearbyFont.b3M14.font
@@ -87,8 +87,8 @@ final class MeetingVerificationCell: UICollectionViewCell {
     private func setUI() {
         contentView.addSubview(contentStackView)
         contentStackView.addArrangedSubviews(profileView, dividerView, verifyStackView)
-        verifyStackView.addArrangedSubviews(verifyTitleLabel, verifySubtitleLabl, verifyButton)
-        verifyStackView.setCustomSpacing(16, after: verifySubtitleLabl)
+        verifyStackView.addArrangedSubviews(verifyTitleLabel, verifySubtitleLabel, verifyButton)
+        verifyStackView.setCustomSpacing(16, after: verifySubtitleLabel)
     }
 
     private func setLayout() {

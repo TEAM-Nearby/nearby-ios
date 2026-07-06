@@ -41,7 +41,7 @@ final class NearbyButton: UIButton {
         layer.cornerRadius = 16
         setTitle(title, for: .normal)
         setTitleColor(style.titleColor, for: .normal)
-        titleLabel?.font = self.style.font.font
+        titleLabel?.font = style.font.font
         
         if style.usesGradient {
             setGradient()

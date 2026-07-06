@@ -15,13 +15,21 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
     enum Input {
         case viewDidLoad
         case confirmButtonDidTap
+        case enterChatButtonDidTap
+        case chatHelpButtonDidTap
     }
 
     // MARK: - Output
 
     struct Output {
         let displayData = PassthroughSubject<DisplayData, Never>()
+        let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<Void, Never>()
+    }
+
+    enum Step {
+        case matched
+        case chat
     }
 
     struct DisplayData {
@@ -64,7 +72,18 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
             output.displayData.send(data)
 
         case .confirmButtonDidTap:
+            switch output.step.value {
+            case .matched:
+                output.step.send(.chat)
+            case .chat:
+                output.showOpenChat.send(())
+            }
+
+        case .enterChatButtonDidTap:
             output.showOpenChat.send(())
+
+        case .chatHelpButtonDidTap:
+            break
         }
     }
 }

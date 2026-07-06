@@ -26,6 +26,14 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
         rootView.onConfirmButtonDidTap = { [weak self] in
             self?.viewModel.action(.confirmButtonDidTap)
         }
+
+        rootView.onEnterChatButtonDidTap = { [weak self] in
+            self?.viewModel.action(.enterChatButtonDidTap)
+        }
+
+        rootView.onChatHelpButtonDidTap = { [weak self] in
+            self?.viewModel.action(.chatHelpButtonDidTap)
+        }
     }
 
     override func bindState() {
@@ -36,10 +44,16 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
             }
             .store(in: &cancellables)
 
+        viewModel.output.step
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] step in
+                self?.rootView.updateStep(step)
+            }
+            .store(in: &cancellables)
+
         viewModel.output.showOpenChat
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - Coordinator 연결 (오픈채팅 뷰로 이동)
                 self?.navigationController?.popToRootViewController(animated: true)
             }
             .store(in: &cancellables)

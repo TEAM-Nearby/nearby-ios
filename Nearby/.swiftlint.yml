@@ -3,14 +3,13 @@ analyzer_rules:
   - unused_import
 
 disabled_rules:
-  - trailing_whitespace
-  - line_length
   - type_body_length
   - function_body_length
   - cyclomatic_complexity
   - identifier_name
   - todo
   - required_deinit
+  - trailing_whitespace
 
 opt_in_rules:
   - force_unwrapping
@@ -33,6 +32,10 @@ opt_in_rules:
   - redundant_nil_coalescing
   - operator_usage_whitespace
   - lower_acl_than_parent
+
+line_length:
+  warning: 200
+  error: 150
 
 excluded:
   - Pods

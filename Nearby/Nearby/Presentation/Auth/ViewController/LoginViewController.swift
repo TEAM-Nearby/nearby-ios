@@ -19,10 +19,6 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
         self.view = loginView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
     // MARK: - Custom Methods
 
     func setAddTarget() {

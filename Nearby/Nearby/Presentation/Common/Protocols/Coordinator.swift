@@ -18,14 +18,6 @@ protocol Coordinator: AnyObject {
 }
 
 extension Coordinator {
-    func start() {
-        preconditionFailure("❌ override error")
-    }
-    
-    func finish() {
-        preconditionFailure("❌ override error")
-    }
-    
     func addChildCoordinator(_ coordinator: Coordinator) {
         childCoordinators.append(coordinator)
     }

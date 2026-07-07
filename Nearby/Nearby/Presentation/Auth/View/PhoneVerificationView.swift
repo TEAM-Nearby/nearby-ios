@@ -14,8 +14,7 @@ final class PhoneVerificationView: BaseView {
     
     // MARK: - UI Components
 
-    private let navigationView = UIView()
-    let backButton = UIButton(type: .system)
+    let navigationBar = NearbyNavigationBar()
 
     private let progressContainerView = UIView()
     private let progressView = UIProgressView(progressViewStyle: .default)
@@ -41,17 +40,12 @@ final class PhoneVerificationView: BaseView {
     override func setStyle() {
         backgroundColor = .white
 
-        navigationView.do {
-            $0.backgroundColor = .white
+        navigationBar.do {
+            $0.configure(leftItem: .back)
         }
-
+        
         progressContainerView.do {
             $0.backgroundColor = .white
-        }
-
-        backButton.do {
-            $0.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-            $0.tintColor = .grey80
         }
 
         progressView.do {
@@ -137,13 +131,12 @@ final class PhoneVerificationView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(navigationView, progressContainerView, titleLabel,
+        addSubviews(navigationBar, progressContainerView, titleLabel,
             phoneTitleLabel, phoneTextFieldContainerView, phoneErrorLabel,
             verificationTitleLabel, verificationTextFieldContainerView,
             verificationErrorLabel,bottomButton
         )
 
-        navigationView.addSubview(backButton)
         progressContainerView.addSubview(progressView)
 
         phoneTextFieldContainerView.addSubviews(
@@ -158,19 +151,13 @@ final class PhoneVerificationView: BaseView {
     }
 
     override func setLayout() {
-        navigationView.snp.makeConstraints {
-            $0.top.leading.trailing.equalTo(safeAreaLayoutGuide)
-            $0.height.equalTo(48)
+        
+        navigationBar.snp.makeConstraints {
+            $0.top.horizontalEdges.equalTo(safeAreaLayoutGuide)
         }
-
-        backButton.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.centerY.equalToSuperview()
-            $0.size.equalTo(28)
-        }
-
+        
         progressContainerView.snp.makeConstraints {
-            $0.top.equalTo(navigationView.snp.bottom)
+            $0.top.equalTo(navigationBar.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(11)
         }

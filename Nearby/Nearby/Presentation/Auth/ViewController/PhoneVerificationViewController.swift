@@ -34,11 +34,9 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
     }
 
     private func setAddTarget() {
-        phoneVerificationView.backButton.addTarget(
-            self,
-            action: #selector(backButtonDidTap),
-            for: .touchUpInside
-        )
+        phoneVerificationView.navigationBar.leftButtonAction = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
 
         phoneVerificationView.bottomButton.addTarget(
             self,

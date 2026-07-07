@@ -74,18 +74,18 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
     private func setChipStyle(title: String) {
         backgroundColor = style.backgroundColor
         layer.borderColor = style.borderColor.cgColor
-        layer.cornerRadius = style.cornerRadius
+        layer.cornerRadius = style.layerCornerRadius
         chipTextLabel.textColor = style.titleColor
         chipTextLabel.font = style.font
         setChipTitle(title, titleColor: style.titleColor)
     }
-    
+
     private func updateUI() {
         let toggleStyle = isSelected ? style.selectedStyle : style.unselectedStyle
         
         backgroundColor = toggleStyle.backgroundColor
         layer.borderColor = toggleStyle.borderColor.cgColor
-        layer.cornerRadius = toggleStyle.cornerRadius
+        layer.cornerRadius = toggleStyle.layerCornerRadius
         chipTextLabel.textColor = toggleStyle.titleColor
         chipTextLabel.font = toggleStyle.font
         setChipTitle(chipTitle, titleColor: toggleStyle.titleColor)

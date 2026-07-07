@@ -35,7 +35,6 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
         setUI()
         setLayout()
         setChipStyle(title: title)
-        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -118,24 +117,10 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
         chipTextLabel.attributedText = attributedString
     }
     
-    private func bind() {
-        addTarget(self, action: #selector(chipDidTap), for: .touchUpInside)
-    }
-    
     // MARK: - Methods
     
     func updateSelected(_ isSelected: Bool) {
         self.isSelected = isSelected
-        updateUI()
-    }
-    
-    // MARK: - Action
-    
-    @objc
-    private func chipDidTap() {
-        guard style.isSelectable else { return }
-        
-        isSelected.toggle()
         updateUI()
     }
 }

@@ -38,14 +38,7 @@ final class CompanionProfileViewModel: BaseViewModelType {
     private var nickname = ""
     private var selectedGender: CompanionProfileGender = .female
     private var introduction = ""
-    private var selectedKeywords: Set<String> = [
-        "외향형",
-        "느좋 카페 투어",
-        "사진 맛집 투어",
-        "미식 탐방",
-        "한 곳 오래",
-        "문화 예술"
-    ]
+    private var selectedKeywords: Set<String> = []
     
     // MARK: - Initializer
     

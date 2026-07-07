@@ -105,9 +105,8 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     }
     
     @objc
-    private func keywordButtonDidTap(_ sender: UIButton) {
-        guard let keyword = sender.currentTitle else { return }
-        viewModel.action(.keywordButtonDidTap(keyword))
+    private func keywordButtonDidTap(_ sender: NearbyChipButton) {
+        viewModel.action(.keywordButtonDidTap(sender.chipTitle))
     }
     
     @objc
@@ -131,7 +130,9 @@ extension CompanionProfileViewController: UITextFieldDelegate {
 extension CompanionProfileViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         let text = textView.text ?? ""
+        
         companionProfileView.introductionClearButton.isHidden = text.isEmpty
+        companionProfileView.updateIntroductionPlaceholder(isHidden: !text.isEmpty)
         viewModel.action(.introductionDidChange(text))
     }
 }

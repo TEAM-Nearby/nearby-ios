@@ -42,6 +42,7 @@ final class CompanionProfileView: BaseView {
     private let introductionTitleLabel = UILabel()
     private let introductionTextViewContainerView = UIView()
     let introductionTextView = UITextView()
+    private let introductionPlaceholderLabel = UILabel()
     let introductionClearButton = UIButton(type: .system)
     
     private let travelStyleTitleLabel = UILabel()
@@ -131,7 +132,7 @@ final class CompanionProfileView: BaseView {
         nicknameClearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey20
-            $0.isHidden = true
+            $0.isHidden = false
         }
         
         genderTitleLabel.do {
@@ -169,10 +170,18 @@ final class CompanionProfileView: BaseView {
             $0.textContainer.lineFragmentPadding = 0
         }
         
+        introductionPlaceholderLabel.do {
+            $0.setFont(
+                .b3M14,
+                text: "ex) 감성스팟과 맛집탐방을 좋아합니다",
+                textColor: .grey20
+            )
+        }
+        
         introductionClearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey20
-            $0.isHidden = true
+            $0.isHidden = false
         }
         
         travelStyleTitleLabel.do {
@@ -215,6 +224,7 @@ final class CompanionProfileView: BaseView {
         nicknameTextFieldContainerView.addSubviews(nicknameTextField, nicknameClearButton)
         genderStackView.addArrangedSubviews(maleButton, femaleButton)
         introductionTextViewContainerView.addSubviews(introductionTextView, introductionClearButton)
+        introductionTextView.addSubview(introductionPlaceholderLabel)
         
         setKeywordButtons()
     }
@@ -276,7 +286,7 @@ final class CompanionProfileView: BaseView {
         }
         
         imageSelectLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(24)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(8)
             $0.centerX.equalToSuperview()
         }
         
@@ -331,6 +341,10 @@ final class CompanionProfileView: BaseView {
             $0.height.equalTo(22)
         }
         
+        introductionPlaceholderLabel.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
         introductionClearButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(28)
             $0.centerY.equalToSuperview()
@@ -360,14 +374,19 @@ final class CompanionProfileView: BaseView {
         }
     }
     
+    func updateIntroductionPlaceholder(isHidden: Bool) {
+        introductionPlaceholderLabel.isHidden = isHidden
+    }
+    
     func clearNicknameText() {
         nicknameTextField.text = nil
-        nicknameClearButton.isHidden = true
+        nicknameClearButton.isHidden = false
     }
     
     func clearIntroductionText() {
         introductionTextView.text = nil
-        introductionClearButton.isHidden = true
+        introductionClearButton.isHidden = false
+        introductionPlaceholderLabel.isHidden = false
     }
     
     // MARK: - Method
@@ -378,18 +397,19 @@ final class CompanionProfileView: BaseView {
             ["느좋 카페 투어", "도보여행", "사진 맛집 투어"],
             ["미식 탐방", "디저트 중독", "소품샵 투어"],
             ["야경 러버", "역사 탐방", "전시장 러버"],
-            ["한 곳 오래", "많이 도는형", "문화 예술"]
+            ["한 곳 오래", "많이 도는형", "음주 애호가"],
+            ["음주 비선호"]
         ]
 
         keywordRows.forEach { rowKeywords in
             let rowStackView = UIStackView()
             rowStackView.axis = .horizontal
-            rowStackView.spacing = 8
+            rowStackView.spacing = 4
             rowStackView.alignment = .center
 
             rowKeywords.forEach { keyword in
                 let chipButton = NearbyChipButton(
-                    style: .profileKeywordUnselected,
+                    style: .personalityDefault,
                     title: keyword,
                     horizontalInset: 20
                 )

@@ -27,34 +27,19 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
 
     // MARK: - Custom Method
 
+    override func setAddTarget() {
+        phoneVerificationView.navigationBar.leftButtonAction = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        phoneVerificationView.bottomButton.addTarget(self, action: #selector(bottomButtonDidTap), for: .touchUpInside)
+        phoneVerificationView.phoneClearButton.addTarget(self, action: #selector(phoneClearButtonDidTap), for: .touchUpInside)
+        phoneVerificationView.verificationClearButton.addTarget(self, action: #selector(verificationClearButtonDidTap), for: .touchUpInside)
+    }
+
     private func bindViewModel() {
         viewModel.output.isVerificationMode = { [weak self] isVerificationMode in
             self?.phoneVerificationView.updateVerificationMode(isVerificationMode)
         }
-    }
-
-    private func setAddTarget() {
-        phoneVerificationView.navigationBar.leftButtonAction = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
-
-        phoneVerificationView.bottomButton.addTarget(
-            self,
-            action: #selector(bottomButtonDidTap),
-            for: .touchUpInside
-        )
-
-        phoneVerificationView.phoneClearButton.addTarget(
-            self,
-            action: #selector(phoneClearButtonDidTap),
-            for: .touchUpInside
-        )
-
-        phoneVerificationView.verificationClearButton.addTarget(
-            self,
-            action: #selector(verificationClearButtonDidTap),
-            for: .touchUpInside
-        )
     }
 
     // MARK: - Actions

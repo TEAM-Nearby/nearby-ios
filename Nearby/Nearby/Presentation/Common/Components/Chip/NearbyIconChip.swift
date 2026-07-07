@@ -5,8 +5,8 @@
 //  Created by soomin on 7/6/26.
 //
 
-import SnapKit
 import UIKit
+import SnapKit
 
 final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
     
@@ -57,11 +57,6 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
     
     private func setStyle() {
         applyChipShadow(style: style)
-    }
-    
-    private func setUI() {
-        addSubview(contentStackView)
-        contentStackView.addArrangedSubviews(chipIconImageView, chipTextLabel)
         
         contentStackView.axis = .horizontal
         contentStackView.alignment = .center
@@ -73,6 +68,11 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
         
         chipTextLabel.text = title
         chipTextLabel.textAlignment = .center
+    }
+    
+    private func setUI() {
+        addSubview(contentStackView)
+        contentStackView.addArrangedSubviews(chipIconImageView, chipTextLabel)
     }
     
     private func setLayout() {

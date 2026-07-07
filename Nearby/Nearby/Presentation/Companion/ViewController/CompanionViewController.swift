@@ -151,7 +151,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
     }
     
-    // MARK: - Action
+    // MARK: - Actions
     
     @objc
     private func currentLocationButtonDidTap() {

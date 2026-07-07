@@ -28,19 +28,23 @@ final class AppDIContainer {
     // MARK: - Repositories
     
     // MARK: - ViewModels
-  
+    
     func makeLoginViewModel() -> LoginViewModel {
         LoginViewModel()
     }
-  
+    
     func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
     }
     
     // MARK: - ViewControllers
     
-    func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
-        CompanionViewController(viewModel: viewModel)
+    func makeLoginViewController() -> LoginViewController {
+        return LoginViewController(viewModel: makeLoginViewModel())
+    }
+    
+    func makeCompanionViewController() -> CompanionViewController {
+        return CompanionViewController(viewModel: makeCompanionViewModel())
     }
     
     func makeDiningMapViewController() -> UIViewController {
@@ -61,10 +65,6 @@ final class AppDIContainer {
     
     func makeRecruitCompanionViewController() -> UIViewController {
         makePlaceholderViewController(title: "동행글 작성")
-    }
-  
-    func makeLoginViewController(viewModel: LoginViewModel) -> LoginViewController {
-        LoginViewController(viewModel: viewModel)
     }
 }
 

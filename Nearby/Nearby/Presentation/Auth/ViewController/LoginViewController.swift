@@ -21,7 +21,7 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
 
     // MARK: - Custom Method
 
-    func setAddTarget() {
+    override func setAddTarget() {
         loginView.kakaoLoginButton.addTarget(self, action: #selector(kakaoLoginButtonDidTap), for: .touchUpInside)
     }
 

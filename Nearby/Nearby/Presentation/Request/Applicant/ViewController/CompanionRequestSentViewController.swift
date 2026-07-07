@@ -25,8 +25,8 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
     override func setAddTarget() {
         companionRequestSentView.onBackButtonDidTap = { [weak self] in
                 // TODO: - Coordinator 연결 (뒤로가기)
-                self?.navigationController?.popViewController(animated: true)
-            }
+            self?.navigationController?.popViewController(animated: true)
+        }
         companionRequestSentView.onSearchButtonDidTap = { [weak self] in
             self?.viewModel.action(.searchButtonDidTap)
         }

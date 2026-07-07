@@ -9,14 +9,12 @@ import UIKit
 
 import CoreLocation
 import GoogleMaps
-import SnapKit
 
 final class CompanionViewController: BaseViewController<CompanionViewModel> {
     
     // MARK: - Properties
     
     private let locationManager = CLLocationManager()
-    private var mapView: GMSMapView?
     private var currentLocation: CLLocation?
     private var currentLocationMarker: GMSMarker?
     private weak var currentLocationDirectionView: UIView?
@@ -40,13 +38,17 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureMapView()
         configureLocationManager()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        locationManager.stopUpdatingHeading()
     }
     
     // MARK: - Custom Methods
@@ -62,24 +64,6 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
     
     // MARK: - Methods
-    
-    private func configureMapView() {
-        let camera = GMSCameraPosition.camera(withLatitude: 37.531821, longitude: 126.913904, zoom: 15.0)
-        
-        let options = GMSMapViewOptions()
-        options.camera = camera
-        options.frame = contentView.mapContainerView.bounds
-        
-        let mapView = GMSMapView(options: options)
-        mapView.isMyLocationEnabled = false
-        mapView.settings.myLocationButton = false
-        
-        contentView.mapContainerView.addSubview(mapView)
-        mapView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-        self.mapView = mapView
-    }
     
     private func configureLocationManager() {
         locationManager.delegate = self
@@ -104,7 +88,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             longitude: location.coordinate.longitude,
             zoom: 16.0
         )
-        mapView?.animate(to: camera)
+        contentView.mapView.animate(to: camera)
     }
     
     private func updateCurrentLocationMarker(to location: CLLocation) {
@@ -118,9 +102,10 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         let marker = GMSMarker(position: coordinate)
         marker.iconView = makeCurrentLocationMarkerView()
         marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
-        marker.map = mapView
+        marker.map = contentView.mapView
         marker.tracksViewChanges = true
         currentLocationMarker = marker
+        stopTrackingViewChanges(for: marker)
     }
 
     private func makeCurrentLocationMarkerView() -> UIView {
@@ -153,8 +138,17 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         let headingDegree = heading.trueHeading >= 0 ? heading.trueHeading : heading.magneticHeading
         let headingRadian = CGFloat(headingDegree * .pi / 180)
         
-        currentLocationDirectionView?.transform = CGAffineTransform(rotationAngle: headingRadian)
-        currentLocationMarker?.tracksViewChanges = true
+        if let currentLocationMarker {
+            currentLocationMarker.tracksViewChanges = true
+            currentLocationDirectionView?.transform = CGAffineTransform(rotationAngle: headingRadian)
+            stopTrackingViewChanges(for: currentLocationMarker)
+        }
+    }
+    
+    private func stopTrackingViewChanges(for marker: GMSMarker) {
+        DispatchQueue.main.async {
+            marker.tracksViewChanges = false
+        }
     }
     
     // MARK: - Action

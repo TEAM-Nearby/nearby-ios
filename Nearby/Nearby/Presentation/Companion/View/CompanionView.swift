@@ -7,6 +7,7 @@
 
 import UIKit
 
+import GoogleMaps
 import SnapKit
 import Then
 
@@ -23,6 +24,16 @@ final class CompanionView: BaseView {
     private let companionCountChip = NearbyChipButton(style: .mapInfo, title: "내 주변 12개의 동행이 있어요", horizontalInset: 12)
     let recruitCompanionButton = UIButton()
     let mapContainerView = UIView()
+    let mapView: GMSMapView = {
+        let camera = GMSCameraPosition.camera(withLatitude: 37.531821, longitude: 126.913904, zoom: 15.0)
+        let options = GMSMapViewOptions()
+        options.camera = camera
+        
+        let mapView = GMSMapView(options: options)
+        mapView.isMyLocationEnabled = false
+        mapView.settings.myLocationButton = false
+        return mapView
+    }()
     let currentLocationButton = UIButton()
     let categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
@@ -120,12 +131,17 @@ final class CompanionView: BaseView {
     }
     
     override func setUI() {
+        mapContainerView.addSubview(mapView)
         addSubviews(mapContainerView, blurBackgroundView, blurWhiteGradientView, navigationBar, categoryCollectionView,
                     currentLocationButton, companionCountChip, recruitCompanionButton)
     }
     
     override func setLayout() {
         mapContainerView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        mapView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
         

@@ -25,14 +25,14 @@ final class CompanionCoordinator {
     
     // MARK: - Methods
     
-    func handle(_ route: CompanionViewModel.Route) {
+    private func handle(_ route: CompanionViewModel.Route) {
         switch route {
         case .recruitCompanion:
             showRecruitCompanion()
         }
     }
     
-    func showRecruitCompanion() {
+    private func showRecruitCompanion() {
         // TODO: 동행글 작성 View로 이동
 //        let viewController = diContainer.makeRecruitCompanionViewController()
 //        navigationController.pushViewController(viewController, animated: true)

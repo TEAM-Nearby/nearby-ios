@@ -110,7 +110,7 @@ final class CompanionProfileView: BaseView {
         }
         
         nicknameTitleLabel.do {
-            $0.setFont(.b2Sb16, text: "닉네임", textColor: .grey80)
+            $0.setRequiredTitle("닉네임")
         }
         
         nicknameTextFieldContainerView.do {
@@ -136,7 +136,7 @@ final class CompanionProfileView: BaseView {
         }
         
         genderTitleLabel.do {
-            $0.setFont(.b2Sb16, text: "성별", textColor: .grey80)
+            $0.setRequiredTitle("성별")
         }
         
         genderStackView.do {
@@ -166,6 +166,7 @@ final class CompanionProfileView: BaseView {
             $0.backgroundColor = .clear
             $0.font = NearbyFont.b3M14.font
             $0.textColor = .grey80
+
             $0.textContainerInset = .zero
             $0.textContainer.lineFragmentPadding = 0
         }
@@ -185,7 +186,7 @@ final class CompanionProfileView: BaseView {
         }
         
         travelStyleTitleLabel.do {
-            $0.setFont(.b2Sb16, text: "여행스타일 키워드", textColor: .grey80)
+            $0.setRequiredTitle("여행스타일 키워드")
         }
         
         travelStyleStackView.do {
@@ -335,19 +336,21 @@ final class CompanionProfileView: BaseView {
         }
         
         introductionTextView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(16)
             $0.leading.equalToSuperview().offset(28)
-            $0.centerY.equalToSuperview()
             $0.trailing.equalTo(introductionClearButton.snp.leading).offset(-12)
-            $0.height.equalTo(22)
+            $0.height.equalTo(40)
         }
         
         introductionPlaceholderLabel.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(22)
         }
         
         introductionClearButton.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().inset(28)
-            $0.centerY.equalToSuperview()
             $0.size.equalTo(24)
         }
         
@@ -431,7 +434,7 @@ private extension UILabel {
             string: title,
             attributes: [
                 .foregroundColor: UIColor.grey80,
-                .font: NearbyFont.h3Sb20.font
+                .font: NearbyFont.b2Sb16.font
             ]
         )
 
@@ -440,12 +443,12 @@ private extension UILabel {
                 string: "*",
                 attributes: [
                     .foregroundColor: UIColor.highlightRed,
-                    .font: NearbyFont.h3Sb20.font
+                    .font: NearbyFont.b2Sb16.font
                 ]
             )
         )
 
-        self.attributedText = attributedString
+        attributedText = attributedString
     }
 }
 

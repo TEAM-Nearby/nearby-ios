@@ -23,7 +23,7 @@ final class AppCoordinator {
 
 extension AppCoordinator: Coordinator {
      func start() {
-         showMainTab()
+         showLogin()
      }
      
      func finish() {
@@ -39,6 +39,14 @@ extension AppCoordinator: Coordinator {
         mainTabCoordinator.start()
         
         window.rootViewController = mainTabCoordinator.rootViewController
+        window.makeKeyAndVisible()
+    }
+    
+    func showLogin() {
+        let loginViewController = diContainer.makeLoginViewController()
+        let navigationController = UINavigationController(rootViewController: loginViewController)
+
+        window.rootViewController = navigationController
         window.makeKeyAndVisible()
     }
  }

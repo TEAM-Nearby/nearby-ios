@@ -8,7 +8,7 @@
 import SnapKit
 import UIKit
 
-final class NearbyChipView: UIButton {
+final class NearbyChipButton: UIButton {
     
     // MARK: - Properties
     

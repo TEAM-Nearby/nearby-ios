@@ -4,6 +4,7 @@
 //
 //  Created by h2e on 7/7/26.
 //
+
 import UIKit
 
 import SnapKit
@@ -129,7 +130,7 @@ final class CompanionRequestAcceptView: BaseView {
         
         avatarStackView.do {
             $0.axis = .horizontal
-            $0.spacing = -12
+            $0.spacing = -6
             $0.alignment = .center
         }
         
@@ -331,11 +332,7 @@ final class CompanionRequestAcceptView: BaseView {
         let width = bounds.width
         let isChat = step == .chat
         
-        UIView.animate(
-            withDuration: 0.35,
-            delay: 0,
-            options: .curveEaseInOut
-        ) {
+        UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseInOut) {
             if isChat {
                 self.matchedContainer.transform = CGAffineTransform(translationX: -width, y: 0)
                 self.chatContainer.transform = .identity

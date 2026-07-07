@@ -10,8 +10,8 @@ import UIKit
 enum NearbyGradient {
     static var buttonBackgroundColors: [CGColor] {
         [
-            UIColor(named: "btn_gradation_bg_start")?.cgColor ?? UIColor(red: 0x61 / 255, green: 0x48 / 255, blue: 0xFF / 255, alpha: 1).cgColor,
-            UIColor(named: "btn_gradation_bg_end")?.cgColor ?? UIColor(red: 0x7B / 255, green: 0xAE / 255, blue: 0xFF / 255, alpha: 1).cgColor
+            UIColor(named: "btn_gradation_bg_start")?.cgColor ?? UIColor.gradientStart.cgColor,
+            UIColor(named: "btn_gradation_bg_end")?.cgColor ?? UIColor.gradientEnd.cgColor
         ]
     }
 

@@ -15,28 +15,27 @@ final class GradientCircleView: BaseView {
     // MARK: - Properties
 
     private let diameter: CGFloat
-    private let borderWidth: CGFloat
-    private let gap: CGFloat
+    private let borderWidth: CGFloat = 2
+    private let gap: CGFloat = 2
 
     // MARK: - UI Components
 
     private let gradientLayer = NearbyGradient.profileBorderLayer(frame: .zero)
+    private let whiteCircleView = UIView()
     private let innerCircleView = UIView()
     private let imageView = UIImageView()
 
     // MARK: - Initializer
 
-    init(diameter: CGFloat = 100, borderWidth: CGFloat = 4, gap: CGFloat = 6) {
+    init(diameter: CGFloat = 100) {
         self.diameter = diameter
-        self.borderWidth = borderWidth
-        self.gap = gap
         super.init(frame: .zero)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Life Cycle
 
     override func layoutSubviews() {
@@ -46,6 +45,9 @@ final class GradientCircleView: BaseView {
         gradientLayer.cornerRadius = diameter / 2
         layer.cornerRadius = diameter / 2
 
+        let whiteRadius = (diameter - borderWidth * 2) / 2
+        whiteCircleView.layer.cornerRadius = whiteRadius
+
         let innerRadius = (diameter - (borderWidth + gap) * 2) / 2
         innerCircleView.layer.cornerRadius = innerRadius
         imageView.layer.cornerRadius = innerRadius
@@ -54,7 +56,12 @@ final class GradientCircleView: BaseView {
     // MARK: - Custom Methods
 
     override func setStyle() {
-        backgroundColor = .white
+        backgroundColor = .clear
+
+        whiteCircleView.do {
+            $0.backgroundColor = .white
+            $0.clipsToBounds = true
+        }
 
         innerCircleView.do {
             $0.backgroundColor = .primary10
@@ -69,7 +76,8 @@ final class GradientCircleView: BaseView {
 
     override func setUI() {
         layer.addSublayer(gradientLayer)
-        addSubview(innerCircleView)
+        addSubview(whiteCircleView)
+        whiteCircleView.addSubview(innerCircleView)
         innerCircleView.addSubview(imageView)
     }
 
@@ -78,8 +86,12 @@ final class GradientCircleView: BaseView {
             $0.size.equalTo(diameter)
         }
 
+        whiteCircleView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(borderWidth)
+        }
+
         innerCircleView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(borderWidth + gap)
+            $0.edges.equalToSuperview().inset(gap)
         }
 
         imageView.snp.makeConstraints {

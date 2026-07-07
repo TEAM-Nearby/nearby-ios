@@ -36,7 +36,6 @@
 				Data/Network/MyPage/DTO/.gitkeep,
 				Data/Network/RecruitCompanion/DTO/.gitkeep,
 				Data/Repository/Mock/.gitkeep,
-				Presentation/Auth/Coordinator/.gitkeep,
 				Presentation/Auth/View/.gitkeep,
 				Presentation/Auth/ViewController/.gitkeep,
 				Presentation/Auth/ViewModel/.gitkeep,
@@ -68,7 +67,6 @@
 				Presentation/RecruitCompanion/ViewController/.gitkeep,
 				Presentation/RecruitCompanion/ViewModel/.gitkeep,
 				Presentation/Request/Applicant/Coordinator/.gitkeep,
-				Presentation/Request/Host/Coordinator/.gitkeep,
 				Resource/Info.plist,
 			);
 			target = 771209D42FF423C700D688FD /* Nearby */;

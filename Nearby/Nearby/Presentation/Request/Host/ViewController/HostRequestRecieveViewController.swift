@@ -28,6 +28,9 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
     // MARK: - Custom Methods
 
     override func setAddTarget() {
+        hostRequestRecieveView.onBackButtonDidTap = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
         hostRequestRecieveView.onAllowButtonDidTap = { [weak self] in
             self?.viewModel.action(.allowButtonDidTap)
         }

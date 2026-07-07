@@ -65,15 +65,9 @@ final class LoginView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(
-            contentStackView,
-            kakaoLoginButton
-        )
+        addSubviews(contentStackView, kakaoLoginButton)
         
-        contentStackView.addArrangedSubviews(
-            titleLabel,
-            subtitleLabel,
-            logoContainerView
+        contentStackView.addArrangedSubviews(titleLabel, subtitleLabel, logoContainerView
         )
         
         logoContainerView.addSubview(logoLabel)

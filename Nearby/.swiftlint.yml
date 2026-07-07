@@ -22,7 +22,6 @@ opt_in_rules:
   - shorthand_optional_binding
   - attributes
   - vertical_whitespace
-  - sorted_imports
   - mark
   - class_delegate_protocol
   - closure_end_indentation

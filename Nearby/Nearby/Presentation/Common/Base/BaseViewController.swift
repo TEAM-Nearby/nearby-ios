@@ -35,7 +35,7 @@ class BaseViewController<VM: BaseViewModelType>: UIViewController {
         
         setUI()
         setLayout()
-        addTarget()
+        setAddTarget()
         setDelegate()
         bindAction()
         bindState()
@@ -65,7 +65,7 @@ class BaseViewController<VM: BaseViewModelType>: UIViewController {
     
     func setUI() {}
     func setLayout() {}
-    func addTarget() {}
+    func setAddTarget() {}
     func setDelegate() {}
     func bindAction() {}
     func bindState() {}

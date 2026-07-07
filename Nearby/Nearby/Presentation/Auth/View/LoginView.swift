@@ -53,13 +53,7 @@ final class LoginView: BaseView {
         }
         
         kakaoLoginButton.do {
-            $0.backgroundColor = .grey50
-            $0.layer.cornerRadius = 34
-            $0.clipsToBounds = true
-            $0.tintColor = .black
-            
-            let image = UIImage(named: "icon_kakao")?.withRenderingMode(.alwaysOriginal)
-            $0.setImage(image, for: .normal)
+            $0.setImage(.iconKakao.withRenderingMode(.alwaysOriginal), for: .normal)
             $0.imageView?.contentMode = .scaleAspectFit
         }
     }
@@ -92,7 +86,7 @@ final class LoginView: BaseView {
         
         kakaoLoginButton.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(safeAreaLayoutGuide).inset(120)
+            $0.bottom.equalTo(safeAreaLayoutGuide).inset(98)
             $0.size.equalTo(68)
         }
     }

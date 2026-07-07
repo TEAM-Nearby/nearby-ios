@@ -23,7 +23,7 @@ final class AppCoordinator {
 
 extension AppCoordinator: Coordinator {
      func start() {
-         showLogin()
+         showMainTab()
      }
      
      func finish() {

@@ -16,11 +16,13 @@
 		7712132B2FF43A5B00D688FD /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132A2FF43A5B00D688FD /* KakaoSDKShare */; };
 		7712132D2FF43A5B00D688FD /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132C2FF43A5B00D688FD /* KakaoSDKUser */; };
 		771213302FF43B3700D688FD /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132F2FF43B3700D688FD /* GoogleMaps */; };
+		772B1DED2FFB952C0044A4F2 /* Cofig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */; };
 		77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 77C74AF12FF6EEF200604CBC /* .swiftlint.yml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		771209D52FF423C700D688FD /* Nearby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nearby.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Cofig.xcconfig; sourceTree = "<group>"; };
 		77C74AF12FF6EEF200604CBC /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,6 +104,7 @@
 		771209CC2FF423C700D688FD = {
 			isa = PBXGroup;
 			children = (
+				772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */,
 				77C74AF12FF6EEF200604CBC /* .swiftlint.yml */,
 				771209D72FF423C700D688FD /* Nearby */,
 				771209D62FF423C700D688FD /* Products */,
@@ -199,6 +202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */,
+				772B1DED2FFB952C0044A4F2 /* Cofig.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,6 +242,7 @@
 /* Begin XCBuildConfiguration section */
 		771209E92FF423C900D688FD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -316,6 +321,7 @@
 		};
 		771209EB2FF423C900D688FD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

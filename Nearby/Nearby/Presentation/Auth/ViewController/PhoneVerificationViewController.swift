@@ -9,13 +9,13 @@ import UIKit
 
 final class PhoneVerificationViewController: BaseViewController<PhoneVerificationViewModel> {
 
-    // MARK: - UI Components
-
-    private let phoneVerificationView = PhoneVerificationView()
-
     // MARK: - Properties
 
     private var isVerificationMode = false
+    
+    // MARK: - UI Components
+
+    private let phoneVerificationView = PhoneVerificationView()
 
     // MARK: - Life Cycles
 
@@ -67,11 +67,13 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
     private func bottomButtonDidTap() {
         if isVerificationMode {
             viewModel.action(.nextButtonDidTap)
+            // TODO: - 다음 버튼 탭
             // print("다음 버튼 탭")
         } else {
             isVerificationMode = true
             phoneVerificationView.updateVerificationMode()
             viewModel.action(.sendVerificationButtonDidTap)
+            // TODO: - 인증문자 발송하기 버튼 탭
             // print("인증문자 발송하기 버튼 탭")
         }
     }

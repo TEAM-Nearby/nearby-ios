@@ -12,6 +12,10 @@ import Then
 
 final class PhoneVerificationView: BaseView {
 
+    // MARK: - Properties
+
+    private var isVerificationMode = false
+    
     // MARK: - UI Components
 
     private let navigationView = UIView()
@@ -38,10 +42,6 @@ final class PhoneVerificationView: BaseView {
         style: .primary,
         title: "인증문자 발송하기"
     )
-
-    // MARK: - Properties
-
-    private var isVerificationMode = false
 
     // MARK: - Custom Methods
 
@@ -89,7 +89,7 @@ final class PhoneVerificationView: BaseView {
             $0.placeholder = "전화번호를 입력해주세요"
             $0.keyboardType = .numberPad
             $0.borderStyle = .none
-            $0.font = .systemFont(ofSize: 16, weight: .regular)
+            $0.font = NearbyFont.b3M14.font
             $0.textColor = .grey80
             $0.attributedPlaceholder = NSAttributedString(
                 string: "전화번호를 입력해주세요",
@@ -124,7 +124,7 @@ final class PhoneVerificationView: BaseView {
             $0.placeholder = "인증번호를 입력해주세요"
             $0.keyboardType = .numberPad
             $0.borderStyle = .none
-            $0.font = .systemFont(ofSize: 16, weight: .regular)
+            $0.font = NearbyFont.b3M14.font
             $0.textColor = .grey80
             $0.attributedPlaceholder = NSAttributedString(
                 string: "인증번호를 입력해주세요",

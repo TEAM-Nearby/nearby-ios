@@ -29,7 +29,7 @@ final class LoginViewModel: BaseViewModelType {
         self.output = Output()
     }
 
-    // MARK: - Actions
+    // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {

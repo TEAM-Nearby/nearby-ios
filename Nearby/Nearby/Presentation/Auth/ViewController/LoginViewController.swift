@@ -29,7 +29,7 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
         )
     }
 
-    // MARK: - Actions
+    // MARK: - Action
 
     @objc
     private func kakaoLoginButtonDidTap() {

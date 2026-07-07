@@ -102,7 +102,7 @@ final class CompanionRequestSentView: BaseView {
 
         descriptionLabel.snp.makeConstraints {
             $0.verticalEdges.equalToSuperview().inset(24)
-            $0.horizontalEdges.equalToSuperview().inset(18)
+            $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
         searchButton.snp.makeConstraints {

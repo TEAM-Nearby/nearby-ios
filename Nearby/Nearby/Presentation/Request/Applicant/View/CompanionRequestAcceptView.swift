@@ -314,7 +314,7 @@ final class CompanionRequestAcceptView: BaseView {
         chatHelpButton.addTarget(self, action: #selector(chatHelpButtonDidTap), for: .touchUpInside)
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     func configure(with output: CompanionRequestAcceptViewModel.DisplayData) {
         imageView.image = output.image
@@ -346,7 +346,7 @@ final class CompanionRequestAcceptView: BaseView {
         }
     }
     
-    // MARK: - Action
+    // MARK: - Actions
     
     @objc
     private func confirmButtonDidTap() {

@@ -26,13 +26,12 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
     }
 
     // MARK: - Custom Methods
-
+    
     override func addTarget() {
         rootView.onBackButtonDidTap = { [weak self] in
-                // TODO: - Coordinator 연결 (뒤로가기)
-                self?.navigationController?.popViewController(animated: true)
-            }
-        
+            // TODO: - Coordinator 연결 (뒤로가기)
+            self?.navigationController?.popViewController(animated: true)
+        }
         rootView.onWriteButtonDidTap = { [weak self] in
             self?.viewModel.action(.writeButtonDidTap)
         }
@@ -48,7 +47,7 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
                 self?.rootView.configure(with: data)
             }
             .store(in: &cancellables)
-        
+    
         viewModel.output.showWriteCompanionHost
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in

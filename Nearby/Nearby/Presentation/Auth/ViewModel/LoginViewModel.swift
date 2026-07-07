@@ -19,7 +19,7 @@ final class LoginViewModel: BaseViewModelType {
 
     struct Output { }
 
-    // MARK: - Properties
+    // MARK: - Property
 
     let output: Output
 

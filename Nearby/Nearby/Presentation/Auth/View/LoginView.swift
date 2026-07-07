@@ -70,6 +70,8 @@ final class LoginView: BaseView {
         contentStackView.addArrangedSubviews(titleLabel, subtitleLabel, logoContainerView
         )
         
+        contentStackView.setCustomSpacing(36, after: subtitleLabel)
+        
         logoContainerView.addSubview(logoLabel)
     }
     
@@ -83,8 +85,6 @@ final class LoginView: BaseView {
             $0.width.equalTo(180)
             $0.height.equalTo(64)
         }
-        
-        contentStackView.setCustomSpacing(36, after: subtitleLabel)
         
         logoLabel.snp.makeConstraints {
             $0.center.equalToSuperview()

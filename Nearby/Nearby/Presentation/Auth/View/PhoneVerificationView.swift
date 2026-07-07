@@ -140,17 +140,10 @@ final class PhoneVerificationView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(
-            navigationView,
-            progressContainerView,
-            titleLabel,
-            phoneTitleLabel,
-            phoneTextFieldContainerView,
-            phoneErrorLabel,
-            verificationTitleLabel,
-            verificationTextFieldContainerView,
-            verificationErrorLabel,
-            bottomButton
+        addSubviews(navigationView, progressContainerView, titleLabel,
+            phoneTitleLabel, phoneTextFieldContainerView, phoneErrorLabel,
+            verificationTitleLabel, verificationTextFieldContainerView,
+            verificationErrorLabel,bottomButton
         )
 
         navigationView.addSubview(backButton)

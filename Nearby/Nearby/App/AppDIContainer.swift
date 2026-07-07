@@ -28,7 +28,11 @@ final class AppDIContainer {
     // MARK: - Repositories
     
     // MARK: - ViewModels
-    
+  
+    func makeLoginViewModel() -> LoginViewModel {
+        LoginViewModel()
+    }
+  
     func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
     }
@@ -57,6 +61,10 @@ final class AppDIContainer {
     
     func makeRecruitCompanionViewController() -> UIViewController {
         makePlaceholderViewController(title: "동행글 작성")
+    }
+  
+    func makeLoginViewController(viewModel: LoginViewModel) -> LoginViewController {
+        LoginViewController(viewModel: viewModel)
     }
 }
 

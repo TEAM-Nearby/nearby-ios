@@ -3,6 +3,7 @@ analyzer_rules:
   - unused_import
 
 disabled_rules:
+  - line_length
   - type_body_length
   - function_body_length
   - cyclomatic_complexity
@@ -21,7 +22,6 @@ opt_in_rules:
   - shorthand_optional_binding
   - attributes
   - vertical_whitespace
-  - sorted_imports
   - mark
   - class_delegate_protocol
   - closure_end_indentation
@@ -32,10 +32,6 @@ opt_in_rules:
   - redundant_nil_coalescing
   - operator_usage_whitespace
   - lower_acl_than_parent
-
-line_length:
-  warning: 200
-  error: 150
 
 excluded:
   - Pods

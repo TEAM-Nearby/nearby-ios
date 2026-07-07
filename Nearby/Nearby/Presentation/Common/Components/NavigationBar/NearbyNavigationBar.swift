@@ -18,7 +18,8 @@ final class NearbyNavigationBar: BaseView {
     var rightFirstButtonAction: (() -> Void)?
     var rightSecondButtonAction: (() -> Void)?
     var reportButtonAction: (() -> Void)?
-
+    var centerTitle: String?
+    
     // MARK: - UI Components
 
     private let leftButton = UIButton(type: .system)
@@ -29,32 +30,17 @@ final class NearbyNavigationBar: BaseView {
     private let rightSecondButton = UIButton(type: .system)
     private let reportButton = UIButton(type: .system)
 
-    // MARK: - Initializer
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setAddTarget()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     // MARK: - Custom Methods
 
     override func setStyle() {
         backgroundColor = .white
 
         leftButton.do {
-            $0.tintColor = .black
+            $0.tintColor = .grey80
         }
 
         titleLabel.do {
-            $0.setFont(
-                .b1Sb18,
-                text: "페이지 제목",
-                textColor: .black,
-            )
+            $0.setFont(.b2Sb16, text: centerTitle, textColor: .grey80)
         }
 
         logoLabel.do {
@@ -70,11 +56,11 @@ final class NearbyNavigationBar: BaseView {
         }
 
         rightFirstButton.do {
-            $0.tintColor = .black
+            $0.tintColor = .grey80
         }
 
         rightSecondButton.do {
-            $0.tintColor = .black
+            $0.tintColor = .grey80
         }
 
         reportButton.do {
@@ -85,9 +71,7 @@ final class NearbyNavigationBar: BaseView {
     }
 
     override func setUI() {
-        addSubviews(
-            leftButton, titleLabel, logoLabel, rightStackView, reportButton
-        )
+        addSubviews(leftButton, titleLabel, logoLabel, rightStackView, reportButton)
 
         rightStackView.addArrangedSubviews(
             rightFirstButton, rightSecondButton
@@ -96,7 +80,7 @@ final class NearbyNavigationBar: BaseView {
 
     override func setLayout() {
         snp.makeConstraints {
-            $0.height.equalTo(64)
+            $0.height.equalTo(48)
         }
 
         leftButton.snp.makeConstraints {

@@ -43,7 +43,7 @@ final class CompanionProfileView: BaseView {
     
     private let travelStyleTitleLabel = UILabel()
     private let travelStyleStackView = UIStackView()
-    let bottomButton = NearbyButton(style: .primary, title: "다음")
+    let bottomButton = NearbyButton(style: .primary, title: "완료")
     
     private(set) var keywordButtons: [NearbyChipButton] = []
     
@@ -57,26 +57,25 @@ final class CompanionProfileView: BaseView {
         }
         
         progressView.do {
-            $0.progress = 1.0
+            $0.progress = 0.5
             $0.progressTintColor = .btnPrimaryBg
             $0.trackTintColor = .chipBgPurple
-            $0.layer.cornerRadius = 2
-            $0.clipsToBounds = true
+            $0.transform = CGAffineTransform(scaleX: -1, y: 1)
         }
         
         titleLabel.do {
             $0.setFont(
-                .h1Sb24,
+                .h3Sb20,
                 text: "동행 프로필을 만들어볼까요?",
                 textColor: .grey80
             )
         }
         
         descriptionLabel.do {
-            $0.numberOfLines = 2
+            $0.numberOfLines = 1
             $0.setFont(
-                .b2M16,
-                text: "동행을 구할 때, 상대에게 보여지는 내 소개예요.\n지금은 건너뛰고 나중에 작성해도 괜찮아요!",
+                .b3M14,
+                text: "동행을 구할 때, 상대에게 보여지는 내 소개에요.",
                 textColor: .grey50
             )
         }
@@ -86,17 +85,17 @@ final class CompanionProfileView: BaseView {
         }
         
         profileImageView.do {
-            $0.image = .profileDefault
+            $0.image = .imgProfileDefault
             $0.contentMode = .scaleAspectFit
         }
         
         imageSelectLabel.do {
             $0.textAlignment = .center
-            $0.setFont(.b2M16, text: "이미지 선택", textColor: .grey30)
+            $0.setFont(.b3M14, text: "이미지 선택", textColor: .grey30)
         }
         
         nicknameTitleLabel.do {
-            $0.setRequiredTitle("닉네임")
+            $0.setFont(.b2Sb16, text: "닉네임", textColor: .grey80)
         }
         
         nicknameTextFieldContainerView.do {
@@ -122,7 +121,7 @@ final class CompanionProfileView: BaseView {
         }
         
         genderTitleLabel.do {
-            $0.setRequiredTitle("성별")
+            $0.setFont(.b2Sb16, text: "성별", textColor: .grey80)
         }
         
         genderStackView.do {
@@ -131,15 +130,15 @@ final class CompanionProfileView: BaseView {
         }
         
         maleButton.do {
-            $0.setGenderTitle("남성", isSelected: false)
+            $0.setGenderTitle("남성", isSelected: true)
         }
         
         femaleButton.do {
-            $0.setGenderTitle("여성", isSelected: true)
+            $0.setGenderTitle("여성", isSelected: false)
         }
         
         introductionTitleLabel.do {
-            $0.setFont(.h3Sb20, text: "나를 소개해주세요", textColor: .grey80)
+            $0.setFont(.b2Sb16, text: "나를 소개해주세요", textColor: .grey80)
         }
         
         introductionTextViewContainerView.do {
@@ -163,7 +162,7 @@ final class CompanionProfileView: BaseView {
         }
         
         travelStyleTitleLabel.do {
-            $0.setRequiredTitle("여행스타일 키워드")
+            $0.setFont(.b2Sb16, text: "여행스타일 키워드", textColor: .grey80)
         }
         
         travelStyleStackView.do {
@@ -174,21 +173,11 @@ final class CompanionProfileView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(
-            navigationBar,
-            progressContainerView,
-            titleLabel,
-            descriptionLabel,
-            profileImageButton,
-            nicknameTitleLabel,
-            nicknameTextFieldContainerView,
-            genderTitleLabel,
-            genderStackView,
-            introductionTitleLabel,
-            introductionTextViewContainerView,
-            travelStyleTitleLabel,
-            travelStyleStackView,
-            bottomButton
+        addSubviews(navigationBar, progressContainerView, titleLabel,
+            descriptionLabel, profileImageButton, nicknameTitleLabel,
+            nicknameTextFieldContainerView, genderTitleLabel, genderStackView,
+            introductionTitleLabel, introductionTextViewContainerView,
+            travelStyleTitleLabel, travelStyleStackView, bottomButton
         )
         
         progressContainerView.addSubview(progressView)
@@ -218,12 +207,12 @@ final class CompanionProfileView: BaseView {
         }
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(progressContainerView.snp.bottom).offset(64)
+            $0.top.equalTo(progressContainerView.snp.bottom).offset(32)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
         descriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(4)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -262,7 +251,7 @@ final class CompanionProfileView: BaseView {
         }
         
         nicknameClearButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(28)
+            $0.trailing.equalToSuperview().inset(24)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(24)
         }
@@ -273,7 +262,7 @@ final class CompanionProfileView: BaseView {
         }
         
         genderStackView.snp.makeConstraints {
-            $0.top.equalTo(genderTitleLabel.snp.bottom).offset(24)
+            $0.top.equalTo(genderTitleLabel.snp.bottom).offset(18)
             $0.leading.equalToSuperview().offset(24)
         }
         
@@ -283,9 +272,9 @@ final class CompanionProfileView: BaseView {
         }
         
         introductionTextViewContainerView.snp.makeConstraints {
-            $0.top.equalTo(introductionTitleLabel.snp.bottom).offset(18)
+            $0.top.equalTo(introductionTitleLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(56)
+            $0.height.equalTo(72)
         }
         
         introductionTextView.snp.makeConstraints {
@@ -325,7 +314,7 @@ final class CompanionProfileView: BaseView {
     
     func updateSelectedKeywords(_ selectedKeywords: Set<String>) {
         keywordButtons.forEach {
-            $0.isSelected = selectedKeywords.contains($0.currentTitle ?? "")
+            $0.updateSelected(selectedKeywords.contains($0.chipTitle))
         }
     }
     
@@ -349,25 +338,78 @@ final class CompanionProfileView: BaseView {
             ["야경 러버", "역사 탐방", "전시장 러버"],
             ["한 곳 오래", "많이 도는형", "문화 예술"]
         ]
-        
+
         keywordRows.forEach { rowKeywords in
             let rowStackView = UIStackView()
             rowStackView.axis = .horizontal
             rowStackView.spacing = 8
             rowStackView.alignment = .center
-            
+
             rowKeywords.forEach { keyword in
                 let chipButton = NearbyChipButton(
-                    style: .profileKeyword,
+                    style: .profileKeywordUnselected,
                     title: keyword,
                     horizontalInset: 20
                 )
-                
+
                 keywordButtons.append(chipButton)
                 rowStackView.addArrangedSubview(chipButton)
             }
-            
+
             travelStyleStackView.addArrangedSubview(rowStackView)
         }
+    }
+}
+
+// MARK: - UILabel Extensions
+
+private extension UILabel {
+    func setRequiredTitle(_ title: String) {
+        let attributedString = NSMutableAttributedString(
+            string: title,
+            attributes: [
+                .foregroundColor: UIColor.grey80,
+                .font: NearbyFont.h3Sb20.font
+            ]
+        )
+
+        attributedString.append(
+            NSAttributedString(
+                string: "*",
+                attributes: [
+                    .foregroundColor: UIColor.highlightRed,
+                    .font: NearbyFont.h3Sb20.font
+                ]
+            )
+        )
+
+        self.attributedText = attributedString
+    }
+}
+
+// MARK: - UIButton Extensions
+
+private extension UIButton {
+    func setGenderTitle(_ title: String, isSelected: Bool) {
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(
+            systemName: isSelected ? "largecircle.fill.circle" : "circle"
+        )
+        configuration.imagePlacement = .leading
+        configuration.imagePadding = 12
+        configuration.baseForegroundColor = isSelected ? .btnPrimaryBg : .grey50
+
+        self.configuration = configuration
+
+        setAttributedTitle(
+            NSAttributedString(
+                string: title,
+                attributes: [
+                    .foregroundColor: UIColor.grey70,
+                    .font: NearbyFont.b2M16.font
+                ]
+            ),
+            for: .normal
+        )
     }
 }

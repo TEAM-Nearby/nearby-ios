@@ -66,12 +66,6 @@ class StarRatingView: BaseView {
     
     func rating(at point: CGPoint) -> Int {
         let convertedPoint = convert(point, to: stackView)
-        var count = 0
-        for imageView in starImageViews  {
-            if convertedPoint.x >= imageView.frame.minX {
-                count += 1
-            }
-        }
-        return count
+        return starImageViews.filter { convertedPoint.x >= $0.frame.minX }.count
     }
 }

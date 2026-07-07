@@ -11,10 +11,6 @@ import SnapKit
 import Then
 
 final class PhoneVerificationView: BaseView {
-
-    // MARK: - Property
-
-    private var isVerificationMode = false
     
     // MARK: - UI Components
 
@@ -263,19 +259,20 @@ final class PhoneVerificationView: BaseView {
         }
     }
 
-    func updateVerificationMode() {
-        isVerificationMode = true
+    func updateVerificationMode(_ isVerificationMode: Bool) {
+        progressView.progress = isVerificationMode ? 1.0 : 0.5
 
-        progressView.progress = 0.5
+        phoneClearButton.isHidden = !isVerificationMode
+        phoneErrorLabel.isHidden = true
 
-        phoneClearButton.isHidden = false
-        phoneErrorLabel.isHidden = false
+        verificationTitleLabel.isHidden = !isVerificationMode
+        verificationTextFieldContainerView.isHidden = !isVerificationMode
+        verificationErrorLabel.isHidden = true
 
-        verificationTitleLabel.isHidden = false
-        verificationTextFieldContainerView.isHidden = false
-        verificationErrorLabel.isHidden = false
-
-        bottomButton.setTitle("다음", for: .normal)
+        bottomButton.setTitle(
+            isVerificationMode ? "다음" : "인증문자 발송하기",
+            for: .normal
+        )
     }
 
     func clearPhoneText() {

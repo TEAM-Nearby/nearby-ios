@@ -35,6 +35,6 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
     private func kakaoLoginButtonDidTap() {
         viewModel.action(.kakaoLoginButtonDidTap)
         // TODO: - 카카오 로그인 버튼 탭
-        //print("카카오 로그인 버튼 탭")
+        // print("카카오 로그인 버튼 탭")
     }
 }

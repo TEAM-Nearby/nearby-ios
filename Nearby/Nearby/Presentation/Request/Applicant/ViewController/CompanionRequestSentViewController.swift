@@ -10,7 +10,7 @@ import UIKit
 
 final class CompanionRequestSentViewController: BaseViewController<CompanionRequestSentViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let companionRequestSentView = CompanionRequestSentView()
 
@@ -22,7 +22,7 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
 
     // MARK: - Custom Methods
 
-    override func addTarget() {
+    override func setAddTarget() {
         companionRequestSentView.onBackButtonDidTap = { [weak self] in
                 // TODO: - Coordinator 연결 (뒤로가기)
                 self?.navigationController?.popViewController(animated: true)

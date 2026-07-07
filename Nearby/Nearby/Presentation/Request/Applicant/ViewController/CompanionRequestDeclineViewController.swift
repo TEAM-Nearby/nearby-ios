@@ -10,7 +10,7 @@ import UIKit
 
 final class CompanionRequestDeclineViewController: BaseViewController<CompanionRequestDeclineViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let companionRequestDeclineView = CompanionRequestDeclineView()
 
@@ -27,7 +27,7 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
 
     // MARK: - Custom Methods
     
-    override func addTarget() {
+    override func setAddTarget() {
         companionRequestDeclineView.onBackButtonDidTap = { [weak self] in
             // TODO: - Coordinator 연결 (뒤로가기)
             self?.navigationController?.popViewController(animated: true)

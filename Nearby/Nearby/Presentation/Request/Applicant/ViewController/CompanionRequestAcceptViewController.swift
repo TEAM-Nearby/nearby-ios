@@ -10,7 +10,7 @@ import UIKit
 
 final class CompanionRequestAcceptViewController: BaseViewController<CompanionRequestAcceptViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let companionRequestAcceptView = CompanionRequestAcceptView()
 
@@ -27,7 +27,7 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
 
     // MARK: - Custom Methods
 
-    override func addTarget() {
+    override func setAddTarget() {
         companionRequestAcceptView.onConfirmButtonDidTap = { [weak self] in
             self?.viewModel.action(.confirmButtonDidTap)
         }

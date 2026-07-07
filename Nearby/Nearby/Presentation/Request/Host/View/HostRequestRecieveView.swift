@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class HostRequestAcceptView: BaseView {
+final class HostRequestRecieveView: BaseView {
     
     // MARK: - Properties
     
@@ -36,7 +36,7 @@ final class HostRequestAcceptView: BaseView {
     private let nameLabel = UILabel()
     private let genderLabel = UILabel()
     
-    private let identificationStackView = UIStackView()
+    private let identificationView = UIView()
     private let identificationLabel = UILabel()
     private let levelLabel = UILabel()
     private let nextButton = UIButton()
@@ -81,6 +81,44 @@ final class HostRequestAcceptView: BaseView {
             $0.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
         }
         
+        labelStackView.do {
+            $0.axis = .vertical
+            $0.spacing = 6.5
+        }
+        
+        profileInformationStackView.do {
+            $0.axis = .horizontal
+            $0.spacing = 12
+        }
+        
+        nameLabel.do {
+            $0.setFont(.h3Sb20, text: "", textColor: .black)
+            $0.textAlignment = .left
+        }
+        
+        genderLabel.do {
+            $0.setFont(.b1M18, text: "", textColor: .primary50)
+            $0.textAlignment = .left
+        }
+        
+        identificationLabel.do {
+            $0.setFont(.b3M14, text: "본인인증 완료 · 매너 지수", textColor: .grey60)
+            $0.textAlignment = .left
+        }
+        
+        levelLabel.do {
+            $0.setFont(.b1Sb18, text: "", textColor: .primary50)
+        }
+        
+        nextButton.do {
+            $0.setImage(.chevronRightIcon, for: .normal)
+        }
+        
+        informationView.do {
+            $0.axis = .vertical
+            $0.spacing = 10
+        }
+        
         dividerView.do {
             $0.backgroundColor = .grey10
         }
@@ -115,13 +153,14 @@ final class HostRequestAcceptView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(titleView, applicantView)
+        addSubviews(titleView, applicantView, rejectButton, allowButton)
         titleView.addSubviews(imageView, titleLabel, subTitleLabel)
         applicantView.addArrangedSubviews(profileView, dividerView,informationView)
+        applicantView.setCustomSpacing(12, after: dividerView)
         profileView.addArrangedSubviews(profileImageView, labelStackView)
-        labelStackView.addArrangedSubviews(profileInformationStackView,identificationStackView)
+        labelStackView.addArrangedSubviews(profileInformationStackView,identificationView)
         profileInformationStackView.addArrangedSubviews(nameLabel, genderLabel)
-        identificationStackView.addArrangedSubviews(identificationLabel, nextButton)
+        identificationView.addSubviews(identificationLabel,levelLabel, nextButton)
         informationView.addArrangedSubviews(locationStackView, dateStackView)
         locationStackView.addArrangedSubviews(locationImageView, locationLabel)
         dateStackView.addArrangedSubviews(calendarImageView, dateLabel)
@@ -141,6 +180,7 @@ final class HostRequestAcceptView: BaseView {
         
         subTitleLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(8)
+            $0.centerX.equalToSuperview()
         }
         
         applicantView.snp.makeConstraints {
@@ -148,14 +188,41 @@ final class HostRequestAcceptView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
+        profileView.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
         profileImageView.snp.makeConstraints {
             $0.size.equalTo(65)
         }
         
+        labelStackView.snp.makeConstraints {
+            $0.leading.equalTo(profileImageView.snp.trailing).offset(12)
+        }
         
+        identificationView.snp.makeConstraints {
+            $0.leading.equalToSuperview()
+            $0.height.equalTo(25)
+        }
+        
+        identificationLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview()
+        }
+        
+        levelLabel.snp.makeConstraints {
+            $0.leading.equalTo(identificationLabel.snp.trailing).offset(4)
+        }
+        
+        nextButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview()
+            $0.size.equalTo(25)
+        }
+        
+        dividerView.snp.makeConstraints {
+            $0.height.equalTo(1)
+        }
         
         informationView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(34)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -166,6 +233,20 @@ final class HostRequestAcceptView: BaseView {
         calendarImageView.snp.makeConstraints {
             $0.size.equalTo(20)
         }
+        
+        rejectButton.snp.makeConstraints {
+            $0.width.equalTo(125)
+            $0.height.equalTo(56)
+            $0.leading.equalToSuperview().inset(20)
+            $0.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        
+        allowButton.snp.makeConstraints {
+            $0.width.equalTo(220)
+            $0.height.equalTo(56)
+            $0.bottom.equalTo(safeAreaLayoutGuide)
+            $0.trailing.equalToSuperview().inset(20)
+        }
     }
     
     override func setAddTarget() {
@@ -175,9 +256,14 @@ final class HostRequestAcceptView: BaseView {
     
     // MARK: - Method
     
-    func configure(with output: CompanionRequestAcceptViewModel.DisplayData) {
+    func configure(with output: HostRequestRecieveViewModel.DisplayData) {
         imageView.image = output.image
+        nameLabel.text = output.name
+        profileImageView.image = output.profile
+        genderLabel.text = output.gender
+        levelLabel.text = output.level
         titleLabel.text = output.title
+        subTitleLabel.text = output.subtitle
         locationLabel.text = output.location
         dateLabel.text = output.date
     }

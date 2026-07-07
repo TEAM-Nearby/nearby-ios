@@ -12,7 +12,7 @@ import Then
 
 final class NearbyDateTimePickerView: BaseView {
 
-    // MARK: - UI Component
+    // MARK: - UI Components
 
     private let selectedBackgroundView = UIView()
     private let pickerView = UIPickerView()
@@ -193,7 +193,7 @@ extension NearbyDateTimePickerView: UIPickerViewDelegate {
         label.text = title(component: component, row: row)
         label.textAlignment = .center
         label.font = NearbyFont.b2Sb16.font
-        label.textColor = isSelected(component: component, row: row) ? .primary50 : .grey10
+        label.textColor = isSelected(component: component, row: row) ? .primary50 : .grey20
         
         return label
     }

@@ -134,7 +134,7 @@ final class PhoneVerificationView: BaseView {
         addSubviews(navigationBar, progressContainerView, titleLabel,
             phoneTitleLabel, phoneTextFieldContainerView, phoneErrorLabel,
             verificationTitleLabel, verificationTextFieldContainerView,
-            verificationErrorLabel,bottomButton
+            verificationErrorLabel, bottomButton
         )
 
         progressContainerView.addSubview(progressView)

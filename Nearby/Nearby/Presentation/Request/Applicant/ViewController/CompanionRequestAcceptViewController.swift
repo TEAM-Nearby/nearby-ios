@@ -27,7 +27,7 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
 
     // MARK: - Custom Methods
 
-    override func addTarget() {
+    override func setAddTarget() {
         companionRequestAcceptView.onConfirmButtonDidTap = { [weak self] in
             self?.viewModel.action(.confirmButtonDidTap)
         }

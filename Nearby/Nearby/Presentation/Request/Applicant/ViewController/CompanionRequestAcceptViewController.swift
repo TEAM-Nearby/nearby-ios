@@ -5,8 +5,8 @@
 //  Created by h2e on 7/7/26.
 //
 
-import UIKit
 import Combine
+import UIKit
 
 final class CompanionRequestAcceptViewController: BaseViewController<CompanionRequestAcceptViewModel> {
 

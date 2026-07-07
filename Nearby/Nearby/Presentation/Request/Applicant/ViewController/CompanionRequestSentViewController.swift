@@ -5,8 +5,8 @@
 //  Created by h2e on 7/6/26.
 //
 
-import UIKit
 import Combine
+import UIKit
 
 final class CompanionRequestSentViewController: BaseViewController<CompanionRequestSentViewModel> {
 

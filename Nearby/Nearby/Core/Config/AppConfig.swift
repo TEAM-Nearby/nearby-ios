@@ -16,7 +16,7 @@ enum AppConfig {
         try string(forKey: "GOOGLE_MAPS_API_KEY")
     }
     
-    static func kakaoApiKey() throws -> String {
+    static func kakaoAPIKey() throws -> String {
         try string(forKey: "KAKAO_API_KEY")
     }
 }

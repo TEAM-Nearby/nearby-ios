@@ -51,7 +51,7 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
             for: .touchUpInside
         )
         
-        companionProfileView.introductionClearButton.addTarget(
+        companionProfileView.introductionTextView.clearButton.addTarget(
             self,
             action: #selector(introductionClearButtonDidTap),
             for: .touchUpInside
@@ -74,7 +74,7 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     
     override func setDelegate() {
         companionProfileView.nicknameTextField.delegate = self
-        companionProfileView.introductionTextView.delegate = self
+        companionProfileView.introductionTextView.textView.delegate = self
     }
     
     override func bindState() {

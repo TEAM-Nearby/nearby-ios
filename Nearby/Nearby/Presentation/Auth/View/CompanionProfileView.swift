@@ -40,10 +40,9 @@ final class CompanionProfileView: BaseView {
     let femaleButton = UIButton(type: .system)
     
     private let introductionTitleLabel = UILabel()
-    private let introductionTextViewContainerView = UIView()
-    let introductionTextView = UITextView()
-    private let introductionPlaceholderLabel = UILabel()
-    let introductionClearButton = UIButton(type: .system)
+    let introductionTextView = NearbyTextView(
+        placeholder: "ex) 감성스팟과 맛집탐방을 좋아합니다"
+    )
     
     private let travelStyleTitleLabel = UILabel()
     private let travelStyleStackView = UIStackView()
@@ -156,35 +155,6 @@ final class CompanionProfileView: BaseView {
             $0.setFont(.b2Sb16, text: "나를 소개해주세요", textColor: .grey80)
         }
         
-        introductionTextViewContainerView.do {
-            $0.backgroundColor = .bgSurfaceGrey0
-            $0.layer.cornerRadius = 16
-            $0.clipsToBounds = true
-        }
-        
-        introductionTextView.do {
-            $0.backgroundColor = .clear
-            $0.font = NearbyFont.b3M14.font
-            $0.textColor = .grey80
-
-            $0.textContainerInset = .zero
-            $0.textContainer.lineFragmentPadding = 0
-        }
-        
-        introductionPlaceholderLabel.do {
-            $0.setFont(
-                .b3M14,
-                text: "ex) 감성스팟과 맛집탐방을 좋아합니다",
-                textColor: .grey20
-            )
-        }
-        
-        introductionClearButton.do {
-            $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
-            $0.tintColor = .grey20
-            $0.isHidden = false
-        }
-        
         travelStyleTitleLabel.do {
             $0.setRequiredTitle("여행스타일 키워드")
         }
@@ -216,7 +186,7 @@ final class CompanionProfileView: BaseView {
             genderTitleLabel,
             genderStackView,
             introductionTitleLabel,
-            introductionTextViewContainerView,
+            introductionTextView,
             travelStyleTitleLabel,
             travelStyleStackView
         )
@@ -224,8 +194,6 @@ final class CompanionProfileView: BaseView {
         profileImageButton.addSubviews(profileImageView, imageSelectLabel)
         nicknameTextFieldContainerView.addSubviews(nicknameTextField, nicknameClearButton)
         genderStackView.addArrangedSubviews(maleButton, femaleButton)
-        introductionTextViewContainerView.addSubviews(introductionTextView, introductionClearButton)
-        introductionTextView.addSubview(introductionPlaceholderLabel)
         
         setKeywordButtons()
     }
@@ -329,33 +297,14 @@ final class CompanionProfileView: BaseView {
             $0.leading.equalToSuperview().offset(20)
         }
         
-        introductionTextViewContainerView.snp.makeConstraints {
+        introductionTextView.snp.makeConstraints {
             $0.top.equalTo(introductionTitleLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(72)
         }
         
-        introductionTextView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(16)
-            $0.leading.equalToSuperview().offset(28)
-            $0.trailing.equalTo(introductionClearButton.snp.leading).offset(-12)
-            $0.height.equalTo(40)
-        }
-        
-        introductionPlaceholderLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(22)
-        }
-        
-        introductionClearButton.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(16)
-            $0.trailing.equalToSuperview().inset(28)
-            $0.size.equalTo(24)
-        }
-        
         travelStyleTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(introductionTextViewContainerView.snp.bottom).offset(32)
+            $0.top.equalTo(introductionTextView.snp.bottom).offset(32)
             $0.leading.equalToSuperview().offset(20)
         }
         
@@ -378,7 +327,7 @@ final class CompanionProfileView: BaseView {
     }
     
     func updateIntroductionPlaceholder(isHidden: Bool) {
-        introductionPlaceholderLabel.isHidden = isHidden
+        introductionTextView.updatePlaceholder(isHidden: isHidden)
     }
     
     func clearNicknameText() {
@@ -387,9 +336,7 @@ final class CompanionProfileView: BaseView {
     }
     
     func clearIntroductionText() {
-        introductionTextView.text = nil
-        introductionClearButton.isHidden = false
-        introductionPlaceholderLabel.isHidden = false
+        introductionTextView.clearText()
     }
     
     func updateProfileImage(_ image: UIImage) {

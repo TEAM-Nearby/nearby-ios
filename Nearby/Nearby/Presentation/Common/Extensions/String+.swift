@@ -5,14 +5,28 @@
 //  Created by soomin on 7/2/26.
 //
 
-import Foundation
+import UIKit
 
 extension String {
     var trimmed: String {
         trimmingCharacters(in: .whitespacesAndNewlines)
     }
-
+    
     var isBlank: Bool {
         trimmed.isEmpty
+    }
+    
+    func withLineHeightMultiple(_ multiple: CGFloat, font: UIFont, color: UIColor) -> NSAttributedString {
+        let style = NSMutableParagraphStyle()
+        style.lineHeightMultiple = multiple
+        
+        return NSAttributedString(
+            string: self,
+            attributes: [
+                .paragraphStyle: style,
+                .font: font,
+                .foregroundColor: color
+            ]
+        )
     }
 }

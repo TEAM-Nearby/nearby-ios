@@ -17,6 +17,8 @@ enum NearbyChipStyle: Equatable {
     case filterSortUnselected
     case tagStateSelected
     case tagStateUnselected
+    case profileKeywordSelected
+    case profileKeywordUnselected
     case mapInfo
     case badgeVerification
     case badgeProfile
@@ -27,9 +29,11 @@ enum NearbyChipStyle: Equatable {
             return .white
         case .personalityOrange:
             return .chipPersonalityBgOrange
-        case .categoryHonbapSelected, .filterSortSelected, .tagStateSelected:
+        case .categoryHonbapSelected, .filterSortSelected,
+                .tagStateSelected, .profileKeywordSelected:
             return .chipBgPurple
-        case .categoryHonbapUnselected, .filterSortUnselected, .badgeProfile:
+        case .categoryHonbapUnselected, .filterSortUnselected,
+                .badgeProfile, .profileKeywordUnselected:
             return .chipBgGrey
         case .badgeVerification:
             return .bgDefaultGrey
@@ -38,7 +42,8 @@ enum NearbyChipStyle: Equatable {
     
     var titleColor: UIColor {
         switch self {
-        case .personalityDefault, .filterSortUnselected, .tagStateUnselected:
+        case .personalityDefault, .filterSortUnselected,
+                .tagStateUnselected, .profileKeywordUnselected:
             return .grey50
         case .personalityOrange:
             return .chipPersonalityTextOrange
@@ -46,7 +51,7 @@ enum NearbyChipStyle: Equatable {
             return .grey90
         case .categoryHonbapUnselected, .badgeProfile:
             return .grey40
-        case .categoryHonbapSelected, .tagStateSelected:
+        case .categoryHonbapSelected, .tagStateSelected, .profileKeywordSelected:
             return .primary50
         case .filterSortSelected:
             return .highlightTextPurple
@@ -54,7 +59,6 @@ enum NearbyChipStyle: Equatable {
             return .grey80
         case .badgeVerification:
             return .grey70
-            
         }
     }
     
@@ -66,8 +70,9 @@ enum NearbyChipStyle: Equatable {
             return .chipBorderGrey
         case .personalityOrange, .category, .categoryHonbapSelected,
                 .tagStateSelected, .mapInfo, .badgeProfile,
-                .badgeVerification, .filterSortSelected:
-            return UIColor.clear
+                .badgeVerification, .filterSortSelected,
+                .profileKeywordSelected, .profileKeywordUnselected:
+            return .clear
         }
     }
     
@@ -75,9 +80,11 @@ enum NearbyChipStyle: Equatable {
         switch self {
         case .personalityOrange, .personalityDefault, .category,
                 .categoryHonbapUnselected, .tagStateSelected,
-                .tagStateUnselected, .filterSortUnselected:
+                .tagStateUnselected, .filterSortUnselected,
+                .profileKeywordUnselected:
             return NearbyFont.b3M14.font
-        case .categoryHonbapSelected, .filterSortSelected:
+        case .categoryHonbapSelected, .filterSortSelected,
+                .profileKeywordSelected:
             return NearbyFont.b3Sb14.font
         case .mapInfo:
             return NearbyFont.c1Sb12.font
@@ -90,7 +97,8 @@ enum NearbyChipStyle: Equatable {
     
     var height: CGFloat {
         switch self {
-        case .personalityDefault, .personalityOrange:
+        case .personalityDefault, .personalityOrange,
+                .profileKeywordSelected, .profileKeywordUnselected:
             return 36
         case .category, .categoryHonbapSelected, .categoryHonbapUnselected,
                 .filterSortSelected, .filterSortUnselected:
@@ -110,7 +118,8 @@ enum NearbyChipStyle: Equatable {
         switch self {
         case .personalityDefault, .personalityOrange,
                 .category, .categoryHonbapSelected, .categoryHonbapUnselected,
-                .filterSortSelected, .filterSortUnselected:
+                .filterSortSelected, .filterSortUnselected,
+                .profileKeywordSelected, .profileKeywordUnselected:
             return 30
         case .tagStateSelected, .tagStateUnselected:
             return 12
@@ -137,6 +146,7 @@ enum NearbyChipStyle: Equatable {
                 .categoryHonbapSelected, .categoryHonbapUnselected,
                 .filterSortSelected, .filterSortUnselected,
                 .tagStateSelected, .tagStateUnselected,
+                .profileKeywordSelected, .profileKeywordUnselected,
                 .badgeVerification, .badgeProfile:
             return 0
         }
@@ -152,11 +162,14 @@ enum NearbyChipStyle: Equatable {
     
     var isSelected: Bool {
         switch self {
-        case .categoryHonbapSelected, .filterSortSelected, .tagStateSelected:
+        case .categoryHonbapSelected, .filterSortSelected,
+                .tagStateSelected, .profileKeywordSelected:
             return true
-        case .personalityOrange, .personalityDefault, .categoryHonbapUnselected,
-                .category, .filterSortUnselected, .tagStateUnselected,
-                .mapInfo, .badgeProfile, .badgeVerification:
+        case .personalityOrange, .personalityDefault,
+                .categoryHonbapUnselected, .category,
+                .filterSortUnselected, .tagStateUnselected,
+                .profileKeywordUnselected, .mapInfo,
+                .badgeProfile, .badgeVerification:
             return false
         }
     }
@@ -165,7 +178,8 @@ enum NearbyChipStyle: Equatable {
         switch self {
         case .categoryHonbapSelected, .categoryHonbapUnselected,
                 .filterSortSelected, .filterSortUnselected,
-                .tagStateSelected, .tagStateUnselected:
+                .tagStateSelected, .tagStateUnselected,
+                .profileKeywordSelected, .profileKeywordUnselected:
             return true
         case .personalityOrange, .personalityDefault, .category,
                 .mapInfo, .badgeProfile, .badgeVerification:
@@ -181,7 +195,10 @@ enum NearbyChipStyle: Equatable {
             return .filterSortSelected
         case .tagStateSelected, .tagStateUnselected:
             return .tagStateSelected
-        case .personalityOrange, .personalityDefault, .category, .mapInfo, .badgeProfile, .badgeVerification:
+        case .profileKeywordSelected, .profileKeywordUnselected:
+            return .profileKeywordSelected
+        case .personalityOrange, .personalityDefault,
+                .category, .mapInfo, .badgeProfile, .badgeVerification:
             return self
         }
     }
@@ -194,7 +211,10 @@ enum NearbyChipStyle: Equatable {
             return .filterSortUnselected
         case .tagStateSelected, .tagStateUnselected:
             return .tagStateUnselected
-        case .personalityOrange, .personalityDefault, .category, .mapInfo, .badgeProfile, .badgeVerification:
+        case .profileKeywordSelected, .profileKeywordUnselected:
+            return .profileKeywordUnselected
+        case .personalityOrange, .personalityDefault,
+                .category, .mapInfo, .badgeProfile, .badgeVerification:
             return self
         }
     }

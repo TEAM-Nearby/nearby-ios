@@ -41,4 +41,12 @@ extension AppCoordinator: Coordinator {
         window.rootViewController = mainTabCoordinator.rootViewController
         window.makeKeyAndVisible()
     }
+    
+    func showLogin() {
+        let loginViewController = diContainer.makeLoginViewController()
+        let navigationController = UINavigationController(rootViewController: loginViewController)
+
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+    }
  }

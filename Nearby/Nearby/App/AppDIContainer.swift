@@ -25,6 +25,10 @@ final class AppDIContainer {
     
     // MARK: - ViewModels
     
+    func makeLoginViewModel() -> LoginViewModel {
+        LoginViewModel()
+    }
+    
     // MARK: - ViewControllers
     
     func makeCompanionViewController() -> UIViewController {
@@ -45,6 +49,11 @@ final class AppDIContainer {
     
     func makeMyPageViewController() -> UIViewController {
         makePlaceholderViewController(title: "마이페이지")
+    }
+    
+    func makeLoginViewController() -> LoginViewController {
+        let viewModel = makeLoginViewModel()
+        return LoginViewController(viewModel: viewModel)
     }
 }
 

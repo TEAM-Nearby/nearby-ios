@@ -14,7 +14,7 @@ final class MeetingProfileView: BaseView {
     
     // MARK: - UI Components
     
-    private let profileStackView = UIStackView()
+    private let profileView = UIView()
     private let imageView = UIImageView()
     private let hostStackView = UIStackView()
     
@@ -24,14 +24,11 @@ final class MeetingProfileView: BaseView {
     
     private let informationLabel = UILabel()
 
+    private let nextButton = UIButton()
+    
     // MARK: - Custom Methods
     
     override func setStyle() {
-        profileStackView.do {
-            $0.axis = .horizontal
-            $0.spacing = 12
-        }
-        
         imageView.do {
             $0.image = .imgProfileDefault
         }
@@ -55,17 +52,21 @@ final class MeetingProfileView: BaseView {
             $0.setFont(.b3M14, text: "시우다드 콘달 · 오후 4:30", textColor: .grey80)
             $0.textAlignment = .left
         }
+        
+        nextButton.do {
+            $0.setImage(.chevronRightIcon, for: .normal)
+        }
     }
     
     override func setUI() {
-        addSubview(profileStackView)
-        profileStackView.addArrangedSubviews(imageView, hostStackView)
+        addSubview(profileView)
+        profileView.addSubviews(imageView, hostStackView, nextButton)
         hostStackView.addSubviews(hostIdentificationStackView, informationLabel)
         hostIdentificationStackView.addSubviews(nameLabel, identificationLabel)
     }
     
     override func setLayout() {
-        profileStackView.snp.makeConstraints {
+        profileView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
         
@@ -73,8 +74,14 @@ final class MeetingProfileView: BaseView {
             $0.height.width.equalTo(46)
         }
         
+        nextButton.snp.makeConstraints {
+            $0.size.equalTo(24)
+            $0.trailing.equalToSuperview()
+        }
+        
         hostIdentificationStackView.snp.makeConstraints {
             $0.top.equalToSuperview()
+            $0.leading.equalTo(imageView.snp.trailing).offset(12)
             $0.height.equalTo(22)
         }
         

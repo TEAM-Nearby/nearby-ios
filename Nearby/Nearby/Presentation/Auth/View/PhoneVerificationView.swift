@@ -164,26 +164,26 @@ final class PhoneVerificationView: BaseView {
         }
 
         backButton.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(28)
+            $0.leading.equalToSuperview().offset(20)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(28)
         }
 
         progressContainerView.snp.makeConstraints {
             $0.top.equalTo(navigationView.snp.bottom)
-            $0.leading.trailing.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(11)
         }
 
         progressView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview()
             $0.height.equalTo(4)
         }
 
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(progressContainerView.snp.bottom).offset(40)
-            $0.leading.trailing.equalToSuperview().inset(28)
+            $0.horizontalEdges.equalToSuperview().inset(28)
         }
 
         phoneTitleLabel.snp.makeConstraints {
@@ -193,7 +193,7 @@ final class PhoneVerificationView: BaseView {
 
         phoneTextFieldContainerView.snp.makeConstraints {
             $0.top.equalTo(phoneTitleLabel.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(28)
+            $0.horizontalEdges.equalToSuperview().inset(28)
             $0.height.equalTo(56)
         }
 
@@ -221,7 +221,7 @@ final class PhoneVerificationView: BaseView {
 
         verificationTextFieldContainerView.snp.makeConstraints {
             $0.top.equalTo(verificationTitleLabel.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(28)
+            $0.horizontalEdges.equalToSuperview().inset(28)
             $0.height.equalTo(56)
         }
 
@@ -243,7 +243,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         bottomButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(28)
+            $0.horizontalEdges.equalToSuperview().inset(28)
             $0.bottom.equalTo(safeAreaLayoutGuide)
             $0.height.equalTo(56)
         }

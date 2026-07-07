@@ -22,11 +22,7 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
     // MARK: - Custom Method
 
     func setAddTarget() {
-        loginView.kakaoLoginButton.addTarget(
-            self,
-            action: #selector(kakaoLoginButtonDidTap),
-            for: .touchUpInside
-        )
+        loginView.kakaoLoginButton.addTarget(self, action: #selector(kakaoLoginButtonDidTap), for: .touchUpInside)
     }
 
     // MARK: - Action

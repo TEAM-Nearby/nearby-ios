@@ -5,6 +5,7 @@
 //  Created by 신서연 on 7/7/26.
 //
 
+import PhotosUI
 import UIKit
 
 final class CompanionProfileViewController: BaseViewController<CompanionProfileViewModel> {
@@ -19,12 +20,18 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
         self.view = companionProfileView
     }
     
-    // MARK: - Custom Method
+    // MARK: - Custom Methods
     
     override func setAddTarget() {
         companionProfileView.navigationBar.leftButtonAction = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
+        
+        companionProfileView.profileImageButton.addTarget(
+            self,
+            action: #selector(profileImageButtonDidTap),
+            for: .touchUpInside
+        )
         
         companionProfileView.maleButton.addTarget(
             self,
@@ -80,7 +87,23 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
         }
     }
     
+    private func presentPhotoPicker() {
+        var configuration = PHPickerConfiguration()
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+        
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
+        
+        present(picker, animated: true)
+    }
+    
     // MARK: - Actions
+    
+    @objc
+    private func profileImageButtonDidTap() {
+        presentPhotoPicker()
+    }
     
     @objc
     private func maleButtonDidTap() {
@@ -115,12 +138,35 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     }
 }
 
+// MARK: - PHPickerViewControllerDelegate
+
+extension CompanionProfileViewController: PHPickerViewControllerDelegate {
+    func picker(
+        _ picker: PHPickerViewController,
+        didFinishPicking results: [PHPickerResult]
+    ) {
+        picker.dismiss(animated: true)
+        
+        guard let itemProvider = results.first?.itemProvider,
+              itemProvider.canLoadObject(ofClass: UIImage.self) else {
+            return
+        }
+        
+        itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, _ in
+            guard let image = image as? UIImage else { return }
+            
+            DispatchQueue.main.async {
+                self?.companionProfileView.updateProfileImage(image)
+            }
+        }
+    }
+}
+
 // MARK: - UITextFieldDelegate
 
 extension CompanionProfileViewController: UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         let text = textField.text ?? ""
-        companionProfileView.nicknameClearButton.isHidden = text.isEmpty
         viewModel.action(.nicknameDidChange(text))
     }
 }
@@ -131,7 +177,6 @@ extension CompanionProfileViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         let text = textView.text ?? ""
         
-        companionProfileView.introductionClearButton.isHidden = text.isEmpty
         companionProfileView.updateIntroductionPlaceholder(isHidden: !text.isEmpty)
         viewModel.action(.introductionDidChange(text))
     }

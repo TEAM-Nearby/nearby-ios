@@ -25,7 +25,7 @@ final class CompanionProfileView: BaseView {
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     
-    private let profileImageButton = UIButton(type: .system)
+    let profileImageButton = UIButton(type: .system)
     private let profileImageView = UIImageView()
     private let imageSelectLabel = UILabel()
     
@@ -390,6 +390,13 @@ final class CompanionProfileView: BaseView {
         introductionTextView.text = nil
         introductionClearButton.isHidden = false
         introductionPlaceholderLabel.isHidden = false
+    }
+    
+    func updateProfileImage(_ image: UIImage) {
+        profileImageView.image = image
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.layer.cornerRadius = 50
+        profileImageView.clipsToBounds = true
     }
     
     // MARK: - Method

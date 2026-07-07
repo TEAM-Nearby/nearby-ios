@@ -234,7 +234,7 @@ final class CompanionProfileView: BaseView {
         }
         
         nicknameTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImageButton.snp.bottom).offset(28)
+            $0.top.equalTo(profileImageButton.snp.bottom).offset(12)
             $0.leading.equalToSuperview().offset(20)
         }
         
@@ -267,7 +267,7 @@ final class CompanionProfileView: BaseView {
         }
         
         introductionTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(genderStackView.snp.bottom).offset(44)
+            $0.top.equalTo(genderStackView.snp.bottom).offset(24)
             $0.leading.equalToSuperview().offset(20)
         }
         

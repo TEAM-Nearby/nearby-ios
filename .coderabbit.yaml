@@ -37,6 +37,7 @@ reviews:
         - import는 알파벳 순으로 정렬합니다.
         - 기본 프레임워크를 먼저 작성하고, 한 줄 개행 후 외부 라이브러리를 작성합니다.
         - 예: UIKit / Foundation 먼저, 이후 Alamofire / SnapKit / Then 등을 작성합니다.
+        - 예외: 외부 라이브러리가 하나일 경우, 기본 프레임워크와 붙여 씁니다.
 
         [네이밍]
         - 클래스, 구조체, enum, protocol 이름은 UpperCamelCase를 사용합니다.
@@ -68,8 +69,6 @@ reviews:
         - 의존성 생성은 가능한 AppDIContainer 또는 관련 DI Container를 통해 관리되어야 합니다.
 
         [개행 / 들여쓰기]
-        - 한 줄이 100자를 넘으면 파라미터 기준으로 개행을 권장합니다.
-        - 파라미터가 3개 이상이면 파라미터 기준 개행을 권장합니다.
         - SnapKit에서 superView와의 관계는 inset, 요소 간 관계는 offset 사용을 권장합니다.
 
         [함수]
@@ -78,7 +77,6 @@ reviews:
         - 하나의 함수가 너무 많은 역할을 하면 분리를 제안해주세요.
 
         [주석 / MARK]
-        - 일반적이지 않은 함수, 변수, 여러 파일에서 사용되는 글로벌 함수나 변수에는 /// 문서화 주석을 권장합니다.
         - MARK 주석은 위아래로 한 줄씩 띄웁니다.
         - MARK 이름은 Properties, UI Components, Initializer, Life Cycles, Custom Methods, Methods, Action, 실제 프로토콜명을 사용합니다.
         - 단수/복수 표현이 맞지 않는 MARK가 있으면 지적해주세요.
@@ -88,3 +86,4 @@ reviews:
         - 불필요한 self를 지양합니다.
         - 사용하지 않는 import와 선언을 지적합니다.
         - 불필요한 nil coalescing, 비효율적인 filter/isEmpty 사용, count 비교 등을 개선 제안해주세요.
+        - deinit 지적은 불필요합니다.

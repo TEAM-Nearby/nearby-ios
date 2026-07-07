@@ -34,9 +34,9 @@ extension MainTabCoordinator: Coordinator {
 
 private extension MainTabCoordinator {
     func makeNavigationController(for item: NearbyTabItem) -> UINavigationController {
-        let viewController = makeRootViewController(for: item)
+        let navigationController = UINavigationController()
         
-        let navigationController = UINavigationController(rootViewController: viewController)
+        configureRootViewController(for: item, navigationController: navigationController)
         navigationController.tabBarItem = UITabBarItem(
             title: item.title,
             image: item.defaultImage,
@@ -47,10 +47,25 @@ private extension MainTabCoordinator {
         return navigationController
     }
     
+    func configureRootViewController(for item: NearbyTabItem, navigationController: UINavigationController) {
+        switch item {
+        case .companion:
+            let companionCoordinator = diContainer.makeCompanionCoordinator(
+                navigationController: navigationController
+            )
+            companionCoordinator.parentCoordinator = self
+            addChildCoordinator(companionCoordinator)
+            companionCoordinator.start()
+        default:
+            let viewController = makeRootViewController(for: item)
+            navigationController.setViewControllers([viewController], animated: false)
+        }
+    }
+    
     func makeRootViewController(for item: NearbyTabItem) -> UIViewController {
         switch item {
         case .companion:
-            return diContainer.makeCompanionViewController()
+            preconditionFailure("Companion tab should be configured by CompanionCoordinator")
         case .diningMap:
             return diContainer.makeDiningMapViewController()
         case .matching:

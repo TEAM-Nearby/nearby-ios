@@ -29,17 +29,6 @@ final class NearbyNavigationBar: BaseView {
     private let rightSecondButton = UIButton(type: .system)
     private let reportButton = UIButton(type: .system)
 
-    // MARK: - Initializer
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setAddTarget()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     // MARK: - Custom Methods
 
     override func setStyle() {

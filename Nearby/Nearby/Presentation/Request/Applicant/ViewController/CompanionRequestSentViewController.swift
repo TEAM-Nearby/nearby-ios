@@ -23,6 +23,10 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
     // MARK: - Custom Methods
 
     override func addTarget() {
+        rootView.onBackButtonDidTap = { [weak self] in
+                // TODO: - Coordinator 연결 (뒤로가기)
+                self?.navigationController?.popViewController(animated: true)
+            }
         rootView.onSearchButtonDidTap = { [weak self] in
             self?.viewModel.action(.searchButtonDidTap)
         }
@@ -47,4 +51,3 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
         viewModel.action(.viewDidLoad)
     }
 }
-

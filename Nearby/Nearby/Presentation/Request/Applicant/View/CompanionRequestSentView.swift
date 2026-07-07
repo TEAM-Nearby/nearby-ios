@@ -12,11 +12,14 @@ import Then
 
 final class CompanionRequestSentView: BaseView {
 
-    // MARK: - Property
+    // MARK: - Properties
 
+    var onBackButtonDidTap: (() -> Void)?
     var onSearchButtonDidTap: (() -> Void)?
 
     // MARK: - UI Components
+    
+    private let navigationBar = NearbyNavigationBar()
 
     private let imageView = UIImageView()
 
@@ -59,20 +62,29 @@ final class CompanionRequestSentView: BaseView {
 
         descriptionLabel.do {
             $0.setFont(.b3M14, text: "", textColor: .grey40)
-            $0.textAlignment = .left
-            $0.numberOfLines = 2
+            $0.numberOfLines = 0
+            $0.lineBreakMode = .byCharWrapping
+        }
+        
+        navigationBar.do {
+            $0.configure(leftItem: .back, centerItem: .title("동행 신청"))
         }
     }
 
     override func setUI() {
-        addSubviews(imageView, labelStackView, descriptionView, searchButton)
+        addSubviews(navigationBar, imageView, labelStackView, descriptionView, searchButton)
         labelStackView.addArrangedSubviews(titleLabel, subtitleLabel)
         descriptionView.addSubview(descriptionLabel)
     }
 
     override func setLayout() {
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(safeAreaLayoutGuide)
+            $0.horizontalEdges.equalToSuperview()
+        }
+        
         imageView.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(80)
+            $0.bottom.equalTo(self.snp.centerY).offset(-40)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(177)
         }
@@ -90,7 +102,7 @@ final class CompanionRequestSentView: BaseView {
 
         descriptionLabel.snp.makeConstraints {
             $0.verticalEdges.equalToSuperview().inset(24)
-            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.horizontalEdges.equalToSuperview().inset(18)
         }
 
         searchButton.snp.makeConstraints {
@@ -101,6 +113,9 @@ final class CompanionRequestSentView: BaseView {
     }
 
     override func setAddTarget() {
+        navigationBar.leftButtonAction = { [weak self] in
+            self?.onBackButtonDidTap?()
+        }
         searchButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
     }
 
@@ -110,7 +125,7 @@ final class CompanionRequestSentView: BaseView {
         imageView.image = output.image
         titleLabel.text = output.title
         subtitleLabel.text = output.subtitle
-        descriptionLabel.text = output.description
+        descriptionLabel.attributedText = output.description.withLineHeightMultiple(1.4, font: NearbyFont.b3M14.font, color: .grey40)
         searchButton.setTitle(output.buttonTitle, for: .normal)
     }
     

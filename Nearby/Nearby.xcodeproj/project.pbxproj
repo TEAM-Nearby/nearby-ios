@@ -67,6 +67,11 @@
 				Presentation/RecruitCompanion/View/.gitkeep,
 				Presentation/RecruitCompanion/ViewController/.gitkeep,
 				Presentation/RecruitCompanion/ViewModel/.gitkeep,
+				Presentation/Request/Applicant/Coordinator/.gitkeep,
+				Presentation/Request/Host/Coordinator/.gitkeep,
+				Presentation/Request/Host/View/.gitkeep,
+				Presentation/Request/Host/ViewController/.gitkeep,
+				Presentation/Request/Host/ViewModel/.gitkeep,
 				Resource/Info.plist,
 			);
 			target = 771209D42FF423C700D688FD /* Nearby */;

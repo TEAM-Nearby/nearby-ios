@@ -32,7 +32,7 @@ enum NearbyChipStyle: Equatable {
         case .categoryHonbapUnselected, .filterSortUnselected, .badgeProfile:
             return .chipBgGrey
         case .badgeVerification:
-            return .bgDefaultGey
+            return .bgDefaultGrey
         }
     }
     

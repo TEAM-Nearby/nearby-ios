@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "illust_request_failed.svg",
+      "idiom" : "universal"
+    },
+    {
+      "idiom" : "car"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

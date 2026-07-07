@@ -9,11 +9,11 @@ import UIKit
 
 final class PhoneVerificationViewController: BaseViewController<PhoneVerificationViewModel> {
 
-    // MARK: - Properties
+    // MARK: - Property
 
     private var isVerificationMode = false
     
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let phoneVerificationView = PhoneVerificationView()
 
@@ -28,7 +28,7 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
         setAddTarget()
     }
 
-    // MARK: - Custom Methods
+    // MARK: - Custom Method
 
     private func setAddTarget() {
         phoneVerificationView.backButton.addTarget(

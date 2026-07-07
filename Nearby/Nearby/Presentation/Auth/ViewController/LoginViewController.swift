@@ -9,17 +9,17 @@ import UIKit
 
 final class LoginViewController: BaseViewController<LoginViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let loginView = LoginView()
 
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
 
     override func loadView() {
         self.view = loginView
     }
 
-    // MARK: - Custom Methods
+    // MARK: - Custom Method
 
     func setAddTarget() {
         loginView.kakaoLoginButton.addTarget(

@@ -12,7 +12,7 @@ import Then
 
 final class PhoneVerificationView: BaseView {
 
-    // MARK: - Properties
+    // MARK: - Property
 
     private var isVerificationMode = false
     

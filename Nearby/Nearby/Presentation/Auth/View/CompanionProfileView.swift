@@ -19,6 +19,9 @@ final class CompanionProfileView: BaseView {
     private let progressContainerView = UIView()
     private let progressView = UIProgressView(progressViewStyle: .default)
     
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     
@@ -56,11 +59,22 @@ final class CompanionProfileView: BaseView {
             $0.configure(leftItem: .back)
         }
         
+        progressContainerView.do {
+            $0.backgroundColor = .white
+        }
+        
         progressView.do {
             $0.progress = 0.5
             $0.progressTintColor = .btnPrimaryBg
             $0.trackTintColor = .chipBgPurple
             $0.transform = CGAffineTransform(scaleX: -1, y: 1)
+            $0.layer.cornerRadius = 2
+            $0.clipsToBounds = true
+        }
+        
+        scrollView.do {
+            $0.showsVerticalScrollIndicator = false
+            $0.alwaysBounceVertical = true
         }
         
         titleLabel.do {
@@ -173,14 +187,30 @@ final class CompanionProfileView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(navigationBar, progressContainerView, titleLabel,
-            descriptionLabel, profileImageButton, nicknameTitleLabel,
-            nicknameTextFieldContainerView, genderTitleLabel, genderStackView,
-            introductionTitleLabel, introductionTextViewContainerView,
-            travelStyleTitleLabel, travelStyleStackView, bottomButton
+        addSubviews(
+            navigationBar,
+            progressContainerView,
+            scrollView,
+            bottomButton
         )
         
         progressContainerView.addSubview(progressView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubviews(
+            titleLabel,
+            descriptionLabel,
+            profileImageButton,
+            nicknameTitleLabel,
+            nicknameTextFieldContainerView,
+            genderTitleLabel,
+            genderStackView,
+            introductionTitleLabel,
+            introductionTextViewContainerView,
+            travelStyleTitleLabel,
+            travelStyleStackView
+        )
+        
         profileImageButton.addSubviews(profileImageView, imageSelectLabel)
         nicknameTextFieldContainerView.addSubviews(nicknameTextField, nicknameClearButton)
         genderStackView.addArrangedSubviews(maleButton, femaleButton)
@@ -206,8 +236,25 @@ final class CompanionProfileView: BaseView {
             $0.height.equalTo(4)
         }
         
+        bottomButton.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalTo(safeAreaLayoutGuide).inset(14)
+            $0.height.equalTo(56)
+        }
+        
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(progressContainerView.snp.bottom)
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalTo(bottomButton.snp.top).offset(-12)
+        }
+        
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+            $0.width.equalTo(scrollView)
+        }
+        
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(progressContainerView.snp.bottom).offset(32)
+            $0.top.equalToSuperview().offset(32)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -298,12 +345,7 @@ final class CompanionProfileView: BaseView {
         travelStyleStackView.snp.makeConstraints {
             $0.top.equalTo(travelStyleTitleLabel.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(20)
-        }
-        
-        bottomButton.snp.makeConstraints {
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.bottom.equalTo(safeAreaLayoutGuide).inset(14)
-            $0.height.equalTo(56)
+            $0.bottom.equalToSuperview().inset(24)
         }
     }
     
@@ -328,7 +370,7 @@ final class CompanionProfileView: BaseView {
         introductionClearButton.isHidden = true
     }
     
-    // MARK: - Methods
+    // MARK: - Method
     
     private func setKeywordButtons() {
         let keywordRows = [
@@ -361,7 +403,7 @@ final class CompanionProfileView: BaseView {
     }
 }
 
-// MARK: - UILabel Extensions
+// MARK: - UILabel Extension
 
 private extension UILabel {
     func setRequiredTitle(_ title: String) {
@@ -387,7 +429,7 @@ private extension UILabel {
     }
 }
 
-// MARK: - UIButton Extensions
+// MARK: - UIButton Extension
 
 private extension UIButton {
     func setGenderTitle(_ title: String, isSelected: Bool) {

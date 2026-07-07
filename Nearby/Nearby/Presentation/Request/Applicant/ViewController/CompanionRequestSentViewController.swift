@@ -12,22 +12,22 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
 
     // MARK: - UI Components
 
-    private let rootView = CompanionRequestSentView()
+    private let companionRequestSentView = CompanionRequestSentView()
 
     // MARK: - Life Cycles
 
     override func loadView() {
-        view = rootView
+        view = companionRequestSentView
     }
 
     // MARK: - Custom Methods
 
     override func addTarget() {
-        rootView.onBackButtonDidTap = { [weak self] in
+        companionRequestSentView.onBackButtonDidTap = { [weak self] in
                 // TODO: - Coordinator 연결 (뒤로가기)
                 self?.navigationController?.popViewController(animated: true)
             }
-        rootView.onSearchButtonDidTap = { [weak self] in
+        companionRequestSentView.onSearchButtonDidTap = { [weak self] in
             self?.viewModel.action(.searchButtonDidTap)
         }
     }
@@ -36,7 +36,7 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] data in
-                self?.rootView.configure(with: data)
+                self?.companionRequestSentView.configure(with: data)
             }
             .store(in: &cancellables)
 

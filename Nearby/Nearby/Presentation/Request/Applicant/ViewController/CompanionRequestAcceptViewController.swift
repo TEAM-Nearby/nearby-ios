@@ -12,12 +12,12 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
 
     // MARK: - UI Components
 
-    private let rootView = CompanionRequestAcceptView()
+    private let companionRequestAcceptView = CompanionRequestAcceptView()
 
     // MARK: - Life Cycles
 
     override func loadView() {
-        view = rootView
+        view = companionRequestAcceptView
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -28,15 +28,15 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
     // MARK: - Custom Methods
 
     override func addTarget() {
-        rootView.onConfirmButtonDidTap = { [weak self] in
+        companionRequestAcceptView.onConfirmButtonDidTap = { [weak self] in
             self?.viewModel.action(.confirmButtonDidTap)
         }
 
-        rootView.onEnterChatButtonDidTap = { [weak self] in
+        companionRequestAcceptView.onEnterChatButtonDidTap = { [weak self] in
             self?.viewModel.action(.enterChatButtonDidTap)
         }
 
-        rootView.onChatHelpButtonDidTap = { [weak self] in
+        companionRequestAcceptView.onChatHelpButtonDidTap = { [weak self] in
             self?.viewModel.action(.chatHelpButtonDidTap)
         }
     }
@@ -45,14 +45,14 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] data in
-                self?.rootView.configure(with: data)
+                self?.companionRequestAcceptView.configure(with: data)
             }
             .store(in: &cancellables)
 
         viewModel.output.step
             .receive(on: DispatchQueue.main)
             .sink { [weak self] step in
-                self?.rootView.updateStep(step)
+                self?.companionRequestAcceptView.updateStep(step)
             }
             .store(in: &cancellables)
 

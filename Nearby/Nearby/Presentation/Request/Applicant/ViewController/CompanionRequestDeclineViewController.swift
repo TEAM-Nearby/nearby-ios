@@ -12,12 +12,12 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
 
     // MARK: - UI Components
 
-    private let rootView = CompanionRequestDeclineView()
+    private let companionRequestDeclineView = CompanionRequestDeclineView()
 
     // MARK: - Life Cycles
 
     override func loadView() {
-        view = rootView
+        view = companionRequestDeclineView
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -28,14 +28,14 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
     // MARK: - Custom Methods
     
     override func addTarget() {
-        rootView.onBackButtonDidTap = { [weak self] in
+        companionRequestDeclineView.onBackButtonDidTap = { [weak self] in
             // TODO: - Coordinator 연결 (뒤로가기)
             self?.navigationController?.popViewController(animated: true)
         }
-        rootView.onWriteButtonDidTap = { [weak self] in
+        companionRequestDeclineView.onWriteButtonDidTap = { [weak self] in
             self?.viewModel.action(.writeButtonDidTap)
         }
-        rootView.onSearchButtonDidTap = { [weak self] in
+        companionRequestDeclineView.onSearchButtonDidTap = { [weak self] in
             self?.viewModel.action(.searchButtonDidTap)
         }
     }
@@ -44,7 +44,7 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] data in
-                self?.rootView.configure(with: data)
+                self?.companionRequestDeclineView.configure(with: data)
             }
             .store(in: &cancellables)
     

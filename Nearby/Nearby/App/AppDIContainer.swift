@@ -19,20 +19,28 @@ final class AppDIContainer {
         MainTabCoordinator(diContainer: self)
     }
     
+    func makeCompanionCoordinator(navigationController: UINavigationController) -> CompanionCoordinator {
+        CompanionCoordinator(navigationController: navigationController, diContainer: self)
+    }
+    
     // MARK: - Networks
     
     // MARK: - Repositories
     
     // MARK: - ViewModels
-    
+  
     func makeLoginViewModel() -> LoginViewModel {
         LoginViewModel()
+    }
+  
+    func makeCompanionViewModel() -> CompanionViewModel {
+        CompanionViewModel()
     }
     
     // MARK: - ViewControllers
     
-    func makeCompanionViewController() -> UIViewController {
-        makePlaceholderViewController(title: "동행 찾기")
+    func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
+        CompanionViewController(viewModel: viewModel)
     }
     
     func makeDiningMapViewController() -> UIViewController {
@@ -51,9 +59,12 @@ final class AppDIContainer {
         makePlaceholderViewController(title: "마이페이지")
     }
     
-    func makeLoginViewController() -> LoginViewController {
-        let viewModel = makeLoginViewModel()
-        return LoginViewController(viewModel: viewModel)
+    func makeRecruitCompanionViewController() -> UIViewController {
+        makePlaceholderViewController(title: "동행글 작성")
+    }
+  
+    func makeLoginViewController(viewModel: LoginViewModel) -> LoginViewController {
+        LoginViewController(viewModel: viewModel)
     }
 }
 

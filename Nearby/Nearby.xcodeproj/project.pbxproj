@@ -21,6 +21,7 @@
 
 /* Begin PBXFileReference section */
 		771209D52FF423C700D688FD /* Nearby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nearby.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Cofig.xcconfig; sourceTree = "<group>"; };
 		77C74AF12FF6EEF200604CBC /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -35,6 +36,10 @@
 				Data/Network/MyPage/DTO/.gitkeep,
 				Data/Network/RecruitCompanion/DTO/.gitkeep,
 				Data/Repository/Mock/.gitkeep,
+				Presentation/Auth/Coordinator/.gitkeep,
+				Presentation/Auth/View/.gitkeep,
+				Presentation/Auth/ViewController/.gitkeep,
+				Presentation/Auth/ViewModel/.gitkeep,
 				Presentation/Companion/Coordinator/.gitkeep,
 				Presentation/Companion/View/.gitkeep,
 				Presentation/Companion/ViewController/.gitkeep,
@@ -102,6 +107,7 @@
 		771209CC2FF423C700D688FD = {
 			isa = PBXGroup;
 			children = (
+				772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */,
 				77C74AF12FF6EEF200604CBC /* .swiftlint.yml */,
 				771209D72FF423C700D688FD /* Nearby */,
 				771209D62FF423C700D688FD /* Products */,
@@ -238,6 +244,7 @@
 /* Begin XCBuildConfiguration section */
 		771209E92FF423C900D688FD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -316,6 +323,7 @@
 		};
 		771209EB2FF423C900D688FD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

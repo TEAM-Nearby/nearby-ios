@@ -1,17 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "mypage_choosed_icon.svg",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "meet_choosed_icon.svg",
+      "idiom" : "universal"
     }
   ],
   "info" : {

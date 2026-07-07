@@ -7,6 +7,9 @@
 
 import UIKit
 
+import GoogleMaps
+import KakaoSDKCommon
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -14,6 +17,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        do {
+            let googleMapAPIKey = try AppConfig.googleMapsAPIKey()
+            GMSServices.provideAPIKey(googleMapAPIKey)
+        } catch {
+            AppLogger.error(error)
+            fatalError("Google Maps API key is missing. Set GOOGLE_MAPS_API_KEY before creating GMSMapView.")
+        }
         return true
     }
 
@@ -33,4 +43,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-

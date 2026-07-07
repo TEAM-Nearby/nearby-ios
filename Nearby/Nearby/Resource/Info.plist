@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>GOOGLE_MAPS_API_KEY</key>
+	<string>$(GOOGLE_MAPS_API_KEY)</string>
+	<key>BASE_URL</key>
+	<string>$(BASE_URL)</string>
+	<key>KAKAO_API_KEY</key>
+	<string>$(KAKAO_API_KEY)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>원활한 사용을 위해 위치 정보를 허용해주세요</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Pretendard-Medium.ttf</string>

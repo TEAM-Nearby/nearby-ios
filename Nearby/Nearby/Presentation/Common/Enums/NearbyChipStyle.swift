@@ -42,7 +42,9 @@ enum NearbyChipStyle: Equatable {
             return .grey50
         case .personalityOrange:
             return .chipPersonalityTextOrange
-        case .category, .categoryHonbapUnselected, .badgeProfile:
+        case .category:
+            return .grey90
+        case .categoryHonbapUnselected, .badgeProfile:
             return .grey40
         case .categoryHonbapSelected, .tagStateSelected:
             return .primary50

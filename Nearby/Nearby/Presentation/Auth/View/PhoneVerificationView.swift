@@ -34,10 +34,7 @@ final class PhoneVerificationView: BaseView {
     let verificationClearButton = UIButton(type: .system)
     private let verificationErrorLabel = UILabel()
 
-    let bottomButton = NearbyButton(
-        style: .primary,
-        title: "인증문자 발송하기"
-    )
+    let bottomButton = NearbyButton(style: .primary, title: "인증문자 발송하기")
 
     // MARK: - Custom Methods
 
@@ -77,7 +74,7 @@ final class PhoneVerificationView: BaseView {
 
         phoneTextFieldContainerView.do {
             $0.backgroundColor = .bgSurfaceGrey0
-            $0.layer.cornerRadius = 20
+            $0.layer.cornerRadius = 16
             $0.clipsToBounds = true
         }
 
@@ -94,7 +91,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         phoneClearButton.do {
-            $0.setImage(UIImage(systemName: "xmark"), for: .normal)
+            $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey20
             $0.isHidden = true
         }
@@ -111,7 +108,7 @@ final class PhoneVerificationView: BaseView {
 
         verificationTextFieldContainerView.do {
             $0.backgroundColor = .bgSurfaceGrey0
-            $0.layer.cornerRadius = 20
+            $0.layer.cornerRadius = 16
             $0.clipsToBounds = true
             $0.isHidden = true
         }
@@ -129,7 +126,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         verificationClearButton.do {
-            $0.setImage(UIImage(systemName: "xmark"), for: .normal)
+            $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey20
         }
 

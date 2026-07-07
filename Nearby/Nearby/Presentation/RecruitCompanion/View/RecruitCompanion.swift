@@ -18,7 +18,23 @@ final class RecruitCompanionView: BaseView {
     private let nowButton = NearbyButton(style: .selected, title: "지금 바로")
     private let timeButton = NearbyButton(style: .unselected, title: "시간 설정")
     private let buttonStackView = UIStackView()
+    private let dateOptionView = UIView()
     private let datePicker = NearbyDateTimePickerView()
+    private let dateCheckBox = NearbyCheckBox(text: "동행과 정하고 싶어요")
+    private let peopleStepper = NearbyStepper()
+    private let peopleNumber = UILabel()
+    private let peopleTitleLabel = UILabel()
+    private let peopleCheckBox = NearbyCheckBox(text: "목표 인원이 안 차도 출발할래요")
+    private let peopleButton = UIButton()
+    private let peopleTopDivider = UIView()
+    private let peopleBottomDivider = UIView()
+    
+    // MARK: - Properties
+
+    private var peopleTitleTopFromButtonConstraint: Constraint?
+    private var peopleTitleTopFromDatePickerConstraint: Constraint?
+    private var peopleCheckBoxTopFromTitleConstraint: Constraint?
+    private var peopleCheckBoxTopFromStepperConstraint: Constraint?
     
     // MARK: - Custom Methods
     
@@ -37,12 +53,45 @@ final class RecruitCompanionView: BaseView {
             $0.distribution = .fillEqually
         }
         
-        datePicker.isHidden = true
+        dateOptionView.isHidden = true
+        
+        peopleTitleLabel.do {
+            $0.text = "최대 몇 명과 함께 갈까요?"
+            $0.font = NearbyFont.b1Sb18.font
+            $0.textColor = .grey80
+        }
+        
+        peopleNumber.do {
+            $0.text = "2명"
+            $0.font = NearbyFont.h3Sb20.font
+            $0.textColor = .primary50
+        }
+
+        peopleStepper.isHidden = true
+
+        [peopleTopDivider, peopleBottomDivider].forEach {
+            $0.backgroundColor = .grey5
+        }
+        
+        peopleButton.setImage(.chevronDownIcon, for: .normal)
+        peopleButton.setImage(.chevronUpIcon, for: .selected)
     }
 
     override func setUI() {
-        addSubviews(whenTitleLabel, buttonStackView, datePicker)
+        addSubviews(
+            whenTitleLabel,
+            buttonStackView,
+            dateOptionView,
+            peopleTopDivider,
+            peopleTitleLabel,
+            peopleStepper,
+            peopleNumber,
+            peopleButton,
+            peopleCheckBox,
+            peopleBottomDivider
+        )
         buttonStackView.addArrangedSubviews(nowButton, timeButton)
+        dateOptionView.addSubviews(datePicker, dateCheckBox)
     }
 
     override func setLayout() {
@@ -58,11 +107,68 @@ final class RecruitCompanionView: BaseView {
             $0.height.equalTo(46)
         }
 
-        datePicker.snp.makeConstraints {
+        dateOptionView.snp.makeConstraints {
             $0.top.equalTo(buttonStackView.snp.bottom).offset(18)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(154)
         }
+
+        datePicker.snp.makeConstraints {
+            $0.top.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(138)
+        }
+        
+        dateCheckBox.snp.makeConstraints {
+            $0.top.equalTo(datePicker.snp.bottom)
+            $0.leading.equalToSuperview().inset(10)
+            $0.bottom.equalToSuperview()
+            $0.height.equalTo(44)
+        }
+
+        peopleTopDivider.snp.makeConstraints {
+            $0.bottom.equalTo(peopleTitleLabel.snp.top).offset(-24)
+            $0.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(1)
+        }
+        
+        peopleTitleLabel.snp.makeConstraints {
+            peopleTitleTopFromButtonConstraint = $0.top.equalTo(buttonStackView.snp.bottom).offset(40).constraint
+            peopleTitleTopFromDatePickerConstraint = $0.top.equalTo(dateOptionView.snp.bottom).offset(40).constraint
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+
+        peopleTitleTopFromDatePickerConstraint?.deactivate()
+        
+        peopleNumber.snp.makeConstraints {
+            $0.centerY.equalTo(peopleTitleLabel.snp.centerY)
+            $0.trailing.equalTo(peopleButton.snp.leading).offset(-8)
+        }
+
+        peopleButton.snp.makeConstraints {
+            $0.centerY.equalTo(peopleTitleLabel.snp.centerY)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.size.equalTo(24)
+        }
+        
+        peopleStepper.snp.makeConstraints {
+            $0.top.equalTo(peopleTitleLabel.snp.bottom).offset(24)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(48)
+        }
+
+        peopleCheckBox.snp.makeConstraints {
+            peopleCheckBoxTopFromTitleConstraint = $0.top.equalTo(peopleTitleLabel.snp.bottom).offset(18.5).constraint
+            peopleCheckBoxTopFromStepperConstraint = $0.top.equalTo(peopleStepper.snp.bottom).offset(25.5).constraint
+            $0.horizontalEdges.equalToSuperview().inset(10)
+            $0.height.equalTo(22)
+        }
+
+        peopleBottomDivider.snp.makeConstraints {
+            $0.top.equalTo(peopleCheckBox.snp.bottom).offset(31)
+            $0.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(1)
+        }
+
+        peopleCheckBoxTopFromStepperConstraint?.deactivate()
     }
 
     override func registerCells() {
@@ -74,6 +180,10 @@ final class RecruitCompanionView: BaseView {
     private func setAction() {
         nowButton.addTarget(self, action: #selector(nowButtonDidTap), for: .touchUpInside)
         timeButton.addTarget(self, action: #selector(timeButtonDidTap), for: .touchUpInside)
+        peopleButton.addTarget(self, action: #selector(peopleButtonDidTap), for: .touchUpInside)
+        peopleStepper.countDidChange = { [weak self] count in
+            self?.peopleNumber.text = "\(count + 1)명"
+        }
     }
     
     // MARK: - Action
@@ -82,14 +192,31 @@ final class RecruitCompanionView: BaseView {
     private func nowButtonDidTap() {
         nowButton.setSelected(true)
         timeButton.setSelected(false)
-        datePicker.isHidden = true
+        dateOptionView.isHidden = true
+        peopleTitleTopFromDatePickerConstraint?.deactivate()
+        peopleTitleTopFromButtonConstraint?.activate()
     }
 
     @objc
     private func timeButtonDidTap() {
         nowButton.setSelected(false)
         timeButton.setSelected(true)
-        datePicker.isHidden = false
+        dateOptionView.isHidden = false
+        peopleTitleTopFromButtonConstraint?.deactivate()
+        peopleTitleTopFromDatePickerConstraint?.activate()
     }
-    
+
+    @objc
+    private func peopleButtonDidTap() {
+        peopleButton.isSelected.toggle()
+        peopleStepper.isHidden = !peopleButton.isSelected
+
+        if peopleButton.isSelected {
+            peopleCheckBoxTopFromTitleConstraint?.deactivate()
+            peopleCheckBoxTopFromStepperConstraint?.activate()
+        } else {
+            peopleCheckBoxTopFromStepperConstraint?.deactivate()
+            peopleCheckBoxTopFromTitleConstraint?.activate()
+        }
+    }
 }

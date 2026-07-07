@@ -16,7 +16,6 @@
 		7712132B2FF43A5B00D688FD /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132A2FF43A5B00D688FD /* KakaoSDKShare */; };
 		7712132D2FF43A5B00D688FD /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132C2FF43A5B00D688FD /* KakaoSDKUser */; };
 		771213302FF43B3700D688FD /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132F2FF43B3700D688FD /* GoogleMaps */; };
-		772B1DED2FFB952C0044A4F2 /* Cofig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */; };
 		77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 77C74AF12FF6EEF200604CBC /* .swiftlint.yml */; };
 /* End PBXBuildFile section */
 
@@ -202,7 +201,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */,
-				772B1DED2FFB952C0044A4F2 /* Cofig.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

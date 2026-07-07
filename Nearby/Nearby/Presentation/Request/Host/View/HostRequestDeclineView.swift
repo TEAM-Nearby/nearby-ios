@@ -58,6 +58,7 @@ final class HostRequestDeclineView: BaseView {
             $0.textAlignment = .left
         }
         
+        // TODO: - TextView로 수정
         rejectReasonTextField.do {
             $0.attributedPlaceholder = NSAttributedString(string: "내용을 입력해주세요.", attributes: [.foregroundColor: UIColor(resource: .grey20), .font: NearbyFont.b3M14.font])
             $0.backgroundColor = .bgSurfaceGrey0
@@ -87,7 +88,7 @@ final class HostRequestDeclineView: BaseView {
         }
         
         applicantProfileView.snp.makeConstraints {
-            $0.top.equalTo(self.snp.centerY).offset(-72)
+            $0.top.equalTo(self.snp.centerY).offset(-172)
             $0.horizontalEdges.equalToSuperview()
         }
         

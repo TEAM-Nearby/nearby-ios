@@ -61,6 +61,7 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
 
         case .rejectButtonDidTap(let reason):
             // TODO: - CoorDinator 연결
+            print("거절 사유: \(reason)")
             output.showDeclineComplete.send(())
         }
     }

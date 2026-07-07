@@ -37,7 +37,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         let title: String
         let location: String
         let date: String
-        let buttonTitle: String
+        let chatTitle: String
     }
 
     // MARK: - Properties
@@ -65,7 +65,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
                 title: "\(applicantName) 님과 동행이 매칭됐어요!",
                 location: "\(locationName)",
                 date: "6월 18일 (목) 오후 4시 30분",
-                buttonTitle: "일정 확정하기"
+                chatTitle: "\(applicantName) 님과 대화를 나눠보세요"
             )
             output.displayData.send(data)
 

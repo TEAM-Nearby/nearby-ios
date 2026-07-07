@@ -8,7 +8,7 @@
 import SnapKit
 import UIKit
 
-final class NearbyIconChip: UIButton {
+final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
     
     // MARK: - Properties
     
@@ -50,21 +50,13 @@ final class NearbyIconChip: UIButton {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        let shadowRect = bounds.offsetBy(dx: 0, dy: style.shadowOffset.height / 2)
-        layer.shadowPath = UIBezierPath(roundedRect: shadowRect, cornerRadius: style.layerCornerRadius).cgPath
+        updateChipShadowPath(style: style)
     }
     
     // MARK: - Methods
     
     private func setStyle() {
-        clipsToBounds = false
-        layer.borderWidth = 1
-        layer.cornerRadius = style.layerCornerRadius
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOffset = style.shadowOffset
-        layer.shadowRadius = style.shadowRadius
-        layer.shadowOpacity = style.shadowOpacity
-        isUserInteractionEnabled = style.isSelectable
+        applyChipShadow(style: style)
     }
     
     private func setUI() {
@@ -122,7 +114,7 @@ final class NearbyIconChip: UIButton {
     @objc
     private func chipDidTap() {
         guard style.isSelectable else { return }
-        isSelected = !isSelected
+        isSelected.toggle()
         updateChipButton()
     }
 }

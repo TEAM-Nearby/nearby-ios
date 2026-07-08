@@ -68,6 +68,7 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
         
         chipTextLabel.text = title
         chipTextLabel.textAlignment = .center
+        chipTextLabel.textColor = .grey90
     }
     
     private func setUI() {

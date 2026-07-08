@@ -317,6 +317,7 @@ final class CompanionProfileView: BaseView {
     func updateIntroductionPlaceholder(isHidden: Bool) {
         introductionTextView.updatePlaceholder(isHidden: isHidden)
     }
+    // TODO: - 서버 연결 후 isHidden 값 받아오는 방식 수정할 예정
     
     func clearNicknameText() {
         nicknameTextField.text = nil

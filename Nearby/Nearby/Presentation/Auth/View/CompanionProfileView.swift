@@ -315,6 +315,8 @@ final class CompanionProfileView: BaseView {
         }
     }
     
+    // MARK: - Methods
+    
     func updateGender(selectedGender: CompanionProfileGender) {
         maleButton.setGenderTitle("남성", isSelected: selectedGender == .male)
         femaleButton.setGenderTitle("여성", isSelected: selectedGender == .female)
@@ -345,8 +347,6 @@ final class CompanionProfileView: BaseView {
         profileImageView.layer.cornerRadius = 50
         profileImageView.clipsToBounds = true
     }
-    
-    // MARK: - Method
     
     private func setKeywordButtons() {
         let keywordRows = [

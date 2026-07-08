@@ -8,28 +8,17 @@
 import Combine
 import UIKit
 
-final class MeetingTabViewController: UIViewController {
+final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
 
-    // MARK: - Properties
+    // MARK: - UI Component
 
     private let meetingTabView = MeetingTabView()
-    private let viewModel: MeetingTabViewModel
-    private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Property
     
     weak var coordinator: MeetingTabCoordinator?
-    
-    // MARK: - InitialLizer
-    
-    init(viewModel: MeetingTabViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
 
     override func loadView() {
         view = meetingTabView
@@ -37,30 +26,35 @@ final class MeetingTabViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setCollectionView()
-        bind()
-        viewModel.load()
     }
 
-    // MARK: - Methods
+    // MARK: - Custom Methods
+    
+    override func setDelegate() {
+        meetingTabView.collectionView.delegate = self
+        meetingTabView.collectionView.dataSource = self
+    }
+    
+    override func bindState() {
+        viewModel.output.items
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] items in
+                self?.meetingTabView.updateState(isEmpty: items.isEmpty)
+                self?.meetingTabView.collectionView.reloadData()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.action(.viewDidLoad)
+    }
+    
+    // MARK: - Method
 
     private func setCollectionView() {
-        meetingTabView.collectionView.dataSource = self
         meetingTabView.collectionView.register(
             MeetingVerificationCell.self,
             forCellWithReuseIdentifier: MeetingVerificationCell.identifier
         )
-    }
-    
-    private func bind() {
-        viewModel.$cellTypes
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] types in
-                self?.meetingTabView.updateState(isEmpty: types.isEmpty)
-                self?.meetingTabView.collectionView.reloadData()
-            }
-            .store(in: &cancellables)
     }
 }
 
@@ -70,7 +64,7 @@ extension MeetingTabViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
-        viewModel.cellTypes.count
+        viewModel.items.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -81,12 +75,23 @@ extension MeetingTabViewController: UICollectionViewDataSource {
         ) as? MeetingVerificationCell else {
             return UICollectionViewCell()
         }
-        cell.configure(type: viewModel.cellTypes[indexPath.item])
+        
+        let item = viewModel.item(at: indexPath.item)
+        cell.configure(with: item)
 
         cell.onVerifyButtonDidTap = { [weak self] in
-            self?.coordinator?.showVerification()
+            self?.coordinator?.showMeetingProgress(for: item)
         }
-
         return cell
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension MeetingTabViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = viewModel.item(at: indexPath.item)
+        coordinator?.showMeetingProgress(for: item)
     }
 }

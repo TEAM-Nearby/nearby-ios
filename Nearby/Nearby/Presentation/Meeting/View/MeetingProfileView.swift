@@ -20,7 +20,7 @@ final class MeetingProfileView: BaseView {
     
     private let hostIdentificationView = UIView()
     private let nameLabel = UILabel()
-    private let identificationLabel = UILabel()
+    private let genderLabel = UILabel()
     
     private let informationLabel = UILabel()
 
@@ -38,7 +38,7 @@ final class MeetingProfileView: BaseView {
             $0.textAlignment = .left
         }
         
-        identificationLabel.do {
+        genderLabel.do {
             $0.setFont(.b2M16, text: "20대 여성", textColor: .primary50)
             $0.textAlignment = .left
         }
@@ -57,7 +57,7 @@ final class MeetingProfileView: BaseView {
         addSubview(profileView)
         profileView.addSubviews(imageView, hostView, nextButton)
         hostView.addSubviews(hostIdentificationView, informationLabel)
-        hostIdentificationView.addSubviews(nameLabel, identificationLabel)
+        hostIdentificationView.addSubviews(nameLabel, genderLabel)
     }
     
     override func setLayout() {
@@ -97,9 +97,17 @@ final class MeetingProfileView: BaseView {
             $0.top.leading.equalToSuperview()
         }
         
-        identificationLabel.snp.makeConstraints {
+        genderLabel.snp.makeConstraints {
             $0.top.equalTo(nameLabel.snp.top)
-            $0.leading.equalTo(nameLabel.snp.trailing).offset(12)
+            $0.leading.equalTo(nameLabel.snp.trailing).offset(8)
         }
+    }
+    
+    // MARK: - Method
+    
+    func configure(name: String, gender: String, information: String) {
+        nameLabel.text = name
+        genderLabel.text = gender
+        informationLabel.text = information
     }
 }

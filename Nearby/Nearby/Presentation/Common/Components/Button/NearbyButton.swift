@@ -14,6 +14,12 @@ final class NearbyButton: UIButton {
     private let style: NearbyButtonStyle
     private var gradientLayer: CAGradientLayer?
     
+    override var isEnabled: Bool {
+        didSet {
+            updateStyle(isEnabled ? style : .disabled)
+        }
+    }
+    
     // MARK: - Initializer
     
     init(style: NearbyButtonStyle, title: String) {
@@ -46,6 +52,12 @@ final class NearbyButton: UIButton {
         if style.usesGradient {
             setGradient()
         }
+    }
+    
+    private func updateStyle(_ newStyle: NearbyButtonStyle) {
+        backgroundColor = newStyle.backgroundColor
+        setTitleColor(newStyle.titleColor, for: .normal)
+        gradientLayer?.isHidden = !newStyle.usesGradient
     }
 
     private func updateUI() {

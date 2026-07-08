@@ -28,8 +28,6 @@ final class MeetingTabCoordinator {
 
 extension MeetingTabCoordinator: Coordinator {
     
-    // MARK: - Coordinator
-    
     func start() {
         let viewController = diContainer.makeMeetingViewController(coordinator: self)
         navigationController.setViewControllers([viewController], animated: false)
@@ -39,7 +37,11 @@ extension MeetingTabCoordinator: Coordinator {
         parentCoordinator?.removeChildCoordinator(self)
     }
     
-    func showVerification() {
-        // TODO: - 만남 인증 화면 연결
+    func showMeetingProgress(for item: MeetingItem) {
+        let viewController = diContainer.makeMeetingProgressViewController(
+            coordinator: self,
+            item: item
+        )
+        navigationController.pushViewController(viewController, animated: true)
     }
 }

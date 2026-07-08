@@ -5,8 +5,8 @@
 //  Created by 장지인 on 7/4/26.
 //
 
-import SnapKit
 import UIKit
+import SnapKit
 
 final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
     
@@ -15,15 +15,18 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
     private let style: NearbyChipStyle
     private let horizontalInset: CGFloat
     
+    let chipTitle: String
+    
     // MARK: - UI Component
     
-    private var chipTextLabel = UILabel()
+    private let chipTextLabel = UILabel()
     
     // MARK: - Initializer
     
     init(style: NearbyChipStyle, title: String, horizontalInset: CGFloat) {
         self.style = style
         self.horizontalInset = horizontalInset
+        self.chipTitle = title
         super.init(frame: .zero)
 
         isSelected = style.isSelected
@@ -31,14 +34,13 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
         setUI()
         setLayout()
         setChipStyle(title: title)
-        bind()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Custom Method
+    // MARK: - Life Cycle
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -70,17 +72,21 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
     private func setChipStyle(title: String) {
         backgroundColor = style.backgroundColor
         layer.borderColor = style.borderColor.cgColor
+        layer.cornerRadius = style.layerCornerRadius
         chipTextLabel.textColor = style.titleColor
         chipTextLabel.font = style.font
         setChipTitle(title, titleColor: style.titleColor)
     }
-    
+
     private func updateUI() {
-        let toggleStyle: NearbyChipStyle = isSelected ? style.selectedStyle : style.unselectedStyle
+        let toggleStyle = isSelected ? style.selectedStyle : style.unselectedStyle
+        
         backgroundColor = toggleStyle.backgroundColor
         layer.borderColor = toggleStyle.borderColor.cgColor
+        layer.cornerRadius = toggleStyle.layerCornerRadius
         chipTextLabel.textColor = toggleStyle.titleColor
         chipTextLabel.font = toggleStyle.font
+        setChipTitle(chipTitle, titleColor: toggleStyle.titleColor)
     }
     
     private func setChipTitle(_ title: String, titleColor: UIColor) {
@@ -91,14 +97,11 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
         }
         
         let attributedString = NSMutableAttributedString(string: title)
-        attributedString.addAttribute(
-            .foregroundColor,
-            value: titleColor,
-            range: NSRange(location: 0, length: attributedString.length)
-        )
-        attributedString.addAttribute(
-            .font,
-            value: style.font,
+        attributedString.addAttributes(
+            [
+                .foregroundColor: titleColor,
+                .font: style.font
+            ],
             range: NSRange(location: 0, length: attributedString.length)
         )
         
@@ -113,21 +116,10 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
         chipTextLabel.attributedText = attributedString
     }
     
-    private func setSelected(_ selected: Bool) {
-        isSelected = selected
-        updateUI()
-    }
+    // MARK: - Method
     
-    private func bind() {
-        addTarget(self, action: #selector(chipDidTap), for: .touchUpInside)
-    }
-    
-    // MARK: - Action
-    
-    @objc
-    private func chipDidTap() {
-        guard style.isSelectable else { return }
-        isSelected = !isSelected
+    func updateSelected(_ isSelected: Bool) {
+        self.isSelected = isSelected
         updateUI()
     }
 }

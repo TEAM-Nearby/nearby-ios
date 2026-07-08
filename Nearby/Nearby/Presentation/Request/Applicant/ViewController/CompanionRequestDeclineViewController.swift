@@ -10,7 +10,7 @@ import UIKit
 
 final class CompanionRequestDeclineViewController: BaseViewController<CompanionRequestDeclineViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let companionRequestDeclineView = CompanionRequestDeclineView()
 

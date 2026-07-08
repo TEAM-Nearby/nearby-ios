@@ -55,8 +55,25 @@ final class AppDIContainer {
         return LoginViewController(viewModel: makeLoginViewModel())
     }
     
-    func makeCompanionViewController() -> CompanionViewController {
-        return CompanionViewController(viewModel: makeCompanionViewModel())
+    func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
+        return CompanionViewController(
+            viewModel: viewModel,
+            nearbyBottomSheetViewController: makeNearCompanionBottomSheetViewController(),
+            specificBottomSheetViewController: makeSpecificCompanionBottomSheetViewController(),
+            emptyBottomSheetViewController: makeEmptyCompanionBottomSheetViewController()
+        )
+    }
+    
+    func makeNearCompanionBottomSheetViewController() -> NearCompanionBottomSheetViewController {
+        return NearCompanionBottomSheetViewController()
+    }
+    
+    func makeSpecificCompanionBottomSheetViewController() -> SpecificCompanionSheetViewController {
+        return SpecificCompanionSheetViewController()
+    }
+    
+    func makeEmptyCompanionBottomSheetViewController() -> EmptyCompanionBottomSheetViewController {
+        return EmptyCompanionBottomSheetViewController()
     }
     
     func makeDiningMapViewController() -> UIViewController {

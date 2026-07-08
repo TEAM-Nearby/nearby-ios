@@ -28,7 +28,6 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
         let image: UIImage
         let title: String
         let subTitle: String
-        let placeholder: String
         let buttonTitle: String
     }
 
@@ -54,7 +53,6 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
                 image: .imgProfileDefault,
                 title: "\(applicantName) 님과의 동행을 거절할게요",
                 subTitle: "더 잘 맞는 동행을 기다려볼까요?",
-                placeholder: "",
                 buttonTitle: "거절하기"
             )
             output.displayData.send(data)

@@ -19,14 +19,25 @@ final class NearbyTextView: BaseView {
     private let placeholderLabel = UILabel()
     let clearButton = UIButton(type: .system)
     
-    // MARK: - Property
+    // MARK: - Properties
     
     private let placeholder: String
+    private let contentInsets: UIEdgeInsets
+    
+    var text: String { textView.text ?? "" }
+    
+    var isClearButtonHidden: Bool = false {
+        didSet {
+            clearButton.isHidden = isClearButtonHidden
+            remakeTextViewConstraints()
+        }
+    }
     
     // MARK: - Initializer
     
-    init(placeholder: String) {
+    init(placeholder: String, contentInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 28, bottom: 16, right: 28)) {
         self.placeholder = placeholder
+        self.contentInsets = contentInsets
         super.init(frame: .zero)
     }
     
@@ -50,39 +61,30 @@ final class NearbyTextView: BaseView {
         }
         
         placeholderLabel.do {
-            $0.setFont(.b3M14, text: placeholder, textColor: .grey20
-            )
+            $0.setFont(.b3M14, text: placeholder, textColor: .grey20)
         }
         
         clearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey20
-            $0.isHidden = false
         }
     }
     
     override func setUI() {
-        addSubviews(textView, clearButton)
-        textView.addSubview(placeholderLabel)
+        addSubviews(textView, placeholderLabel, clearButton)
     }
     
     override func setLayout() {
-        textView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(16)
-            $0.leading.equalToSuperview().offset(28)
-            $0.trailing.equalTo(clearButton.snp.leading).offset(-12)
-            $0.bottom.equalToSuperview().inset(16)
-        }
+        remakeTextViewConstraints()
         
         placeholderLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.horizontalEdges.equalToSuperview()
+            $0.top.leading.equalTo(textView)
             $0.height.equalTo(22)
         }
         
         clearButton.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(16)
-            $0.trailing.equalToSuperview().inset(28)
+            $0.top.equalToSuperview().offset(contentInsets.top)
+            $0.trailing.equalToSuperview().inset(contentInsets.right)
             $0.size.equalTo(24)
         }
     }
@@ -91,6 +93,19 @@ final class NearbyTextView: BaseView {
 // MARK: - Methods
 
 extension NearbyTextView {
+    private func remakeTextViewConstraints() {
+        textView.snp.remakeConstraints {
+            $0.top.equalToSuperview().offset(contentInsets.top)
+            $0.leading.equalToSuperview().offset(contentInsets.left)
+            $0.bottom.equalToSuperview().inset(contentInsets.bottom)
+            if isClearButtonHidden {
+                $0.trailing.equalToSuperview().inset(contentInsets.right)
+            } else {
+                $0.trailing.equalTo(clearButton.snp.leading).offset(-12)
+            }
+        }
+    }
+    
     func updatePlaceholder(isHidden: Bool) {
         placeholderLabel.isHidden = isHidden
     }

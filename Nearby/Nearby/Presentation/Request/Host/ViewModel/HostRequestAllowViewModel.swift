@@ -50,8 +50,8 @@ final class HostRequestAllowViewModel: BaseViewModelType {
 
     // MARK: - Initializer
 
-    init(hostName: String, locationName: String) {
-        self.applicantName = hostName
+    init(applicantName: String, locationName: String) {
+        self.applicantName = applicantName
         self.locationName = locationName
     }
 

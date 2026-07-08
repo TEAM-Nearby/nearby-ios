@@ -31,10 +31,11 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
         hostRequestRecieveView.onBackButtonDidTap = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
+        
         hostRequestRecieveView.onAllowButtonDidTap = { [weak self] in
             self?.viewModel.action(.allowButtonDidTap)
         }
-
+        
         hostRequestRecieveView.onRejectButtonDidTap = { [weak self] in
             self?.viewModel.action(.rejectButtonDidTap)
         }

@@ -26,7 +26,7 @@ final class HostRequestDeclineView: BaseView {
     private let titleLabel = UILabel()
     private let subTitleLabel = UILabel()
     
-    private let rejectView = UIStackView()
+    private let rejectView = UIView()
     private let rejectReasonLabel = UILabel()
     private let rejectReasonTextField = UITextField()
     
@@ -58,7 +58,7 @@ final class HostRequestDeclineView: BaseView {
             $0.textAlignment = .left
         }
         
-        // TODO: - TextView로 수정
+        // TODO: - TextView로 수정d\
         rejectReasonTextField.do {
             $0.attributedPlaceholder = NSAttributedString(string: "내용을 입력해주세요.", attributes: [.foregroundColor: UIColor(resource: .grey20), .font: NearbyFont.b3M14.font])
             $0.backgroundColor = .bgSurfaceGrey0
@@ -130,6 +130,10 @@ final class HostRequestDeclineView: BaseView {
     }
     
     override func setAddTarget() {
+        navigationBar.leftButtonAction = { [weak self] in
+            self?.onBackButtonDidTap?()
+        }
+        
         rejectButton.addTarget(self, action: #selector(rejectButtonDidTap), for: .touchUpInside)
     }
     

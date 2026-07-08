@@ -71,12 +71,14 @@ final class MeetingProfileView: BaseView {
         }
         
         imageView.snp.makeConstraints {
-            $0.height.width.equalTo(46)
+            $0.size.equalTo(46)
+            $0.top.leading.equalToSuperview()
         }
         
         nextButton.snp.makeConstraints {
             $0.size.equalTo(24)
             $0.trailing.equalToSuperview()
+            $0.centerY.equalTo(imageView.snp.centerY)
         }
         
         hostIdentificationStackView.snp.makeConstraints {

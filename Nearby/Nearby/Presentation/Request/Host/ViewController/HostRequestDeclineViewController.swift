@@ -10,7 +10,7 @@ import UIKit
 
 final class HostRequestDeclineViewController: BaseViewController<HostRequestDeclineViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let hostRequestDeclineView = HostRequestDeclineView()
 
@@ -26,7 +26,7 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
         hostRequestDeclineView.onBackButtonDidTap = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
-
+        
         hostRequestDeclineView.onRejectButtonDidTap = { [weak self] in
             let reason = self?.hostRequestDeclineView.rejectReasonText ?? ""
             self?.viewModel.action(.rejectButtonDidTap(reason: reason))

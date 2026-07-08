@@ -48,8 +48,8 @@ extension CompanionCoordinator: Coordinator {
             self?.handle(route)
         }
         
-        let viewController = diContainer.makeCompanionViewController()
-        navigationController.setViewControllers([viewController], animated: false)
+        let companionViewController = diContainer.makeCompanionViewController(viewModel: viewModel)
+        navigationController.setViewControllers([companionViewController], animated: false)
     }
     
     func finish() {

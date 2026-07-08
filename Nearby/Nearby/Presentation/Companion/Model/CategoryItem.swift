@@ -12,6 +12,10 @@ struct CategoryItem {
     let icon: UIImage
     let iconColor: UIColor
     
+    var isRestaurant: Bool {
+        title == "식당"
+    }
+    
     static let categoryItems: [CategoryItem] = [
         CategoryItem(title: "식당", icon: .icRestaurant, iconColor: .chipIcOrange),
         CategoryItem(title: "카페", icon: .icCafe, iconColor: .chipIcOrange),

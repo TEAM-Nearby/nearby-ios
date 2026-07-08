@@ -6,69 +6,130 @@
 //
 
 import UIKit
-
 import CoreLocation
 import GoogleMaps
 
+import SnapKit
+
 final class CompanionViewController: BaseViewController<CompanionViewModel> {
-    
+
     // MARK: - Properties
-    
+
     private let locationManager = CLLocationManager()
+    private let bottomSheetViewController = NearbyBottomSheetViewController()
+    private let nearbyBottomSheetViewController: UIViewController
+    private let specificBottomSheetViewController: UIViewController
+    private let emptyBottomSheetViewController: UIViewController
     private var currentLocation: CLLocation?
     private var currentLocationMarker: GMSMarker?
     private weak var currentLocationDirectionView: UIView?
     private var categoryItems: [CategoryItem] {
         viewModel.output.categoryItems
     }
-    
-    private var contentView: CompanionView {
+
+    private var companionView: CompanionView {
         guard let view = view as? CompanionView else {
             fatalError("CompanionViewController view is not CompanionView")
         }
         return view
     }
-    
+
+    // MARK: - Initializer
+
+    init(
+        viewModel: CompanionViewModel,
+        nearbyBottomSheetViewController: UIViewController,
+        specificBottomSheetViewController: UIViewController,
+        emptyBottomSheetViewController: UIViewController
+    ) {
+        self.nearbyBottomSheetViewController = nearbyBottomSheetViewController
+        self.specificBottomSheetViewController = specificBottomSheetViewController
+        self.emptyBottomSheetViewController = emptyBottomSheetViewController
+        super.init(viewModel: viewModel)
+    }
+
     // MARK: - Life Cycles
-    
+
     override func loadView() {
         view = CompanionView()
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         configureLocationManager()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         locationManager.stopUpdatingHeading()
     }
-    
+
     // MARK: - Custom Methods
-    
+
+    override func setUI() {
+        setBottomSheet()
+    }
+
     override func setAddTarget() {
-        contentView.currentLocationButton.addTarget(self, action: #selector(currentLocationButtonDidTap), for: .touchUpInside)
-        contentView.recruitCompanionButton.addTarget(self, action: #selector(recruitCompanionButtonDidTap), for: .touchUpInside)
+        companionView.currentLocationButton.addTarget(self, action: #selector(currentLocationButtonDidTap), for: .touchUpInside)
+        companionView.recruitCompanionButton.addTarget(self, action: #selector(recruitCompanionButtonDidTap), for: .touchUpInside)
     }
-    
+
     override func setDelegate() {
-        contentView.categoryCollectionView.dataSource = self
-        contentView.categoryCollectionView.delegate = self
+        companionView.categoryCollectionView.dataSource = self
+        companionView.categoryCollectionView.delegate = self
     }
-    
+
     // MARK: - Methods
-    
+
+    private func setBottomSheet() {
+        addChild(bottomSheetViewController)
+        view.insertSubview(bottomSheetViewController.view, aboveSubview: companionView.mapContainerView)
+
+        bottomSheetViewController.view.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
+        bottomSheetViewController.didMove(toParent: self)
+        bottomSheetViewController.onHeightChange = { [weak self] height, bottomSheetType in
+            self?.companionView.updateMapControls(
+                bottomInset: height + 12,
+                hidesFloatingControls: bottomSheetType.isThirdStep
+            )
+        }
+        bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
+        bottomSheetViewController.configureSheetHeight(preset: .nearbyCompanionSmall, animated: false)
+        companionView.setFloatingControlsHidden(false)
+    }
+
+    private func showNearbyBottomSheet(animated: Bool = true) {
+        bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
+        bottomSheetViewController.configureSheetHeight(preset: .nearbyCompanionSmall, animated: animated)
+        companionView.setFloatingControlsHidden(false)
+    }
+
+    private func showEmptyBottomSheet(animated: Bool = true) {
+        bottomSheetViewController.setContentViewController(emptyBottomSheetViewController)
+        bottomSheetViewController.configureSheetHeight(preset: .companionEmpty, animated: animated)
+        companionView.setFloatingControlsHidden(false)
+    }
+
+    private func showSpecificBottomSheet(animated: Bool = true) {
+        bottomSheetViewController.setContentViewController(specificBottomSheetViewController)
+        bottomSheetViewController.configureSheetHeight(preset: .specificCompanion, animated: animated)
+        companionView.setFloatingControlsHidden(false)
+    }
+
     private func configureLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        
+
         switch locationManager.authorizationStatus {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
@@ -81,28 +142,28 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             break
         }
     }
-    
+
     private func moveCamera(to location: CLLocation) {
         let camera = GMSCameraPosition.camera(
             withLatitude: location.coordinate.latitude,
             longitude: location.coordinate.longitude,
             zoom: 16.0
         )
-        contentView.mapView.animate(to: camera)
+        companionView.mapView.animate(to: camera)
     }
-    
+
     private func updateCurrentLocationMarker(to location: CLLocation) {
         let coordinate = location.coordinate
-        
+
         if let currentLocationMarker {
             currentLocationMarker.position = coordinate
             return
         }
-        
+
         let marker = GMSMarker(position: coordinate)
         marker.iconView = makeCurrentLocationMarkerView()
         marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
-        marker.map = contentView.mapView
+        marker.map = companionView.mapView
         marker.tracksViewChanges = true
         currentLocationMarker = marker
         stopTrackingViewChanges(for: marker)
@@ -110,18 +171,18 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
 
     private func makeCurrentLocationMarkerView() -> UIView {
         let markerView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        
+
         let backgroundImageView = UIImageView(image: .markerMyLocationBg)
         backgroundImageView.frame = markerView.bounds
 
         let directionView = UIView(frame: markerView.bounds)
-        
+
         let arrowImageView = UIImageView(image: .markerMyLocationArrow)
         arrowImageView.frame = CGRect(x: 13, y: 0, width: 24, height: 24)
-        
+
         let profileImageView = UIImageView(image: .markerMyLocationProfile)
         profileImageView.frame = CGRect(x: 10, y: 10, width: 30, height: 30)
-        
+
         directionView.addSubviews(arrowImageView, profileImageView)
         markerView.addSubviews(backgroundImageView, directionView)
         currentLocationDirectionView = directionView
@@ -137,32 +198,32 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private func updateCurrentLocationHeading(_ heading: CLHeading) {
         let headingDegree = heading.trueHeading >= 0 ? heading.trueHeading : heading.magneticHeading
         let headingRadian = CGFloat(headingDegree * .pi / 180)
-        
+
         if let currentLocationMarker {
             currentLocationMarker.tracksViewChanges = true
             currentLocationDirectionView?.transform = CGAffineTransform(rotationAngle: headingRadian)
             stopTrackingViewChanges(for: currentLocationMarker)
         }
     }
-    
+
     private func stopTrackingViewChanges(for marker: GMSMarker) {
         DispatchQueue.main.async {
             marker.tracksViewChanges = false
         }
     }
-    
+
     // MARK: - Actions
-    
+
     @objc
     private func currentLocationButtonDidTap() {
         if let currentLocation {
             moveCamera(to: currentLocation)
             return
         }
-        
+
         locationManager.requestLocation()
     }
-    
+
     @objc
     private func recruitCompanionButtonDidTap() {
         viewModel.action(.recruitCompanionButtonDidTap)
@@ -175,16 +236,16 @@ extension CompanionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         categoryItems.count
     }
-    
+
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(NearbyChipCollectionViewCell.self, for: indexPath)
         let item = categoryItems[indexPath.item]
-        
+
         cell.configure(style: .category, title: item.title, icon: item.icon, iconColor: item.iconColor)
-        
+
         return cell
     }
 }
@@ -192,6 +253,14 @@ extension CompanionViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension CompanionViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = categoryItems[indexPath.item]
+
+        guard !item.isRestaurant else { return }
+
+        showSpecificBottomSheet()
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -201,7 +270,7 @@ extension CompanionViewController: UICollectionViewDelegateFlowLayout {
         let titleWidth = (item.title as NSString).size(withAttributes: [.font: NearbyChipStyle.category.font]).width
         let iconWidth: CGFloat = 24
         let horizontalInset: CGFloat = 24
-        
+
         return CGSize(
             width: ceil(titleWidth + iconWidth + horizontalInset),
             height: NearbyChipStyle.category.height
@@ -223,14 +292,14 @@ extension CompanionViewController: CLLocationManagerDelegate {
             break
         }
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         currentLocation = location
         updateCurrentLocationMarker(to: location)
         moveCamera(to: location)
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         AppLogger.error(error)
     }

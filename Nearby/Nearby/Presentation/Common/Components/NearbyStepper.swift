@@ -1,9 +1,9 @@
-////
-////  NearbyStepper.swift
-////  Nearby
-////
-////  Created by 장지인 on 7/6/26.
-////
+//
+//  NearbyStepper.swift
+//  Nearby
+//
+//  Created by 장지인 on 7/6/26.
+//
 
 import UIKit
 

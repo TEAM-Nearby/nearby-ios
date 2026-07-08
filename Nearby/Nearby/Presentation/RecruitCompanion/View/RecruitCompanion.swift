@@ -12,7 +12,7 @@ import Then
 
 final class RecruitCompanionView: BaseView {
     
-    // MARK: - UI Component
+    // MARK: - UI Components
 
     private let whenTitleLabel = UILabel()
     private let nowButton = NearbyButton(style: .selected, title: "지금 바로")
@@ -27,7 +27,17 @@ final class RecruitCompanionView: BaseView {
     private let peopleTopDivider = UIView()
     private let peopleBottomDivider = UIView()
     private let tagTitleLabel = UILabel()
-    private let tagTitles = ["사진에 진심인", "리액션이 좋은", "차분한 성격", "정보 공유 환영", "새로운 음식 도전", "음식 쉐어 가능", "파워 J형", "파워 P형", "술 한잔 가능"]
+    private let tagTitles = [
+        "사진에 진심인",
+        "리액션이 좋은",
+        "차분한 성격",
+        "정보 공유 환영",
+        "새로운 음식 도전",
+        "음식 쉐어 가능",
+        "파워 J형",
+        "파워 P형",
+        "술 한잔 가능"
+    ]
     private lazy var tagCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeTagLayout())
     private let tagBottomDivider = UIView()
     
@@ -114,7 +124,7 @@ final class RecruitCompanionView: BaseView {
 
     override func setLayout() {
         whenTitleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(24)
+            $0.top.equalTo(safeAreaLayoutGuide).inset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
@@ -184,9 +194,9 @@ final class RecruitCompanionView: BaseView {
         
         tagCollectionView.snp.makeConstraints {
             $0.top.equalTo(tagTitleLabel.snp.bottom).offset(12)
-            $0.width.equalTo(353)
-            $0.height.equalTo(124)
             $0.leading.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview()
+            $0.height.equalTo(124)
         }
         
         tagBottomDivider.snp.makeConstraints {
@@ -197,13 +207,10 @@ final class RecruitCompanionView: BaseView {
     }
 
     override func registerCells() {
-        setAction()
         tagCollectionView.register(NearbyTextChipCollectionViewCell.self)
     }
 
-    // MARK: - Method
-    
-    private func setAction() {
+    override func setAddTarget() {
         nowButton.addTarget(self, action: #selector(nowButtonDidTap), for: .touchUpInside)
         timeButton.addTarget(self, action: #selector(timeButtonDidTap), for: .touchUpInside)
         peopleButton.addTarget(self, action: #selector(peopleButtonDidTap), for: .touchUpInside)
@@ -211,6 +218,8 @@ final class RecruitCompanionView: BaseView {
             self?.peopleNumber.text = "\(count)명"
         }
     }
+
+    // MARK: - Methods
     
     private func makeTagLayout() -> UICollectionViewFlowLayout {
         let layout = LeftAlignedCollectionViewFlowLayout()
@@ -260,6 +269,8 @@ final class RecruitCompanionView: BaseView {
     }
 }
 
+// MARK: - UICollectionViewDataSource
+
 extension RecruitCompanionView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return tagTitles.count
@@ -281,6 +292,8 @@ extension RecruitCompanionView: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
+
 extension RecruitCompanionView: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
@@ -299,6 +312,8 @@ extension RecruitCompanionView: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - UICollectionViewDelegate
+
 extension RecruitCompanionView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if selectedTagIndexes.contains(indexPath.item) {
@@ -314,7 +329,7 @@ extension RecruitCompanionView: UICollectionViewDelegate {
     }
 }
 
-class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
+final class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
     override init() {
         super.init()
     }
@@ -324,16 +339,16 @@ class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
     }
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let attributes = super.layoutAttributesForElements(in: rect)?.compactMap {
+        let attributes = (super.layoutAttributesForElements(in: rect) ?? []).compactMap {
             $0.copy() as? UICollectionViewLayoutAttributes
         }
-        let cellAttributes = attributes?
+        let cellAttributes = attributes
             .filter { $0.representedElementCategory == .cell }
             .sorted { $0.indexPath.item < $1.indexPath.item }
         var leftMargin: CGFloat = 0.0
         var maxY: CGFloat = -1.0
     
-        cellAttributes?.forEach { layoutAttribute in
+        cellAttributes.forEach { layoutAttribute in
             if layoutAttribute.frame.origin.y >= maxY {
                 leftMargin = 0.0
             }

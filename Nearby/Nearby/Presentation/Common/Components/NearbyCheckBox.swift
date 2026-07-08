@@ -20,8 +20,11 @@ final class NearbyCheckBox: BaseView {
 
     // MARK: - Property
 
-    var isChecked: Bool
-
+    var isChecked: Bool {
+        didSet {
+            checkButton.isSelected = isChecked
+        }
+    }
     // MARK: - Initializer
 
     init(text: String, isChecked: Bool = false) {
@@ -29,7 +32,6 @@ final class NearbyCheckBox: BaseView {
         super.init(frame: .zero)
 
         titleLabel.text = text
-        checkButton.isSelected = isChecked
     }
 
     required init?(coder: NSCoder) {

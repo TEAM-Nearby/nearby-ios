@@ -5,8 +5,8 @@
 //  Created by 장지인 on 7/7/26.
 //
 
-import SnapKit
 import UIKit
+import SnapKit
 
 final class NearbyTextChipCollectionViewCell: UICollectionViewCell {
 

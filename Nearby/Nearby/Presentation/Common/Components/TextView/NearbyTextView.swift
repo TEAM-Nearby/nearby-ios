@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class NearbyTextView: UIView {
+final class NearbyTextView: BaseView {
     
     // MARK: - UI Components
     
@@ -19,25 +19,24 @@ final class NearbyTextView: UIView {
     private let placeholderLabel = UILabel()
     let clearButton = UIButton(type: .system)
     
+    // MARK: - Property
+    
+    private let placeholder: String
+    
     // MARK: - Initializer
     
     init(placeholder: String) {
+        self.placeholder = placeholder
         super.init(frame: .zero)
-        
-        setStyle(placeholder: placeholder)
-        setUI()
-        setLayout()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-}
-
-// MARK: - Custom Methods
-
-private extension NearbyTextView {
-    func setStyle(placeholder: String) {
+    
+    // MARK: - Custom Methods
+    
+    override func setStyle() {
         backgroundColor = .bgSurfaceGrey0
         layer.cornerRadius = 16
         clipsToBounds = true
@@ -65,12 +64,12 @@ private extension NearbyTextView {
         }
     }
     
-    func setUI() {
+    override func setUI() {
         addSubviews(textView, clearButton)
         textView.addSubview(placeholderLabel)
     }
     
-    func setLayout() {
+    override func setLayout() {
         textView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(16)
             $0.leading.equalToSuperview().offset(28)

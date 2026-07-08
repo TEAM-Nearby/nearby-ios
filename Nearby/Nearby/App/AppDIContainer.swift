@@ -49,6 +49,10 @@ final class AppDIContainer {
         MeetingProgressViewModel(item: item)
     }
     
+    func makeHostReviewListViewModel() -> HostReviewListViewModel {
+        HostReviewListViewModel()
+    }
+    
     // MARK: - ViewControllers
     
     func makeLoginViewController() -> LoginViewController {
@@ -108,6 +112,14 @@ final class AppDIContainer {
     
     func makeRecruitCompanionViewController() -> UIViewController {
         makePlaceholderViewController(title: "동행글 작성")
+    }
+    
+    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = HostReviewListViewController(
+            viewModel: makeHostReviewListViewModel()
+        )
+        viewController.coordinator = coordinator
+        return viewController
     }
 }
 

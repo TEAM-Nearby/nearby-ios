@@ -44,4 +44,9 @@ extension MeetingTabCoordinator: Coordinator {
         )
         navigationController.pushViewController(viewController, animated: true)
     }
+    
+    func showHostReviewList() {
+        let viewController = diContainer.makeHostReviewListViewController(coordinator: self)
+        navigationController.pushViewController(viewController, animated: true)
+    }
 }

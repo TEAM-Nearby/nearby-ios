@@ -26,6 +26,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let verifyButtonState = PassthroughSubject<VerifyButtonState, Never>()
         let showMeetingVerification = PassthroughSubject<Void, Never>()
         let showReport = PassthroughSubject<Void, Never>()
+        let showReviewList = PassthroughSubject<Void, Never>()
     }
     
     struct DisplayData {
@@ -87,10 +88,17 @@ final class MeetingProgressViewModel: BaseViewModelType {
             startTimer()
         
         case .verifyButtonDidTap:
-            guard isVerifiable else { return }
-            // TODO: - 만남 인증 API 연동 후 성공 콜백에서 단계 갱신
-            output.step.send(.completion)
-            updateVerifyButtonState()
+            switch currentStep {
+            case .verification:
+                guard isVerifiable else { return }
+                // TODO: - 만남 인증 API 연동 후 성공 콜백에서 단계 갱신
+                output.step.send(.completion)
+                updateVerifyButtonState()
+            case .completion:
+                output.showReviewList.send(())
+            case .match:
+                return
+            }
             
         case .reportButtonDidTap:
             output.showReport.send(())

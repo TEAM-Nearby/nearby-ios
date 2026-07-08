@@ -23,4 +23,13 @@ enum NearbyGradient {
         gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
         return gradientLayer
     }
+    
+    static func profileBorderLayer(frame: CGRect) -> CAGradientLayer {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = frame
+        gradientLayer.colors = buttonBackgroundColors
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        return gradientLayer
+    }
 }

@@ -22,19 +22,18 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     // MARK: - Properties
 
     private var currentContentViewController: UIViewController?
-    private var currentBottomSheetType: BottomSheetType = BottomSheetType.companionEmpty
+    private var currentState = BottomSheetState(content: .nearbyCompanionEmpty)
     private var containerHeight: CGFloat = 0
     private var panStartHeight: CGFloat = 0
 
-    var onHeightChange: ((CGFloat, BottomSheetType) -> Void)?
+    var onStateChange: ((CGFloat, BottomSheetState) -> Void)?
 
     // MARK: - Life Cycles
 
     override func loadView() {
         let passthroughView = BottomSheetPassthroughView()
         passthroughView.shouldHandleBackgroundTouch = { [weak self] in
-            guard let self else { return false }
-            return currentBottomSheetType.isDraggable && !self.currentBottomSheetType.isSmallType
+            self?.currentState.level == .standard && self?.currentState.isDraggable == true
         }
         view = passthroughView
     }
@@ -48,16 +47,16 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        guard shouldResolveHeightFromSuperview(for: currentBottomSheetType) else { return }
+        guard shouldResolveHeightFromSuperview(for: currentState.level) else { return }
 
-        let resolvedHeight = resolvedHeight(for: currentBottomSheetType)
+        let resolvedHeight = resolvedHeight(for: currentState)
         guard abs(containerHeight - resolvedHeight) > 0.5 else { return }
 
         containerHeight = resolvedHeight
         containerView.snp.updateConstraints {
             $0.height.equalTo(resolvedHeight)
         }
-        onHeightChange?(resolvedHeight, currentBottomSheetType)
+        onStateChange?(resolvedHeight, currentState)
     }
 
     // MARK: - Custom Methods
@@ -129,40 +128,50 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     }
 
     private func clampedHeight(_ height: CGFloat) -> CGFloat {
-        guard let minType = currentBottomSheetType.snapTypes.first,
-              let maxType = currentBottomSheetType.snapTypes.last else {
+        guard let minLevel = currentState.availableLevels.first,
+              let maxLevel = currentState.availableLevels.last else {
             return height
         }
 
-        let minHeight = resolvedHeight(for: minType)
-        let maxHeight = resolvedHeight(for: maxType)
+        let minHeight = resolvedHeight(for: BottomSheetState(content: currentState.content, level: minLevel))
+        let maxHeight = resolvedHeight(for: BottomSheetState(content: currentState.content, level: maxLevel))
         return min(maxHeight, max(minHeight, height))
     }
 
-    private func nearestBottomSheetType(to height: CGFloat) -> BottomSheetType {
-        currentBottomSheetType.snapTypes.min {
-            abs(resolvedHeight(for: $0) - height) < abs(resolvedHeight(for: $1) - height)
-        } ?? currentBottomSheetType
+    private func nearestLevel(to height: CGFloat) -> BottomSheetLevel {
+        currentState.availableLevels.min {
+            let leftState = BottomSheetState(content: currentState.content, level: $0)
+            let rightState = BottomSheetState(content: currentState.content, level: $1)
+            return abs(resolvedHeight(for: leftState) - height) < abs(resolvedHeight(for: rightState) - height)
+        } ?? currentState.level
     }
 
-    private func resolvedHeight(for bottomSheetType: BottomSheetType) -> CGFloat {
-        switch bottomSheetType {
-        case .nearbyCompanionBig, .specificCompanionBig:
+    private func resolvedHeight(for state: BottomSheetState) -> CGFloat {
+        switch state.level {
+        case .compact:
+            return 122
+        case .standard:
+            return standardHeight(for: state.content)
+        case .expanded:
             return max(0, availableHeight - topSafeAreaInset - 48)
-        case .diningMapFullScreen:
-            return availableHeight
-        default:
-            return bottomSheetType.fixedHeight ?? 0
         }
     }
 
-    private func shouldResolveHeightFromSuperview(for bottomSheetType: BottomSheetType) -> Bool {
-        switch bottomSheetType {
-        case .nearbyCompanionBig, .specificCompanionBig, .diningMapFullScreen:
-            return true
-        default:
-            return false
+    private func standardHeight(for content: BottomSheetContent) -> CGFloat {
+        switch content {
+        case .nearbyCompanionEmpty:
+            return 297
+        case .specificRestaurantCompanionList:
+            return 517
+        case .diningMapList, .savedRestaurantList:
+            return 423
+        case .nearbyCompanionList:
+            return 383
         }
+    }
+
+    private func shouldResolveHeightFromSuperview(for level: BottomSheetLevel) -> Bool {
+        level == .expanded
     }
 
     private var availableHeight: CGFloat {
@@ -174,41 +183,46 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
         max(view.superview?.safeAreaInsets.top ?? 0, view.safeAreaInsets.top)
     }
 
-    private func nextBottomSheetType(translationY: CGFloat, velocityY: CGFloat) -> BottomSheetType {
-        let snapTypes = currentBottomSheetType.snapTypes
-        guard let smallType = snapTypes.first,
-              let bigType = snapTypes.last,
-              snapTypes.count >= 2 else {
-            return currentBottomSheetType
+    private func nextLevel(translationY: CGFloat, velocityY: CGFloat) -> BottomSheetLevel {
+        let levels = currentState.availableLevels
+        guard let firstLevel = levels.first,
+              let lastLevel = levels.last,
+              levels.count >= 2 else {
+            return currentState.level
         }
 
         let projectedHeight = clampedHeight(panStartHeight - translationY - velocityY * 0.18)
-        let smallHeight = resolvedHeight(for: smallType)
-        let bigHeight = resolvedHeight(for: bigType)
+        let firstHeight = resolvedHeight(for: BottomSheetState(content: currentState.content, level: firstLevel))
+        let lastHeight = resolvedHeight(for: BottomSheetState(content: currentState.content, level: lastLevel))
 
-        if currentBottomSheetType == smallType,
-           translationY < -(bigHeight - smallHeight) * 0.35 || velocityY < -1200 {
-            return bigType
+        if currentState.level == firstLevel,
+           translationY < -(lastHeight - firstHeight) * 0.35 || velocityY < -1200 {
+            return lastLevel
         }
 
-        if currentBottomSheetType == bigType,
-           translationY > (bigHeight - smallHeight) * 0.35 || velocityY > 1200 {
-            return smallType
+        if currentState.level == lastLevel,
+           translationY > (lastHeight - firstHeight) * 0.35 || velocityY > 1200 {
+            return firstLevel
         }
 
-        return nearestBottomSheetType(to: projectedHeight)
+        return nearestLevel(to: projectedHeight)
     }
 
-    func configureSheetHeight(
-        preset: BottomSheetType,
+    func setState(
+        content: BottomSheetContent,
+        level: BottomSheetLevel? = nil,
         animated: Bool = false
     ) {
-        currentBottomSheetType = preset
+        setState(BottomSheetState(content: content, level: level), animated: animated)
+    }
+
+    func setState(_ state: BottomSheetState, animated: Bool = false) {
+        currentState = state
         updateSheetLayout(animated: animated)
     }
 
     func updateSheetLayout(animated: Bool = true) {
-        let bottomSheetHeight = resolvedHeight(for: currentBottomSheetType)
+        let bottomSheetHeight = resolvedHeight(for: currentState)
 
         containerHeight = bottomSheetHeight
         containerView.snp.updateConstraints {
@@ -226,7 +240,7 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
             animations()
         }
 
-        onHeightChange?(bottomSheetHeight, currentBottomSheetType)
+        onStateChange?(bottomSheetHeight, currentState)
     }
 
     func setContentViewController(_ viewController: UIViewController) {
@@ -251,7 +265,7 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
 
     @objc
     private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
-        guard currentBottomSheetType.isDraggable else { return }
+        guard currentState.isDraggable else { return }
 
         switch gesture.state {
         case .began:
@@ -265,11 +279,14 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
                 $0.height.equalTo(targetHeight)
             }
             view.layoutIfNeeded()
-            onHeightChange?(targetHeight, currentBottomSheetType)
+            onStateChange?(targetHeight, currentState)
         case .ended, .cancelled, .failed:
-            currentBottomSheetType = nextBottomSheetType(
-                translationY: gesture.translation(in: view).y,
-                velocityY: gesture.velocity(in: view).y
+            currentState = BottomSheetState(
+                content: currentState.content,
+                level: nextLevel(
+                    translationY: gesture.translation(in: view).y,
+                    velocityY: gesture.velocity(in: view).y
+                )
             )
             updateSheetLayout(animated: true)
         default:
@@ -279,13 +296,14 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
 
     @objc
     private func backgroundDidTap(_ gesture: UITapGestureRecognizer) {
-        guard currentBottomSheetType.isDraggable, !currentBottomSheetType.isSmallType else { return }
+        guard currentState.level == .standard else { return }
         guard !containerView.frame.contains(gesture.location(in: view)) else { return }
-        guard !currentBottomSheetType.isThirdStep else { return }
 
-        configureSheetHeight(preset: currentBottomSheetType.smallType, animated: true)
+        setState(currentState.compactState, animated: true)
     }
 }
+
+// MARK: - Handle Background Touch
 
 private final class BottomSheetPassthroughView: UIView {
     var shouldHandleBackgroundTouch: (() -> Bool)?

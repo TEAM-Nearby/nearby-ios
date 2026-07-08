@@ -123,17 +123,14 @@ final class CompanionView: BaseView {
 
     // MARK: - Methods
 
-    func updateMapControls(bottomInset: CGFloat, hidesFloatingControls: Bool) {
+    func updateMapControls(bottomInset: CGFloat, state: BottomSheetState) {
         companionCountChip.snp.updateConstraints {
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(bottomInset)
         }
 
-        companionCountChip.isHidden = hidesFloatingControls
-        currentLocationButton.isHidden = hidesFloatingControls
+        companionCountChip.isHidden = state.level == .expanded
+        currentLocationButton.isHidden = state.level == .expanded
+        recruitCompanionButton.isHidden = state.content != .nearbyCompanionList || state.level == .compact
     }
 
-    func setFloatingControlsHidden(_ isHidden: Bool) {
-        companionCountChip.isHidden = isHidden
-        currentLocationButton.isHidden = isHidden
-    }
 }

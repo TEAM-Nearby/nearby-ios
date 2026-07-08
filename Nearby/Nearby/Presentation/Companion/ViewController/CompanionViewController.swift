@@ -16,12 +16,16 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     // MARK: - Properties
 
     private let locationManager = CLLocationManager()
+    private var currentLocation: CLLocation?
+    private var currentLocationMarker: GMSMarker?
+    
+    // MARK: - UI Components
+    
     private let bottomSheetViewController = NearbyBottomSheetViewController()
     private let nearbyBottomSheetViewController: UIViewController
     private let specificBottomSheetViewController: UIViewController
     private let emptyBottomSheetViewController: UIViewController
-    private var currentLocation: CLLocation?
-    private var currentLocationMarker: GMSMarker?
+    
     private weak var currentLocationDirectionView: UIView?
     private var categoryItems: [CategoryItem] {
         viewModel.output.categoryItems
@@ -97,33 +101,40 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
 
         bottomSheetViewController.didMove(toParent: self)
-        bottomSheetViewController.onHeightChange = { [weak self] height, bottomSheetType in
+        bottomSheetViewController.onStateChange = { [weak self] height, state in
+            self?.updateBottomSheetLayer(for: state)
             self?.companionView.updateMapControls(
                 bottomInset: height + 12,
-                hidesFloatingControls: bottomSheetType.isThirdStep
+                state: state
             )
         }
         bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
-        bottomSheetViewController.configureSheetHeight(preset: .nearbyCompanionSmall, animated: false)
-        companionView.setFloatingControlsHidden(false)
+        bottomSheetViewController.setState(content: .nearbyCompanionList, animated: false)
     }
 
     private func showNearbyBottomSheet(animated: Bool = true) {
         bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
-        bottomSheetViewController.configureSheetHeight(preset: .nearbyCompanionSmall, animated: animated)
-        companionView.setFloatingControlsHidden(false)
+        bottomSheetViewController.setState(content: .nearbyCompanionList, animated: animated)
     }
 
     private func showEmptyBottomSheet(animated: Bool = true) {
         bottomSheetViewController.setContentViewController(emptyBottomSheetViewController)
-        bottomSheetViewController.configureSheetHeight(preset: .companionEmpty, animated: animated)
-        companionView.setFloatingControlsHidden(false)
+        bottomSheetViewController.setState(content: .nearbyCompanionEmpty, animated: animated)
     }
 
     private func showSpecificBottomSheet(animated: Bool = true) {
         bottomSheetViewController.setContentViewController(specificBottomSheetViewController)
-        bottomSheetViewController.configureSheetHeight(preset: .specificCompanion, animated: animated)
-        companionView.setFloatingControlsHidden(false)
+        bottomSheetViewController.setState(content: .specificRestaurantCompanionList, animated: animated)
+    }
+
+    private func updateBottomSheetLayer(for state: BottomSheetState) {
+        if state.level == .expanded {
+            view.bringSubviewToFront(bottomSheetViewController.view)
+            view.bringSubviewToFront(companionView.recruitCompanionButton)
+            return
+        }
+
+        view.insertSubview(bottomSheetViewController.view, aboveSubview: companionView.mapContainerView)
     }
 
     private func configureLocationManager() {
@@ -256,9 +267,11 @@ extension CompanionViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = categoryItems[indexPath.item]
 
-        guard !item.isRestaurant else { return }
-
-        showSpecificBottomSheet()
+        if item.isRestaurant {
+            showNearbyBottomSheet()
+        } else {
+            showEmptyBottomSheet()
+        }
     }
 
     func collectionView(

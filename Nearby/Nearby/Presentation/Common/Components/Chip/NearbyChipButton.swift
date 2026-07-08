@@ -41,7 +41,7 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -117,7 +117,7 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
         chipTextLabel.attributedText = attributedString
     }
     
-    // MARK: - Methods
+    // MARK: - Method
     
     func updateSelected(_ isSelected: Bool) {
         self.isSelected = isSelected

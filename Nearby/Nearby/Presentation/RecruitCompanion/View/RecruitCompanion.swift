@@ -18,9 +18,7 @@ final class RecruitCompanionView: BaseView {
     private let nowButton = NearbyButton(style: .selected, title: "지금 바로")
     private let timeButton = NearbyButton(style: .unselected, title: "시간 설정")
     private let buttonStackView = UIStackView()
-    private let dateOptionView = UIView()
     private let datePicker = NearbyDateTimePickerView()
-    private let dateCheckBox = NearbyCheckBox(text: "동행과 정하고 싶어요")
     private let peopleStepper = NearbyStepper()
     private let peopleNumber = UILabel()
     private let peopleTitleLabel = UILabel()
@@ -28,6 +26,10 @@ final class RecruitCompanionView: BaseView {
     private let peopleButton = UIButton()
     private let peopleTopDivider = UIView()
     private let peopleBottomDivider = UIView()
+    private let tagTitleLabel = UILabel()
+    private let tagTitles = ["사진에 진심인", "리액션이 좋은", "차분한 성격", "정보 공유 환영", "새로운 음식 도전", "음식 쉐어 가능", "파워 J형", "파워 P형", "술 한잔 가능"]
+    private lazy var tagCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeTagLayout())
+    private let tagBottomDivider = UIView()
     
     // MARK: - Properties
 
@@ -35,6 +37,7 @@ final class RecruitCompanionView: BaseView {
     private var peopleTitleTopFromDatePickerConstraint: Constraint?
     private var peopleCheckBoxTopFromTitleConstraint: Constraint?
     private var peopleCheckBoxTopFromStepperConstraint: Constraint?
+    private var selectedTagIndexes = Set<Int>()
     
     // MARK: - Custom Methods
     
@@ -53,7 +56,7 @@ final class RecruitCompanionView: BaseView {
             $0.distribution = .fillEqually
         }
         
-        dateOptionView.isHidden = true
+        datePicker.isHidden = true
         
         peopleTitleLabel.do {
             $0.text = "최대 몇 명과 함께 갈까요?"
@@ -69,29 +72,44 @@ final class RecruitCompanionView: BaseView {
 
         peopleStepper.isHidden = true
 
-        [peopleTopDivider, peopleBottomDivider].forEach {
+        [peopleTopDivider, peopleBottomDivider, tagBottomDivider].forEach {
             $0.backgroundColor = .grey5
         }
         
         peopleButton.setImage(.chevronDownIcon, for: .normal)
         peopleButton.setImage(.chevronUpIcon, for: .selected)
+        
+        tagTitleLabel.do {
+            $0.text = "어떤 동행과 함께하고 싶나요?"
+            $0.font = NearbyFont.b1Sb18.font
+            $0.textColor = .grey80
+        }
+        
+        tagCollectionView.do {
+            $0.backgroundColor = .clear
+            $0.isScrollEnabled = false
+            $0.dataSource = self
+            $0.delegate = self
+        }
     }
 
     override func setUI() {
         addSubviews(
             whenTitleLabel,
             buttonStackView,
-            dateOptionView,
+            datePicker,
             peopleTopDivider,
             peopleTitleLabel,
             peopleStepper,
             peopleNumber,
             peopleButton,
             peopleCheckBox,
-            peopleBottomDivider
+            peopleBottomDivider,
+            tagTitleLabel,
+            tagCollectionView,
+            tagBottomDivider
         )
         buttonStackView.addArrangedSubviews(nowButton, timeButton)
-        dateOptionView.addSubviews(datePicker, dateCheckBox)
     }
 
     override func setLayout() {
@@ -107,21 +125,10 @@ final class RecruitCompanionView: BaseView {
             $0.height.equalTo(46)
         }
 
-        dateOptionView.snp.makeConstraints {
+        datePicker.snp.makeConstraints {
             $0.top.equalTo(buttonStackView.snp.bottom).offset(18)
             $0.horizontalEdges.equalToSuperview()
-        }
-
-        datePicker.snp.makeConstraints {
-            $0.top.horizontalEdges.equalToSuperview()
             $0.height.equalTo(138)
-        }
-        
-        dateCheckBox.snp.makeConstraints {
-            $0.top.equalTo(datePicker.snp.bottom)
-            $0.leading.equalToSuperview().inset(10)
-            $0.bottom.equalToSuperview()
-            $0.height.equalTo(44)
         }
 
         peopleTopDivider.snp.makeConstraints {
@@ -132,7 +139,7 @@ final class RecruitCompanionView: BaseView {
         
         peopleTitleLabel.snp.makeConstraints {
             peopleTitleTopFromButtonConstraint = $0.top.equalTo(buttonStackView.snp.bottom).offset(40).constraint
-            peopleTitleTopFromDatePickerConstraint = $0.top.equalTo(dateOptionView.snp.bottom).offset(40).constraint
+            peopleTitleTopFromDatePickerConstraint = $0.top.equalTo(datePicker.snp.bottom).offset(40).constraint
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
@@ -169,10 +176,29 @@ final class RecruitCompanionView: BaseView {
         }
 
         peopleCheckBoxTopFromStepperConstraint?.deactivate()
+        
+        tagTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(peopleBottomDivider.snp.bottom).offset(24)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        tagCollectionView.snp.makeConstraints {
+            $0.top.equalTo(tagTitleLabel.snp.bottom).offset(12)
+            $0.width.equalTo(353)
+            $0.height.equalTo(124)
+            $0.leading.equalToSuperview().inset(20)
+        }
+        
+        tagBottomDivider.snp.makeConstraints {
+            $0.top.equalTo(tagCollectionView.snp.bottom).offset(31)
+            $0.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(1)
+        }
     }
 
     override func registerCells() {
         setAction()
+        tagCollectionView.register(NearbyTextChipCollectionViewCell.self)
     }
 
     // MARK: - Method
@@ -182,8 +208,21 @@ final class RecruitCompanionView: BaseView {
         timeButton.addTarget(self, action: #selector(timeButtonDidTap), for: .touchUpInside)
         peopleButton.addTarget(self, action: #selector(peopleButtonDidTap), for: .touchUpInside)
         peopleStepper.countDidChange = { [weak self] count in
-            self?.peopleNumber.text = "\(count + 1)명"
+            self?.peopleNumber.text = "\(count)명"
         }
+    }
+    
+    private func makeTagLayout() -> UICollectionViewFlowLayout {
+        let layout = LeftAlignedCollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 8
+        layout.minimumInteritemSpacing = 8
+        
+        return layout
+    }
+
+    private func tagChipStyle(at index: Int) -> NearbyChipStyle {
+        return selectedTagIndexes.contains(index) ? .tagStateSelected : .tagStateUnselected
     }
     
     // MARK: - Action
@@ -192,7 +231,7 @@ final class RecruitCompanionView: BaseView {
     private func nowButtonDidTap() {
         nowButton.setSelected(true)
         timeButton.setSelected(false)
-        dateOptionView.isHidden = true
+        datePicker.isHidden = true
         peopleTitleTopFromDatePickerConstraint?.deactivate()
         peopleTitleTopFromButtonConstraint?.activate()
     }
@@ -201,7 +240,7 @@ final class RecruitCompanionView: BaseView {
     private func timeButtonDidTap() {
         nowButton.setSelected(false)
         timeButton.setSelected(true)
-        dateOptionView.isHidden = false
+        datePicker.isHidden = false
         peopleTitleTopFromButtonConstraint?.deactivate()
         peopleTitleTopFromDatePickerConstraint?.activate()
     }
@@ -218,5 +257,90 @@ final class RecruitCompanionView: BaseView {
             peopleCheckBoxTopFromStepperConstraint?.deactivate()
             peopleCheckBoxTopFromTitleConstraint?.activate()
         }
+    }
+}
+
+extension RecruitCompanionView: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return tagTitles.count
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            NearbyTextChipCollectionViewCell.self,
+            for: indexPath
+        )
+        let title = tagTitles[indexPath.item]
+        
+        cell.configure(style: tagChipStyle(at: indexPath.item), title: title, horizontalInset: 12)
+
+        return cell
+    }
+}
+
+extension RecruitCompanionView: UICollectionViewDelegateFlowLayout {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let title = tagTitles[indexPath.item]
+        let font = NearbyChipStyle.tagStateUnselected.font
+        let titleWidth = (title as NSString).size(withAttributes: [.font: font]).width
+        let horizontalInset: CGFloat = 24
+
+        return CGSize(
+            width: ceil(titleWidth + horizontalInset),
+            height: NearbyChipStyle.tagStateUnselected.height
+        )
+    }
+}
+
+extension RecruitCompanionView: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if selectedTagIndexes.contains(indexPath.item) {
+            selectedTagIndexes.remove(indexPath.item)
+        } else {
+            selectedTagIndexes.insert(indexPath.item)
+        }
+
+        UIView.performWithoutAnimation {
+            collectionView.reloadItems(at: [indexPath])
+            collectionView.layoutIfNeeded()
+        }
+    }
+}
+
+class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
+    override init() {
+        super.init()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        let attributes = super.layoutAttributesForElements(in: rect)?.compactMap {
+            $0.copy() as? UICollectionViewLayoutAttributes
+        }
+        let cellAttributes = attributes?
+            .filter { $0.representedElementCategory == .cell }
+            .sorted { $0.indexPath.item < $1.indexPath.item }
+        var leftMargin: CGFloat = 0.0
+        var maxY: CGFloat = -1.0
+    
+        cellAttributes?.forEach { layoutAttribute in
+            if layoutAttribute.frame.origin.y >= maxY {
+                leftMargin = 0.0
+            }
+            layoutAttribute.frame.origin.x = leftMargin
+            leftMargin += layoutAttribute.frame.width + minimumInteritemSpacing
+            maxY = max(layoutAttribute.frame.maxY, maxY)
+        }
+        return attributes
     }
 }

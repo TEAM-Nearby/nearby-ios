@@ -176,7 +176,7 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
 
     private var availableHeight: CGFloat {
         let height = view.superview?.bounds.height ?? view.bounds.height
-        return height > 0 ? height : UIScreen.main.bounds.height
+        return height > 0 ? height : (view.window?.windowScene?.screen.bounds.height ?? 0)
     }
 
     private var topSafeAreaInset: CGFloat {

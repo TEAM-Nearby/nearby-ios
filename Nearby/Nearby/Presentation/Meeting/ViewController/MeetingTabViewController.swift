@@ -5,18 +5,16 @@
 //  Created by h2e on 7/8/26.
 //
 
+import Combine
 import UIKit
 
 final class MeetingTabViewController: UIViewController {
 
-    // MARK: - Property
+    // MARK: - Properties
 
     private let meetingTabView = MeetingTabView()
-
-    // TODO: - 테스트용 -> 뷰모델로 교체 예정
-    private let items: [MeetingVerificationCellType] = [
-        .verifiable, .notYet, .verifiable, .notYet
-    ]
+    private let viewModel = MeetingTabViewModel()
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Life Cycle
 
@@ -26,10 +24,13 @@ final class MeetingTabViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setCollectionView()
+        bind()
+        viewModel.load()
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     private func setCollectionView() {
         meetingTabView.collectionView.dataSource = self
@@ -37,6 +38,15 @@ final class MeetingTabViewController: UIViewController {
             MeetingVerificationCell.self,
             forCellWithReuseIdentifier: MeetingVerificationCell.identifier
         )
+    }
+    
+    private func bind() {
+        viewModel.$cellTypes
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.meetingTabView.collectionView.reloadData()
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -46,7 +56,7 @@ extension MeetingTabViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
-        items.count
+        viewModel.cellTypes.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -57,7 +67,7 @@ extension MeetingTabViewController: UICollectionViewDataSource {
         ) as? MeetingVerificationCell else {
             return UICollectionViewCell()
         }
-        cell.configure(type: items[indexPath.item])
+        cell.configure(type: viewModel.cellTypes[indexPath.item])
         return cell
     }
 }

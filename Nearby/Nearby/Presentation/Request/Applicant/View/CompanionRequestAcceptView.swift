@@ -37,7 +37,7 @@ final class CompanionRequestAcceptView: BaseView {
     
     private let peopleStackView = UIStackView()
     private let peopleImageView = UIImageView()
-    private let avatarStackView = UIStackView()
+    private let avatarStackView = AvatarStackView()
     private let peopleLabel = UILabel()
     
     private let checkListView = UIStackView()
@@ -128,12 +128,6 @@ final class CompanionRequestAcceptView: BaseView {
             $0.textAlignment = .left
         }
         
-        avatarStackView.do {
-            $0.axis = .horizontal
-            $0.spacing = -6
-            $0.alignment = .center
-        }
-        
         checkListView.do {
             $0.backgroundColor = .bgSurfaceGrey0
             $0.layer.cornerRadius = 16
@@ -210,18 +204,7 @@ final class CompanionRequestAcceptView: BaseView {
         locationStackView.addArrangedSubviews(locationImageView, locationLabel)
         dateStackView.addArrangedSubviews(calendarImageView, dateLabel)
         
-        (0..<3).forEach { _ in
-            let avatar = UIImageView().then {
-                $0.image = .avatarStack
-                $0.contentMode = .scaleAspectFill
-                $0.layer.cornerRadius = 8
-                $0.clipsToBounds = true
-                $0.snp.makeConstraints { make in
-                    make.size.equalTo(16)
-                }
-            }
-            avatarStackView.addArrangedSubview(avatar)
-        }
+        avatarStackView.configureWithDefaultAvatars(count: 3)
         
         peopleStackView.addArrangedSubviews(peopleImageView, avatarStackView, peopleLabel)
         peopleStackView.setCustomSpacing(6, after: avatarStackView)

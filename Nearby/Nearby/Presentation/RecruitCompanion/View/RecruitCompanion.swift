@@ -19,7 +19,7 @@ final class RecruitCompanionView: BaseView {
     private let timeButton = NearbyButton(style: .unselected, title: "시간 설정")
     private let buttonStackView = UIStackView()
     private let datePicker = NearbyDateTimePickerView()
-    private let peopleStepper = NearbyStepper()
+    private let peopleStepper = NearbyStepper(count: 2)
     private let peopleNumber = UILabel()
     private let peopleTitleLabel = UILabel()
     private let peopleCheckBox = NearbyCheckBox(text: "목표 인원이 안 차도 출발할래요")
@@ -28,15 +28,9 @@ final class RecruitCompanionView: BaseView {
     private let peopleBottomDivider = UIView()
     private let tagTitleLabel = UILabel()
     private let tagTitles = [
-        "사진에 진심인",
-        "리액션이 좋은",
-        "차분한 성격",
-        "정보 공유 환영",
-        "새로운 음식 도전",
-        "음식 쉐어 가능",
-        "파워 J형",
-        "파워 P형",
-        "술 한잔 가능"
+        "사진에 진심인", "리액션이 좋은", "차분한 성격",
+        "정보 공유 환영", "새로운 음식 도전", "음식 쉐어 가능",
+        "파워 J형", "파워 P형", "술 한잔 가능"
     ]
     private lazy var tagCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeTagLayout())
     private let tagBottomDivider = UIView()
@@ -105,18 +99,10 @@ final class RecruitCompanionView: BaseView {
 
     override func setUI() {
         addSubviews(
-            whenTitleLabel,
-            buttonStackView,
-            datePicker,
-            peopleTopDivider,
-            peopleTitleLabel,
-            peopleStepper,
-            peopleNumber,
-            peopleButton,
-            peopleCheckBox,
-            peopleBottomDivider,
-            tagTitleLabel,
-            tagCollectionView,
+            whenTitleLabel, buttonStackView, datePicker,
+            peopleTopDivider, peopleTitleLabel, peopleStepper,
+            peopleNumber, peopleButton, peopleCheckBox,
+            peopleBottomDivider, tagTitleLabel, tagCollectionView,
             tagBottomDivider
         )
         buttonStackView.addArrangedSubviews(nowButton, timeButton)
@@ -175,7 +161,7 @@ final class RecruitCompanionView: BaseView {
         peopleCheckBox.snp.makeConstraints {
             peopleCheckBoxTopFromTitleConstraint = $0.top.equalTo(peopleTitleLabel.snp.bottom).offset(18.5).constraint
             peopleCheckBoxTopFromStepperConstraint = $0.top.equalTo(peopleStepper.snp.bottom).offset(25.5).constraint
-            $0.horizontalEdges.equalToSuperview().inset(10)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(22)
         }
 
@@ -234,7 +220,7 @@ final class RecruitCompanionView: BaseView {
         return selectedTagIndexes.contains(index) ? .tagStateSelected : .tagStateUnselected
     }
     
-    // MARK: - Action
+    // MARK: - Actions
 
     @objc
     private func nowButtonDidTap() {
@@ -280,10 +266,7 @@ extension RecruitCompanionView: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            NearbyTextChipCollectionViewCell.self,
-            for: indexPath
-        )
+        let cell = collectionView.dequeueReusableCell(NearbyTextChipCollectionViewCell.self, for: indexPath)
         let title = tagTitles[indexPath.item]
         
         cell.configure(style: tagChipStyle(at: indexPath.item), title: title, horizontalInset: 12)

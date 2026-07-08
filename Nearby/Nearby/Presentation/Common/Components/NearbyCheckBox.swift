@@ -25,12 +25,14 @@ final class NearbyCheckBox: BaseView {
             checkButton.isSelected = isChecked
         }
     }
+
     // MARK: - Initializer
 
     init(text: String, isChecked: Bool = false) {
         self.isChecked = isChecked
         super.init(frame: .zero)
 
+        checkButton.isSelected = isChecked
         titleLabel.text = text
     }
 
@@ -83,6 +85,5 @@ final class NearbyCheckBox: BaseView {
     @objc
     private func checkButtonDidTap() {
         isChecked.toggle()
-        checkButton.isSelected = isChecked
     }
 }

@@ -46,13 +46,7 @@ final class NearbyDateTimePickerView: BaseView {
 
     var selectedDate: Date {
         let year = calendar.component(.year, from: Date())
-        let components = DateComponents(
-            year: year,
-            month: selectedMonth,
-            day: selectedDay,
-            hour: selectedHour,
-            minute: selectedMinute
-        )
+        let components = DateComponents(year: year, month: selectedMonth, day: selectedDay, hour: selectedHour, minute: selectedMinute)
 
         return calendar.date(from: components) ?? Date()
     }
@@ -157,6 +151,8 @@ final class NearbyDateTimePickerView: BaseView {
     }
 }
 
+// MARK: - UIPickerViewDataSource
+
 extension NearbyDateTimePickerView: UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 4
@@ -177,6 +173,8 @@ extension NearbyDateTimePickerView: UIPickerViewDataSource {
         }
     }
 }
+
+// MARK: - UIPickerViewDelegate
 
 extension NearbyDateTimePickerView: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
@@ -207,19 +205,22 @@ extension NearbyDateTimePickerView: UIPickerViewDelegate {
                 selectedDay = days.count
             }
 
+            pickerView.reloadComponent(0)
             pickerView.reloadComponent(1)
             pickerView.selectRow(selectedDay - 1, inComponent: 1, animated: false)
         case 1:
             selectedDay = days[row]
+            pickerView.reloadComponent(component)
         case 2:
             selectedHour = hours[row]
+            pickerView.reloadComponent(component)
         case 3:
             selectedMinute = minutes[row]
+            pickerView.reloadComponent(component)
         default:
             break
         }
 
-        pickerView.reloadAllComponents()
         dateDidChange?(selectedDate)
     }
 }

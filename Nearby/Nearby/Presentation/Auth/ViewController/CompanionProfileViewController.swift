@@ -28,46 +28,32 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
         }
         
         companionProfileView.profileImageButton.addTarget(
-            self,
-            action: #selector(profileImageButtonDidTap),
-            for: .touchUpInside
+            self, action: #selector(profileImageButtonDidTap), for: .touchUpInside
         )
         
         companionProfileView.maleButton.addTarget(
-            self,
-            action: #selector(maleButtonDidTap),
-            for: .touchUpInside
+            self, action: #selector(maleButtonDidTap), for: .touchUpInside
         )
         
         companionProfileView.femaleButton.addTarget(
-            self,
-            action: #selector(femaleButtonDidTap),
-            for: .touchUpInside
+            self, action: #selector(femaleButtonDidTap), for: .touchUpInside
         )
         
         companionProfileView.nicknameClearButton.addTarget(
-            self,
-            action: #selector(nicknameClearButtonDidTap),
-            for: .touchUpInside
+            self, action: #selector(nicknameClearButtonDidTap), for: .touchUpInside
         )
         
         companionProfileView.introductionTextView.clearButton.addTarget(
-            self,
-            action: #selector(introductionClearButtonDidTap),
-            for: .touchUpInside
+            self, action: #selector(introductionClearButtonDidTap), for: .touchUpInside
         )
         
         companionProfileView.bottomButton.addTarget(
-            self,
-            action: #selector(bottomButtonDidTap),
-            for: .touchUpInside
+            self, action: #selector(bottomButtonDidTap), for: .touchUpInside
         )
         
         companionProfileView.keywordButtons.forEach {
             $0.addTarget(
-                self,
-                action: #selector(keywordButtonDidTap(_:)),
-                for: .touchUpInside
+                self, action: #selector(keywordButtonDidTap(_:)), for: .touchUpInside
             )
         }
     }
@@ -86,6 +72,8 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
             self?.companionProfileView.updateSelectedKeywords(selectedKeywords)
         }
     }
+    
+    // MARK: - Method
     
     private func presentPhotoPicker() {
         var configuration = PHPickerConfiguration()

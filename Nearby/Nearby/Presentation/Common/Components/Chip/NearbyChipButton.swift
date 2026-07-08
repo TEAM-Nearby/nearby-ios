@@ -6,7 +6,6 @@
 //
 
 import UIKit
-
 import SnapKit
 
 final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
@@ -49,7 +48,7 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
         updateChipShadowPath(style: style)
     }
     
-    // MARK: - Custom Methods
+    // MARK: - Methods
     
     private func setStyle() {
         applyChipShadow(style: style)

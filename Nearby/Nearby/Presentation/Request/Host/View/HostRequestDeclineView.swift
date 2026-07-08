@@ -28,12 +28,12 @@ final class HostRequestDeclineView: BaseView {
     
     private let rejectView = UIView()
     private let rejectReasonLabel = UILabel()
-    private let rejectReasonTextBox = NearbyTextView(placeholder: "내용을 입력해주세요")
+    private let rejectReasonTextBox = NearbyTextView(placeholder: "내용을 입력해주세요", contentInsets: UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20))
     
     private let rejectButton = NearbyButton(style: .primary, title: "")
     
     var rejectReasonText: String {
-        rejectReasonTextBox.text ?? ""
+        rejectReasonTextBox.text
     }
     
     // MARK: - Custom Methods

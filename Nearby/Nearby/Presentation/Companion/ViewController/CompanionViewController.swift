@@ -93,6 +93,12 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     // MARK: - Methods
 
     private func setBottomSheet() {
+        setBottomSheetLayout()
+        bindBottomSheet()
+        initializeBottomSheetState()
+    }
+
+    private func setBottomSheetLayout() {
         addChild(bottomSheetViewController)
         view.insertSubview(bottomSheetViewController.view, aboveSubview: companionView.mapContainerView)
 
@@ -101,13 +107,17 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
 
         bottomSheetViewController.didMove(toParent: self)
+    }
+
+    private func bindBottomSheet() {
         bottomSheetViewController.onStateChange = { [weak self] height, state in
-            self?.updateBottomSheetLayer(for: state)
-            self?.companionView.updateMapControls(
-                bottomInset: height + 12,
-                state: state
-            )
+            guard let self = self else { return }
+            self.updateBottomSheetLayer(for: state)
+            self.companionView.updateMapControls(bottomInset: height + 12, state: state)
         }
+    }
+
+    private func initializeBottomSheetState() {
         bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
         bottomSheetViewController.setState(content: .nearbyCompanionList, animated: false)
     }

@@ -1,5 +1,5 @@
 //
-//  CompanionSpecificBottomSheetViewController.swift
+//  SpecificCompanionSheetViewController.swift
 //  Nearby
 //
 //  Created by soomin on 7/8/26.

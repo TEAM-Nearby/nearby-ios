@@ -176,7 +176,7 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
 
     private var availableHeight: CGFloat {
         let height = view.superview?.bounds.height ?? view.bounds.height
-        return height > 0 ? height : UIScreen.main.bounds.height
+        return height > 0 ? height : (view.window?.windowScene?.screen.bounds.height ?? 0)
     }
 
     private var topSafeAreaInset: CGFloat {
@@ -244,10 +244,10 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     }
 
     func setContentViewController(_ viewController: UIViewController) {
-        if let existingViewControlelr = currentContentViewController {
-            existingViewControlelr.willMove(toParent: nil)
-            existingViewControlelr.view.removeFromSuperview()
-            existingViewControlelr.removeFromParent()
+        if let existingViewController = currentContentViewController {
+            existingViewController.willMove(toParent: nil)
+            existingViewController.view.removeFromSuperview()
+            existingViewController.removeFromParent()
         }
 
         addChild(viewController)

@@ -1,5 +1,5 @@
 //
-//  CompanionNearbyBottomSheetViewController.swift
+//  NearCompanionBottomSheetViewController.swift
 //  Nearby
 //
 //  Created by soomin on 7/8/26.
@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class CompanionNearbyBottomSheetViewController: BaseViewController<EmptyViewModel> {
+final class NearCompanionBottomSheetViewController: BaseViewController<EmptyViewModel> {
     
     // MARK: - UI Component
     

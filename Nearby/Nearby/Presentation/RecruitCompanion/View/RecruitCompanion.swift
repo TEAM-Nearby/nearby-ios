@@ -14,6 +14,9 @@ final class RecruitCompanionView: BaseView {
     
     // MARK: - UI Components
 
+    private let navigationBar = NearbyNavigationBar()
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
     private let whenTitleLabel = UILabel()
     private let nowButton = NearbyButton(style: .selected, title: "지금 바로")
     private let timeButton = NearbyButton(style: .unselected, title: "시간 설정")
@@ -34,6 +37,16 @@ final class RecruitCompanionView: BaseView {
     ]
     private lazy var tagCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeTagLayout())
     private let tagBottomDivider = UIView()
+    private let meetingPlaceTitleLabel = UILabel()
+    let meetingPlaceTextView = NearbyTextView(
+        placeholder: "입력창입력창입력창입력창입력창입력창입력창입력창입력창입력창입력창..."
+    )
+    private let descriptionTitleLabel = UILabel()
+    private let descriptionTextView = NearbyTextView(
+        placeholder: "ex) 20대 여자입니다. 맛집 탐방하는 걸 좋아해요 :)\n"
+            + "사진 잘 찍어드릴 수 있습니다!\n"
+            + "같이 재미있게 놀아요..."
+    )
     
     // MARK: - Properties
 
@@ -47,6 +60,12 @@ final class RecruitCompanionView: BaseView {
     
     override func setStyle() {
         backgroundColor = .white
+
+        navigationBar.configure(leftItem: .back, centerItem: .title("동행 모집하기"))
+
+        scrollView.do {
+            $0.showsVerticalScrollIndicator = false
+        }
 
         whenTitleLabel.do {
             $0.setFont(.b1Sb18, text: "언제 만날 예정인가요?", textColor: .grey80)
@@ -91,21 +110,60 @@ final class RecruitCompanionView: BaseView {
             $0.dataSource = self
             $0.delegate = self
         }
+        
+        meetingPlaceTitleLabel.do {
+            $0.setFont(.b1Sb18, text: "어디서 만날까요?")
+        }
+        
+        meetingPlaceTextView.do {
+            $0.updatePlaceholder(isHidden: false)
+            $0.clearButton.setImage(UIImage(named: "search_icon"), for: .normal)
+            $0.clearButton.tintColor = .grey40
+            $0.clearButton.isHidden = false
+        }
+        
+        descriptionTitleLabel.do {
+            $0.setFont(.b1Sb18, text: "나이와 간단한 소개를 적어볼까요?")
+        }
+        
+        descriptionTextView.do {
+            $0.updatePlaceholder(isHidden: false)
+            $0.clearButton.isHidden = true
+        }
     }
 
     override func setUI() {
-        addSubviews(
+        addSubviews(navigationBar, scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubviews(
             whenTitleLabel, buttonStackView, datePicker,
             peopleTopDivider, peopleTitleLabel, peopleStepper,
-            peopleNumber, peopleButton, peopleExplainLabel, peopleBottomDivider,
-            tagTitleLabel, tagCollectionView, tagBottomDivider
+            peopleNumber, peopleButton, peopleExplainLabel,
+            peopleBottomDivider, tagTitleLabel, tagCollectionView,
+            tagBottomDivider, meetingPlaceTitleLabel, meetingPlaceTextView,
+            descriptionTitleLabel, descriptionTextView
         )
         buttonStackView.addArrangedSubviews(nowButton, timeButton)
     }
 
     override func setLayout() {
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(safeAreaLayoutGuide)
+            $0.horizontalEdges.equalToSuperview()
+        }
+
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.horizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+        }
+
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+        }
+
         whenTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).inset(24)
+            $0.top.equalToSuperview().inset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
@@ -185,6 +243,29 @@ final class RecruitCompanionView: BaseView {
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(1)
         }
+        
+        meetingPlaceTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(tagBottomDivider.snp.bottom).offset(24)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        meetingPlaceTextView.snp.makeConstraints {
+            $0.top.equalTo(meetingPlaceTitleLabel.snp.bottom).offset(12)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(56)
+        }
+        
+        descriptionTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(meetingPlaceTextView.snp.bottom).offset(24)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        descriptionTextView.snp.makeConstraints {
+            $0.top.equalTo(descriptionTitleLabel.snp.bottom).offset(12)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(92)
+            $0.bottom.equalToSuperview().inset(24)
+        }
     }
 
     override func registerCells() {
@@ -198,6 +279,7 @@ final class RecruitCompanionView: BaseView {
         peopleStepper.countDidChange = { [weak self] count in
             self?.peopleNumber.text = "\(count)명"
         }
+        meetingPlaceTextView.clearButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
     }
 
     // MARK: - Methods
@@ -247,6 +329,11 @@ final class RecruitCompanionView: BaseView {
             peopleCheckBoxTopFromStepperConstraint?.deactivate()
             peopleCheckBoxTopFromTitleConstraint?.activate()
         }
+    }
+    
+    @objc
+    private func searchButtonDidTap() {
+        // TODO: - 장소 검색 API 연결
     }
 }
 

@@ -33,6 +33,7 @@ class BaseViewController<VM: BaseViewModelType>: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         
+        setStyle()
         setUI()
         setLayout()
         setAddTarget()
@@ -63,10 +64,17 @@ class BaseViewController<VM: BaseViewModelType>: UIViewController {
 
     // MARK: - Custom Methods
     
+    func setStyle() {}
     func setUI() {}
     func setLayout() {}
     func setAddTarget() {}
     func setDelegate() {}
     func bindAction() {}
     func bindState() {}
+}
+
+extension BaseViewController where VM == EmptyViewModel {
+    convenience init() {
+        self.init(viewModel: EmptyViewModel())
+    }
 }

@@ -12,3 +12,22 @@ public protocol BaseViewModelType {
     var output: Output { get }
     func action(_ trigger: Input)
 }
+
+struct EmptyViewModel: BaseViewModelType {
+    
+    // MARK: - Input
+    
+    enum Input {}
+    
+    // MARK: - Output
+    
+    struct Output {}
+    
+    // MARK: - Properties
+    
+    let output = Output()
+    
+    // MARK: - Action
+    
+    func action(_ trigger: Input) {}
+}

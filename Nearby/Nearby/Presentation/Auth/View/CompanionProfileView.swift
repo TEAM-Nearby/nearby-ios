@@ -167,29 +167,15 @@ final class CompanionProfileView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(
-            navigationBar,
-            progressContainerView,
-            scrollView,
-            bottomButton
-        )
+        addSubviews(navigationBar, progressContainerView, scrollView, bottomButton)
         
         progressContainerView.addSubview(progressView)
         scrollView.addSubview(contentView)
         
-        contentView.addSubviews(
-            titleLabel,
-            descriptionLabel,
-            profileImageButton,
-            nicknameTitleLabel,
-            nicknameTextFieldContainerView,
-            genderTitleLabel,
-            genderStackView,
-            introductionTitleLabel,
-            introductionTextView,
-            travelStyleTitleLabel,
-            travelStyleStackView
-        )
+        contentView.addSubviews(titleLabel,descriptionLabel,profileImageButton,
+                                nicknameTitleLabel, nicknameTextFieldContainerView, genderTitleLabel,
+                                genderStackView, introductionTitleLabel, introductionTextView,
+                                travelStyleTitleLabel, travelStyleStackView)
         
         profileImageButton.addSubviews(profileImageView, imageSelectLabel)
         nicknameTextFieldContainerView.addSubviews(nicknameTextField, nicknameClearButton)
@@ -386,19 +372,13 @@ private extension UILabel {
     func setRequiredTitle(_ title: String) {
         let attributedString = NSMutableAttributedString(
             string: title,
-            attributes: [
-                .foregroundColor: UIColor.grey80,
-                .font: NearbyFont.b2Sb16.font
-            ]
+            attributes: [.foregroundColor: UIColor.grey80, .font: NearbyFont.b2Sb16.font]
         )
 
         attributedString.append(
             NSAttributedString(
                 string: "*",
-                attributes: [
-                    .foregroundColor: UIColor.highlightRed,
-                    .font: NearbyFont.b2Sb16.font
-                ]
+                attributes: [.foregroundColor: UIColor.highlightRed, .font: NearbyFont.b2Sb16.font]
             )
         )
 
@@ -423,10 +403,7 @@ private extension UIButton {
         setAttributedTitle(
             NSAttributedString(
                 string: title,
-                attributes: [
-                    .foregroundColor: UIColor.grey70,
-                    .font: NearbyFont.b2M16.font
-                ]
+                attributes: [.foregroundColor: UIColor.grey70, .font: NearbyFont.b2M16.font]
             ),
             for: .normal
         )

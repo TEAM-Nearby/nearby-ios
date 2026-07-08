@@ -7,68 +7,66 @@
 
 import UIKit
 
-enum BottomSheetType {
-    case nearbyCompanionSmall
-    case nearbyCompanionMedium
-    case nearbyCompanionBig
-    case companionEmpty
-    case specificCompanion
-    case specificCompanionBig
-    case diningMap
-    case diningMapFullScreen
+enum BottomSheetContent {
+    case nearbyCompanionList
+    case nearbyCompanionEmpty
+    case specificRestaurantCompanionList
+    case diningMapList
+    case savedRestaurantList
 
-    var snapTypes: [BottomSheetType] {
+    var defaultLevel: BottomSheetLevel {
+        .standard
+    }
+
+    var availableLevels: [BottomSheetLevel] {
         switch self {
-        case .nearbyCompanionSmall, .nearbyCompanionMedium, .nearbyCompanionBig:
-            return [.nearbyCompanionSmall, .nearbyCompanionMedium, .nearbyCompanionBig]
-        case .specificCompanion, .specificCompanionBig:
-            return [.specificCompanion, .specificCompanionBig]
-        case .diningMap, .diningMapFullScreen:
-            return [.diningMap, .diningMapFullScreen]
-        case .companionEmpty:
-            return []
+        case .nearbyCompanionEmpty:
+            return [.standard]
+        case .nearbyCompanionList,
+             .specificRestaurantCompanionList,
+             .diningMapList,
+             .savedRestaurantList:
+            return [.compact, .standard, .expanded]
         }
+    }
+}
+
+enum BottomSheetLevel {
+    case compact
+    case standard
+    case expanded
+}
+
+struct BottomSheetState: Equatable {
+    let content: BottomSheetContent
+    let level: BottomSheetLevel
+
+    init(content: BottomSheetContent, level: BottomSheetLevel? = nil) {
+        self.content = content
+        self.level = level ?? content.defaultLevel
+    }
+
+    var availableLevels: [BottomSheetLevel] {
+        content.availableLevels
     }
 
     var isDraggable: Bool {
-        !snapTypes.isEmpty
+        availableLevels.count > 1
     }
 
-    var smallType: BottomSheetType {
-        switch self {
-        case .nearbyCompanionSmall, .nearbyCompanionMedium, .nearbyCompanionBig:
-            return .nearbyCompanionSmall
-        case .specificCompanion, .specificCompanionBig:
-            return .specificCompanion
-        case .diningMap, .diningMapFullScreen:
-            return .diningMap
-        case .companionEmpty:
-            return .companionEmpty
-        }
+    var isFirstLevel: Bool {
+        level == availableLevels.first
     }
 
-    var isSmallType: Bool {
-        self == smallType
+    var isSecondLevel: Bool {
+        level == .standard
     }
 
-    var isThirdStep: Bool {
-        snapTypes.count == 3 && self == snapTypes.last
+    var isThirdLevel: Bool {
+        level == .expanded && availableLevels.contains(.expanded)
     }
 
-    var fixedHeight: CGFloat? {
-        switch self {
-        case .nearbyCompanionSmall:
-            return 122
-        case .nearbyCompanionMedium:
-            return 383
-        case .companionEmpty:
-            return 297
-        case .specificCompanion:
-            return 517
-        case .diningMap:
-            return 423
-        case .nearbyCompanionBig, .specificCompanionBig, .diningMapFullScreen:
-            return nil
-        }
+    var compactState: BottomSheetState {
+        BottomSheetState(content: content, level: availableLevels.first ?? level)
     }
 }

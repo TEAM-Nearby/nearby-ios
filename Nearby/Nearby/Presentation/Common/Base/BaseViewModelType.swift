@@ -23,7 +23,7 @@ struct EmptyViewModel: BaseViewModelType {
     
     struct Output {}
     
-    // MARK: - Properties
+    // MARK: - Property
     
     let output = Output()
     

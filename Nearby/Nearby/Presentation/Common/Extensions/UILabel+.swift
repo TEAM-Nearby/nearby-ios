@@ -32,4 +32,26 @@ extension UILabel {
         
         self.attributedText = NSAttributedString(string: text, attributes: attributes)
     }
+    
+    func setRequiredTitle(_ title: String) {
+        let attributedString = NSMutableAttributedString(
+            string: title,
+            attributes: [
+                .foregroundColor: UIColor.grey80,
+                .font: NearbyFont.b2Sb16.font
+            ]
+        )
+        
+        attributedString.append(
+            NSAttributedString(
+                string: "*",
+                attributes: [
+                    .foregroundColor: UIColor.highlightRed,
+                    .font: NearbyFont.b2Sb16.font
+                ]
+            )
+        )
+        
+        self.attributedText = attributedString
+    }
 }

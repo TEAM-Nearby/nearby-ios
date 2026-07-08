@@ -88,11 +88,9 @@ final class NearbyTextView: BaseView {
             $0.size.equalTo(24)
         }
     }
-}
-
-// MARK: - Methods
-
-extension NearbyTextView {
+    
+    // MARK: - Methods
+    
     private func remakeTextViewConstraints() {
         textView.snp.remakeConstraints {
             $0.top.equalToSuperview().offset(contentInsets.top)

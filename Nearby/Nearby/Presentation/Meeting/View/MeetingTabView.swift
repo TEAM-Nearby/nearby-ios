@@ -76,10 +76,7 @@ final class MeetingTabView: BaseView {
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let group = NSCollectionLayoutGroup.vertical(
-            layoutSize: itemSize,
-            subitems: [item]
-        )
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [item])
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 12

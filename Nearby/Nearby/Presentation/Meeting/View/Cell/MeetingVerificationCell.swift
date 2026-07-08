@@ -115,8 +115,6 @@ final class MeetingVerificationCell: UICollectionViewCell {
         verifyButton.addTarget(self, action: #selector(verifyButtonDidTap), for: .touchUpInside)
     }
 
-    // MARK: - Configure
-
     func configure(with item: MeetingItem) {
         profileView.configure(name: item.name, gender: item.gender, information: item.information)
         

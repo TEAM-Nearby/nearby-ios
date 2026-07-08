@@ -62,8 +62,7 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
 
 extension MeetingTabViewController: UICollectionViewDataSource {
 
-    func collectionView(_ collectionView: UICollectionView,
-                        numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.items.count
     }
 
@@ -89,7 +88,6 @@ extension MeetingTabViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 
 extension MeetingTabViewController: UICollectionViewDelegate {
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = viewModel.item(at: indexPath.item)
         coordinator?.showMeetingProgress(for: item)

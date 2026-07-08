@@ -125,7 +125,7 @@ final class RecruitCompanionView: BaseView {
         
         meetingPlaceTextView.do {
             $0.updatePlaceholder(isHidden: false)
-            $0.clearButton.setImage(UIImage(named: "search_icon"), for: .normal)
+            $0.clearButton.setImage(.searchIcon, for: .normal)
             $0.clearButton.tintColor = .grey40
             $0.clearButton.isHidden = false
             $0.setPlaceholderTruncation(numberOfLines: 1)
@@ -369,9 +369,7 @@ final class RecruitCompanionView: BaseView {
             && hasText(descriptionTextView)
             && hasText(kakaoLinkTextView)
 
-        completeButton.isEnabled = isEnabled
-        completeButton.backgroundColor = isEnabled ? .btnPrimaryBg : .grey10
-        completeButton.setTitleColor(isEnabled ? .white : .grey40, for: .normal)
+        completeButton.setEnabled(isEnabled)
     }
     
     // MARK: - Actions

@@ -22,7 +22,7 @@ final class LoginViewModel: BaseViewModelType {
         var loginDidFail: ((Error) -> Void)?
     }
     
-    // MARK: - Property
+    // MARK: - Properties
     
     var output: Output
     

@@ -55,9 +55,14 @@ final class NearbyStepper: BaseView {
             $0.spacing = 14.5
             $0.distribution = .fill
         }
-
-        minusButton.setImage(.icMin.withRenderingMode(.alwaysTemplate), for: .normal)
-        plusButton.setImage(.plusIconHome.withRenderingMode(.alwaysTemplate), for: .normal)
+        
+        minusButton.do {
+            $0.setImage(.icMin.withRenderingMode(.alwaysTemplate), for: .normal)
+        }
+        
+        plusButton.do{
+            $0.setImage(.plusIconHome.withRenderingMode(.alwaysTemplate), for: .normal)
+        }
 
         countLabel.do {
             $0.font = NearbyFont.h3Sb20.font

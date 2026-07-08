@@ -22,9 +22,9 @@ final class RecruitCompanionView: BaseView {
     private let peopleStepper = NearbyStepper(count: 2)
     private let peopleNumber = UILabel()
     private let peopleTitleLabel = UILabel()
-    private let peopleCheckBox = NearbyCheckBox(text: "목표 인원이 안 차도 출발할래요")
     private let peopleButton = UIButton()
     private let peopleTopDivider = UIView()
+    private let peopleExplainLabel = UILabel()
     private let peopleBottomDivider = UIView()
     private let tagTitleLabel = UILabel()
     private let tagTitles = [
@@ -49,9 +49,7 @@ final class RecruitCompanionView: BaseView {
         backgroundColor = .white
 
         whenTitleLabel.do {
-            $0.text = "언제 만날 예정인가요?"
-            $0.textColor = .grey80
-            $0.font = NearbyFont.b1Sb18.font
+            $0.setFont(.b1Sb18, text: "언제 만날 예정인가요?", textColor: .grey80)
         }
         
         buttonStackView.do {
@@ -63,15 +61,11 @@ final class RecruitCompanionView: BaseView {
         datePicker.isHidden = true
         
         peopleTitleLabel.do {
-            $0.text = "최대 몇 명과 함께 갈까요?"
-            $0.font = NearbyFont.b1Sb18.font
-            $0.textColor = .grey80
+            $0.setFont(.b1Sb18, text: "최대 몇 명과 함께 갈까요?", textColor: .grey80)
         }
         
         peopleNumber.do {
-            $0.text = "2명"
-            $0.font = NearbyFont.h3Sb20.font
-            $0.textColor = .primary50
+            $0.setFont(.h3Sb20, text: "2명", textColor: .primary50)
         }
 
         peopleStepper.isHidden = true
@@ -83,10 +77,12 @@ final class RecruitCompanionView: BaseView {
         peopleButton.setImage(.chevronDownIcon, for: .normal)
         peopleButton.setImage(.chevronUpIcon, for: .selected)
         
+        peopleExplainLabel.do {
+            $0.setFont(.b2M16, text: "목표 인원이 안 차도 출발할 수 있어요", textColor: .grey30)
+        }
+        
         tagTitleLabel.do {
-            $0.text = "어떤 동행과 함께하고 싶나요?"
-            $0.font = NearbyFont.b1Sb18.font
-            $0.textColor = .grey80
+            $0.setFont(.b1Sb18, text: "어떤 동행과 함께하고 싶나요?", textColor: .grey80)
         }
         
         tagCollectionView.do {
@@ -101,9 +97,8 @@ final class RecruitCompanionView: BaseView {
         addSubviews(
             whenTitleLabel, buttonStackView, datePicker,
             peopleTopDivider, peopleTitleLabel, peopleStepper,
-            peopleNumber, peopleButton, peopleCheckBox,
-            peopleBottomDivider, tagTitleLabel, tagCollectionView,
-            tagBottomDivider
+            peopleNumber, peopleButton, peopleExplainLabel, peopleBottomDivider,
+            tagTitleLabel, tagCollectionView, tagBottomDivider
         )
         buttonStackView.addArrangedSubviews(nowButton, timeButton)
     }
@@ -158,7 +153,7 @@ final class RecruitCompanionView: BaseView {
             $0.height.equalTo(48)
         }
 
-        peopleCheckBox.snp.makeConstraints {
+        peopleExplainLabel.snp.makeConstraints {
             peopleCheckBoxTopFromTitleConstraint = $0.top.equalTo(peopleTitleLabel.snp.bottom).offset(18.5).constraint
             peopleCheckBoxTopFromStepperConstraint = $0.top.equalTo(peopleStepper.snp.bottom).offset(25.5).constraint
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -166,7 +161,7 @@ final class RecruitCompanionView: BaseView {
         }
 
         peopleBottomDivider.snp.makeConstraints {
-            $0.top.equalTo(peopleCheckBox.snp.bottom).offset(31)
+            $0.top.equalTo(peopleExplainLabel.snp.bottom).offset(31)
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(1)
         }

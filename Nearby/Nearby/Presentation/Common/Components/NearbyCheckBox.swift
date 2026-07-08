@@ -55,8 +55,7 @@ final class NearbyCheckBox: BaseView {
         }
 
         titleLabel.do {
-            $0.font = NearbyFont.b3M14.font
-            $0.textColor = .grey30
+            $0.setFont(.b3M14, text: "", textColor: .grey30)
             $0.numberOfLines = 0
         }
     }

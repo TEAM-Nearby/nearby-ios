@@ -18,10 +18,8 @@ final class NearbyTextChipCollectionViewCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        clipsToBounds = false
-        contentView.clipsToBounds = false
-        contentView.backgroundColor = .clear
+        
+        setStyle()
     }
 
     required init?(coder: NSCoder) {
@@ -38,6 +36,12 @@ final class NearbyTextChipCollectionViewCell: UICollectionViewCell {
     }
 
     // MARK: - Method
+    
+    private func setStyle() {
+        clipsToBounds = false
+        contentView.clipsToBounds = false
+        contentView.backgroundColor = .clear
+    }
 
     func configure(style: NearbyChipStyle, title: String, horizontalInset: CGFloat) {
         chipButton?.removeFromSuperview()

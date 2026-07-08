@@ -50,8 +50,7 @@ final class NearbyTextView: BaseView {
         }
         
         placeholderLabel.do {
-            $0.setFont(.b3M14, text: placeholder, textColor: .grey20
-            )
+            $0.setFont(.b3M14, text: placeholder, textColor: .grey20)
         }
         
         clearButton.do {
@@ -77,7 +76,7 @@ final class NearbyTextView: BaseView {
         placeholderLabel.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(22)
+            $0.bottom.lessThanOrEqualToSuperview()
         }
         
         clearButton.snp.makeConstraints {
@@ -94,9 +93,14 @@ extension NearbyTextView {
     func updatePlaceholder(isHidden: Bool) {
         placeholderLabel.isHidden = isHidden
     }
-    
+
     func clearText() {
         textView.text = nil
         placeholderLabel.isHidden = false
+    }
+    
+    func setPlaceholderTruncation(numberOfLines: Int) {
+        placeholderLabel.numberOfLines = numberOfLines
+        placeholderLabel.lineBreakMode = .byTruncatingTail
     }
 }

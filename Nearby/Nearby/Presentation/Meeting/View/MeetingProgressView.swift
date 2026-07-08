@@ -107,10 +107,6 @@ final class MeetingProgressView: BaseView {
             $0.spacing = 4
         }
         
-        progressBarView.do {
-            $0.alignment = .center
-        }
-        
         stepStackView.do {
             $0.axis = .horizontal
             $0.spacing = 8
@@ -132,6 +128,7 @@ final class MeetingProgressView: BaseView {
         progressBarView.do {
             $0.axis = .vertical
             $0.spacing = 4
+            $0.alignment = .center
         }
         
         progressLabelStackView.do {

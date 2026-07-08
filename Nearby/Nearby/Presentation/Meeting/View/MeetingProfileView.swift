@@ -91,6 +91,7 @@ final class MeetingProfileView: BaseView {
         informationLabel.snp.makeConstraints {
             $0.top.equalTo(hostIdentificationView.snp.bottom).offset(4)
             $0.bottom.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
         nameLabel.snp.makeConstraints {

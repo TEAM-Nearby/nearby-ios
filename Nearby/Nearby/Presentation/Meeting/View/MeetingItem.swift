@@ -19,11 +19,12 @@ struct MeetingItem {
 // MARK: - Cell Type
 
 extension MeetingItem {
+    var isWithinVerifiableWindow: Bool {
+        abs(meetingDate.timeIntervalSinceNow) <= 3600
+    }
     var cellType: MeetingVerificationCellType {
         guard step == .verification else { return .notYet }
         
-        let verifiableWindow: TimeInterval = 3600
-        let isInWindow = abs(meetingDate.timeIntervalSinceNow) <= verifiableWindow
-        return isInWindow ? .verifiable : .notYet
+        return isWithinVerifiableWindow ? .verifiable : .notYet
     }
 }

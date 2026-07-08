@@ -16,7 +16,7 @@ final class NearbyButton: UIButton {
     
     override var isEnabled: Bool {
         didSet {
-            updateStyle(isEnabled ? style : .disabled)
+            refreshStyle()
         }
     }
     
@@ -54,16 +54,18 @@ final class NearbyButton: UIButton {
         }
     }
     
-    private func updateStyle(_ newStyle: NearbyButtonStyle) {
+    private func refreshStyle() {
+        guard isEnabled else {
+            applyStyle(.disabled)
+            return
+        }
+        applyStyle(isSelected ? .selected : .unselected)
+    }
+    
+    private func applyStyle(_ newStyle: NearbyButtonStyle) {
         backgroundColor = newStyle.backgroundColor
         setTitleColor(newStyle.titleColor, for: .normal)
         gradientLayer?.isHidden = !newStyle.usesGradient
-    }
-
-    private func updateUI() {
-        let toggleStyle: NearbyButtonStyle = isSelected ? .selected : .unselected
-        backgroundColor = toggleStyle.backgroundColor
-        setTitleColor(toggleStyle.titleColor, for: .normal)
     }
     
     private func setGradient() {
@@ -75,6 +77,6 @@ final class NearbyButton: UIButton {
     
     func setSelected(_ selected: Bool) {
         isSelected = selected
-        updateUI()
+        refreshStyle()
     }
 }

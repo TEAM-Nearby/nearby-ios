@@ -67,7 +67,7 @@ final class MeetingTabView: BaseView {
         }
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     private static func makeLayout() -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(

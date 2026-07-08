@@ -1,5 +1,5 @@
 //
-//  CompanionProfileGender.swift
+//  CompanionProfileViewModel.swift
 //  Nearby
 //
 //  Created by 신서연 on 7/7/26.
@@ -7,18 +7,13 @@
 
 import Foundation
 
-enum CompanionProfileGender {
-    case male
-    case female
-}
-
 final class CompanionProfileViewModel: BaseViewModelType {
     
     // MARK: - Input
     
     enum Input {
         case nicknameDidChange(String)
-        case genderButtonDidTap(CompanionProfileGender)
+        case genderButtonDidTap(NearbyGender)
         case introductionDidChange(String)
         case keywordButtonDidTap(String)
         case bottomButtonDidTap
@@ -27,7 +22,7 @@ final class CompanionProfileViewModel: BaseViewModelType {
     // MARK: - Output
     
     struct Output {
-        var selectedGender: ((CompanionProfileGender) -> Void)?
+        var selectedGender: ((NearbyGender) -> Void)?
         var selectedKeywords: ((Set<String>) -> Void)?
     }
     
@@ -36,7 +31,7 @@ final class CompanionProfileViewModel: BaseViewModelType {
     var output: Output
     
     private var nickname = ""
-    private var selectedGender: CompanionProfileGender = .female
+    private var selectedGender: NearbyGender = .female
     private var introduction = ""
     private var selectedKeywords: Set<String> = []
     

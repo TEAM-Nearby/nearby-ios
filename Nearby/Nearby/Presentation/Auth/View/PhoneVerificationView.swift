@@ -264,28 +264,6 @@ final class PhoneVerificationView: BaseView {
 // MARK: - UILabel Extensions
 
 private extension UILabel {
-    func setRequiredTitle(_ title: String) {
-        let attributedString = NSMutableAttributedString(
-            string: title,
-            attributes: [
-                .foregroundColor: UIColor.grey80,
-                .font: UIFont.systemFont(ofSize: 18, weight: .semibold)
-            ]
-        )
-
-        attributedString.append(
-            NSAttributedString(
-                string: "*",
-                attributes: [
-                    .foregroundColor: UIColor.highlightRed,
-                    .font: UIFont.systemFont(ofSize: 18, weight: .semibold)
-                ]
-            )
-        )
-
-        self.attributedText = attributedString
-    }
-
     func setLineSpacing(lineSpacing: CGFloat) {
         guard let text = self.text else { return }
 

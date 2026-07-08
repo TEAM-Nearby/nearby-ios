@@ -26,35 +26,26 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
         companionProfileView.navigationBar.leftButtonAction = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
-        
         companionProfileView.profileImageButton.addTarget(
             self, action: #selector(profileImageButtonDidTap), for: .touchUpInside
         )
-        
         companionProfileView.maleButton.addTarget(
             self, action: #selector(maleButtonDidTap), for: .touchUpInside
         )
-        
         companionProfileView.femaleButton.addTarget(
             self, action: #selector(femaleButtonDidTap), for: .touchUpInside
         )
-        
         companionProfileView.nicknameClearButton.addTarget(
             self, action: #selector(nicknameClearButtonDidTap), for: .touchUpInside
         )
-        
         companionProfileView.introductionTextView.clearButton.addTarget(
             self, action: #selector(introductionClearButtonDidTap), for: .touchUpInside
         )
-        
         companionProfileView.bottomButton.addTarget(
             self, action: #selector(bottomButtonDidTap), for: .touchUpInside
         )
-        
         companionProfileView.keywordButtons.forEach {
-            $0.addTarget(
-                self, action: #selector(keywordButtonDidTap(_:)), for: .touchUpInside
-            )
+            $0.addTarget(self, action: #selector(keywordButtonDidTap(_:)), for: .touchUpInside)
         }
     }
     

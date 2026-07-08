@@ -78,20 +78,13 @@ final class CompanionProfileView: BaseView {
         }
         
         titleLabel.do {
-            $0.setFont(
-                .h3Sb20,
-                text: "동행 프로필을 만들어볼까요?",
-                textColor: .grey80
+            $0.setFont(.h3Sb20, text: "동행 프로필을 만들어볼까요?", textColor: .grey80
             )
         }
         
         descriptionLabel.do {
             $0.numberOfLines = 1
-            $0.setFont(
-                .b3M14,
-                text: "동행을 구할 때, 상대에게 보여지는 내 소개에요.",
-                textColor: .grey50
-            )
+            $0.setFont(.b3M14, text: "동행을 구할 때, 상대에게 보여지는 내 소개에요.", textColor: .grey50)
         }
         
         profileImageButton.do {
@@ -144,11 +137,11 @@ final class CompanionProfileView: BaseView {
         }
         
         maleButton.do {
-            $0.setGenderTitle("남성", isSelected: true)
+            setGenderTitle($0, title: "남성", isSelected: true)
         }
         
         femaleButton.do {
-            $0.setGenderTitle("여성", isSelected: false)
+            setGenderTitle($0, title: "여성", isSelected: false)
         }
         
         introductionTitleLabel.do {
@@ -172,10 +165,19 @@ final class CompanionProfileView: BaseView {
         progressContainerView.addSubview(progressView)
         scrollView.addSubview(contentView)
         
-        contentView.addSubviews(titleLabel,descriptionLabel,profileImageButton,
-                                nicknameTitleLabel, nicknameTextFieldContainerView, genderTitleLabel,
-                                genderStackView, introductionTitleLabel, introductionTextView,
-                                travelStyleTitleLabel, travelStyleStackView)
+        contentView.addSubviews(
+            titleLabel,
+            descriptionLabel,
+            profileImageButton,
+            nicknameTitleLabel,
+            nicknameTextFieldContainerView,
+            genderTitleLabel,
+            genderStackView,
+            introductionTitleLabel,
+            introductionTextView,
+            travelStyleTitleLabel,
+            travelStyleStackView
+        )
         
         profileImageButton.addSubviews(profileImageView, imageSelectLabel)
         nicknameTextFieldContainerView.addSubviews(nicknameTextField, nicknameClearButton)
@@ -303,9 +305,10 @@ final class CompanionProfileView: BaseView {
     
     // MARK: - Methods
     
-    func updateGender(selectedGender: CompanionProfileGender) {
-        maleButton.setGenderTitle("남성", isSelected: selectedGender == .male)
-        femaleButton.setGenderTitle("여성", isSelected: selectedGender == .female)
+    func updateGender(selectedGender: NearbyGender) {
+        setGenderTitle(maleButton, title: "남성", isSelected: selectedGender == .male)
+        
+        setGenderTitle(femaleButton, title: "여성", isSelected: selectedGender == .female)
     }
     
     func updateSelectedKeywords(_ selectedKeywords: Set<String>) {
@@ -335,6 +338,30 @@ final class CompanionProfileView: BaseView {
         profileImageView.clipsToBounds = true
     }
     
+    private func setGenderTitle(
+        _ button: UIButton,
+        title: String,
+        isSelected: Bool
+    ) {
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(
+            systemName: isSelected ? "largecircle.fill.circle" : "circle"
+        )
+        configuration.imagePlacement = .leading
+        configuration.imagePadding = 12
+        configuration.baseForegroundColor = isSelected ? .btnPrimaryBg : .grey50
+        
+        button.configuration = configuration
+        
+        button.setAttributedTitle(
+            NSAttributedString(
+                string: title, attributes: [.foregroundColor: UIColor.grey70, .font: NearbyFont.b2M16.font
+                ]
+            ),
+            for: .normal
+        )
+    }
+    
     private func setKeywordButtons() {
         let keywordRows = [
             ["외향형", "내향형", "계획형", "즉흥형"],
@@ -344,69 +371,22 @@ final class CompanionProfileView: BaseView {
             ["한 곳 오래", "많이 도는형", "음주 애호가"],
             ["음주 비선호"]
         ]
-
+        
         keywordRows.forEach { rowKeywords in
             let rowStackView = UIStackView()
             rowStackView.axis = .horizontal
             rowStackView.spacing = 4
             rowStackView.alignment = .center
-
+            
             rowKeywords.forEach { keyword in
-                let chipButton = NearbyChipButton(
-                    style: .personalityDefault,
-                    title: keyword,
-                    horizontalInset: 20
+                let chipButton = NearbyChipButton(style: .personalityDefault, title: keyword, horizontalInset: 16
                 )
-
+                
                 keywordButtons.append(chipButton)
                 rowStackView.addArrangedSubview(chipButton)
             }
-
+            
             travelStyleStackView.addArrangedSubview(rowStackView)
         }
-    }
-}
-
-// MARK: - UILabel Extension
-
-private extension UILabel {
-    func setRequiredTitle(_ title: String) {
-        let attributedString = NSMutableAttributedString(
-            string: title,
-            attributes: [.foregroundColor: UIColor.grey80, .font: NearbyFont.b2Sb16.font]
-        )
-
-        attributedString.append(
-            NSAttributedString(
-                string: "*",
-                attributes: [.foregroundColor: UIColor.highlightRed, .font: NearbyFont.b2Sb16.font]
-            )
-        )
-
-        attributedText = attributedString
-    }
-}
-
-// MARK: - UIButton Extension
-
-private extension UIButton {
-    func setGenderTitle(_ title: String, isSelected: Bool) {
-        var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(
-            systemName: isSelected ? "largecircle.fill.circle" : "circle"
-        )
-        configuration.imagePlacement = .leading
-        configuration.imagePadding = 12
-        configuration.baseForegroundColor = isSelected ? .btnPrimaryBg : .grey50
-
-        self.configuration = configuration
-
-        setAttributedTitle(
-            NSAttributedString(
-                string: title,
-                attributes: [.foregroundColor: UIColor.grey70, .font: NearbyFont.b2M16.font]
-            ),
-            for: .normal
-        )
     }
 }

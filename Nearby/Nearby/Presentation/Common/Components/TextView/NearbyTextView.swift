@@ -50,10 +50,7 @@ final class NearbyTextView: BaseView {
         }
         
         placeholderLabel.do {
-            $0.setFont(
-                .b3M14,
-                text: placeholder,
-                textColor: .grey20
+            $0.setFont(.b3M14, text: placeholder, textColor: .grey20
             )
         }
         

@@ -60,7 +60,7 @@ final class NearbyStepper: BaseView {
             $0.setImage(.icMin.withRenderingMode(.alwaysTemplate), for: .normal)
         }
         
-        plusButton.do{
+        plusButton.do {
             $0.setImage(.plusIconHome.withRenderingMode(.alwaysTemplate), for: .normal)
         }
 

@@ -39,11 +39,7 @@ final class CompanionTopSectionView: BaseView {
         blurBackgroundView.do {
             $0.isUserInteractionEnabled = false
             
-            blurMaskLayer.colors = [
-                UIColor.black.cgColor,
-                UIColor.black.cgColor,
-                UIColor.clear.cgColor
-            ]
+            blurMaskLayer.colors = [UIColor.black.cgColor, UIColor.black.cgColor, UIColor.clear.cgColor]
             blurMaskLayer.locations = [0, 0.55, 1]
             blurMaskLayer.startPoint = CGPoint(x: 0.5, y: 0)
             blurMaskLayer.endPoint = CGPoint(x: 0.5, y: 1)
@@ -53,10 +49,7 @@ final class CompanionTopSectionView: BaseView {
         blurWhiteGradientView.do {
             $0.isUserInteractionEnabled = false
             
-            blurWhiteGradientLayer.colors = [
-                UIColor.white.withAlphaComponent(0.28).cgColor,
-                UIColor.white.withAlphaComponent(0).cgColor
-            ]
+            blurWhiteGradientLayer.colors = [UIColor.white.withAlphaComponent(0.28).cgColor, UIColor.white.withAlphaComponent(0).cgColor]
             blurWhiteGradientLayer.locations = [0, 1]
             blurWhiteGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
             blurWhiteGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)

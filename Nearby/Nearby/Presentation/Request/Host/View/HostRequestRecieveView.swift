@@ -222,7 +222,6 @@ final class HostRequestRecieveView: BaseView {
         identificationView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(25)
-            
         }
         
         identificationLabel.snp.makeConstraints {

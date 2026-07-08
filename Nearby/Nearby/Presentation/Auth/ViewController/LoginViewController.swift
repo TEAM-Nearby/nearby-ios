@@ -34,7 +34,7 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
     }
 }
 
-// MARK: - Private Methods
+// MARK: - LoginViewController 익스텐션
 
 private extension LoginViewController {
     

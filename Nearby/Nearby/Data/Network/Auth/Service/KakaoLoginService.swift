@@ -46,7 +46,7 @@ enum KakaoLoginError: Error {
 
 final class KakaoAuthService {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     private let baseURL = "https:// 어쩌구.. base url"
     
@@ -73,7 +73,7 @@ final class KakaoAuthService {
     }
 }
 
-// MARK: - Private Method
+// MARK: - KaKaoAuthService 익스텐션
 
 private extension KakaoAuthService {
     

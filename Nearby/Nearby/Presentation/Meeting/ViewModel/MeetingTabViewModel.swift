@@ -9,15 +9,18 @@ import Combine
 
 final class MeetingTabViewModel {
 
+    // MARK: - Properties
     @Published private(set) var cellTypes: [MeetingVerificationCellType] = []
+    
+    var isEmpty: Bool { cellTypes.isEmpty }
 
     // TODO: - 서버 연동 예정 
     func load() {
         cellTypes = [
-            .verifiable,
-            .notYet,
-            .verifiable,
-            .notYet
+//            .verifiable,
+//            .notYet,
+//            .verifiable,
+//            .notYet
         ]
     }
 }

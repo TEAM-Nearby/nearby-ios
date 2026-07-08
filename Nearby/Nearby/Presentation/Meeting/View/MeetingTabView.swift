@@ -15,6 +15,8 @@ final class MeetingTabView: BaseView {
     // MARK: - UI Components
 
     private let navigationBar = NearbyNavigationBar()
+    private let titleLabel = UILabel()
+    private let emptyView = MeetingEmptyView()
     
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
 
@@ -24,7 +26,11 @@ final class MeetingTabView: BaseView {
         backgroundColor = .white
         
         navigationBar.do {
-            $0.configure(leftItem: .logo)
+            $0.configure(centerItem: .logo, rightItems: [.alarmButton])
+        }
+        
+        titleLabel.do {
+            $0.setFont(.h1Sb24, text: "현재 진행 중인 동행", textColor: .grey80)
         }
         
         collectionView.do {
@@ -35,7 +41,7 @@ final class MeetingTabView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(navigationBar, collectionView)
+        addSubviews(navigationBar, titleLabel, collectionView, emptyView)
     }
 
     override func setLayout() {
@@ -44,10 +50,20 @@ final class MeetingTabView: BaseView {
             $0.horizontalEdges.equalToSuperview()
         }
         
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom).offset(12)
+            $0.leading.equalToSuperview().inset(20)
+        }
+        
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom).offset(32)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(32)
             $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalToSuperview()
+        }
+        
+        emptyView.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.horizontalEdges.bottom.equalToSuperview()
         }
     }
 
@@ -72,5 +88,11 @@ final class MeetingTabView: BaseView {
         )
 
         return UICollectionViewCompositionalLayout(section: section)
+    }
+    
+    func updateState(isEmpty: Bool) {
+        titleLabel.isHidden = isEmpty
+        collectionView.isHidden = isEmpty
+        emptyView.isHidden = !isEmpty
     }
 }

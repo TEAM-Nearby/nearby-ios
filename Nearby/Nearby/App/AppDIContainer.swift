@@ -19,6 +19,10 @@ final class AppDIContainer {
         MainTabCoordinator(diContainer: self)
     }
     
+    func makeMeetingCoordinator(navigationController: UINavigationController) -> MeetingTabCoordinator {
+        MeetingTabCoordinator(navigationController: navigationController, diContainer: self)
+    }
+    
     func makeCompanionCoordinator(navigationController: UINavigationController) -> CompanionCoordinator {
         CompanionCoordinator(navigationController: navigationController, diContainer: self)
     }
@@ -35,6 +39,10 @@ final class AppDIContainer {
     
     func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
+    }
+    
+    func makeMeetingViewModel () -> MeetingTabViewModel {
+        MeetingTabViewModel()
     }
     
     // MARK: - ViewControllers
@@ -55,8 +63,10 @@ final class AppDIContainer {
         makePlaceholderViewController(title: "매칭")
     }
     
-    func makeMeetingViewController() -> UIViewController {
-        makePlaceholderViewController(title: "만남")
+    func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = MeetingTabViewController(viewModel: makeMeetingViewModel())
+        viewController.coordinator = coordinator
+        return viewController
     }
     
     func makeMyPageViewController() -> UIViewController {

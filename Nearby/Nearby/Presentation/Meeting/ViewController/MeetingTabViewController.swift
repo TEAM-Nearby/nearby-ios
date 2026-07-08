@@ -13,8 +13,21 @@ final class MeetingTabViewController: UIViewController {
     // MARK: - Properties
 
     private let meetingTabView = MeetingTabView()
-    private let viewModel = MeetingTabViewModel()
+    private let viewModel: MeetingTabViewModel
     private var cancellables = Set<AnyCancellable>()
+    
+    weak var coordinator: MeetingTabCoordinator?
+    
+    // MARK: - InitialLizer
+    
+    init(viewModel: MeetingTabViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Life Cycle
 
@@ -43,7 +56,8 @@ final class MeetingTabViewController: UIViewController {
     private func bind() {
         viewModel.$cellTypes
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] types in
+                self?.meetingTabView.updateState(isEmpty: types.isEmpty)
                 self?.meetingTabView.collectionView.reloadData()
             }
             .store(in: &cancellables)
@@ -68,6 +82,11 @@ extension MeetingTabViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         cell.configure(type: viewModel.cellTypes[indexPath.item])
+
+        cell.onVerifyButtonDidTap = { [weak self] in
+            self?.coordinator?.showVerification()
+        }
+
         return cell
     }
 }

@@ -16,9 +16,9 @@ final class MeetingProfileView: BaseView {
     
     private let profileView = UIView()
     private let imageView = UIImageView()
-    private let hostStackView = UIStackView()
+    private let hostView = UIView()
     
-    private let hostIdentificationStackView = UIStackView()
+    private let hostIdentificationView = UIView()
     private let nameLabel = UILabel()
     private let identificationLabel = UILabel()
     
@@ -43,11 +43,6 @@ final class MeetingProfileView: BaseView {
             $0.textAlignment = .left
         }
         
-        hostIdentificationStackView.do {
-            $0.axis = .horizontal
-            $0.spacing = 12
-        }
-        
         informationLabel.do {
             $0.setFont(.b3M14, text: "시우다드 콘달 · 오후 4:30", textColor: .grey80)
             $0.textAlignment = .left
@@ -60,9 +55,9 @@ final class MeetingProfileView: BaseView {
     
     override func setUI() {
         addSubview(profileView)
-        profileView.addSubviews(imageView, hostStackView, nextButton)
-        hostStackView.addSubviews(hostIdentificationStackView, informationLabel)
-        hostIdentificationStackView.addSubviews(nameLabel, identificationLabel)
+        profileView.addSubviews(imageView, hostView, nextButton)
+        hostView.addSubviews(hostIdentificationView, informationLabel)
+        hostIdentificationView.addSubviews(nameLabel, identificationLabel)
     }
     
     override func setLayout() {
@@ -72,7 +67,7 @@ final class MeetingProfileView: BaseView {
         
         imageView.snp.makeConstraints {
             $0.size.equalTo(46)
-            $0.top.leading.equalToSuperview()
+            $0.verticalEdges.leading.equalToSuperview()
         }
         
         nextButton.snp.makeConstraints {
@@ -81,14 +76,21 @@ final class MeetingProfileView: BaseView {
             $0.centerY.equalTo(imageView.snp.centerY)
         }
         
-        hostIdentificationStackView.snp.makeConstraints {
+        hostView.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.equalTo(imageView.snp.trailing).offset(12)
+            $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8)
+        }
+        
+        hostIdentificationView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.equalTo(imageView.snp.trailing).offset(12)
             $0.height.equalTo(22)
         }
         
         informationLabel.snp.makeConstraints {
-            $0.top.equalTo(hostIdentificationStackView.snp.bottom).offset(4)
+            $0.top.equalTo(hostIdentificationView.snp.bottom).offset(4)
+            $0.bottom.equalToSuperview()
         }
         
         nameLabel.snp.makeConstraints {

@@ -101,6 +101,7 @@ final class GradientCircleView: BaseView {
 
     // MARK: - Method
 
+    // TODO: - Kinfisher 사용
     func configure(image: UIImage?) {
         imageView.image = image
     }

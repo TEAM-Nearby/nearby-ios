@@ -14,7 +14,7 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
 
     private let hostRequestDeclineView = HostRequestDeclineView()
 
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
 
     override func loadView() {
         view = hostRequestDeclineView

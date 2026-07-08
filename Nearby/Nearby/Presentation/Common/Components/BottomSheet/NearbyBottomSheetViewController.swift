@@ -244,10 +244,10 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     }
 
     func setContentViewController(_ viewController: UIViewController) {
-        if let existingViewControlelr = currentContentViewController {
-            existingViewControlelr.willMove(toParent: nil)
-            existingViewControlelr.view.removeFromSuperview()
-            existingViewControlelr.removeFromParent()
+        if let existingViewController = currentContentViewController {
+            existingViewController.willMove(toParent: nil)
+            existingViewController.view.removeFromSuperview()
+            existingViewController.removeFromParent()
         }
 
         addChild(viewController)

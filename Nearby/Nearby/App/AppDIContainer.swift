@@ -46,22 +46,22 @@ final class AppDIContainer {
     func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
         return CompanionViewController(
             viewModel: viewModel,
-            nearbyBottomSheetViewController: makeCompanionNearbyBottomSheetViewController(),
-            specificBottomSheetViewController: makeCompanionSpecificBottomSheetViewController(),
-            emptyBottomSheetViewController: makeCompanionEmptyBottomSheetViewController()
+            nearbyBottomSheetViewController: makeNearCompanionBottomSheetViewController(),
+            specificBottomSheetViewController: makeSpecificCompanionBottomSheetViewController(),
+            emptyBottomSheetViewController: makeEmptyCompanionBottomSheetViewController()
         )
     }
     
-    func makeCompanionNearbyBottomSheetViewController() -> CompanionNearbyBottomSheetViewController {
-        return CompanionNearbyBottomSheetViewController()
+    func makeNearCompanionBottomSheetViewController() -> NearCompanionBottomSheetViewController {
+        return NearCompanionBottomSheetViewController()
     }
     
-    func makeCompanionSpecificBottomSheetViewController() -> SpecificCompanionSheetViewController {
+    func makeSpecificCompanionBottomSheetViewController() -> SpecificCompanionSheetViewController {
         return SpecificCompanionSheetViewController()
     }
     
-    func makeCompanionEmptyBottomSheetViewController() -> CompanionEmptyBottomSheetViewController {
-        return CompanionEmptyBottomSheetViewController()
+    func makeEmptyCompanionBottomSheetViewController() -> EmptyCompanionBottomSheetViewController {
+        return EmptyCompanionBottomSheetViewController()
     }
     
     func makeDiningMapViewController() -> UIViewController {

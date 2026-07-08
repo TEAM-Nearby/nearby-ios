@@ -165,19 +165,10 @@ final class CompanionProfileView: BaseView {
         progressContainerView.addSubview(progressView)
         scrollView.addSubview(contentView)
         
-        contentView.addSubviews(
-            titleLabel,
-            descriptionLabel,
-            profileImageButton,
-            nicknameTitleLabel,
-            nicknameTextFieldContainerView,
-            genderTitleLabel,
-            genderStackView,
-            introductionTitleLabel,
-            introductionTextView,
-            travelStyleTitleLabel,
-            travelStyleStackView
-        )
+        contentView.addSubviews(titleLabel, descriptionLabel, profileImageButton,
+                                nicknameTitleLabel, nicknameTextFieldContainerView,
+                                genderTitleLabel, genderStackView, introductionTitleLabel,
+                                introductionTextView, travelStyleTitleLabel, travelStyleStackView)
         
         profileImageButton.addSubviews(profileImageView, imageSelectLabel)
         nicknameTextFieldContainerView.addSubviews(nicknameTextField, nicknameClearButton)
@@ -307,7 +298,6 @@ final class CompanionProfileView: BaseView {
     
     func updateGender(selectedGender: NearbyGender) {
         setGenderTitle(maleButton, title: "남성", isSelected: selectedGender == .male)
-        
         setGenderTitle(femaleButton, title: "여성", isSelected: selectedGender == .female)
     }
     
@@ -355,8 +345,7 @@ final class CompanionProfileView: BaseView {
         
         button.setAttributedTitle(
             NSAttributedString(
-                string: title, attributes: [.foregroundColor: UIColor.grey70, .font: NearbyFont.b2M16.font
-                ]
+                string: title, attributes: [.foregroundColor: UIColor.grey70, .font: NearbyFont.b2M16.font]
             ),
             for: .normal
         )

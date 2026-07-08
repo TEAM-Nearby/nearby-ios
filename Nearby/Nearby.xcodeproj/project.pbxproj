@@ -63,7 +63,6 @@
 				Presentation/Notification/ViewController/.gitkeep,
 				Presentation/Notification/ViewModel/.gitkeep,
 				Presentation/RecruitCompanion/Coordinator/.gitkeep,
-				Presentation/RecruitCompanion/View/.gitkeep,
 				Presentation/RecruitCompanion/ViewController/.gitkeep,
 				Presentation/RecruitCompanion/ViewModel/.gitkeep,
 				Presentation/Request/Applicant/Coordinator/.gitkeep,

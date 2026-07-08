@@ -56,6 +56,13 @@ private extension MainTabCoordinator {
             companionCoordinator.parentCoordinator = self
             addChildCoordinator(companionCoordinator)
             companionCoordinator.start()
+            
+        case .meeting:
+                let meetingCoordinator = diContainer.makeMeetingCoordinator(navigationController: navigationController)
+                meetingCoordinator.parentCoordinator = self
+                addChildCoordinator(meetingCoordinator)
+                meetingCoordinator.start()
+            
         default:
             let viewController = makeRootViewController(for: item)
             navigationController.setViewControllers([viewController], animated: false)
@@ -71,7 +78,7 @@ private extension MainTabCoordinator {
         case .matching:
             return diContainer.makeMatchingViewController()
         case .meeting:
-            return diContainer.makeMeetingViewController()
+            preconditionFailure("Meeting tab should be configured by MeetingCoordinator")
         case .myPage:
             return diContainer.makeMyPageViewController()
         }

@@ -43,6 +43,13 @@ final class MeetingVerificationCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Life Cycle
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        onVerifyButtonDidTap = nil
+    }
+
     // MARK: - Methods
 
     private func setStyle() {
@@ -108,9 +115,13 @@ final class MeetingVerificationCell: UICollectionViewCell {
         verifyButton.addTarget(self, action: #selector(verifyButtonDidTap), for: .touchUpInside)
     }
 
-    func configure(type: MeetingVerificationCellType) {
+    func configure(with item: MeetingItem) {
+        profileView.configure(name: item.name, gender: item.gender, information: item.information)
+        
+        let type = item.cellType
         dividerView.isHidden = !type.showsVerifyView
         verifyStackView.isHidden = !type.showsVerifyView
+        verifyButton.isEnabled = (type == .verifiable)
     }
 
     // MARK: - Action
@@ -118,6 +129,5 @@ final class MeetingVerificationCell: UICollectionViewCell {
     @objc
     private func verifyButtonDidTap() {
         onVerifyButtonDidTap?()
-        // TODO: - 만남 인증하기 API 연동
     }
 }

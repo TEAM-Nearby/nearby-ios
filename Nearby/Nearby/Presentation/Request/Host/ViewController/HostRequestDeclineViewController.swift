@@ -1,34 +1,35 @@
 //
-//  CompanionRequestSentViewController.swift
+//  HostRequestDeclineViewController.swift
 //  Nearby
 //
-//  Created by h2e on 7/6/26.
+//  Created by h2e on 7/7/26.
 //
 
 import Combine
 import UIKit
 
-final class CompanionRequestSentViewController: BaseViewController<CompanionRequestSentViewModel> {
+final class HostRequestDeclineViewController: BaseViewController<HostRequestDeclineViewModel> {
 
     // MARK: - UI Component
 
-    private let companionRequestSentView = CompanionRequestSentView()
+    private let hostRequestDeclineView = HostRequestDeclineView()
 
     // MARK: - Life Cycles
 
     override func loadView() {
-        view = companionRequestSentView
+        view = hostRequestDeclineView
     }
 
     // MARK: - Custom Methods
 
     override func setAddTarget() {
-        companionRequestSentView.onBackButtonDidTap = { [weak self] in
-                // TODO: - Coordinator 연결 (뒤로가기)
+        hostRequestDeclineView.onBackButtonDidTap = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
-        companionRequestSentView.onSearchButtonDidTap = { [weak self] in
-            self?.viewModel.action(.searchButtonDidTap)
+        
+        hostRequestDeclineView.onRejectButtonDidTap = { [weak self] in
+            let reason = self?.hostRequestDeclineView.rejectReasonText ?? ""
+            self?.viewModel.action(.rejectButtonDidTap(reason: reason))
         }
     }
 
@@ -36,14 +37,14 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] data in
-                self?.companionRequestSentView.configure(with: data)
+                self?.hostRequestDeclineView.configure(with: data)
             }
             .store(in: &cancellables)
 
-        viewModel.output.showCompanionList
+        viewModel.output.showDeclineComplete
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - Coordinator 연결 (동행 리스트로 이동)
+                // TODO: - Coordinator 연결 (거절 완료 화면 or 뒤로)
                 self?.navigationController?.popToRootViewController(animated: true)
             }
             .store(in: &cancellables)

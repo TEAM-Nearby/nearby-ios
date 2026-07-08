@@ -28,6 +28,15 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
 
     var onStateChange: ((CGFloat, BottomSheetState) -> Void)?
 
+    private var availableHeight: CGFloat {
+        let height = view.superview?.bounds.height ?? view.bounds.height
+        return height > 0 ? height : (view.window?.windowScene?.screen.bounds.height ?? 0)
+    }
+
+    private var topSafeAreaInset: CGFloat {
+        max(view.superview?.safeAreaInsets.top ?? 0, view.safeAreaInsets.top)
+    }
+
     // MARK: - Life Cycles
 
     override func loadView() {
@@ -172,15 +181,6 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
 
     private func shouldResolveHeightFromSuperview(for level: BottomSheetLevel) -> Bool {
         level == .expanded
-    }
-
-    private var availableHeight: CGFloat {
-        let height = view.superview?.bounds.height ?? view.bounds.height
-        return height > 0 ? height : (view.window?.windowScene?.screen.bounds.height ?? 0)
-    }
-
-    private var topSafeAreaInset: CGFloat {
-        max(view.superview?.safeAreaInsets.top ?? 0, view.safeAreaInsets.top)
     }
 
     private func nextLevel(translationY: CGFloat, velocityY: CGFloat) -> BottomSheetLevel {

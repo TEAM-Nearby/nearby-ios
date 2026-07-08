@@ -5,7 +5,7 @@
 //  Created by soomin on 7/7/26.
 //
 
-import UIKit
+import Foundation
 
 enum BottomSheetContent {
     case nearbyCompanionList

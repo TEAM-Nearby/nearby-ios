@@ -28,12 +28,12 @@ final class HostRequestDeclineView: BaseView {
     
     private let rejectView = UIView()
     private let rejectReasonLabel = UILabel()
-    private let rejectReasonTextField = UITextField()
+    private let rejectReasonTextBox = NearbyTextView(placeholder: "내용을 입력해주세요", contentInsets: UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20))
     
     private let rejectButton = NearbyButton(style: .primary, title: "")
     
     var rejectReasonText: String {
-        rejectReasonTextField.text ?? ""
+        rejectReasonTextBox.text
     }
     
     // MARK: - Custom Methods
@@ -58,16 +58,9 @@ final class HostRequestDeclineView: BaseView {
             $0.textAlignment = .left
         }
         
-        // TODO: - TextView로 수정d\
-        rejectReasonTextField.do {
-            $0.attributedPlaceholder = NSAttributedString(string: "내용을 입력해주세요.", attributes: [.foregroundColor: UIColor(resource: .grey20), .font: NearbyFont.b3M14.font])
-            $0.backgroundColor = .bgSurfaceGrey0
-            $0.layer.cornerRadius = 16
-            
-            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 0))
-            $0.leftView = paddingView
-            $0.rightView = paddingView
-            $0.leftViewMode = .always
+        rejectReasonTextBox.do {
+            $0.textView.textColor = .grey60
+            $0.isClearButtonHidden = true
         }
         
         navigationBar.do {
@@ -77,7 +70,7 @@ final class HostRequestDeclineView: BaseView {
     
     override func setUI() {
         addSubviews(navigationBar, applicantProfileView, rejectView, rejectButton)
-        rejectView.addSubviews(rejectReasonLabel, rejectReasonTextField)
+        rejectView.addSubviews(rejectReasonLabel, rejectReasonTextBox)
         applicantProfileView.addSubviews(imageView, titleLabel, subTitleLabel)
     }
     
@@ -117,9 +110,10 @@ final class HostRequestDeclineView: BaseView {
             $0.horizontalEdges.equalToSuperview()
         }
         
-        rejectReasonTextField.snp.makeConstraints {
+        rejectReasonTextBox.snp.makeConstraints {
             $0.top.equalTo(rejectReasonLabel.snp.bottom).offset(10)
             $0.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(92)
         }
         
         rejectButton.snp.makeConstraints {

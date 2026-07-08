@@ -30,17 +30,17 @@ final class LoginView: BaseView {
         contentStackView.do {
             $0.axis = .vertical
             $0.alignment = .center
-            $0.spacing = 12
+            $0.spacing = 8
         }
         
         titleLabel.do {
             $0.textAlignment = .center
-            $0.setFont(.h1Sb24, text: "따로, 또 함께하는 여행", textColor: .black)
+            $0.setFont(.h1Sb24, text: "따로, 또 함께하는 여행", textColor: .grey80)
         }
         
         subtitleLabel.do {
             $0.textAlignment = .center
-            $0.setFont(.c1M12, text: "지금 로그인하고 Nearby를 시작해보세요!", textColor: .grey70)
+            $0.setFont(.b3M14, text: "지금 로그인하고 Nearby를 시작해보세요!", textColor: .grey50)
         }
         
         logoContainerView.do {

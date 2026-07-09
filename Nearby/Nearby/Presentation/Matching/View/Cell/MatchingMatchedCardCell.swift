@@ -172,18 +172,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
-    func configure(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState) {
-        contentView.backgroundColor = state.backgroundColor
-        confirmedLabel.isHidden = !state.showsConfirmedLabel
-        profileImageView.image = content.profileImage ?? .imgProfileDefault
-        nameLabel.setFont(.b2Sb16, text: content.name, textColor: .grey80)
-        genderLabel.setFont(.b2M16, text: content.gender, textColor: .primary40)
-        uploadedTimeLabel.setFont(.b2M16, text: content.uploadedTime, textColor: .grey50)
-        informationLabel.setFont(.b3M14, text: "\(content.place) · \(content.meetingTime)", textColor: .grey80)
-        contentLabel.setFont(.b3M14, text: content.description, textColor: .grey30)
-        updateProfileTopConstraint(state: state)
-    }
-
     private func updateProfileTopConstraint(state: MatchingMatchedCardState) {
         profileImageView.snp.remakeConstraints {
             if state.showsConfirmedLabel {
@@ -195,6 +183,18 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.leading.equalToSuperview().inset(20)
             $0.size.equalTo(40)
         }
+    }
+    
+    func configure(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState) {
+        contentView.backgroundColor = state.backgroundColor
+        confirmedLabel.isHidden = !state.showsConfirmedLabel
+        profileImageView.image = content.profileImage ?? .imgProfileDefault
+        nameLabel.setFont(.b2Sb16, text: content.name, textColor: .grey80)
+        genderLabel.setFont(.b2M16, text: content.gender, textColor: .primary40)
+        uploadedTimeLabel.setFont(.b2M16, text: content.uploadedTime, textColor: .grey50)
+        informationLabel.setFont(.b3M14, text: "\(content.place) · \(content.meetingTime)", textColor: .grey80)
+        contentLabel.setFont(.b3M14, text: content.description, textColor: .grey30)
+        updateProfileTopConstraint(state: state)
     }
 
     // MARK: - Action

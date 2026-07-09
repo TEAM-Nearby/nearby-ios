@@ -29,8 +29,9 @@ final class MatchedCardCollectionView: BaseView {
 
     override func setStyle() {
         backgroundColor = .white
-
-        navigationBar.configure(centerItem: .logo, rightItems: [.alarm])
+        navigationBar.do {
+            $0.configure(centerItem: .logo, rightItems: [.alarm])
+        }
 
         titleLabel.do {
             $0.setFont(.h1Sb24, text: "매칭된 동행 관리", textColor: .grey80)

@@ -342,7 +342,7 @@ final class ReviewPostView: BaseView {
         completionButton.isEnabled = isEnabled
     }
     
-    // MARK: - Action
+    // MARK: - Actions
     
     @objc
     private func reportButtonDidTap() {

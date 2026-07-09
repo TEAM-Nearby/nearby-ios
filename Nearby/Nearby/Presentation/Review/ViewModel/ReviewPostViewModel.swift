@@ -37,7 +37,7 @@ final class ReviewPostViewModel: BaseViewModelType {
         let information: String
     }
     
-    // MARK: - Tag Data
+    // MARK: - Properties
     
     let firstTagTitles = [
         "연락이 빨라요", "매너가 좋아요", "대화가 잘 통해요",
@@ -50,8 +50,6 @@ final class ReviewPostViewModel: BaseViewModelType {
     
     private(set) var firstSelectedTags = Set<Int>()
     private(set) var secondSelectedTags = Set<Int>()
-    
-    // MARK: - Properties
     
     let output = Output()
     private let reviewItem: ReviewItem

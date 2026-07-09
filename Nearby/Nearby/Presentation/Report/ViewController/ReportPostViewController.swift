@@ -85,13 +85,16 @@ extension ReportPostViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ReportReasonCell.identifier, for: indexPath) as? ReportReasonCell else {
-            return UITableViewCell()
-        }
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ReportReasonCell.identifier,
+            for: indexPath
+        ) as? ReportReasonCell else { return UITableViewCell() }
         
         let reason = viewModel.reasons[indexPath.row]
         let isChecked = viewModel.selectedReasons.contains(indexPath.row)
-        cell.configure(title: reason.title, isChecked: isChecked)
+        let isLast = indexPath.row == viewModel.reasons.count - 1
+        
+        cell.configure(title: reason.title, isChecked: isChecked, isLast: isLast)
         return cell
     }
 }

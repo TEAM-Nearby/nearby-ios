@@ -53,6 +53,10 @@ final class AppDIContainer {
         HostReviewListViewModel()
     }
     
+    func makeReportPostViewModel() -> ReportPostViewModel {
+        ReportPostViewModel()
+    }
+    
     func makeReviewPostViewModel(reviewItem: ReviewItem) -> ReviewPostViewModel {
         ReviewPostViewModel(reviewItem: reviewItem)
     }
@@ -133,6 +137,18 @@ final class AppDIContainer {
         let viewController = ReviewPostViewController(
             viewModel: makeReviewPostViewModel(reviewItem: reviewItem)
         )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeReportPostViewController(coordinator: MeetingTabCoordinator) -> ReportPostViewController {
+        let viewController = ReportPostViewController(viewModel: makeReportPostViewModel())
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> ReportCompletionViewController {
+        let viewController = ReportCompletionViewController()
         viewController.coordinator = coordinator
         return viewController
     }

@@ -64,20 +64,22 @@ final class ReportReasonCell: UITableViewCell {
         
         titleLabel.snp.makeConstraints {
             $0.leading.equalTo(checkBox.snp.trailing).offset(12)
-            $0.centerY.equalToSuperview()
-            $0.trailing.lessThanOrEqualToSuperview().inset(20)
+            $0.centerY.equalTo(checkBox.snp.centerY)
+            $0.trailing.lessThanOrEqualToSuperview()
         }
         
         dividerView.snp.makeConstraints {
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview()
+            $0.top.equalTo(checkBox.snp.bottom).offset(20)
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(20)
             $0.height.equalTo(1)
         }
     }
     
-    func configure(title: String, isChecked: Bool) {
+    func configure(title: String, isChecked: Bool, isLast: Bool) {
         titleLabel.text = title
         checkBox.image = isChecked ? .checkboxSelect : .checkboxDefault
+        dividerView.isHidden = isLast
     }
 }
 

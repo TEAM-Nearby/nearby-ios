@@ -24,7 +24,7 @@ final class ReportPostView: BaseView {
     
     private let reasonTextView = NearbyTextView(placeholder: "신고와 관련된 상세 내용을 입력해주세요. (선택)", contentInsets: UIEdgeInsets(top: 15, left: 16, bottom: 15, right: 16))
     
-    private let reportButton = NearbyButton(style: .disabled, title: "신고하기")
+    private let reportButton = NearbyButton(style: .primary, title: "신고하기")
     
     // MARK: - Properties
     
@@ -55,7 +55,8 @@ final class ReportPostView: BaseView {
         
         reasonTableView.do {
             $0.separatorStyle = .none
-            $0.rowHeight = 44
+            $0.rowHeight = UITableView.automaticDimension
+            $0.estimatedRowHeight = 65
             $0.isScrollEnabled = false
             $0.backgroundColor = .clear
         }
@@ -71,7 +72,7 @@ final class ReportPostView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(navigationBar, labelStackView, reasonTableView, reportButton)
+        addSubviews(navigationBar, labelStackView, reasonTableView, reasonTextView, reportButton)
         labelStackView.addArrangedSubviews(titleLabel, subtitleLabel)
     }
     
@@ -89,11 +90,11 @@ final class ReportPostView: BaseView {
         reasonTableView.snp.makeConstraints {
             $0.top.equalTo(labelStackView.snp.bottom).offset(32)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(280)
+            $0.height.equalTo(300)
         }
         
         reasonTextView.snp.makeConstraints {
-            $0.top.equalTo(reasonTableView.snp.bottom).offset(28)
+            $0.top.equalTo(reasonTableView.snp.bottom).offset(8)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(153)
         }

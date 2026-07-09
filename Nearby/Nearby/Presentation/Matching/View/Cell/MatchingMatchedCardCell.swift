@@ -10,16 +10,6 @@ import UIKit
 import SnapKit
 import Then
 
-struct MatchingMatchedCardContent {
-    let profileImage: UIImage?
-    let name: String
-    let gender: String
-    let uploadedTime: String
-    let place: String
-    let meetingTime: String
-    let description: String
-}
-
 final class MatchingMatchedCardCell: UICollectionViewCell {
 
     // MARK: - Properties
@@ -88,7 +78,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         genderLabel.do {
             $0.setFont(.b2M16, text: nil, textColor: .primary40)
         }
-        
+
         dotLabel.do {
             $0.setFont(.b2Sb16, text: "·", textColor: .grey80)
         }
@@ -149,7 +139,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.leading.equalTo(nameLabel.snp.trailing).offset(8)
             $0.height.equalTo(22)
         }
-        
+
         dotLabel.snp.makeConstraints {
             $0.centerY.equalTo(nameLabel.snp.centerY)
             $0.leading.equalTo(genderLabel.snp.trailing).offset(4)
@@ -178,10 +168,12 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
         nextButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
-            $0.centerY.equalTo(profileImageView.snp.centerY)
+            $0.centerY.equalToSuperview()
             $0.size.equalTo(24)
         }
     }
+
+    // MARK: - Methods
 
     func configure(content: MatchingMatchedCardContent, state: MatchingMatchedCardState) {
         contentView.backgroundColor = state.backgroundColor
@@ -194,6 +186,8 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         contentLabel.setFont(.b3M14, text: content.description, textColor: .grey30)
         updateProfileTopConstraint(state: state)
     }
+
+    // MARK: - Private Methods
 
     private func updateProfileTopConstraint(state: MatchingMatchedCardState) {
         profileImageView.snp.remakeConstraints {
@@ -208,7 +202,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
-    // MARK: - Action
+    // MARK: - Actions
 
     @objc
     private func nextButtonDidTap() {

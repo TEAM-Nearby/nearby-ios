@@ -10,6 +10,7 @@ import UIKit
 struct MatchingMatchedCardContentModel {
     let profileImage: UIImage?
     let name: String
+    let participantCount: Int
     let gender: String
     let uploadedTime: String
     let place: String

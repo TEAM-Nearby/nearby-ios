@@ -15,15 +15,18 @@ final class CompanionView: BaseView {
     
     // MARK: - UI Components
     
-    private let blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialLight))
-    private let blurMaskLayer = CAGradientLayer()
-    private let blurWhiteGradientView = UIView()
-    private let blurWhiteGradientLayer = CAGradientLayer()
-    private let navigationBar = NearbyNavigationBar()
+    private let topSectionView = CompanionTopSectionView()
     private let recruitCompanionButtonGradientLayer = CAGradientLayer()
     private let companionCountChip = NearbyChipButton(style: .mapInfo, title: "내 주변 12개의 동행이 있어요", horizontalInset: 12)
+    
     let recruitCompanionButton = UIButton()
     let mapContainerView = UIView()
+    let currentLocationButton = UIButton()
+    
+    var categoryCollectionView: UICollectionView {
+        topSectionView.categoryCollectionView
+    }
+    
     let mapView: GMSMapView = {
         let camera = GMSCameraPosition.camera(withLatitude: 37.531821, longitude: 126.913904, zoom: 15.0)
         let options = GMSMapViewOptions()
@@ -34,18 +37,17 @@ final class CompanionView: BaseView {
         mapView.settings.myLocationButton = false
         return mapView
     }()
-    let currentLocationButton = UIButton()
-    let categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     // MARK: - Life Cycle
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        blurMaskLayer.frame = blurBackgroundView.bounds
-        blurWhiteGradientLayer.frame = blurWhiteGradientView.bounds
         recruitCompanionButtonGradientLayer.frame = recruitCompanionButton.bounds
         recruitCompanionButtonGradientLayer.cornerRadius = recruitCompanionButton.bounds.height / 2
+        recruitCompanionButton.layer.shadowPath = UIBezierPath(
+            roundedRect: recruitCompanionButton.bounds,
+            cornerRadius: recruitCompanionButton.bounds.height / 2).cgPath
     }
     
     // MARK: - Custom Methods
@@ -53,51 +55,6 @@ final class CompanionView: BaseView {
     override func setStyle() {
         backgroundColor = .white
         mapContainerView.backgroundColor = .white
-        
-        blurBackgroundView.do {
-            $0.isUserInteractionEnabled = false
-            
-            blurMaskLayer.colors = [
-                UIColor.black.cgColor,
-                UIColor.black.cgColor,
-                UIColor.clear.cgColor
-            ]
-            blurMaskLayer.locations = [0, 0.55, 1]
-            blurMaskLayer.startPoint = CGPoint(x: 0.5, y: 0)
-            blurMaskLayer.endPoint = CGPoint(x: 0.5, y: 1)
-            $0.layer.mask = blurMaskLayer
-        }
-        
-        blurWhiteGradientView.do {
-            $0.isUserInteractionEnabled = false
-            
-            blurWhiteGradientLayer.colors = [
-                UIColor.white.withAlphaComponent(0.28).cgColor,
-                UIColor.white.withAlphaComponent(0).cgColor
-            ]
-            blurWhiteGradientLayer.locations = [0, 1]
-            blurWhiteGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
-            blurWhiteGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
-            $0.layer.addSublayer(blurWhiteGradientLayer)
-        }
-        
-        navigationBar.do {
-            $0.configure(leftItem: .logo, rightItems: [.alarmPoint])
-            $0.backgroundColor = .clear
-        }
-        
-        categoryCollectionView.do {
-            if let layout = $0.collectionViewLayout as? UICollectionViewFlowLayout {
-                layout.scrollDirection = .horizontal
-                layout.minimumInteritemSpacing = 6
-                layout.minimumLineSpacing = 6
-                layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-            }
-            
-            $0.backgroundColor = .clear
-            $0.clipsToBounds = false
-            $0.showsHorizontalScrollIndicator = false
-        }
         
         currentLocationButton.do {
             $0.setImage(.icMylocationBtn.withRenderingMode(.alwaysOriginal), for: .normal)
@@ -132,8 +89,7 @@ final class CompanionView: BaseView {
     
     override func setUI() {
         mapContainerView.addSubview(mapView)
-        addSubviews(mapContainerView, blurBackgroundView, blurWhiteGradientView, navigationBar, categoryCollectionView,
-                    currentLocationButton, companionCountChip, recruitCompanionButton)
+        addSubviews(mapContainerView, topSectionView, currentLocationButton, companionCountChip, recruitCompanionButton)
     }
     
     override func setLayout() {
@@ -145,28 +101,9 @@ final class CompanionView: BaseView {
             $0.edges.equalToSuperview()
         }
         
-        blurBackgroundView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(102)
+        topSectionView.snp.makeConstraints {
+            $0.top.horizontalEdges.equalToSuperview()
         }
-        
-        blurWhiteGradientView.snp.makeConstraints {
-            $0.edges.equalTo(blurBackgroundView)
-        }
-        
-        navigationBar.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide)
-            $0.horizontalEdges.equalToSuperview()
-        }
-        
-        categoryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom).offset(14)
-            $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(NearbyChipStyle.category.height + 8)
-        }
-        
-        // TODO: - 동행 갯수 칩, 위치 조정 버튼 Bottom Sheet 기준으로 레이아웃 잡기
         
         companionCountChip.snp.makeConstraints {
             $0.centerX.equalToSuperview()
@@ -187,7 +124,16 @@ final class CompanionView: BaseView {
         }
     }
     
-    override func registerCells() {
-        categoryCollectionView.register(NearbyChipCollectionViewCell.self)
+    // MARK: - Method
+    
+    func updateMapControls(bottomInset: CGFloat, state: BottomSheetState) {
+        companionCountChip.snp.updateConstraints {
+            $0.bottom.equalTo(safeAreaLayoutGuide).inset(bottomInset)
+        }
+        
+        companionCountChip.isHidden = state.level == .expanded
+        currentLocationButton.isHidden = state.level == .expanded
+        recruitCompanionButton.isHidden = state.content != .nearbyCompanionList || state.level == .compact
     }
+    
 }

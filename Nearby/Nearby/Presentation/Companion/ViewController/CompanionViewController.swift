@@ -6,9 +6,10 @@
 //
 
 import UIKit
-
 import CoreLocation
 import GoogleMaps
+
+import SnapKit
 
 final class CompanionViewController: BaseViewController<CompanionViewModel> {
     
@@ -17,16 +18,38 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     private var currentLocationMarker: GMSMarker?
+    
+    // MARK: - UI Components
+    
+    private let bottomSheetViewController = NearbyBottomSheetViewController()
+    private let nearbyBottomSheetViewController: UIViewController
+    private let specificBottomSheetViewController: UIViewController
+    private let emptyBottomSheetViewController: UIViewController
+    
     private weak var currentLocationDirectionView: UIView?
     private var categoryItems: [CategoryItem] {
         viewModel.output.categoryItems
     }
     
-    private var contentView: CompanionView {
+    private var companionView: CompanionView {
         guard let view = view as? CompanionView else {
             fatalError("CompanionViewController view is not CompanionView")
         }
         return view
+    }
+    
+    // MARK: - Initializer
+    
+    init(
+        viewModel: CompanionViewModel,
+        nearbyBottomSheetViewController: UIViewController,
+        specificBottomSheetViewController: UIViewController,
+        emptyBottomSheetViewController: UIViewController
+    ) {
+        self.nearbyBottomSheetViewController = nearbyBottomSheetViewController
+        self.specificBottomSheetViewController = specificBottomSheetViewController
+        self.emptyBottomSheetViewController = emptyBottomSheetViewController
+        super.init(viewModel: viewModel)
     }
     
     // MARK: - Life Cycles
@@ -53,17 +76,77 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     
     // MARK: - Custom Methods
     
+    override func setUI() {
+        setBottomSheet()
+    }
+    
     override func setAddTarget() {
-        contentView.currentLocationButton.addTarget(self, action: #selector(currentLocationButtonDidTap), for: .touchUpInside)
-        contentView.recruitCompanionButton.addTarget(self, action: #selector(recruitCompanionButtonDidTap), for: .touchUpInside)
+        companionView.currentLocationButton.addTarget(self, action: #selector(currentLocationButtonDidTap), for: .touchUpInside)
+        companionView.recruitCompanionButton.addTarget(self, action: #selector(recruitCompanionButtonDidTap), for: .touchUpInside)
     }
     
     override func setDelegate() {
-        contentView.categoryCollectionView.dataSource = self
-        contentView.categoryCollectionView.delegate = self
+        companionView.categoryCollectionView.dataSource = self
+        companionView.categoryCollectionView.delegate = self
     }
     
     // MARK: - Methods
+    
+    private func setBottomSheet() {
+        setBottomSheetLayout()
+        bindBottomSheet()
+        initializeBottomSheetState()
+    }
+    
+    private func setBottomSheetLayout() {
+        addChild(bottomSheetViewController)
+        view.insertSubview(bottomSheetViewController.view, aboveSubview: companionView.mapContainerView)
+        
+        bottomSheetViewController.view.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        bottomSheetViewController.didMove(toParent: self)
+    }
+    
+    private func bindBottomSheet() {
+        bottomSheetViewController.onStateChange = { [weak self] height, state in
+            guard let self else { return }
+            
+            updateBottomSheetLayer(for: state)
+            companionView.updateMapControls(bottomInset: height + 12, state: state)
+        }
+    }
+    
+    private func initializeBottomSheetState() {
+        bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
+        bottomSheetViewController.setState(content: .nearbyCompanionList, animated: false)
+    }
+    
+    private func showNearbyBottomSheet(animated: Bool = true) {
+        bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
+        bottomSheetViewController.setState(content: .nearbyCompanionList, animated: animated)
+    }
+    
+    private func showEmptyBottomSheet(animated: Bool = true) {
+        bottomSheetViewController.setContentViewController(emptyBottomSheetViewController)
+        bottomSheetViewController.setState(content: .nearbyCompanionEmpty, animated: animated)
+    }
+    
+    private func showSpecificBottomSheet(animated: Bool = true) {
+        bottomSheetViewController.setContentViewController(specificBottomSheetViewController)
+        bottomSheetViewController.setState(content: .specificRestaurantCompanionList, animated: animated)
+    }
+    
+    private func updateBottomSheetLayer(for state: BottomSheetState) {
+        if state.level == .expanded {
+            view.bringSubviewToFront(bottomSheetViewController.view)
+            view.bringSubviewToFront(companionView.recruitCompanionButton)
+            return
+        }
+        
+        view.insertSubview(bottomSheetViewController.view, aboveSubview: companionView.mapContainerView)
+    }
     
     private func configureLocationManager() {
         locationManager.delegate = self
@@ -88,7 +171,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             longitude: location.coordinate.longitude,
             zoom: 16.0
         )
-        contentView.mapView.animate(to: camera)
+        companionView.mapView.animate(to: camera)
     }
     
     private func updateCurrentLocationMarker(to location: CLLocation) {
@@ -102,18 +185,18 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         let marker = GMSMarker(position: coordinate)
         marker.iconView = makeCurrentLocationMarkerView()
         marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
-        marker.map = contentView.mapView
+        marker.map = companionView.mapView
         marker.tracksViewChanges = true
         currentLocationMarker = marker
         stopTrackingViewChanges(for: marker)
     }
-
+    
     private func makeCurrentLocationMarkerView() -> UIView {
         let markerView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         
         let backgroundImageView = UIImageView(image: .markerMyLocationBg)
         backgroundImageView.frame = markerView.bounds
-
+        
         let directionView = UIView(frame: markerView.bounds)
         
         let arrowImageView = UIImageView(image: .markerMyLocationArrow)
@@ -127,13 +210,13 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         currentLocationDirectionView = directionView
         return markerView
     }
-
+    
     private func startUpdatingHeadingIfNeeded() {
         guard CLLocationManager.headingAvailable() else { return }
         locationManager.headingFilter = 1
         locationManager.startUpdatingHeading()
     }
-
+    
     private func updateCurrentLocationHeading(_ heading: CLHeading) {
         let headingDegree = heading.trueHeading >= 0 ? heading.trueHeading : heading.magneticHeading
         let headingRadian = CGFloat(headingDegree * .pi / 180)
@@ -192,6 +275,16 @@ extension CompanionViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension CompanionViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = categoryItems[indexPath.item]
+        
+        if item.isRestaurant {
+            showNearbyBottomSheet()
+        } else {
+            showEmptyBottomSheet()
+        }
+    }
+    
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -234,7 +327,7 @@ extension CompanionViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         AppLogger.error(error)
     }
-
+    
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         updateCurrentLocationHeading(newHeading)
     }

@@ -17,7 +17,7 @@ enum AppConfig {
     }
     
     static func kakaoAPIKey() throws -> String {
-        try string(forKey: "KAKAO_API_KEY")
+        try string(forKey: "KAKAO_APP_KEY")
     }
 }
 

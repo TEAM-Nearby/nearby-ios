@@ -66,6 +66,7 @@ final class NearbyNavigationBar: BaseView {
             $0.setTitle("신고", for: UIControl.State.normal)
             $0.setTitleColor(.systemRed, for: UIControl.State.normal)
             $0.titleLabel?.font = NearbyFont.b2Sb16.font
+            $0.setUnderline()
         }
     }
 
@@ -108,7 +109,7 @@ final class NearbyNavigationBar: BaseView {
         }
 
         reportButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(8)
+            $0.trailing.equalToSuperview().inset(10)
             $0.centerY.equalToSuperview()
         }
     }

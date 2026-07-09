@@ -40,6 +40,14 @@ final class AppDIContainer {
     func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
     }
+
+    func makeNearCompanionBottomSheetViewModel() -> NearCompanionBottomSheetViewModel {
+        NearCompanionBottomSheetViewModel()
+    }
+    
+    func makeSpecificCompanionBottomSheetViewModel() -> SpecificCompanionBottomSheetViewModel {
+        SpecificCompanionBottomSheetViewModel()
+    }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
            MeetingTabViewModel()
@@ -59,17 +67,17 @@ final class AppDIContainer {
         return CompanionViewController(
             viewModel: viewModel,
             nearbyBottomSheetViewController: makeNearCompanionBottomSheetViewController(),
-            specificBottomSheetViewController: makeSpecificCompanionBottomSheetViewController(),
+            specificBottomSheetViewController: makeEmptyCompanionBottomSheetViewController(),
             emptyBottomSheetViewController: makeEmptyCompanionBottomSheetViewController()
         )
     }
     
     func makeNearCompanionBottomSheetViewController() -> NearCompanionBottomSheetViewController {
-        return NearCompanionBottomSheetViewController()
+        return NearCompanionBottomSheetViewController(viewModel: makeNearCompanionBottomSheetViewModel())
     }
     
-    func makeSpecificCompanionBottomSheetViewController() -> SpecificCompanionSheetViewController {
-        return SpecificCompanionSheetViewController()
+    func makeSpecificCompanionBottomSheetViewController() -> SpecificCompanionBottomSheetViewController {
+        return SpecificCompanionBottomSheetViewController(viewModel: makeSpecificCompanionBottomSheetViewModel())
     }
     
     func makeEmptyCompanionBottomSheetViewController() -> EmptyCompanionBottomSheetViewController {

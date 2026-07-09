@@ -103,9 +103,9 @@ private extension KakaoAuthService {
                 
                 guard let httpResponse = response as? HTTPURLResponse,
                       let data else {
-                    DispatchQueue.main.async {
-                        completion(.failure(KakaoLoginError.invalidResponse))
-                    }
+                        DispatchQueue.main.async {
+                            completion(.failure(KakaoLoginError.invalidResponse))
+                        }
                     return
                 }
                 

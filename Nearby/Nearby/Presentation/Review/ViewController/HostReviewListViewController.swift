@@ -10,12 +10,21 @@ import UIKit
 
 final class HostReviewListViewController: BaseViewController<HostReviewListViewModel> {
     
+    // MARK: - UI Component
+    
     private let hostReviewListView = HostReviewListView()
+    
+    // MARK: - Property
+    
     weak var coordinator: MeetingTabCoordinator?
+    
+    // MARK: - Life Cycle
     
     override func loadView() {
         view = hostReviewListView
     }
+    
+    // MARK: - Custom Methods
     
     override func setAddTarget() {
         hostReviewListView.onCompletionButtonDidTap = { [weak self] in

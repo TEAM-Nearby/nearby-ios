@@ -195,7 +195,7 @@ private extension MyPageMenuRowView {
 
         arrowImageView.do {
             $0.image = UIImage(systemName: "chevron.right")
-            $0.tintColor = .grey80
+            $0.tintColor = .grey70
             $0.contentMode = .scaleAspectFit
         }
     }
@@ -214,8 +214,8 @@ private extension MyPageMenuRowView {
         arrowImageView.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
-            $0.width.equalTo(9)
-            $0.height.equalTo(16)
+            $0.width.equalTo(13)
+            $0.height.equalTo(23)
         }
     }
 }

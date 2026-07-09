@@ -16,9 +16,12 @@ final class MyPageView: BaseView {
 
     private let gradientLayer = CAGradientLayer()
 
-    // MARK: - UI Component
+    // MARK: - UI Components
 
     let navigationBar = NearbyNavigationBar()
+
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
 
     // MARK: - Life Cycle
 
@@ -31,7 +34,7 @@ final class MyPageView: BaseView {
     // MARK: - Custom Methods
 
     override func setStyle() {
-        backgroundColor = .clear
+        backgroundColor = .white
 
         gradientLayer.do {
             $0.colors = [
@@ -49,18 +52,41 @@ final class MyPageView: BaseView {
                 rightItems: [.alarm, .setting]
             )
         }
+
+        scrollView.do {
+            $0.backgroundColor = .clear
+            $0.showsVerticalScrollIndicator = false
+        }
+
+        contentView.do {
+            $0.backgroundColor = .clear
+        }
     }
 
     override func setUI() {
         layer.insertSublayer(gradientLayer, at: 0)
 
+        addSubview(scrollView)
         addSubview(navigationBar)
+
+        scrollView.addSubview(contentView)
     }
 
     override func setLayout() {
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview()
+        }
+
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.horizontalEdges.bottom.equalToSuperview()
+        }
+
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+            $0.height.equalTo(1200) // 임시 테스트용임
         }
     }
 }

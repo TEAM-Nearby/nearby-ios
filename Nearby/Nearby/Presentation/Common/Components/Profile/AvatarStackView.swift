@@ -22,6 +22,10 @@ final class AvatarStackView: UIStackView {
         return CGSize(width: width, height: avatarSize)
     }
 
+    override var intrinsicContentSize: CGSize {
+        contentSize
+    }
+
     // MARK: - Initializer
 
     override init(frame: CGRect) {
@@ -41,6 +45,10 @@ final class AvatarStackView: UIStackView {
             $0.axis = .horizontal
             $0.spacing = -avatarOverlap
             $0.alignment = .center
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentHuggingPriority(.required, for: .vertical)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .vertical)
         }
     }
 
@@ -68,17 +76,19 @@ final class AvatarStackView: UIStackView {
             addArrangedSubview(avatarImageView)
 
             avatarImageView.snp.makeConstraints { make in
-                make.size.equalTo(avatarSize)
+                make.size.equalTo(avatarSize).priority(.high)
             }
 
             avatarImageView.layoutIfNeeded()
             avatarImageView.layer.cornerRadius = avatarSize / 2
             avatarImageView.clipsToBounds = true
         }
+
+        invalidateIntrinsicContentSize()
     }
 
     func configureWithDefaultAvatars(count: Int) {
-        let defaultImages = Array<UIImage?>(repeating: nil, count: count)
+        let defaultImages = [UIImage?](repeating: nil, count: count)
         configure(with: defaultImages)
     }
 }

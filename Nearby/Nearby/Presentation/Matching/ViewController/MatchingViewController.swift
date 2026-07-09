@@ -12,9 +12,9 @@ final class MatchingViewController: UIViewController {
     // MARK: - Properties
 
     private let matchedCardView = MatchedCardCollectionView()
-    private var cardItems: [(content: MatchingMatchedCardContent, state: MatchingMatchedCardState)] = [
+    private var cardItems: [(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState)] = [
         (
-            content: MatchingMatchedCardContent(
+            content: MatchingMatchedCardContentModel(
                 profileImage: .imgProfileDefault,
                 name: "정지영",
                 gender: "여성",
@@ -26,7 +26,7 @@ final class MatchingViewController: UIViewController {
             state: .pending
         ),
         (
-            content: MatchingMatchedCardContent(
+            content: MatchingMatchedCardContentModel(
                 profileImage: .imgProfileDefault,
                 name: "정지영",
                 gender: "여성",
@@ -38,7 +38,7 @@ final class MatchingViewController: UIViewController {
             state: .pending
         ),
         (
-            content: MatchingMatchedCardContent(
+            content: MatchingMatchedCardContentModel(
                 profileImage: .imgProfileDefault,
                 name: "정지영",
                 gender: "여성",
@@ -50,7 +50,7 @@ final class MatchingViewController: UIViewController {
             state: .confirmed
         )
     ]
-    private var displayCardItems: [(content: MatchingMatchedCardContent, state: MatchingMatchedCardState)] {
+    private var displayCardItems: [(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState)] {
         return cardItems.sorted {
             $0.state.displayPriority < $1.state.displayPriority
         }
@@ -96,12 +96,12 @@ final class MatchingViewController: UIViewController {
         matchedCardView.matchedCardCollectionView.reloadData()
         updateViewState()
     }
-    
+
     private func matchingCardDidTap() {
         // TODO: - 뷰 연결
     }
 
-    // MARK: - Action
+    // MARK: - Actions
 
     @objc
     private func findCompanionButtonDidTap() {

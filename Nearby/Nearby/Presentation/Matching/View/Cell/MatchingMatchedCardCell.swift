@@ -175,7 +175,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     // MARK: - Methods
 
-    func configure(content: MatchingMatchedCardContent, state: MatchingMatchedCardState) {
+    func configure(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState) {
         contentView.backgroundColor = state.backgroundColor
         confirmedLabel.isHidden = !state.showsConfirmedLabel
         profileImageView.image = content.profileImage ?? .imgProfileDefault

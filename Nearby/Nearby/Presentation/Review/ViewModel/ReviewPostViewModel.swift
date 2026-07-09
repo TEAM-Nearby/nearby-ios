@@ -52,6 +52,13 @@ final class ReviewPostViewModel: BaseViewModelType {
     
     // MARK: - Methods
     
+    private func updateCompletionState() {
+        let hasRating = rating > 0
+        let hasFirstTag = !firstTags.isEmpty
+        let hasSecondTag = !secondTags.isEmpty
+        output.isCompletionEnabled.send(hasRating && hasFirstTag && hasSecondTag)
+    }
+    
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
@@ -72,15 +79,9 @@ final class ReviewPostViewModel: BaseViewModelType {
             output.showReport.send(())
             
         case .completionButtonDidTap:
-            guard rating > 0, !firstTags.isEmpty && !secondTags.isEmpty else { return }
+            guard rating > 0, !firstTags.isEmpty, !secondTags.isEmpty else { return }
             // TODO: - 후기 등록 API 연동 (rating, firstTags, secondTags, reviewItem.id)
             output.submitSuccess.send(())
         }
-    }
-    
-    private func updateCompletionState() {
-        let hasRating = rating > 0
-            let hasTag = !firstTags.isEmpty || !secondTags.isEmpty
-            output.isCompletionEnabled.send(hasRating && hasTag)
     }
 }

@@ -112,8 +112,8 @@ private extension KakaoAuthService {
                 guard (200...299).contains(httpResponse.statusCode) else {
                     let responseBody = String(data: data, encoding: .utf8) ?? "응답 바디 없음"
 
-                    print("서버 로그인 실패 statusCode:", httpResponse.statusCode)
-                    print("서버 로그인 실패 responseBody:", responseBody)
+                    AppLogger.network("서버 로그인 실패 statusCode: \(httpResponse.statusCode)")
+                    AppLogger.debug("서버 로그인 실패 responseBody: \(responseBody)")
 
                     DispatchQueue.main.async {
                         completion(.failure(KakaoLoginError.invalidResponse))
@@ -137,7 +137,9 @@ private extension KakaoAuthService {
                 }
             }.resume()
         } catch {
-            completion(.failure(error))
+            DispatchQueue.main.async {
+                completion(.failure(error))
+            }
         }
     }
 }

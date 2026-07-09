@@ -83,7 +83,7 @@ final class HostReviewListView: BaseView {
         
         locationImage.do {
             $0.image = .smallLocationIcon.withRenderingMode(.alwaysTemplate)
-                $0.tintColor = .primary50
+            $0.tintColor = .primary50
         }
         
         locationLabel.do {
@@ -172,11 +172,7 @@ final class HostReviewListView: BaseView {
         
         items.forEach { item in
             let profileView = ReviewProfileView()
-            profileView.configure(
-                image: item.image,
-                name: item.name,
-                information: item.information
-            )
+            profileView.configure(image: item.image, name: item.name, information: item.information)
             profileView.onNextButtonDidTap = { onProfileTap(item) }
             reviewListStackView.addArrangedSubview(profileView)
         }

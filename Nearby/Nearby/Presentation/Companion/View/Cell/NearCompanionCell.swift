@@ -91,7 +91,9 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.alignment = .center
         }
         
-        profileStackView.configureWithDefaultAvatars(count: profileAvatarCount)
+        profileStackView.do {
+            $0.configureWithDefaultAvatars(count: profileAvatarCount)
+        }
         
         scheduleLabel.do {
             $0.setFont(.c1R12, text: "6월 29일 14:00", textColor: .grey70)

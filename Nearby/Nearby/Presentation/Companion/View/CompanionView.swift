@@ -60,7 +60,7 @@ final class CompanionView: BaseView {
             $0.setImage(.icMylocationBtn.withRenderingMode(.alwaysOriginal), for: .normal)
             $0.imageView?.contentMode = .scaleAspectFit
         }
-        
+
         recruitCompanionButton.do {
             var configuration = UIButton.Configuration.plain()
             var title = AttributedString("동행글 작성")
@@ -115,7 +115,7 @@ final class CompanionView: BaseView {
             $0.bottom.equalTo(companionCountChip)
             $0.size.equalTo(40)
         }
-        
+
         recruitCompanionButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(12)
@@ -130,10 +130,16 @@ final class CompanionView: BaseView {
         companionCountChip.snp.updateConstraints {
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(bottomInset)
         }
-        
-        companionCountChip.isHidden = state.level == .expanded
-        currentLocationButton.isHidden = state.level == .expanded
-        recruitCompanionButton.isHidden = state.content != .nearbyCompanionList || state.level == .compact
+
+        let shouldShowMapControls = state.content == .nearbyCompanionList && state.level != .expanded
+
+        companionCountChip.isHidden = !shouldShowMapControls
+        currentLocationButton.isHidden = !shouldShowMapControls
+        recruitCompanionButton.isHidden = !shouldShowMapControls || state.level == .compact
+    }
+    
+    func setCategoryChipsHidden(_ isHidden: Bool) {
+        categoryCollectionView.isHidden = isHidden
     }
     
 }

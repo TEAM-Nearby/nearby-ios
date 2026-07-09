@@ -56,8 +56,7 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
         viewModel.output.showReviewWrite
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
-                // TODO: - Coordinator 연결 (후기 작성 화면)
-                _ = item
+                self?.coordinator?.showReviewPost(for: item)
             }
             .store(in: &cancellables)
         

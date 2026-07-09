@@ -53,6 +53,10 @@ final class AppDIContainer {
         HostReviewListViewModel()
     }
     
+    func makeReviewPostViewModel(reviewItem: ReviewItem) -> ReviewPostViewModel {
+        ReviewPostViewModel(reviewItem: reviewItem)
+    }
+    
     // MARK: - ViewControllers
     
     func makeLoginViewController() -> LoginViewController {
@@ -117,6 +121,17 @@ final class AppDIContainer {
     func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = HostReviewListViewController(
             viewModel: makeHostReviewListViewModel()
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeReviewPostViewController(
+        coordinator: MeetingTabCoordinator,
+        reviewItem: ReviewItem
+    ) -> UIViewController {
+        let viewController = ReviewPostViewController(
+            viewModel: makeReviewPostViewModel(reviewItem: reviewItem)
         )
         viewController.coordinator = coordinator
         return viewController

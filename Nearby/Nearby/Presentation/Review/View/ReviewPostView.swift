@@ -17,6 +17,9 @@ final class ReviewPostView: BaseView {
     private var firstSelectedTagIndexes = Set<Int>()
     private var secondSelectedTagIndexes = Set<Int>()
     
+    private var firstTagHeightConstraint: Constraint?
+    private var secondTagHeightConstraint: Constraint?
+    
     var onRatingChanged: ((Int) -> Void)?
     var onTagsChanged: ((Set<Int>, Set<Int>) -> Void)?
     var onReportButtonDidTap: (() -> Void)?
@@ -63,26 +66,63 @@ final class ReviewPostView: BaseView {
     private let reportSubtitleLabel = UILabel()
     private let reportButton = UIButton()
     
-    private let completionButton = NearbyButton(style: .primary, title: "")
+    private let completionButton = NearbyButton(style: .primary, title: "동행 마치기")
+    
+    // MARK: - Life Cycle
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        firstTagCollectionView.layoutIfNeeded()
+        secondTagCollectionView.layoutIfNeeded()
+        
+        let firstHeight = firstTagCollectionView.contentSize.height
+        let secondHeight = secondTagCollectionView.contentSize.height
+        
+        if firstTagCollectionView.bounds.height != firstHeight {
+            firstTagHeightConstraint?.update(offset: firstHeight)
+        }
+        if secondTagCollectionView.bounds.height != secondHeight {
+            secondTagHeightConstraint?.update(offset: secondHeight)
+        }
+    }
     
     // MARK: - Custom Methods
     
     override func setStyle() {
-        backgroundColor = .bgSurfaceGrey0
-        
         navigationBar.do {
             $0.configure(leftItem: .back, centerItem: .title("동행 후기"))
+            $0.backgroundColor = .clear
+        }
+        
+        scrollView.do {
+            $0.backgroundColor = .clear
+            $0.showsVerticalScrollIndicator = false
+        }
+        
+        contentView.do {
             $0.backgroundColor = .clear
         }
         
         profileView.do {
             $0.axis = .horizontal
             $0.spacing = 28
+            $0.clipsToBounds = true
         }
         
         profileLabelStackView.do {
             $0.axis = .vertical
             $0.spacing = 6
+        }
+        
+        profileTitleLabel.do {
+            $0.setFont(.h3Sb20, text: "", textColor: .grey90)
+            $0.textAlignment = .left
+            $0.numberOfLines = 2
+        }
+        
+        informationLabel.do {
+            $0.setFont(.b3M14, text: "", textColor: .grey60)
         }
 
         starView.do {
@@ -98,17 +138,24 @@ final class ReviewPostView: BaseView {
         reviewView.do {
             $0.backgroundColor = .white
             $0.layer.cornerRadius = 16
+            $0.clipsToBounds = true
         }
         
         reviewTitleLabel.do {
             $0.setFont(.b1Sb18, text: "어떤 점이 좋았나요?", textColor: .grey80)
             $0.textAlignment = .left
-            $0.numberOfLines = 2
         }
         
         reviewSubtitleLabel.do {
             $0.setFont(.b3M14, text: "", textColor: .grey40)
             $0.textAlignment = .left
+        }
+        
+        firstTagCollectionView.do {
+            $0.backgroundColor = .clear
+            $0.isScrollEnabled = false
+            $0.dataSource = self
+            $0.delegate = self
         }
         
         firstCategoryLabel.do {
@@ -121,9 +168,24 @@ final class ReviewPostView: BaseView {
             $0.textAlignment = .left
         }
         
+        firstTagCollectionView.do {
+            $0.backgroundColor = .clear
+            $0.isScrollEnabled = false
+            $0.dataSource = self
+            $0.delegate = self
+        }
+        
+        secondTagCollectionView.do {
+            $0.backgroundColor = .clear
+            $0.isScrollEnabled = false
+            $0.dataSource = self
+            $0.delegate = self
+        }
+        
         reportView.do {
             $0.backgroundColor = .white
             $0.layer.cornerRadius = 16
+            $0.clipsToBounds = true
         }
         
         reportLabelStackView.do {
@@ -142,7 +204,9 @@ final class ReviewPostView: BaseView {
         }
         
         reportButton.do {
-            $0.titleLabel?.setFont(.c1M12, text: "신고하기", textColor: .highlightRed)
+            $0.setTitle("신고하기", for: .normal)
+            $0.setTitleColor(.highlightRed, for: .normal)
+            $0.titleLabel?.font = NearbyFont.c1M12.font
             $0.setUnderline()
         }
     }
@@ -223,7 +287,7 @@ final class ReviewPostView: BaseView {
         firstTagCollectionView.snp.makeConstraints {
             $0.top.equalTo(firstCategoryLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(12)
-            $0.height.equalTo(80)
+            firstTagHeightConstraint = $0.height.equalTo(0).constraint
         }
         
         secondCategoryLabel.snp.makeConstraints {
@@ -234,7 +298,7 @@ final class ReviewPostView: BaseView {
         secondTagCollectionView.snp.makeConstraints {
             $0.top.equalTo(secondCategoryLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(12)
-            $0.height.equalTo(80)
+            secondTagHeightConstraint = $0.height.equalTo(0).constraint
             $0.bottom.equalToSuperview().inset(16)
         }
         
@@ -264,6 +328,9 @@ final class ReviewPostView: BaseView {
     override func setAddTarget() {
         reportButton.addTarget(self, action: #selector(reportButtonDidTap), for: .touchUpInside)
         completionButton.addTarget(self, action: #selector(completionButtonDidTap), for: .touchUpInside)
+        starRating.onRatingChanged = { [weak self] rating in
+            self?.onRatingChanged?(rating)
+        }
     }
     
     override func registerCells() {
@@ -299,9 +366,9 @@ final class ReviewPostView: BaseView {
     }
     
     func configure(name: String, information: String) {
-        profileTitleLabel.text = "\(name) 님과의 여행이\n끝났어요."
+        profileTitleLabel.text = "\(name)과의 여행이\n끝났어요."
         informationLabel.text = information
-        reviewSubtitleLabel.text = "\(name) 님에게 좋았던 점을 남겨보세요."
+        reviewSubtitleLabel.text = "\(name)에게 좋았던 점을 남겨보세요."
     }
     
     // MARK: - Action
@@ -320,7 +387,6 @@ final class ReviewPostView: BaseView {
 // MARK: - UICollectionViewDataSource
 
 extension ReviewPostView: UICollectionViewDataSource {
-    
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
         tagTitles(for: collectionView).count
@@ -341,7 +407,6 @@ extension ReviewPostView: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension ReviewPostView: UICollectionViewDelegateFlowLayout {
-    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -362,24 +427,34 @@ extension ReviewPostView: UICollectionViewDelegateFlowLayout {
 extension ReviewPostView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
-        if collectionView === firstTagCollectionView {
-            toggle(&firstSelectedTagIndexes, at: indexPath.item)
-        } else {
-            toggle(&secondSelectedTagIndexes, at: indexPath.item)
-        }
+        let index = indexPath.item
         
-        UIView.performWithoutAnimation {
-            collectionView.reloadItems(at: [indexPath])
-            collectionView.layoutIfNeeded()
-            onTagsChanged?(firstSelectedTagIndexes, secondSelectedTagIndexes)
-        }
-    }
-    
-    private func toggle(_ set: inout Set<Int>, at index: Int) {
-        if set.contains(index) {
-            set.remove(index)
+        if collectionView === firstTagCollectionView {
+            if firstSelectedTagIndexes.contains(index) {
+                firstSelectedTagIndexes.remove(index)
+            } else {
+                guard firstSelectedTagIndexes.count < 3 else { return }
+                firstSelectedTagIndexes.insert(index)
+            }
+            
+            UIView.performWithoutAnimation {
+                collectionView.reloadItems(at: [indexPath])
+                collectionView.layoutIfNeeded()
+            }
         } else {
-            set.insert(index)
+            let previous = secondSelectedTagIndexes
+            
+            if secondSelectedTagIndexes.contains(index) {
+                secondSelectedTagIndexes.removeAll()
+            } else {
+                secondSelectedTagIndexes = [index]
+            }
+            let changed = previous.union(secondSelectedTagIndexes).map { IndexPath(item: $0, section: 0) }
+            UIView.performWithoutAnimation {
+                collectionView.reloadItems(at: changed)
+                collectionView.layoutIfNeeded()
+            }
         }
+        onTagsChanged?(firstSelectedTagIndexes, secondSelectedTagIndexes)
     }
 }

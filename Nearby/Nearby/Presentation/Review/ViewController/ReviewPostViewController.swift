@@ -24,6 +24,11 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         view = reviewPostView
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .bgDefaultGrey
+    }
+    
     // MARK: - Custom Methods
     
     override func setAddTarget() {

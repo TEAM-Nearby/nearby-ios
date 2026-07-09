@@ -79,4 +79,12 @@ final class NearbyButton: UIButton {
         isSelected = selected
         refreshStyle()
     }
+
+    func setEnabled(_ enabled: Bool) {
+        isEnabled = enabled
+
+        let buttonStyle: NearbyButtonStyle = enabled ? style : .disabled
+        backgroundColor = buttonStyle.backgroundColor
+        setTitleColor(buttonStyle.titleColor, for: .normal)
+    }
 }

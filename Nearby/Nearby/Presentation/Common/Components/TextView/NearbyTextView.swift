@@ -78,8 +78,9 @@ final class NearbyTextView: BaseView {
         remakeTextViewConstraints()
         
         placeholderLabel.snp.makeConstraints {
-            $0.top.leading.equalTo(textView)
-            $0.height.equalTo(22)
+            $0.top.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.lessThanOrEqualToSuperview()
         }
         
         clearButton.snp.makeConstraints {
@@ -107,9 +108,14 @@ final class NearbyTextView: BaseView {
     func updatePlaceholder(isHidden: Bool) {
         placeholderLabel.isHidden = isHidden
     }
-    
+
     func clearText() {
         textView.text = nil
         placeholderLabel.isHidden = false
+    }
+    
+    func setPlaceholderTruncation(numberOfLines: Int) {
+        placeholderLabel.numberOfLines = numberOfLines
+        placeholderLabel.lineBreakMode = .byTruncatingTail
     }
 }

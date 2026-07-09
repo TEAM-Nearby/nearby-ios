@@ -24,7 +24,7 @@ final class NearbyNavigationBar: BaseView {
 
     private let leftButton = UIButton(type: .system)
     private let titleLabel = UILabel()
-    private let logoLabel = UILabel()
+    private let logoImageView = UIImageView()
     private let rightStackView = UIStackView()
     private let rightFirstButton = UIButton(type: .system)
     private let rightSecondButton = UIButton(type: .system)
@@ -43,10 +43,9 @@ final class NearbyNavigationBar: BaseView {
             $0.setFont(.b2Sb16, text: centerTitle, textColor: .grey80)
         }
 
-        logoLabel.do {
-            $0.text = "Nearby 로고"
-            $0.font = NearbyFont.b1M18.font
-            $0.textColor = .black
+        logoImageView.do {
+            $0.image = .nearbyLogo.withRenderingMode(.alwaysOriginal)
+            $0.contentMode = .scaleAspectFit
         }
 
         rightStackView.do {
@@ -71,7 +70,7 @@ final class NearbyNavigationBar: BaseView {
     }
 
     override func setUI() {
-        addSubviews(leftButton, titleLabel, logoLabel, rightStackView, reportButton)
+        addSubviews(leftButton, titleLabel, logoImageView, rightStackView, reportButton)
 
         rightStackView.addArrangedSubviews(
             rightFirstButton, rightSecondButton
@@ -93,10 +92,7 @@ final class NearbyNavigationBar: BaseView {
             $0.center.equalToSuperview()
         }
 
-        logoLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(20)
-            $0.centerY.equalToSuperview()
-        }
+        setLogoLayout(isCentered: false)
 
         rightStackView.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(8)
@@ -127,24 +123,46 @@ final class NearbyNavigationBar: BaseView {
     // MARK: - Methods
 
     private func configureLeftItem(_ item: NearbyNavigationBarItem) {
-        leftButton.isHidden = item == .empty
+        leftButton.isHidden = item == .empty || item == .logo
+        
+        if item == .logo {
+            showLogo(isCentered: false)
+            return
+        }
+        
         leftButton.setImage(item.image, for: UIControl.State.normal)
     }
 
     private func configureCenterItem(_ item: NearbyNavigationBarItem) {
-        titleLabel.isHidden = true
-        logoLabel.isHidden = true
-
         switch item {
         case .title(let title):
             titleLabel.text = title
             titleLabel.isHidden = false
 
         case .logo:
-            logoLabel.isHidden = false
+            showLogo(isCentered: true)
 
         default:
             break
+        }
+    }
+    
+    private func showLogo(isCentered: Bool) {
+        logoImageView.isHidden = false
+        setLogoLayout(isCentered: isCentered)
+    }
+    
+    private func setLogoLayout(isCentered: Bool) {
+        logoImageView.snp.remakeConstraints {
+            if isCentered {
+                $0.centerX.equalToSuperview()
+            } else {
+                $0.leading.equalToSuperview().inset(20)
+            }
+            
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(87)
+            $0.height.equalTo(24)
         }
     }
 
@@ -183,6 +201,9 @@ final class NearbyNavigationBar: BaseView {
         centerItem: NearbyNavigationBarItem = .empty,
         rightItems: [NearbyNavigationBarItem] = []
     ) {
+        titleLabel.isHidden = true
+        logoImageView.isHidden = true
+        
         configureLeftItem(leftItem)
         configureCenterItem(centerItem)
         configureRightItems(rightItems)

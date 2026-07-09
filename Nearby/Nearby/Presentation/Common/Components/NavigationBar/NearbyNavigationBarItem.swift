@@ -27,6 +27,8 @@ extension NearbyNavigationBarItem {
             return .chevronLeftIcon
         case .down:
             return .chevronDownIcon
+        case .logo:
+            return .nearbyLogo
         case .alarm:
             return .alarmIcon
         case .setting:
@@ -46,8 +48,6 @@ extension NearbyNavigationBarItem {
             return text
         case .report:
             return "신고"
-        case .logo:
-            return "로고"
         default:
             return nil
         }

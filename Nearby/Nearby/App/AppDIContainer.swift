@@ -49,6 +49,14 @@ final class AppDIContainer {
         MeetingProgressViewModel(item: item)
     }
     
+    func makeHostReviewListViewModel() -> HostReviewListViewModel {
+        HostReviewListViewModel()
+    }
+    
+    func makeReviewPostViewModel(reviewItem: ReviewItem) -> ReviewPostViewModel {
+        ReviewPostViewModel(reviewItem: reviewItem)
+    }
+    
     // MARK: - ViewControllers
     
     func makeLoginViewController() -> LoginViewController {
@@ -108,6 +116,25 @@ final class AppDIContainer {
     
     func makeRecruitCompanionViewController() -> UIViewController {
         makePlaceholderViewController(title: "동행글 작성")
+    }
+    
+    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = HostReviewListViewController(
+            viewModel: makeHostReviewListViewModel()
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeReviewPostViewController(
+        coordinator: MeetingTabCoordinator,
+        reviewItem: ReviewItem
+    ) -> UIViewController {
+        let viewController = ReviewPostViewController(
+            viewModel: makeReviewPostViewModel(reviewItem: reviewItem)
+        )
+        viewController.coordinator = coordinator
+        return viewController
     }
 }
 

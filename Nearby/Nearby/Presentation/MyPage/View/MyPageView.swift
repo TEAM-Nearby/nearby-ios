@@ -27,17 +27,13 @@ final class MyPageView: BaseView {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
 
-    private let boardingPassCardView = UIView()
+    private let boardingPassImageView = UIImageView()
     private let profileImageView = GradientCircleView(diameter: 80)
     private let nameStackView = UIStackView()
     private let nicknameLabel = UILabel()
     private let genderLabel = UILabel()
-    private let verificationChip = NearbyChipButton(
-        style: .badgeVerification,
-        title: "본인인증 완료",
-        horizontalInset: 16
-    )
-    private let dottedLineView = MyPageDottedLineView()
+    private let verificationChip = NearbyChipButton(style: .badgeVerification, title: "본인인증 완료", horizontalInset: 16)
+    
     private let personalityChipContainerView = UIView()
     private let personalityFirstLineStackView = UIStackView()
     private let personalitySecondLineStackView = UIStackView()
@@ -103,10 +99,10 @@ final class MyPageView: BaseView {
             $0.backgroundColor = .clear
         }
 
-        boardingPassCardView.do {
-            $0.backgroundColor = .white
-            $0.layer.cornerRadius = 16
-            $0.clipsToBounds = true
+        boardingPassImageView.do {
+            $0.image = .mypageCard
+            $0.contentMode = .scaleToFill
+            $0.isUserInteractionEnabled = true
         }
 
         nameStackView.do {
@@ -186,18 +182,17 @@ final class MyPageView: BaseView {
 
         scrollView.addSubview(contentView)
 
-        contentView.addSubview(boardingPassCardView)
+        contentView.addSubview(boardingPassImageView)
         contentView.addSubview(mannerScoreCardView)
         contentView.addSubview(menuCardView)
 
-        boardingPassCardView.addSubview(profileImageView)
-        boardingPassCardView.addSubview(nameStackView)
-        boardingPassCardView.addSubview(verificationChip)
-        boardingPassCardView.addSubview(dottedLineView)
-        boardingPassCardView.addSubview(personalityChipContainerView)
-        boardingPassCardView.addSubview(statsStackView)
-        boardingPassCardView.addSubview(firstDividerView)
-        boardingPassCardView.addSubview(secondDividerView)
+        boardingPassImageView.addSubview(profileImageView)
+        boardingPassImageView.addSubview(nameStackView)
+        boardingPassImageView.addSubview(verificationChip)
+        boardingPassImageView.addSubview(personalityChipContainerView)
+        boardingPassImageView.addSubview(statsStackView)
+        boardingPassImageView.addSubview(firstDividerView)
+        boardingPassImageView.addSubview(secondDividerView)
 
         nameStackView.addArrangedSubviews(nicknameLabel, genderLabel)
 
@@ -256,7 +251,7 @@ final class MyPageView: BaseView {
             $0.width.equalTo(scrollView.frameLayoutGuide)
         }
 
-        boardingPassCardView.snp.makeConstraints {
+        boardingPassImageView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(408)
@@ -279,14 +274,8 @@ final class MyPageView: BaseView {
             $0.height.equalTo(36)
         }
 
-        dottedLineView.snp.makeConstraints {
-            $0.top.equalTo(verificationChip.snp.bottom).offset(16)
-            $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(1)
-        }
-
         personalityChipContainerView.snp.makeConstraints {
-            $0.top.equalTo(dottedLineView.snp.bottom).offset(16)
+            $0.top.equalTo(verificationChip.snp.bottom).offset(32)
             $0.centerX.equalToSuperview()
             $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
         }
@@ -321,7 +310,7 @@ final class MyPageView: BaseView {
         }
 
         mannerScoreCardView.snp.makeConstraints {
-            $0.top.equalTo(boardingPassCardView.snp.bottom).offset(12)
+            $0.top.equalTo(boardingPassImageView.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(209)
         }

@@ -49,6 +49,10 @@ final class AppDIContainer {
         MeetingProgressViewModel(item: item)
     }
     
+    func makeMyPageViewModel() -> MyPageViewModel {
+        MyPageViewModel()
+    }
+    
     // MARK: - ViewControllers
     
     func makeLoginViewController() -> LoginViewController {
@@ -101,9 +105,9 @@ final class AppDIContainer {
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
-    
+
     func makeMyPageViewController() -> UIViewController {
-        makePlaceholderViewController(title: "마이페이지")
+        MyPageViewController(viewModel: makeMyPageViewModel())
     }
     
     func makeRecruitCompanionViewController() -> UIViewController {

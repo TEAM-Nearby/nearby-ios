@@ -48,7 +48,6 @@
 				Presentation/DiningMap/ViewController/.gitkeep,
 				Presentation/DiningMap/ViewModel/.gitkeep,
 				Presentation/Matching/Coordinator/.gitkeep,
-				Presentation/Matching/ViewController/.gitkeep,
 				Presentation/Matching/ViewModel/.gitkeep,
 				Presentation/Meeting/Coordinator/.gitkeep,
 				Presentation/Meeting/ViewController/.gitkeep,

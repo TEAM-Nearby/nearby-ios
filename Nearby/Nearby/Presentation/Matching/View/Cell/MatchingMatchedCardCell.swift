@@ -12,7 +12,7 @@ import Then
 
 final class MatchingMatchedCardCell: UICollectionViewCell {
 
-    // MARK: - Properties
+    // MARK: - Property
 
     var onNextButtonDidTap: (() -> Void)?
 
@@ -43,7 +43,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -163,7 +163,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.leading.equalTo(profileImageView.snp.leading)
             $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8)
             $0.height.equalTo(20)
-            $0.bottom.lessThanOrEqualToSuperview().inset(16)
         }
 
         nextButton.snp.makeConstraints {
@@ -172,8 +171,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.size.equalTo(24)
         }
     }
-
-    // MARK: - Methods
 
     func configure(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState) {
         contentView.backgroundColor = state.backgroundColor
@@ -186,8 +183,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         contentLabel.setFont(.b3M14, text: content.description, textColor: .grey30)
         updateProfileTopConstraint(state: state)
     }
-
-    // MARK: - Private Methods
 
     private func updateProfileTopConstraint(state: MatchingMatchedCardState) {
         profileImageView.snp.remakeConstraints {
@@ -202,7 +197,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
-    // MARK: - Actions
+    // MARK: - Action
 
     @objc
     private func nextButtonDidTap() {

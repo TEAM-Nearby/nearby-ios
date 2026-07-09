@@ -30,10 +30,7 @@ final class MatchedCardCollectionView: BaseView {
     override func setStyle() {
         backgroundColor = .white
 
-        navigationBar.configure(
-            centerItem: .logo,
-            rightItems: [.alarm]
-        )
+        navigationBar.configure(centerItem: .logo, rightItems: [.alarm])
 
         titleLabel.do {
             $0.setFont(.h1Sb24, text: "매칭된 동행 관리", textColor: .grey80)
@@ -42,7 +39,7 @@ final class MatchedCardCollectionView: BaseView {
         matchedCardCollectionView.do {
             $0.backgroundColor = .clear
             $0.showsVerticalScrollIndicator = false
-            $0.collectionViewLayout = makeMatchedCardLayout()
+            $0.collectionViewLayout = Self.makeLayout()
         }
 
         emptyView.isHidden = true
@@ -83,7 +80,7 @@ final class MatchedCardCollectionView: BaseView {
 
     // MARK: - Methods
 
-    private func makeMatchedCardLayout() -> UICollectionViewFlowLayout {
+    private static func makeLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 12

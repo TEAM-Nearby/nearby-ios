@@ -32,7 +32,7 @@ final class MyPageView: BaseView {
     private let nameStackView = UIStackView()
     private let nicknameLabel = UILabel()
     private let genderLabel = UILabel()
-    private let verificationChip = NearbyChipButton(style: .badgeVerification, title: "본인인증 완료", horizontalInset: 16)
+    private let verificationChip = NearbyChipButton(style: .badgeVerification, title: "본인인증 완료", horizontalInset: 22)
     
     private let personalityChipContainerView = UIView()
     private let personalityFirstLineStackView = UIStackView()
@@ -424,7 +424,7 @@ private extension MyPageStatItemView {
         backgroundColor = .clear
 
         iconImageView.do {
-            $0.image = icon
+            $0.image = icon?.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .grey30
             $0.contentMode = .scaleAspectFit
         }

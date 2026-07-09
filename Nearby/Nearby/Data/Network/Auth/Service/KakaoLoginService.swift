@@ -7,8 +7,8 @@
 
 import Foundation
 
+import KakaoSDKAuth
 import KakaoSDKUser
-internal import KakaoSDKAuth
 
 struct KakaoLoginRequestDTO: Encodable {
     let idToken: String
@@ -40,15 +40,10 @@ enum OnboardingStatus: String, Decodable {
 
 enum KakaoLoginError: Error {
     case missingIDToken
-    case invalidURL
     case invalidResponse
 }
 
 final class KakaoAuthService {
-    
-    // MARK: - Property
-    
-    private let baseURL = "https:// 어쩌구.. base url"
     
     // MARK: - Method
     
@@ -56,7 +51,7 @@ final class KakaoAuthService {
         completion: @escaping (Result<KakaoLoginDataDTO, Error>) -> Void
     ) {
         let nonce = UUID().uuidString
-        
+
         UserApi.shared.loginWithKakaoAccount(nonce: nonce) { [weak self] oauthToken, error in
             if let error {
                 completion(.failure(error))
@@ -81,60 +76,68 @@ private extension KakaoAuthService {
         idToken: String, nonce: String,
         completion: @escaping (Result<KakaoLoginDataDTO, Error>) -> Void
     ) {
-        guard let url = URL(string: "\(baseURL)/auth/kakao/login") else {
-            completion(.failure(KakaoLoginError.invalidURL))
-            return
-        }
-        
-        let requestDTO = KakaoLoginRequestDTO(idToken: idToken, nonce: nonce)
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         do {
+            let url = try AppConfig
+                .baseURL()
+                .appendingPathComponent("/api/kakao/login")
+            
+            let requestDTO = KakaoLoginRequestDTO(idToken: idToken, nonce: nonce
+            )
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("application/json", forHTTPHeaderField: "Accept"
+)
+
             request.httpBody = try JSONEncoder().encode(requestDTO)
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error {
+                    DispatchQueue.main.async {
+                        completion(.failure(error))
+                    }
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse,
+                      let data else {
+                    DispatchQueue.main.async {
+                        completion(.failure(KakaoLoginError.invalidResponse))
+                    }
+                    return
+                }
+                
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    let responseBody = String(data: data, encoding: .utf8) ?? "응답 바디 없음"
+
+                    print("서버 로그인 실패 statusCode:", httpResponse.statusCode)
+                    print("서버 로그인 실패 responseBody:", responseBody)
+
+                    DispatchQueue.main.async {
+                        completion(.failure(KakaoLoginError.invalidResponse))
+                    }
+                    return
+                }
+                
+                do {
+                    let responseDTO = try JSONDecoder().decode(
+                        KakaoLoginResponseDTO.self,
+                        from: data
+                    )
+                    
+                    DispatchQueue.main.async {
+                        completion(.success(responseDTO.data))
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        completion(.failure(error))
+                    }
+                }
+            }.resume()
         } catch {
             completion(.failure(error))
-            return
         }
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  let data else {
-                DispatchQueue.main.async {
-                    completion(.failure(KakaoLoginError.invalidResponse))
-                }
-                return
-            }
-            
-            guard (200...299).contains(httpResponse.statusCode) else {
-                DispatchQueue.main.async {
-                    completion(.failure(KakaoLoginError.invalidResponse))
-                }
-                return
-            }
-            
-            do {
-                let responseDTO = try JSONDecoder().decode(
-                    KakaoLoginResponseDTO.self, from: data
-                )
-                
-                DispatchQueue.main.async {
-                    completion(.success(responseDTO.data))
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-            }
-        }.resume()
     }
 }

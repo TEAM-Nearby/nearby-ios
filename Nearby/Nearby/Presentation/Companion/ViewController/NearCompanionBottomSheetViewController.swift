@@ -6,34 +6,80 @@
 //
 
 import UIKit
+import Combine
 
-import SnapKit
-import Then
+final class NearCompanionBottomSheetViewController: BaseViewController<NearCompanionBottomSheetViewModel> {
+    
+    // MARK: - Properties
 
-final class NearCompanionBottomSheetViewController: BaseViewController<EmptyViewModel> {
+    var onCompanionSelected: ((NearCompanionCellItem) -> Void)?
     
-    // MARK: - UI Component
+    private var nearCompanionBottomSheetView = NearCompanionBottomSheetView(sortOptions: SortOption.allCases)
     
-    private let titleLabel = UILabel()
+    // MARK: - Life Cycles
+    
+    override func loadView() {
+        view = nearCompanionBottomSheetView
+    }
     
     // MARK: - Custom Methods
+
+    override func setDelegate() {
+        nearCompanionBottomSheetView.collectionView.dataSource = self
+        nearCompanionBottomSheetView.collectionView.delegate = self
+    }
+
+    override func bindAction() {
+        nearCompanionBottomSheetView.sortOptionDidTap = { [weak self] option in
+            self?.viewModel.action(.sortOptionDidTap(option))
+        }
+    }
     
-    override func setStyle() {
-        view.backgroundColor = .white
+    override func bindState() {
+        viewModel.output.selectedSortOption
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] selectedOption in
+                self?.nearCompanionBottomSheetView.updateSortButtonSelection(selectedOption)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.companions
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.nearCompanionBottomSheetView.collectionView.reloadData()
+            }
+            .store(in: &cancellables)
         
-        titleLabel.do {
-            $0.setFont(.h3Sb20, text: "지영님 주변에서 동행을 구하고 있어요", textColor: .grey80)
-        }
+        viewModel.output.selectedCompanion
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] item in
+                self?.onCompanionSelected?(item)
+            }
+            .store(in: &cancellables)
     }
-    
-    override func setUI() {
-        view.addSubview(titleLabel)
+}
+
+// MARK: - UICollectionViewDataSource
+
+extension NearCompanionBottomSheetViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        viewModel.nearCompanionCount
     }
-    
-    override func setLayout() {
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(8)
-            $0.horizontalEdges.equalToSuperview().inset(20)
-        }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(NearCompanionCell.self, for: indexPath)
+        cell.configure(with: viewModel.companion(at: indexPath.item))
+        return cell
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension NearCompanionBottomSheetViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewModel.action(.companionDidSelect(indexPath.item))
     }
 }

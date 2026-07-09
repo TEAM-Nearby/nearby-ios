@@ -42,8 +42,8 @@ final class AppDIContainer {
     }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
-           MeetingTabViewModel()
-       }
+        MeetingTabViewModel()
+    }
     
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
@@ -141,13 +141,13 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeReportPostViewController(coordinator: MeetingTabCoordinator) -> ReportPostViewController {
+    func makeReportPostViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = ReportPostViewController(viewModel: makeReportPostViewModel())
         viewController.coordinator = coordinator
         return viewController
     }
     
-    func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> ReportCompletionViewController {
+    func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = ReportCompletionViewController()
         viewController.coordinator = coordinator
         return viewController

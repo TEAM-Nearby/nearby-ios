@@ -12,34 +12,30 @@ import GoogleMaps
 import SnapKit
 
 final class CompanionViewController: BaseViewController<CompanionViewModel> {
-    
     // MARK: - Properties
-    
+
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     private var currentLocationMarker: GMSMarker?
-    
+
     // MARK: - UI Components
-    
+
     private let bottomSheetViewController = NearbyBottomSheetViewController()
     private let nearbyBottomSheetViewController: UIViewController
     private let specificBottomSheetViewController: UIViewController
     private let emptyBottomSheetViewController: UIViewController
+    private var isSpecificBottomSheetPresented = false
     
     private weak var currentLocationDirectionView: UIView?
-    private var categoryItems: [CategoryItem] {
-        viewModel.output.categoryItems
-    }
+    private var categoryItems: [CategoryItem] { viewModel.output.categoryItems }
+    private var bottomSheetHostView: UIView { tabBarController?.view ?? view }
+    private var bottomSheetParentViewController: UIViewController { tabBarController ?? self }
+    private var tabBarHeight: CGFloat { tabBarController?.tabBar.bounds.height ?? 0 }
     
-    private var companionView: CompanionView {
-        guard let view = view as? CompanionView else {
-            fatalError("CompanionViewController view is not CompanionView")
-        }
-        return view
-    }
+    private var companionView = CompanionView()
     
     // MARK: - Initializer
-    
+
     init(
         viewModel: CompanionViewModel,
         nearbyBottomSheetViewController: UIViewController,
@@ -51,11 +47,10 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         self.emptyBottomSheetViewController = emptyBottomSheetViewController
         super.init(viewModel: viewModel)
     }
-    
     // MARK: - Life Cycles
-    
+
     override func loadView() {
-        view = CompanionView()
+        view = companionView
     }
     
     override func viewDidLoad() {
@@ -66,16 +61,18 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setBottomSheetHidden(false)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        hideBottomSheetAfterTransition()
         locationManager.stopUpdatingHeading()
     }
     
     // MARK: - Custom Methods
-    
+
     override func setUI() {
         setBottomSheet()
     }
@@ -91,7 +88,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
     
     // MARK: - Methods
-    
+
     private func setBottomSheet() {
         setBottomSheetLayout()
         bindBottomSheet()
@@ -99,14 +96,16 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
     
     private func setBottomSheetLayout() {
-        addChild(bottomSheetViewController)
-        view.insertSubview(bottomSheetViewController.view, aboveSubview: companionView.mapContainerView)
+        let parentViewController = bottomSheetParentViewController
         
+        parentViewController.addChild(bottomSheetViewController)
+        bottomSheetHostView.addSubview(bottomSheetViewController.view)
+
         bottomSheetViewController.view.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
         
-        bottomSheetViewController.didMove(toParent: self)
+        bottomSheetViewController.didMove(toParent: parentViewController)
     }
     
     private func bindBottomSheet() {
@@ -114,8 +113,16 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             guard let self else { return }
             
             updateBottomSheetLayer(for: state)
-            companionView.updateMapControls(bottomInset: height + 12, state: state)
+            companionView.updateMapControls(bottomInset: max(12, height + 12 - tabBarHeight), state: state)
         }
+        
+        if let nearbyBottomSheetViewController = nearbyBottomSheetViewController as? NearCompanionBottomSheetViewController {
+            nearbyBottomSheetViewController.onCompanionSelected = { [weak self] _ in
+                self?.showSpecificBottomSheet()
+            }
+        }
+        
+        // TODO: 동행칩 뷰가 추가되면 칩 탭 액션을 showSpecificBottomSheet와 연결
     }
     
     private func initializeBottomSheetState() {
@@ -124,28 +131,84 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
     
     private func showNearbyBottomSheet(animated: Bool = true) {
+        isSpecificBottomSheetPresented = false
+        companionView.setCategoryChipsHidden(false)
+        setTabBarHidden(false)
         bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
         bottomSheetViewController.setState(content: .nearbyCompanionList, animated: animated)
     }
     
     private func showEmptyBottomSheet(animated: Bool = true) {
+        isSpecificBottomSheetPresented = false
+        companionView.setCategoryChipsHidden(false)
+        setTabBarHidden(false)
         bottomSheetViewController.setContentViewController(emptyBottomSheetViewController)
         bottomSheetViewController.setState(content: .nearbyCompanionEmpty, animated: animated)
     }
     
     private func showSpecificBottomSheet(animated: Bool = true) {
+        isSpecificBottomSheetPresented = true
+        companionView.setCategoryChipsHidden(true)
+        setTabBarHidden(true)
         bottomSheetViewController.setContentViewController(specificBottomSheetViewController)
         bottomSheetViewController.setState(content: .specificRestaurantCompanionList, animated: animated)
     }
     
-    private func updateBottomSheetLayer(for state: BottomSheetState) {
-        if state.level == .expanded {
-            view.bringSubviewToFront(bottomSheetViewController.view)
-            view.bringSubviewToFront(companionView.recruitCompanionButton)
+    private func hideBottomSheetAfterTransition() {
+        guard let transitionCoordinator else {
+            setBottomSheetHidden(true)
+            setTabBarHidden(false)
             return
         }
         
-        view.insertSubview(bottomSheetViewController.view, aboveSubview: companionView.mapContainerView)
+        setBottomSheetHidden(true)
+        setTabBarHidden(false)
+        
+        transitionCoordinator.animate(alongsideTransition: nil) { [weak self] context in
+            guard context.isCancelled else { return }
+
+            self?.setBottomSheetHidden(false)
+            self?.setTabBarHidden(self?.isSpecificBottomSheetPresented == true)
+        }
+    }
+    
+    private func setBottomSheetHidden(_ isHidden: Bool) { bottomSheetViewController.view.isHidden = isHidden }
+
+    private func setTabBarHidden(_ isHidden: Bool) {
+        guard let tabBar = tabBarController?.tabBar else { return }
+
+        tabBar.isHidden = false
+        tabBar.alpha = isHidden ? 0 : 1
+        tabBar.isUserInteractionEnabled = !isHidden
+        
+        let hiddenTransform = CGAffineTransform(translationX: 0, y: tabBar.bounds.height + view.safeAreaInsets.bottom)
+        tabBar.transform = isHidden ? hiddenTransform : .identity
+        
+        if !isHidden {
+            bottomSheetHostView.bringSubviewToFront(tabBar)
+        }
+        
+        tabBarController?.view.setNeedsLayout()
+        tabBarController?.view.layoutIfNeeded()
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+    }
+    
+    private func updateBottomSheetLayer(for state: BottomSheetState) {
+        bottomSheetHostView.bringSubviewToFront(bottomSheetViewController.view)
+        
+        if state.content != .specificRestaurantCompanionList,
+           let tabBar = tabBarController?.tabBar {
+            bottomSheetHostView.bringSubviewToFront(tabBar)
+        }
+        
+        if state.level == .expanded {
+            if state.content == .nearbyCompanionList {
+                view.bringSubviewToFront(companionView.recruitCompanionButton)
+            }
+
+            return
+        }
     }
     
     private func configureLocationManager() {
@@ -245,7 +308,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         
         locationManager.requestLocation()
     }
-    
+
     @objc
     private func recruitCompanionButtonDidTap() {
         viewModel.action(.recruitCompanionButtonDidTap)

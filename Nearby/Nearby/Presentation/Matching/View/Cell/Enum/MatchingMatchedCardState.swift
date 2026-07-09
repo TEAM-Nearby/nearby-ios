@@ -28,4 +28,13 @@ enum MatchingMatchedCardState {
             return true
         }
     }
+
+    var displayPriority: Int {
+        switch self {
+        case .pending:
+            return 0
+        case .confirmed:
+            return 1
+        }
+    }
 }

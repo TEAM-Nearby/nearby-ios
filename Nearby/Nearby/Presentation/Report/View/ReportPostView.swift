@@ -20,5 +20,25 @@ final class ReportPostView: BaseView {
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
     
-    private let
+    private let reasonTableView = UITableView()
+    
+    // MARK: - Property
+    
+    private var selectedReasons = Set<Int>()
+    
+    // MARK: - Custom Methods
+    
+    override func setStyle() {
+        navigationBar.do {
+            $0.configure(leftItem: .back, centerItem: .title("신고하기"))
+        }
+    }
+    
+    override func setUI() {
+        
+    }
+    
+    override func setLayout() {
+        
+    }
 }

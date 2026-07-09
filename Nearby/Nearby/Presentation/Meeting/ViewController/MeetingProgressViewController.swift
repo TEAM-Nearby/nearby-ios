@@ -80,6 +80,13 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             }
             .store(in: &cancellables)
         
+        viewModel.output.showReviewList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.coordinator?.showHostReviewList()
+            }
+            .store(in: &cancellables)
+        
         viewModel.action(.viewDidLoad)
     }
 }

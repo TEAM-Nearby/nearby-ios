@@ -34,6 +34,8 @@ final class ReviewProfileView: BaseView {
         profileStackView.do {
             $0.axis = .horizontal
             $0.spacing = 16
+            $0.alignment = .center
+            $0.distribution = .fill
         }
         
         imageView.do {
@@ -46,12 +48,12 @@ final class ReviewProfileView: BaseView {
         }
         
         nameLabel.do {
-            $0.setFont(.b2Sb16, text: "정지영 님", textColor: .grey80)
+            $0.setFont(.b2Sb16, text: "", textColor: .grey80)
             $0.textAlignment = .left
         }
         
         informationLabel.do {
-            $0.setFont(.b3M14, text: "바르셀로나 · 2026년 6월 18일", textColor: .grey50)
+            $0.setFont(.b3M14, text: "", textColor: .grey50)
             $0.textAlignment = .left
         }
         
@@ -83,6 +85,14 @@ final class ReviewProfileView: BaseView {
     
     override func setAddTarget() {
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
+    }
+    
+    // MARK: - Method
+    
+    func configure(image: UIImage, name: String, information: String) {
+        imageView.image = image
+        nameLabel.text = name
+        informationLabel.text = information
     }
     
     // MARK: - Action

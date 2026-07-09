@@ -14,6 +14,70 @@ final class ReportReasonCell: UITableViewCell {
     
     // MARK: - UI Components
     
-    private let checkbox = NearbyCheckBox(text: <#String#>)
+    private let checkBox = UIImageView()
     
+    private let titleLabel = UILabel()
+    private let dividerView = UIView()
+    
+    // MARK: - Initiallizer
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setStyle()
+        setUI()
+        setLayout()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Methods
+    
+    private func setStyle() {
+        backgroundColor = .clear
+        selectionStyle = .none
+        
+        checkBox.do {
+            $0.contentMode = .scaleAspectFit
+        }
+        
+        titleLabel.do {
+            $0.setFont(.b2M16, text: "", textColor: .grey80)
+        }
+        
+        dividerView.do {
+            $0.backgroundColor = .grey10
+        }
+    }
+    
+    private func setUI() {
+        contentView.addSubviews(checkBox, titleLabel, dividerView)
+    }
+    
+    private func setLayout() {
+        checkBox.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(20)
+            $0.top.equalToSuperview()
+            $0.size.equalTo(24)
+        }
+        
+        titleLabel.snp.makeConstraints {
+            $0.leading.equalTo(checkBox.snp.trailing).offset(12)
+            $0.centerY.equalToSuperview()
+            $0.trailing.lessThanOrEqualToSuperview().inset(20)
+        }
+        
+        dividerView.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalToSuperview()
+            $0.height.equalTo(1)
+        }
+    }
+    
+    func configure(title: String, isChecked: Bool) {
+        titleLabel.text = title
+        checkBox.image = isChecked ? .checkboxSelect : .checkboxDefault
+    }
 }
+

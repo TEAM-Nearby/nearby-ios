@@ -61,6 +61,10 @@ final class AppDIContainer {
         ReviewPostViewModel(reviewItem: reviewItem)
     }
     
+    func makeReportCompletionViewModel() -> ReportCompletionViewModel {
+        ReportCompletionViewModel()
+    }
+    
     // MARK: - ViewControllers
     
     func makeLoginViewController() -> LoginViewController {
@@ -148,7 +152,7 @@ final class AppDIContainer {
     }
     
     func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
-        let viewController = ReportCompletionViewController()
+        let viewController = ReportCompletionViewController(viewModel: makeReportCompletionViewModel())
         viewController.coordinator = coordinator
         return viewController
     }

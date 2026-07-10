@@ -18,7 +18,7 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
     
     weak var coordinator: MeetingTabCoordinator?
     
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
     
     override func loadView() {
         view = reportPostView

@@ -5,9 +5,10 @@
 //  Created by h2e on 7/9/26.
 //
 
+import Combine
 import UIKit
 
-final class ReportCompletionViewController: UIViewController {
+final class ReportCompletionViewController: BaseViewController<ReportCompletionViewModel> {
     
     // MARK: - UI Component
     
@@ -17,22 +18,17 @@ final class ReportCompletionViewController: UIViewController {
     
     weak var coordinator: MeetingTabCoordinator?
     
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
     
     override func loadView() {
         view = reportCompletionView
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setAddTarget()
-    }
+    // MARK: - Custom Methods
     
-    // MARK: - Method
-    
-    private func setAddTarget() {
+    override func setAddTarget() {
         reportCompletionView.onConfirmButtonDidTap = { [weak self] in
-       self?.coordinator?.dismissReportFlow()
+            self?.coordinator?.dismissReportFlow()
         }
     }
 }

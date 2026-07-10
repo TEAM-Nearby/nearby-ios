@@ -72,11 +72,11 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
 
         nameLabel.do {
-            $0.setFont(.b2Sb16, text: nil, textColor: .grey80)
+            $0.setFont(.b2Sb16, textColor: .grey80)
         }
 
         genderLabel.do {
-            $0.setFont(.b2M16, text: nil, textColor: .primary40)
+            $0.setFont(.b2M16, textColor: .primary40)
         }
 
         dotLabel.do {
@@ -84,15 +84,15 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
 
         uploadedTimeLabel.do {
-            $0.setFont(.b2M16, text: nil, textColor: .grey50)
+            $0.setFont(.b2M16, textColor: .grey50)
         }
 
         informationLabel.do {
-            $0.setFont(.b3M14, text: nil, textColor: .grey80)
+            $0.setFont(.b3M14, textColor: .grey80)
         }
 
         contentLabel.do {
-            $0.setFont(.b3M14, text: nil, textColor: .grey30)
+            $0.setFont(.b3M14, textColor: .grey30)
             $0.numberOfLines = 1
             $0.lineBreakMode = .byTruncatingTail
         }

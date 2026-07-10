@@ -40,6 +40,10 @@ final class AppDIContainer {
     func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
     }
+
+    func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
+        CompanionDetailViewModel(state: state)
+    }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
            MeetingTabViewModel()
@@ -82,6 +86,12 @@ final class AppDIContainer {
     
     func makeEmptyCompanionBottomSheetViewController() -> EmptyCompanionBottomSheetViewController {
         return EmptyCompanionBottomSheetViewController()
+    }
+
+    func makeCompanionDetailViewController(
+        viewModel: CompanionDetailViewModel
+    ) -> CompanionDetailViewController {
+        CompanionDetailViewController(viewModel: viewModel)
     }
     
     func makeDiningMapViewController() -> UIViewController {

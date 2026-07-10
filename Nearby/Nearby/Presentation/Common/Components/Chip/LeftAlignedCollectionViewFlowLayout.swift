@@ -20,15 +20,17 @@ final class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
         let attributes = (super.layoutAttributesForElements(in: rect) ?? []).compactMap {
             $0.copy() as? UICollectionViewLayoutAttributes
         }
+        
         let cellAttributes = attributes
             .filter { $0.representedElementCategory == .cell }
             .sorted { $0.indexPath.item < $1.indexPath.item }
-        var leftMargin: CGFloat = 0.0
+        
+        var leftMargin: CGFloat = sectionInset.left
         var maxY: CGFloat = -1.0
 
         cellAttributes.forEach { layoutAttribute in
             if layoutAttribute.frame.origin.y >= maxY {
-                leftMargin = 0.0
+                leftMargin = sectionInset.left
             }
             layoutAttribute.frame.origin.x = leftMargin
             leftMargin += layoutAttribute.frame.width + minimumInteritemSpacing

@@ -29,13 +29,14 @@ final class ReviewPostViewModel: BaseViewModelType {
         let reloadSecondTags = PassthroughSubject<[Int], Never>()
         let isCompletionEnabled = CurrentValueSubject<Bool, Never>(false)
         let showReport = PassthroughSubject<Void, Never>()
-        let submitSuccess = PassthroughSubject<Void, Never>()
+        let reviewSaved = PassthroughSubject<Void, Never>()
+        let companionCompleted = PassthroughSubject<Void, Never>()
     }
     
     struct DisplayData {
         let name: String
         let information: String
-        let type: NearbyUserType
+        let buttonTitle: String
     }
     
     // MARK: - Properties
@@ -55,13 +56,19 @@ final class ReviewPostViewModel: BaseViewModelType {
     let output = Output()
     private let reviewItem: ReviewItem
     private let type: NearbyUserType
+    private let isLastReview: Bool
     private var rating: Int = 0
+
+    private var isFinishButton: Bool {
+        type == .participant || isLastReview
+    }
     
     // MARK: - Initializer
     
-    init(reviewItem: ReviewItem, type: NearbyUserType) {
+    init(reviewItem: ReviewItem, type: NearbyUserType, isLastReview: Bool) {
         self.reviewItem = reviewItem
         self.type = type
+        self.isLastReview = isLastReview
     }
     
     // MARK: - Action
@@ -70,7 +77,11 @@ final class ReviewPostViewModel: BaseViewModelType {
         switch trigger {
         case .viewDidLoad:
             output.displayData.send(
-                DisplayData(name: reviewItem.name, information: reviewItem.information, type: type)
+                DisplayData(
+                    name: reviewItem.name,
+                    information: reviewItem.information,
+                    buttonTitle: isFinishButton ? "동행 마치기" : "후기 저장하기"
+                )
             )
             updateCompletionState()
             
@@ -93,8 +104,12 @@ final class ReviewPostViewModel: BaseViewModelType {
             
         case .completionButtonDidTap:
             guard output.isCompletionEnabled.value else { return }
-            // TODO: - 후기 등록 API 연동
-            output.submitSuccess.send(())
+            // TODO: - 내용이 있으면 후기 등록 API, isFinishButton이면 동행 완료 API 연동
+            if isFinishButton {
+                output.companionCompleted.send(())
+            } else {
+                output.reviewSaved.send(())
+            }
         }
     }
     
@@ -117,13 +132,7 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
     
     private func updateCompletionState() {
-        let isEnabled: Bool
-        switch type {
-        case .participant:
-            isEnabled = true
-        case .host:
-            isEnabled = rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
-        }
-        output.isCompletionEnabled.send(isEnabled)
+        let hasContent = rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
+        output.isCompletionEnabled.send(isFinishButton ? true : hasContent)
     }
 }

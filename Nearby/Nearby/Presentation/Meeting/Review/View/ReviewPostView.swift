@@ -328,11 +328,11 @@ final class ReviewPostView: BaseView {
         return layout
     }
     
-    func configure(name: String, information: String, userType: NearbyUserType) {
+    func configure(name: String, information: String, buttonTitle: String) {
         profileTitleLabel.text = "\(name) 님과의 여행이\n끝났어요."
         informationLabel.text = information
         reviewSubtitleLabel.text = "\(name) 님에게 좋았던 점을 남겨보세요."
-        completionButton.setTitle(userType.reviewPostCompletionTitle, for: .normal)
+        completionButton.setTitle(buttonTitle, for: .normal)
     }
     
     func updateCompletionButton(isEnabled: Bool) {

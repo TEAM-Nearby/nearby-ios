@@ -14,9 +14,10 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
     
     private let reviewPostView = ReviewPostView()
     
-    // MARK: - Property
+    // MARK: - Properties
     
     weak var coordinator: MeetingTabCoordinator?
+    var onReviewSaved: (() -> Void)?
     
     // MARK: - Life Cycle
     
@@ -55,7 +56,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] data in
-                self?.reviewPostView.configure(name: data.name, information: data.information, userType: data.type)
+                self?.reviewPostView.configure(name: data.name, information: data.information, buttonTitle: data.buttonTitle)
             }
             .store(in: &cancellables)
         
@@ -87,10 +88,18 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
             }
             .store(in: &cancellables)
         
-        viewModel.output.submitSuccess
+        viewModel.output.reviewSaved
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
+                self?.onReviewSaved?()
                 self?.navigationController?.popViewController(animated: true)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.companionCompleted
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.coordinator?.finishCompanonReview()
             }
             .store(in: &cancellables)
         

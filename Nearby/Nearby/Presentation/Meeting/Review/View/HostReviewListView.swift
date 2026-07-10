@@ -163,12 +163,17 @@ final class HostReviewListView: BaseView {
         locationLabel.text = location
     }
     
-    func setReviewList(_ items: [ReviewItem], onProfileTap: @escaping (ReviewItem) -> Void) {
+    func setReviewList(_ items: [ReviewItem], reviewedIDs: Set<Int>, onProfileTap: @escaping (ReviewItem) -> Void) {
         reviewListStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
+
         items.forEach { item in
             let profileView = ReviewProfileView()
-            profileView.configure(image: item.image, name: item.name, information: item.information)
+            profileView.configure(
+                image: item.image,
+                name: item.name,
+                information: item.information,
+                isReviewed: reviewedIDs.contains(item.id)
+            )
             profileView.onNextButtonDidTap = { onProfileTap(item) }
             reviewListStackView.addArrangedSubview(profileView)
         }

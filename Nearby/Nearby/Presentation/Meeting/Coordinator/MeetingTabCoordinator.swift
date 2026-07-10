@@ -59,8 +59,10 @@ extension MeetingTabCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showReviewPost(for item: ReviewItem, type: NearbyUserType) {
-        let viewController = diContainer.makeReviewPostViewController(coordinator: self, reviewItem: item, type: type)
+    func showReviewPost(for item: ReviewItem, type: NearbyUserType, isLast: Bool, onSaved: (() -> Void)?) {
+        let viewController = diContainer.makeReviewPostViewController(
+            coordinator: self, reviewItem: item, type: type, isLast: isLast, onSaved: onSaved
+        )
         navigationController.pushViewController(viewController, animated: true)
     }
     
@@ -82,5 +84,14 @@ extension MeetingTabCoordinator: Coordinator {
         } else {
             navigationController.popToRootViewController(animated: true)
         }
+    }
+    
+    func popReportPost() {
+        navigationController.popViewController(animated: true)
+    }
+    
+    func finishCompanonReview() {
+        navigationController.popToRootViewController(animated: false)
+        (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
     }
 }

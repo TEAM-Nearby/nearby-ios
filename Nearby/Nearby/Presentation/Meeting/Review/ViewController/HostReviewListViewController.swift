@@ -44,27 +44,28 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
             }
             .store(in: &cancellables)
         
-        viewModel.output.items
+        Publishers.CombineLatest(viewModel.output.items, viewModel.output.reviewedIDs)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] items in
-                self?.hostReviewListView.setReviewList(items) { item in
+            .sink { [weak self] items, reviewedIDs in
+                self?.hostReviewListView.setReviewList(items, reviewedIDs: reviewedIDs) { item in
                     self?.viewModel.action(.profileDidTap(item))
                 }
             }
             .store(in: &cancellables)
         
-        // TODO: - 서버 연동 시 type 지정
         viewModel.output.showReviewWrite
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
-                self?.coordinator?.showReviewPost(for: item, type: .host)
+            .sink { [weak self] item, isLast in
+                self?.coordinator?.showReviewPost(for: item, type: .host, isLast: isLast) { [weak self] in
+                    self?.viewModel.action(.reviewSaved(item))
+                }
             }
             .store(in: &cancellables)
         
         viewModel.output.showCompletion
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - Coordinator 연결
+                self?.coordinator?.finishCompanonReview()
             }
             .store(in: &cancellables)
         

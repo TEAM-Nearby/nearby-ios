@@ -30,6 +30,7 @@ final class ReportPostView: BaseView {
     
     private var selectedReasons = Set<Int>()
     var onTextChanged: ((String) -> Void)?
+    var onBackButtonDidTap: (() -> Void)?
     var onReportButtonDidTap: (() -> Void)?
     
     // MARK: - Custom Methods
@@ -107,6 +108,9 @@ final class ReportPostView: BaseView {
     }
     
     override func setAddTarget() {
+        navigationBar.leftButtonAction = { [weak self] in
+            self?.onBackButtonDidTap?()
+        }
         reportButton.addTarget(self, action: #selector(reportButtonDidTap), for: .touchUpInside)
     }
     

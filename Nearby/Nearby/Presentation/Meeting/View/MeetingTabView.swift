@@ -26,7 +26,7 @@ final class MeetingTabView: BaseView {
         backgroundColor = .white
         
         navigationBar.do {
-            $0.configure(centerItem: .logo, rightItems: [.alarmButton])
+            $0.configure(leftItem: .logo, rightItems: [.alarmButton])
         }
         
         titleLabel.do {

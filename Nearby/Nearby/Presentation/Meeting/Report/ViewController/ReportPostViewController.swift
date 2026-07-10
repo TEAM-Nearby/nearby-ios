@@ -37,6 +37,10 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
     }
     
     override func setAddTarget() {
+        reportPostView.onBackButtonDidTap = { [weak self] in
+            self?.coordinator?.popReportPost()
+        }
+        
         reportPostView.onTextChanged = { [weak self] text in
             self?.viewModel.action(.detailTextChanged(text))
         }

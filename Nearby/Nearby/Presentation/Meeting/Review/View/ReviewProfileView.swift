@@ -90,10 +90,15 @@ final class ReviewProfileView: BaseView {
     
     // MARK: - Method
     
-    func configure(image: UIImage, name: String, information: String) {
+    func configure(image: UIImage, name: String, information: String, isReviewed: Bool) {
         imageView.image = image
         nameLabel.text = name
         informationLabel.text = information
+        
+        nextButton.isHidden = isReviewed
+        isUserInteractionEnabled = !isReviewed
+        nameLabel.textColor = isReviewed ? .grey40 : .grey80
+        informationLabel.textColor = isReviewed ? .grey30 : .grey50
     }
     
     // MARK: - Action

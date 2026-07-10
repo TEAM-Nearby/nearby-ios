@@ -11,7 +11,7 @@ final class MatchingHostScheduleDetailViewController: UIViewController {
 
     // MARK: - Properties
 
-    private let rootView = MatchingHostScheduleDetailView()
+    private let rootView = MatchingManageScheduleDetailView()
 
     // MARK: - Life Cycles
 

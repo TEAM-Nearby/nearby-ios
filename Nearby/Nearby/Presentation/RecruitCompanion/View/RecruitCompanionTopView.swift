@@ -1,9 +1,5 @@
 //
-<<<<<<<< HEAD:Nearby/Nearby/Presentation/RecruitCompanion/View/RecruitCompanionTopView.swift
 //  RecruitCompanionTopView.swift
-========
-//  RecruitCompanionView.swift
->>>>>>>> origin/feat/#66:Nearby/Nearby/Presentation/RecruitCompanion/View/RecruitCompanionView.swift
 //  Nearby
 //
 //  Created by 장지인 on 7/10/26.

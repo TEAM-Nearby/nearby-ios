@@ -18,21 +18,24 @@ final class MyPageViewModel: BaseViewModelType {
 
     // MARK: - Output
 
-    struct Output {}
+    struct Output {
+        var alarmButtonDidTap: (() -> Void)?
+        var settingButtonDidTap: (() -> Void)?
+    }
 
     // MARK: - Property
 
-    let output = Output()
+    var output = Output()
 
     // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {
         case .alarmButtonDidTap:
-            break
+            output.alarmButtonDidTap?()
 
         case .settingButtonDidTap:
-            break
+            output.settingButtonDidTap?()
         }
     }
 }

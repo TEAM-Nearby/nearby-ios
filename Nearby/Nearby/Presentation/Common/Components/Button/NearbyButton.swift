@@ -94,12 +94,7 @@ final class NearbyButton: UIButton {
         setTitleColor(buttonStyle.titleColor, for: .normal)
     }
 
-    func setPaddedTitle(
-        _ title: String,
-        font: NearbyFont,
-        titleColor: UIColor,
-        titleInsets: UIEdgeInsets
-    ) {
+    func setPaddedTitle(_ title: String, font: NearbyFont, titleColor: UIColor, titleInsets: UIEdgeInsets) {
         setTitle(title, for: .normal)
         setTitleColor(titleColor, for: .normal)
         titleLabel?.font = font.font

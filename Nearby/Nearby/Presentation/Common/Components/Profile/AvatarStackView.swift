@@ -11,8 +11,11 @@ import SnapKit
 import Then
 
 final class AvatarStackView: UIStackView {
-    let avatarSize: CGFloat = 16
-    let avatarOverlap: CGFloat = 6
+
+    // MARK: - Properties
+
+    private let avatarSize: CGFloat
+    private let avatarOverlap: CGFloat
 
     var contentSize: CGSize {
         let avatarCount = arrangedSubviews.count
@@ -28,7 +31,17 @@ final class AvatarStackView: UIStackView {
 
     // MARK: - Initializer
 
+    init(avatarSize: CGFloat = 16, avatarOverlap: CGFloat = 6) {
+        self.avatarSize = avatarSize
+        self.avatarOverlap = avatarOverlap
+        super.init(frame: .zero)
+
+        setStyle()
+    }
+
     override init(frame: CGRect) {
+        self.avatarSize = 16
+        self.avatarOverlap = 6
         super.init(frame: frame)
 
         setStyle()

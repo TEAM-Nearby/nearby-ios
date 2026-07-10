@@ -25,7 +25,9 @@ final class RecruitCompanionView: BaseView {
     override func setStyle() {
         backgroundColor = .white
 
-        navigationBar.configure(leftItem: .back, centerItem: .title("동행 모집하기"))
+        navigationBar.do{
+            $0.configure(leftItem: .back, centerItem: .title("동행 모집하기"))
+        }
 
         scrollView.do {
             $0.showsVerticalScrollIndicator = false

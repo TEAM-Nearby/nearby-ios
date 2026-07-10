@@ -15,9 +15,7 @@ final class SettingView: BaseView {
     // MARK: - UI Components
 
     let navigationBar = NearbyNavigationBar()
-
     let logoutButton = UIButton(type: .system)
-
     private let dividerView = UIView()
 
     // MARK: - Custom Methods
@@ -42,9 +40,7 @@ final class SettingView: BaseView {
     }
 
     override func setUI() {
-        addSubview(navigationBar)
-        addSubview(logoutButton)
-        addSubview(dividerView)
+        addSubviews(navigationBar, logoutButton, dividerView)
     }
 
     override func setLayout() {

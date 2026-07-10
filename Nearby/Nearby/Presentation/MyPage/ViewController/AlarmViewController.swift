@@ -33,10 +33,7 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setNavigationBarHidden(
-            true,
-            animated: animated
-        )
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     // MARK: - Custom Method
@@ -47,14 +44,12 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
         }
 
         alarmView.sentRequestButton.addTarget(
-            self,
-            action: #selector(sentRequestButtonDidTap),
+            self, action: #selector(sentRequestButtonDidTap),
             for: .touchUpInside
         )
 
         alarmView.receivedRequestButton.addTarget(
-            self,
-            action: #selector(receivedRequestButtonDidTap),
+            self, action: #selector(receivedRequestButtonDidTap),
             for: .touchUpInside
         )
     }

@@ -46,7 +46,6 @@ final class ReportPostViewModel: BaseViewModelType {
         return true
     }
     
-    
     // MARK: - Methods
     
     private func toggleReason(_ index: Int) -> [Int] {

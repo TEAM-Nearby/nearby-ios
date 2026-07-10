@@ -81,18 +81,15 @@ final class AlarmView: BaseView {
     }
 
     override func setUI() {
-        addSubview(navigationBar)
-        addSubview(tabContainerView)
-        addSubview(contentContainerView)
+        addSubviews(navigationBar, tabContainerView, contentContainerView)
 
-        tabContainerView.addSubview(sentRequestButton)
-        tabContainerView.addSubview(receivedRequestButton)
-        tabContainerView.addSubview(bottomDividerView)
-        tabContainerView.addSubview(sentRequestIndicatorView)
-        tabContainerView.addSubview(receivedRequestIndicatorView)
+        tabContainerView.addSubviews(
+            sentRequestButton, receivedRequestButton,
+            bottomDividerView, sentRequestIndicatorView,
+            receivedRequestIndicatorView
+        )
 
-        contentContainerView.addSubview(sentRequestContentView)
-        contentContainerView.addSubview(receivedRequestContentView)
+        contentContainerView.addSubviews(sentRequestContentView, receivedRequestContentView)
     }
 
     override func setLayout() {
@@ -151,6 +148,8 @@ final class AlarmView: BaseView {
             $0.edges.equalToSuperview()
         }
     }
+    
+    // MARK: - Method
 
     func updateSelectedRequestType(_ requestType: AlarmRequestType) {
         switch requestType {

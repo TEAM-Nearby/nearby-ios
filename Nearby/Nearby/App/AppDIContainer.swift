@@ -134,7 +134,6 @@ final class AppDIContainer {
         return viewController
     }
 
-    
     func makeMyPageViewController() -> MyPageViewController {
         let viewModel = makeMyPageViewModel()
         return MyPageViewController(

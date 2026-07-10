@@ -21,10 +21,8 @@ final class MyPageCoordinator {
 
     // MARK: - Initializer
 
-    init(
-        navigationController: UINavigationController,
-        appDIContainer: AppDIContainer
-    ) {
+    init(navigationController: UINavigationController, appDIContainer: AppDIContainer)
+    {
         self.navigationController = navigationController
         self.appDIContainer = appDIContainer
     }
@@ -56,7 +54,7 @@ extension MyPageCoordinator: Coordinator {
     }
 }
 
-// MARK: - Private Methods
+// MARK: - Coordinator
 
 private extension MyPageCoordinator {
     func showAlarm() {
@@ -78,8 +76,7 @@ private extension MyPageCoordinator {
     }
 
     func showSetting() {
-        let settingViewController =
-            appDIContainer.makeSettingViewController()
+        let settingViewController = appDIContainer.makeSettingViewController()
 
         settingViewController.hidesBottomBarWhenPushed = true
 

@@ -69,10 +69,7 @@ private extension MainTabCoordinator {
             
         default:
             let viewController = makeRootViewController(for: item)
-            navigationController.setViewControllers(
-                [viewController],
-                animated: false
-            )
+            navigationController.setViewControllers([viewController], animated: false)
         }
     }
 

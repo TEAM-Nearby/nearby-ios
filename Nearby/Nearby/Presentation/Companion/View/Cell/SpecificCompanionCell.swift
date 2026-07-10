@@ -24,7 +24,7 @@ final class SpecificCompanionCell: UICollectionViewCell {
     private let hostNameLabel = UILabel()
     private let hostGenderChip = NearbyChipButton(style: .badgeProfile, title: "여성", horizontalInset: 6)
     
-    private let writedTimeLabel = UILabel()
+    private let writtenTimeLabel = UILabel()
     private let contentLabel = UILabel()
     
     private let timeStackView = UIStackView()
@@ -70,7 +70,7 @@ final class SpecificCompanionCell: UICollectionViewCell {
             $0.setFont(.b1M18, text: "", textColor: .black)
         }
         
-        writedTimeLabel.do {
+        writtenTimeLabel.do {
             $0.setFont(.c1M12, text: "", textColor: .grey30)
         }
         
@@ -111,7 +111,7 @@ final class SpecificCompanionCell: UICollectionViewCell {
         timeStackView.addArrangedSubviews(meetingTimeLabel, closedTimeLabel)
         applyInfoStackView.addArrangedSubviews(profileStackView, currentStatusLabel)
         
-        contentView.addSubviews(profileImageView, hostStackView, writedTimeLabel, contentLabel, timeStackView, applyInfoStackView)
+        contentView.addSubviews(profileImageView, hostStackView, writtenTimeLabel, contentLabel, timeStackView, applyInfoStackView)
     }
     
     private func setLayout() {
@@ -125,7 +125,7 @@ final class SpecificCompanionCell: UICollectionViewCell {
             $0.leading.equalTo(profileImageView.snp.trailing).offset(10)
         }
         
-        writedTimeLabel.snp.makeConstraints {
+        writtenTimeLabel.snp.makeConstraints {
             $0.top.trailing.equalToSuperview().inset(16)
         }
         
@@ -150,7 +150,7 @@ final class SpecificCompanionCell: UICollectionViewCell {
         profileImageView.configure(image: item.profileImage)
         hostNameLabel.text = item.hostName
         hostGenderChip.updateTitle(item.genderTitle)
-        writedTimeLabel.text = item.writtenTime
+        writtenTimeLabel.text = item.writtenTime
         contentLabel.text = item.content
         meetingTimeLabel.text = item.meetingTime
         closedTimeLabel.text = item.closedTime

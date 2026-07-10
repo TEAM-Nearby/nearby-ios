@@ -57,7 +57,7 @@ final class AppDIContainer {
         ReportPostViewModel()
     }
     
-    func makeReviewPostViewModel(reviewItem: ReviewItem) -> ReviewPostViewModel {
+    func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType) -> ReviewPostViewModel {
         ReviewPostViewModel(reviewItem: reviewItem)
     }
     
@@ -127,7 +127,7 @@ final class AppDIContainer {
         case .host:
             return makeHostReviewListViewController(coordinator: coordinator)
         case .participant:
-            return makeReviewPostViewController(coordinator: coordinator, reviewItem: reviewItem)
+            return makeReviewPostViewController(coordinator: coordinator, reviewItem: reviewItem, type: type)
         }
     }
     
@@ -139,12 +139,9 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeReviewPostViewController(
-        coordinator: MeetingTabCoordinator,
-        reviewItem: ReviewItem
-    ) -> UIViewController {
+    func makeReviewPostViewController(coordinator: MeetingTabCoordinator, reviewItem: ReviewItem, type: NearbyUserType) -> UIViewController {
         let viewController = ReviewPostViewController(
-            viewModel: makeReviewPostViewModel(reviewItem: reviewItem)
+            viewModel: makeReviewPostViewModel(reviewItem: reviewItem, type: type)
         )
         viewController.coordinator = coordinator
         return viewController

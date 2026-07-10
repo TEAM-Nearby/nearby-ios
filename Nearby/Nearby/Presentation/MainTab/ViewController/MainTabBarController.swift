@@ -13,6 +13,7 @@ final class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         configureTabBarAppearance()
     }
     
@@ -21,7 +22,7 @@ final class MainTabBarController: UITabBarController {
     private func configureTabBarAppearance() {
         let barAppearance = UITabBarAppearance()
         barAppearance.configureWithOpaqueBackground()
-        barAppearance.backgroundColor = .bgTadBarGrey
+        barAppearance.backgroundColor = .white
         
         let itemAppearance = UITabBarItemAppearance()
         itemAppearance.normal.iconColor = .grey60
@@ -48,6 +49,7 @@ final class MainTabBarController: UITabBarController {
         
         tabBar.standardAppearance = barAppearance
         tabBar.scrollEdgeAppearance = barAppearance
+        tabBar.backgroundColor = .white
         tabBar.tintColor = .grey80
         tabBar.unselectedItemTintColor = .grey60
         tabBar.isTranslucent = false

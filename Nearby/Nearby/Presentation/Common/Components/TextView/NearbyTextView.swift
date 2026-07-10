@@ -33,6 +33,8 @@ final class NearbyTextView: BaseView {
         }
     }
     
+    var onTextChanged: ((String) -> Void)?
+    
     // MARK: - Initializer
     
     init(placeholder: String, contentInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 28, bottom: 16, right: 28)) {
@@ -58,6 +60,7 @@ final class NearbyTextView: BaseView {
             $0.textColor = .grey80
             $0.textContainerInset = .zero
             $0.textContainer.lineFragmentPadding = 0
+            $0.delegate = self
         }
         
         placeholderLabel.do {
@@ -78,9 +81,10 @@ final class NearbyTextView: BaseView {
         remakeTextViewConstraints()
         
         placeholderLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.horizontalEdges.equalToSuperview()
-            $0.bottom.lessThanOrEqualToSuperview()
+            $0.top.equalToSuperview().offset(contentInsets.top)
+            $0.leading.equalToSuperview().offset(contentInsets.left)
+            $0.trailing.equalToSuperview().inset(contentInsets.right)
+            $0.bottom.lessThanOrEqualToSuperview().inset(contentInsets.bottom)
         }
         
         clearButton.snp.makeConstraints {
@@ -117,5 +121,14 @@ final class NearbyTextView: BaseView {
     func setPlaceholderTruncation(numberOfLines: Int) {
         placeholderLabel.numberOfLines = numberOfLines
         placeholderLabel.lineBreakMode = .byTruncatingTail
+    }
+}
+
+// MARK: - UITextViewDelegate
+
+extension NearbyTextView: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        placeholderLabel.isHidden = !textView.text.isEmpty
+        onTextChanged?(textView.text)
     }
 }

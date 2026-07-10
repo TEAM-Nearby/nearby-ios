@@ -7,47 +7,15 @@
 
 import UIKit
 
-import SnapKit
-import Then
-
 final class EmptyCompanionBottomSheetViewController: BaseViewController<EmptyViewModel> {
     
-    // MARK: - UI Components
+    // MARK: - Property
     
-    private let titleLabel = UILabel()
-    private let imageView = UIImageView()
+    private let emptyCompanionBottomSheetView = EmptyCompanionBottomSheetView()
     
-    // MARK: - Custom Methods
+    // MARK: - Life Cycle
     
-    override func setStyle() {
-        view.backgroundColor = .white
-        
-        titleLabel.do {
-            $0.setFont(.h3Sb20, text: "주변에 아직 열린 동행이 없어요\n동네 혼밥지도를 확인해볼까요?")
-            $0.numberOfLines = 0
-        }
-        
-        imageView.do {
-            $0.image = .illustMainEmpty
-            $0.contentMode = .scaleAspectFit
-        }
-    }
-    
-    override func setUI() {
-        view.addSubviews(titleLabel, imageView)
-    }
-    
-    override func setLayout() {
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(16)
-            $0.horizontalEdges.equalToSuperview().inset(20)
-        }
-        
-        imageView.snp.makeConstraints {
-            $0.centerY.equalToSuperview().offset(25)
-            $0.centerX.equalToSuperview()
-            $0.width.equalTo(196)
-            $0.height.equalTo(112)
-        }
+    override func loadView() {
+        view = emptyCompanionBottomSheetView
     }
 }

@@ -24,6 +24,11 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         view = reviewPostView
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .bgDefaultGrey
+    }
+    
     // MARK: - Custom Methods
     
     override func setDelegate() {
@@ -78,7 +83,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         viewModel.output.showReport
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - Coordinator 연결 (신고 화면)
+                self?.coordinator?.showReportPost()
             }
             .store(in: &cancellables)
         

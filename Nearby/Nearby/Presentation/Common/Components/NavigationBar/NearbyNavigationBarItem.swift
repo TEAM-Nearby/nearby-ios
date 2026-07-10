@@ -46,8 +46,6 @@ extension NearbyNavigationBarItem {
             return text
         case .report:
             return "신고"
-        case .logo:
-            return "로고"
         default:
             return nil
         }

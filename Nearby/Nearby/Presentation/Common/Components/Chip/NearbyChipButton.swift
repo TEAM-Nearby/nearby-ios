@@ -15,7 +15,7 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
     private let style: NearbyChipStyle
     private let horizontalInset: CGFloat
     
-    let chipTitle: String
+    private(set) var chipTitle: String
     
     // MARK: - UI Component
     
@@ -120,6 +120,11 @@ final class NearbyChipButton: UIButton, NearbyChipShadowStyling {
     
     func updateSelected(_ isSelected: Bool) {
         self.isSelected = isSelected
+        updateUI()
+    }
+    
+    func updateTitle(_ title: String) {
+        chipTitle = title
         updateUI()
     }
 }

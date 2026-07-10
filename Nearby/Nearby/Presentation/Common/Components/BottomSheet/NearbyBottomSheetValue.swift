@@ -9,6 +9,9 @@ import UIKit
 
 enum NearbyBottomSheetValue {
     static let contentTopOffset: CGFloat = 24
+    static let nearbyCompanionEmptyCompactHeight: CGFloat = 122
+    static let nearbyCompanionEmptyStandardHeight: CGFloat = 297
+    static let diningListStandardHeight: CGFloat = 423
     
     static let nearCompanionCompactHeight = contentTopOffset + nearCompanionTitleTopOffset + nearCompanionTitleHeight
                                             + nearCompanionSortTopOffset + nearCompanionSortButtonHeight + nearCompanionCollectionTopOffset

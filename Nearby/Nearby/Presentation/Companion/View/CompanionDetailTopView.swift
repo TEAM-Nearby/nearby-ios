@@ -20,7 +20,6 @@ final class CompanionDetailTopView: BaseView {
     // MARK: - UI Components
     
     private let hostProfileImageView = GradientCircleView(diameter: 65)
-    
     private let hostMainInfoStackView = UIStackView()
     private let hostNameLabel = UILabel()
     private let genderLabel = UILabel()
@@ -110,8 +109,8 @@ final class CompanionDetailTopView: BaseView {
     
     override func setLayout() {
         hostProfileImageView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(14)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalToSuperview().inset(14)
+            $0.leading.equalToSuperview().inset(20)
             $0.size.equalTo(65)
         }
         
@@ -143,7 +142,7 @@ final class CompanionDetailTopView: BaseView {
         }
         
         introduceLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(24)
+            $0.top.equalToSuperview().inset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         

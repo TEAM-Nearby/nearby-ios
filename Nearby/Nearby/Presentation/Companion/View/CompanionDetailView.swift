@@ -6,7 +6,6 @@
 //
 
 import UIKit
-
 import SnapKit
 
 final class CompanionDetailView: BaseView {
@@ -52,8 +51,8 @@ final class CompanionDetailView: BaseView {
 
     override func setLayout() {
         backButton.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(2)
-            $0.leading.equalToSuperview().offset(8)
+            $0.top.equalTo(safeAreaLayoutGuide).inset(2)
+            $0.leading.equalToSuperview().inset(8)
             $0.size.equalTo(44)
         }
 

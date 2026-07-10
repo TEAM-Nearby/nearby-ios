@@ -466,39 +466,6 @@ private extension MyPageStatItemView {
     }
 }
 
-private final class MyPageDottedLineView: UIView {
-
-    // MARK: - Property
-
-    private let shapeLayer = CAShapeLayer()
-
-    // MARK: - Life Cycles
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        backgroundColor = .clear
-        layer.addSublayer(shapeLayer)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: 0, y: bounds.midY))
-        path.addLine(to: CGPoint(x: bounds.width, y: bounds.midY))
-
-        shapeLayer.path = path.cgPath
-        shapeLayer.strokeColor = UIColor.grey20.cgColor
-        shapeLayer.lineWidth = 1
-        shapeLayer.lineDashPattern = [8, 8]
-    }
-}
-
 private final class MyPageMenuRowView: UIView {
 
     // MARK: - UI Components

@@ -32,19 +32,18 @@ enum NearbyBottomSheetHeightResolver {
         case .specificRestaurantCompanionList:
             return NearbyBottomSheetValue.specificCompanionCompactHeight
         case .nearbyCompanionEmpty, .diningMapList, .savedRestaurantList:
-            return 122
+            return NearbyBottomSheetValue.nearbyCompanionEmptyCompactHeight
         }
     }
     
     private static func standardHeight(for content: BottomSheetContent, context: NearbyBottomSheetHeightContext) -> CGFloat {
         switch content {
         case .nearbyCompanionEmpty:
-            return 297 + context.tabBarHeight
+            return NearbyBottomSheetValue.nearbyCompanionEmptyStandardHeight + context.tabBarHeight
         case .specificRestaurantCompanionList, .nearbyCompanionList:
             return companionListStandardHeight(context: context) + NearbyBottomSheetValue.companionListStandardHeightAddition
-        case .diningMapList,
-             .savedRestaurantList:
-            return 423
+        case .diningMapList, .savedRestaurantList:
+            return NearbyBottomSheetValue.diningListStandardHeight
         }
     }
     

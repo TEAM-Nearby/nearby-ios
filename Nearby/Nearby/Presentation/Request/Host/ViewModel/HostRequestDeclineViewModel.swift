@@ -44,7 +44,7 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
         self.applicantName = applicantName
     }
 
-    // MARK: - Method
+    // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {

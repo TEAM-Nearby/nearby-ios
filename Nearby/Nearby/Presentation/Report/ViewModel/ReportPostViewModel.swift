@@ -46,21 +46,7 @@ final class ReportPostViewModel: BaseViewModelType {
         return true
     }
     
-    
-    // MARK: - Methods
-    
-    private func toggleReason(_ index: Int) -> [Int] {
-        if selectedReasons.contains(index) {
-            selectedReasons.remove(index)
-        } else {
-            selectedReasons.insert(index)
-        }
-        return [index]
-    }
-    
-    private func updateReportState() {
-        output.isReportButtonEnabled.send(isReportValid)
-    }
+    // MARK: - Action
     
     func action(_ trigger: Input) {
         switch trigger {
@@ -78,5 +64,20 @@ final class ReportPostViewModel: BaseViewModelType {
             // TODO: - 신고 API 연동 (selectedReasons, detailText)
             output.submitSuccess.send(())
         }
+    }
+    
+    // MARK: - Methods
+    
+    private func toggleReason(_ index: Int) -> [Int] {
+        if selectedReasons.contains(index) {
+            selectedReasons.remove(index)
+        } else {
+            selectedReasons.insert(index)
+        }
+        return [index]
+    }
+    
+    private func updateReportState() {
+        output.isReportButtonEnabled.send(isReportValid)
     }
 }

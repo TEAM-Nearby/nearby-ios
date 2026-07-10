@@ -55,7 +55,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         self.locationName = locationName
     }
 
-    // MARK: - Method
+    // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {

@@ -41,7 +41,7 @@ final class HostReviewListViewModel: BaseViewModelType {
     
     var items: [ReviewItem] { output.items.value }
     
-    // MARK: - Methods
+    // MARK: - Action
     
     func action(_ trigger: Input) {
         switch trigger {
@@ -66,6 +66,8 @@ final class HostReviewListViewModel: BaseViewModelType {
             output.showCompletion.send(())
         }
     }
+    
+    // MARK: - Method
     
     func item(at index: Int) -> ReviewItem {
         items[index]

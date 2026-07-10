@@ -40,7 +40,7 @@ final class CompanionRequestDeclineViewModel: BaseViewModelType {
     
     private var cancellables = Set<AnyCancellable>()
 
-    // MARK: - Method
+    // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {

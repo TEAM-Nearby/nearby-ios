@@ -45,7 +45,7 @@ final class CompanionRequestSentViewModel: BaseViewModelType {
         self.hostName = hostName
     }
 
-    // MARK: - Method
+    // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {

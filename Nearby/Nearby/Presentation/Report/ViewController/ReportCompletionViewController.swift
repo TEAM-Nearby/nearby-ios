@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-final class ReportCompletionViewController: BaseViewController<ReportCompletionViewModel> {
+final class ReportCompletionViewController: BaseViewController<EmptyViewModel> {
     
     // MARK: - UI Component
     

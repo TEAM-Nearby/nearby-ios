@@ -53,7 +53,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
         self.locationName = locationName
     }
 
-    // MARK: - Method
+    // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {

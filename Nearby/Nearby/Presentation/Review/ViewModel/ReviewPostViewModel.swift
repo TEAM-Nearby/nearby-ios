@@ -61,29 +61,7 @@ final class ReviewPostViewModel: BaseViewModelType {
         self.reviewItem = reviewItem
     }
     
-    // MARK: - Methods
-    
-    private func toggleFirstTag(_ index: Int) -> [Int] {
-        if firstSelectedTags.contains(index) {
-            firstSelectedTags.remove(index)
-        } else {
-            guard firstSelectedTags.count < 3 else { return [] }
-            firstSelectedTags.insert(index)
-        }
-        return [index]
-    }
-    
-    
-    private func toggleSecondTag(_ index: Int) -> [Int] {
-        let previous = secondSelectedTags
-        secondSelectedTags = secondSelectedTags.contains(index) ? [] : [index]
-        return Array(previous.union(secondSelectedTags))
-    }
-    
-    private func updateCompletionState() {
-        let isEnabled = rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
-        output.isCompletionEnabled.send(isEnabled)
-    }
+    // MARK: - Action
     
     func action(_ trigger: Input) {
         switch trigger {
@@ -114,5 +92,28 @@ final class ReviewPostViewModel: BaseViewModelType {
             // TODO: - 후기 등록 API 연동
             output.submitSuccess.send(())
         }
+    }
+    
+    // MARK: - Methods
+    
+    private func toggleFirstTag(_ index: Int) -> [Int] {
+        if firstSelectedTags.contains(index) {
+            firstSelectedTags.remove(index)
+        } else {
+            guard firstSelectedTags.count < 3 else { return [] }
+            firstSelectedTags.insert(index)
+        }
+        return [index]
+    }
+    
+    private func toggleSecondTag(_ index: Int) -> [Int] {
+        let previous = secondSelectedTags
+        secondSelectedTags = secondSelectedTags.contains(index) ? [] : [index]
+        return Array(previous.union(secondSelectedTags))
+    }
+    
+    private func updateCompletionState() {
+        let isEnabled = rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
+        output.isCompletionEnabled.send(isEnabled)
     }
 }

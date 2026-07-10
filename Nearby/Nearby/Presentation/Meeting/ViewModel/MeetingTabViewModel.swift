@@ -30,7 +30,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     var items: [MeetingItem] { output.items.value }
     
-    // MARK: - Methods
+    // MARK: - Action
     
     func action(_ trigger: Input) {
         switch trigger {
@@ -47,6 +47,8 @@ final class MeetingTabViewModel: BaseViewModelType {
             output.items.send(mockItems)
         }
     }
+    
+    // MARK: - Method
     
     func item(at index: Int) -> MeetingItem {
         items[index]

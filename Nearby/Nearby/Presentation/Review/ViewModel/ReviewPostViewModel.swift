@@ -73,7 +73,6 @@ final class ReviewPostViewModel: BaseViewModelType {
         return [index]
     }
     
-    
     private func toggleSecondTag(_ index: Int) -> [Int] {
         let previous = secondSelectedTags
         secondSelectedTags = secondSelectedTags.contains(index) ? [] : [index]

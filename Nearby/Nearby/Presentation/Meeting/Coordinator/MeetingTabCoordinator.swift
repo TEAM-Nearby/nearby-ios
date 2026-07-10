@@ -16,6 +16,8 @@ final class MeetingTabCoordinator {
     private let navigationController: UINavigationController
     private let diContainer: AppDIContainer
     
+    private weak var reportReturnViewController: UIViewController?
+    
     // MARK: - Initializer
     
     init(navigationController: UINavigationController, diContainer: AppDIContainer) {
@@ -63,6 +65,7 @@ extension MeetingTabCoordinator: Coordinator {
     }
     
     func showReportPost() {
+        reportReturnViewController = navigationController.topViewController
         let viewController = diContainer.makeReportPostViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
     }
@@ -74,6 +77,10 @@ extension MeetingTabCoordinator: Coordinator {
     }
 
     func dismissReportFlow() {
-        navigationController.popToRootViewController(animated: true)
+        if let target = reportReturnViewController {
+            navigationController.popToViewController(target, animated: true)
+        } else {
+            navigationController.popToRootViewController(animated: true)
+        }
     }
 }

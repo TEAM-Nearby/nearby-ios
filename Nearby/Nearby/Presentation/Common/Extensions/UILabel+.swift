@@ -8,14 +8,9 @@
 import UIKit
 
 extension UILabel {
-    func setFont(_ nearbyFont: NearbyFont, text: String?, textColor: UIColor = .black) {
+    func setFont(_ nearbyFont: NearbyFont, text: String = "", textColor: UIColor = .black) {
         self.font = nearbyFont.font
         self.textColor = textColor
-        
-        guard let text else {
-            self.attributedText = nil
-            return
-        }
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.minimumLineHeight = nearbyFont.property.lineHeight

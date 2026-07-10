@@ -19,7 +19,9 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     // MARK: - UI Components
 
     private let confirmedLabel = UILabel()
+    private let profileContainerView = UIView()
     private let profileImageView = UIImageView()
+    private let profileStackView = AvatarStackView(avatarSize: 40, avatarOverlap: 12)
     private let nameLabel = UILabel()
     private let genderLabel = UILabel()
     private let uploadedTimeLabel = UILabel()
@@ -27,6 +29,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     private let contentLabel = UILabel()
     private let nextButton = UIButton()
     private let dotLabel = UILabel()
+    private var profileContainerWidthConstraint: Constraint?
 
     // MARK: - Initializer
 
@@ -71,6 +74,11 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.clipsToBounds = true
         }
 
+        profileStackView.do {
+            $0.configureWithDefaultAvatars(count: 1)
+            $0.isHidden = true
+        }
+
         nameLabel.do {
             $0.setFont(.b2Sb16, textColor: .grey80)
         }
@@ -94,7 +102,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         contentLabel.do {
             $0.setFont(.b3M14, textColor: .grey30)
             $0.numberOfLines = 1
-            $0.lineBreakMode = .byTruncatingTail
         }
 
         nextButton.do {
@@ -108,8 +115,9 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     }
 
     private func setUI() {
+        profileContainerView.addSubviews(profileImageView, profileStackView)
         contentView.addSubviews(
-            confirmedLabel, profileImageView, nameLabel,
+            confirmedLabel, profileContainerView, nameLabel,
             genderLabel, dotLabel, uploadedTimeLabel,
             informationLabel, contentLabel, nextButton
         )
@@ -122,15 +130,24 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.height.equalTo(22)
         }
 
-        profileImageView.snp.makeConstraints {
+        profileContainerView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(19)
             $0.leading.equalToSuperview().inset(20)
-            $0.size.equalTo(40)
+            profileContainerWidthConstraint = $0.width.equalTo(40).constraint
+            $0.height.equalTo(40)
+        }
+
+        profileImageView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
+        profileStackView.snp.makeConstraints {
+            $0.leading.centerY.equalToSuperview()
         }
 
         nameLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.top)
-            $0.leading.equalTo(profileImageView.snp.trailing).offset(12)
+            $0.top.equalTo(profileContainerView.snp.top)
+            $0.leading.equalTo(profileContainerView.snp.trailing).offset(12)
             $0.height.equalTo(22)
         }
 
@@ -158,12 +175,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.height.equalTo(20)
         }
 
-        contentLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(12)
-            $0.leading.equalTo(profileImageView.snp.leading)
-            $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8)
-            $0.height.equalTo(20)
-        }
+        updateContentLabelTrailingConstraint(isNextButtonHidden: false)
 
         nextButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
@@ -172,8 +184,51 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
+    // MARK: - Methods
+
+    private func updateHeader(content: MatchingMatchedCardContentModel, displayMode: MatchingMatchedCardDisplayMode) {
+        switch displayMode {
+        case .list:
+            nameLabel.setFont(.b2Sb16, text: content.name, textColor: .grey80)
+            genderLabel.setFont(.b2M16, text: content.gender, textColor: .primary40)
+            uploadedTimeLabel.setFont(.b2M16, text: content.uploadedTime, textColor: .grey50)
+            genderLabel.isHidden = false
+            dotLabel.isHidden = false
+            uploadedTimeLabel.isHidden = false
+        case .scheduleDetail:
+            nameLabel.setFont(.b2Sb16, text: makeScheduleDetailTitle(content: content), textColor: .grey80)
+            genderLabel.isHidden = true
+            dotLabel.isHidden = true
+            uploadedTimeLabel.isHidden = true
+        }
+    }
+
+    private func makeScheduleDetailTitle(content: MatchingMatchedCardContentModel) -> String {
+        let companionCount = max(content.participantCount - 1, 0)
+
+        return "\(content.name)님 외 \(companionCount)명과의 동행"
+    }
+
+    private func descriptionLimit(for displayMode: MatchingMatchedCardDisplayMode) -> Int {
+        switch displayMode {
+        case .list:
+            return 26
+        case .scheduleDetail:
+            return 30
+        }
+    }
+
+    private func descriptionColor(for displayMode: MatchingMatchedCardDisplayMode) -> UIColor {
+        switch displayMode {
+        case .list:
+            return .grey30
+        case .scheduleDetail:
+            return .grey40
+        }
+    }
+
     private func updateProfileTopConstraint(state: MatchingMatchedCardState) {
-        profileImageView.snp.remakeConstraints {
+        profileContainerView.snp.remakeConstraints {
             if state.showsConfirmedLabel {
                 $0.top.equalTo(confirmedLabel.snp.bottom).offset(12)
             } else {
@@ -181,20 +236,77 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             }
 
             $0.leading.equalToSuperview().inset(20)
-            $0.size.equalTo(40)
+            profileContainerWidthConstraint = $0.width.equalTo(profileContainerWidth()).constraint
+            $0.height.equalTo(40)
         }
     }
-    
-    func configure(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState) {
+
+    private func updateContentLabelTrailingConstraint(isNextButtonHidden: Bool) {
+        contentLabel.snp.remakeConstraints {
+            $0.top.equalTo(profileContainerView.snp.bottom).offset(12)
+            $0.leading.equalTo(profileContainerView.snp.leading)
+
+            if isNextButtonHidden {
+                $0.trailing.lessThanOrEqualToSuperview().inset(20)
+            } else {
+                $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8)
+            }
+
+            $0.height.equalTo(20)
+        }
+    }
+
+    private func profileContainerWidth() -> CGFloat {
+        if profileStackView.isHidden {
+            return 40
+        }
+
+        return max(profileStackView.contentSize.width, 40)
+    }
+
+    private func updateProfile(content: MatchingMatchedCardContentModel, displayMode: MatchingMatchedCardDisplayMode) {
+        switch displayMode {
+        case .list:
+            profileImageView.isHidden = false
+            profileStackView.isHidden = true
+            profileImageView.image = content.profileImage ?? .imgProfileDefault
+        case .scheduleDetail:
+            profileImageView.isHidden = true
+            profileStackView.isHidden = false
+            profileStackView.configure(with: makeProfileImages(content: content))
+        }
+    }
+
+    private func makeProfileImages(content: MatchingMatchedCardContentModel) -> [UIImage?] {
+        let avatarCount = min(max(content.participantCount, 1), 4)
+        let emptyAvatarCount = max(avatarCount - 1, 0)
+
+        return [content.profileImage] + [UIImage?](repeating: nil, count: emptyAvatarCount)
+    }
+
+    func configure(
+        content: MatchingMatchedCardContentModel,
+        state: MatchingMatchedCardState,
+        displayMode: MatchingMatchedCardDisplayMode = .list
+    ) {
         contentView.backgroundColor = state.backgroundColor
+        setNextButtonHidden(false)
         confirmedLabel.isHidden = !state.showsConfirmedLabel
-        profileImageView.image = content.profileImage ?? .imgProfileDefault
-        nameLabel.setFont(.b2Sb16, text: content.name, textColor: .grey80)
-        genderLabel.setFont(.b2M16, text: content.gender, textColor: .primary40)
-        uploadedTimeLabel.setFont(.b2M16, text: content.uploadedTime, textColor: .grey50)
+        updateProfile(content: content, displayMode: displayMode)
+
+        updateHeader(content: content, displayMode: displayMode)
         informationLabel.setFont(.b3M14, text: "\(content.place) · \(content.meetingTime)", textColor: .grey80)
-        contentLabel.setFont(.b3M14, text: content.description, textColor: .grey30)
+        contentLabel.setFont(
+            .b3M14,
+            text: content.description.truncated(limit: descriptionLimit(for: displayMode)),
+            textColor: descriptionColor(for: displayMode)
+        )
         updateProfileTopConstraint(state: state)
+    }
+
+    func setNextButtonHidden(_ isHidden: Bool) {
+        nextButton.isHidden = isHidden
+        updateContentLabelTrailingConstraint(isNextButtonHidden: isHidden)
     }
 
     // MARK: - Action

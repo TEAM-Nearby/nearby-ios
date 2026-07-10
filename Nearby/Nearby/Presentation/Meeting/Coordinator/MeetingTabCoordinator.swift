@@ -94,4 +94,8 @@ extension MeetingTabCoordinator: Coordinator {
         navigationController.popToRootViewController(animated: false)
         (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
     }
+    
+    func showCompanionTab() {
+        (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
+    }
 }

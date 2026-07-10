@@ -31,6 +31,12 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
 
     // MARK: - Custom Methods
     
+    override func setAddTarget() {
+        meetingTabView.onSearchButtonDidTap = { [weak self] in
+            self?.coordinator?.showCompanionTab()
+        }
+    }
+    
     override func setDelegate() {
         meetingTabView.collectionView.delegate = self
         meetingTabView.collectionView.dataSource = self
@@ -61,7 +67,6 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
 // MARK: - UICollectionViewDataSource
 
 extension MeetingTabViewController: UICollectionViewDataSource {
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.items.count
     }

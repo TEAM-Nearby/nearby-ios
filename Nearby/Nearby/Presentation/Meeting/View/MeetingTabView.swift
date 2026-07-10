@@ -11,6 +11,10 @@ import SnapKit
 import Then
 
 final class MeetingTabView: BaseView {
+    
+    // MARK: - Property
+    
+    var onSearchButtonDidTap: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -64,6 +68,12 @@ final class MeetingTabView: BaseView {
         emptyView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
             $0.horizontalEdges.bottom.equalToSuperview()
+        }
+    }
+    
+    override func setAddTarget() {
+        emptyView.onSearchButtonDidTap = { [weak self] in
+            self?.onSearchButtonDidTap?()
         }
     }
 

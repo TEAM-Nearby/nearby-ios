@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class MatchingHostScheduleDetailViewController: UIViewController {
+final class MatchingHostScheduleDetailViewController: BaseViewController<EmptyViewModel> {
 
     // MARK: - Property
 
@@ -19,12 +19,6 @@ final class MatchingHostScheduleDetailViewController: UIViewController {
         view = rootView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setAction()
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -33,7 +27,7 @@ final class MatchingHostScheduleDetailViewController: UIViewController {
 
     // MARK: - Method
 
-    private func setAction() {
+    override func setAddTarget() {
         rootView.backButtonAction = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }

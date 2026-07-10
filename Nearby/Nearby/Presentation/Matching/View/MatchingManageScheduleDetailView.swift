@@ -147,7 +147,7 @@ final class MatchingManageScheduleDetailView: BaseView {
 
         dateAndTimeImageView.snp.makeConstraints {
             $0.centerY.equalTo(dateAndTimeButton.snp.centerY)
-            $0.trailing.equalTo(dateAndTimeButton).inset(34)
+            $0.trailing.equalTo(dateAndTimeButton).offset(-34)
             $0.size.equalTo(24)
         }
 

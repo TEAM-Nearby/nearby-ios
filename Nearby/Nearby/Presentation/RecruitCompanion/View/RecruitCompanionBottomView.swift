@@ -86,7 +86,7 @@ final class RecruitCompanionBottomView: BaseView {
 
     override func setLayout() {
         meetingPlaceTitleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(24)
+            $0.top.equalToSuperview().inset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         

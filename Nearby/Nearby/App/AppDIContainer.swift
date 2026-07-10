@@ -27,6 +27,10 @@ final class AppDIContainer {
         CompanionCoordinator(navigationController: navigationController, diContainer: self)
     }
     
+    func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
+        MyPageCoordinator(navigationController: navigationController, appDIContainer: self)
+    }
+    
     // MARK: - Networks
     
     // MARK: - Repositories
@@ -59,6 +63,18 @@ final class AppDIContainer {
     
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
+    }
+    
+    func makeMyPageViewModel() -> MyPageViewModel {
+        MyPageViewModel()
+    }
+        
+    func makeAlarmViewModel() -> AlarmViewModel {
+        AlarmViewModel()
+    }
+    
+    func makeSettingViewModel() -> SettingViewModel {
+        SettingViewModel()
     }
     
     func makeHostReviewListViewModel() -> HostReviewListViewModel {
@@ -127,9 +143,26 @@ final class AppDIContainer {
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
-    
-    func makeMyPageViewController() -> UIViewController {
-        makePlaceholderViewController(title: "마이페이지")
+
+    func makeMyPageViewController() -> MyPageViewController {
+        let viewModel = makeMyPageViewModel()
+        return MyPageViewController(
+            viewModel: viewModel
+        )
+    }
+
+    func makeAlarmViewController() -> AlarmViewController {
+        let viewModel = AlarmViewModel()
+        return AlarmViewController(
+            viewModel: viewModel
+        )
+    }
+
+    func makeSettingViewController() -> SettingViewController {
+        let viewModel = SettingViewModel()
+        return SettingViewController(
+            viewModel: viewModel
+        )
     }
     
     func makeRecruitCompanionViewController() -> UIViewController {

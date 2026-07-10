@@ -15,4 +15,5 @@ struct NearCompanionCellItem {
     let schedule: String
     let participantImages: [UIImage?]
     let statusText: String
+    let detailState: CompanionDetailState
 }

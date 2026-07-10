@@ -49,11 +49,11 @@ final class AppDIContainer {
         CompanionDetailViewModel(state: state)
     }
 
-    func makeNearCompanionBottomSheetViewModel() -> NearCompanionBottomSheetViewModel {
+    func makeNearCompanionSheetViewModel() -> NearCompanionBottomSheetViewModel {
         NearCompanionBottomSheetViewModel()
     }
     
-    func makeSpecificCompanionBottomSheetViewModel() -> SpecificCompanionBottomSheetViewModel {
+    func makeSpecificCompanionSheetViewModel() -> SpecificCompanionBottomSheetViewModel {
         SpecificCompanionBottomSheetViewModel()
     }
     
@@ -100,29 +100,24 @@ final class AppDIContainer {
     }
     
     func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
-        return CompanionViewController(
-            viewModel: viewModel,
-            nearbyBottomSheetViewController: makeNearCompanionBottomSheetViewController(),
-            specificBottomSheetViewController: makeEmptyCompanionBottomSheetViewController(),
-            emptyBottomSheetViewController: makeEmptyCompanionBottomSheetViewController()
-        )
+        return CompanionViewController(viewModel: viewModel, nearbyBottomSheetViewController: makeNearCompanionSheetViewController(),
+                                       specificBottomSheetViewController: makeSpecificCompanionSheetViewController(),
+                                       emptyBottomSheetViewController: makeEmptyCompanionSheetViewController())
     }
     
-    func makeNearCompanionBottomSheetViewController() -> NearCompanionBottomSheetViewController {
-        return NearCompanionBottomSheetViewController(viewModel: makeNearCompanionBottomSheetViewModel())
+    func makeNearCompanionSheetViewController() -> NearCompanionSheetViewController {
+        return NearCompanionSheetViewController(viewModel: makeNearCompanionSheetViewModel())
     }
     
-    func makeSpecificCompanionBottomSheetViewController() -> SpecificCompanionBottomSheetViewController {
-        return SpecificCompanionBottomSheetViewController(viewModel: makeSpecificCompanionBottomSheetViewModel())
+    func makeSpecificCompanionSheetViewController() -> SpecificCompanionSheetViewController {
+        return SpecificCompanionSheetViewController(viewModel: makeSpecificCompanionSheetViewModel())
     }
     
-    func makeEmptyCompanionBottomSheetViewController() -> EmptyCompanionBottomSheetViewController {
-        return EmptyCompanionBottomSheetViewController()
+    func makeEmptyCompanionSheetViewController() -> EmptyCompanionSheetViewController {
+        return EmptyCompanionSheetViewController()
     }
 
-    func makeCompanionDetailViewController(
-        viewModel: CompanionDetailViewModel
-    ) -> CompanionDetailViewController {
+    func makeCompanionDetailViewController(viewModel: CompanionDetailViewModel) -> CompanionDetailViewController {
         CompanionDetailViewController(viewModel: viewModel)
     }
     
@@ -140,10 +135,7 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeMeetingProgressViewController(
-        coordinator: MeetingTabCoordinator,
-        item: MeetingItem
-    ) -> UIViewController {
+    func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, item: MeetingItem) -> UIViewController {
         let viewController = MeetingProgressViewController(
             viewModel: makeMeetingProgressViewModel(item: item)
         )
@@ -178,17 +170,12 @@ final class AppDIContainer {
     }
     
     func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
-        let viewController = HostReviewListViewController(
-            viewModel: makeHostReviewListViewModel()
-        )
+        let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel())
         viewController.coordinator = coordinator
         return viewController
     }
     
-    func makeReviewPostViewController(
-        coordinator: MeetingTabCoordinator,
-        reviewItem: ReviewItem
-    ) -> UIViewController {
+    func makeReviewPostViewController(coordinator: MeetingTabCoordinator, reviewItem: ReviewItem) -> UIViewController {
         let viewController = ReviewPostViewController(
             viewModel: makeReviewPostViewModel(reviewItem: reviewItem)
         )

@@ -1,5 +1,5 @@
 //
-//  EmptyCompanionBottomSheetViewController.swift
+//  EmptyCompanionSheetViewController.swift
 //  Nearby
 //
 //  Created by soomin on 7/7/26.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class EmptyCompanionBottomSheetViewController: BaseViewController<EmptyViewModel> {
+final class EmptyCompanionSheetViewController: BaseViewController<EmptyViewModel> {
     
     // MARK: - Property
     

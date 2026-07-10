@@ -15,7 +15,7 @@ final class SpecificCompanionBottomSheetView: BaseView {
     // MARK: - UI Components
     
     private let titleLabel = UILabel()
-    private let closeButton = UIButton()
+    let closeButton = UIButton()
     private let placeImageView = UIImageView()
     private let placeNameLabel = UILabel()
     private let placeInfoLabel = UILabel()

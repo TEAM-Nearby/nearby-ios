@@ -90,7 +90,7 @@ final class CompanionDetailBottomView: BaseView {
         
         placeLabel.do {
             $0.setFont(.b2M16, text: "장소명", textColor: .grey80)
-            $0.transform = CGAffineTransform(translationX: 0, y: 1)
+            $0.transform = CGAffineTransform(translationX: 0, y: -1)
         }
         
         dateStackView.do {
@@ -106,7 +106,7 @@ final class CompanionDetailBottomView: BaseView {
         
         dateLabel.do {
             $0.setFont(.b2M16, text: "6월 18일 (목) 오후 4시 30분", textColor: .grey80)
-            $0.transform = CGAffineTransform(translationX: 0, y: 1)
+            $0.transform = CGAffineTransform(translationX: 0, y: -1)
         }
         
         peopleStackView.do {
@@ -126,7 +126,7 @@ final class CompanionDetailBottomView: BaseView {
         
         peopleStatusLabel.do {
             $0.setFont(.b2M16, text: "3/4명", textColor: .grey80)
-            $0.transform = CGAffineTransform(translationX: 0, y: 1)
+            $0.transform = CGAffineTransform(translationX: 0, y: -1)
         }
         
         containerView.do {

@@ -53,7 +53,8 @@ private extension SpecificCompanionBottomSheetViewModel {
             meetingTime: "오후 4시 30분",
             closedTime: " | 마감 2시간 전",
             participantImages: [nil, nil],
-            statusText: "2/4 모집 중"
+            statusText: "2/4 모집 중",
+            detailState: scheduledDetailState
         ),
         SpecificCompanionCellItem(
             profileImage: nil,
@@ -64,7 +65,8 @@ private extension SpecificCompanionBottomSheetViewModel {
             meetingTime: "오후 4시 30분",
             closedTime: " | 마감 20분 전",
             participantImages: [nil, nil],
-            statusText: "2/4 모집 중"
+            statusText: "2/4 모집 중",
+            detailState: scheduledDetailState
         ),
         SpecificCompanionCellItem(
             profileImage: nil,
@@ -75,7 +77,8 @@ private extension SpecificCompanionBottomSheetViewModel {
             meetingTime: "지금 바로",
             closedTime: "",
             participantImages: [nil, nil, nil],
-            statusText: "3/4 모집 중"
+            statusText: "3/4 모집 중",
+            detailState: immediateDetailState
         ),
         SpecificCompanionCellItem(
             profileImage: nil,
@@ -86,7 +89,20 @@ private extension SpecificCompanionBottomSheetViewModel {
             meetingTime: "오후 4시 30분",
             closedTime: " | 마감 20분 전",
             participantImages: [nil, nil],
-            statusText: "2/4 모집 중"
+            statusText: "2/4 모집 중",
+            detailState: scheduledDetailState
         )
     ]
+
+    static let scheduledDetailState = CompanionDetailState(
+        postType: .scheduled,
+        isApplicationEnabled: true,
+        tags: ["사전에 진심", "계획파", "맛집 탐방"]
+    )
+
+    static let immediateDetailState = CompanionDetailState(
+        postType: .immediate(expirationTime: "16시 11분"),
+        isApplicationEnabled: true,
+        tags: ["사전에 진심", "계획파", "맛집 탐방"]
+    )
 }

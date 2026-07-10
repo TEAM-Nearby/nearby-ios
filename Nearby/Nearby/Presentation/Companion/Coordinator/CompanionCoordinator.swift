@@ -29,6 +29,8 @@ final class CompanionCoordinator {
         switch route {
         case .recruitCompanion:
             showRecruitCompanion()
+        case .companionDetail(let state):
+            showCompanionDetail(state: state)
         }
     }
     

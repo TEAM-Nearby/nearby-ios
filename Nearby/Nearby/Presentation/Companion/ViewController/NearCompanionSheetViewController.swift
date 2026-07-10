@@ -1,5 +1,5 @@
 //
-//  NearCompanionBottomSheetViewController.swift
+//  NearCompanionSheetViewController.swift
 //  Nearby
 //
 //  Created by soomin on 7/8/26.
@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-final class NearCompanionBottomSheetViewController: BaseViewController<NearCompanionBottomSheetViewModel> {
+final class NearCompanionSheetViewController: BaseViewController<NearCompanionBottomSheetViewModel> {
     
     // MARK: - Properties
 
@@ -61,7 +61,7 @@ final class NearCompanionBottomSheetViewController: BaseViewController<NearCompa
 
 // MARK: - UICollectionViewDataSource
 
-extension NearCompanionBottomSheetViewController: UICollectionViewDataSource {
+extension NearCompanionSheetViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.nearCompanionCount
     }
@@ -78,7 +78,7 @@ extension NearCompanionBottomSheetViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegate
 
-extension NearCompanionBottomSheetViewController: UICollectionViewDelegate {
+extension NearCompanionSheetViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.action(.companionDidSelect(indexPath.item))
     }

@@ -9,7 +9,7 @@ import UIKit
 
 final class MatchingHostScheduleDetailViewController: UIViewController {
 
-    // MARK: - Properties
+    // MARK: - Property
 
     private let rootView = MatchingManageScheduleDetailView()
 
@@ -31,7 +31,7 @@ final class MatchingHostScheduleDetailViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
-    // MARK: - Methods
+    // MARK: - Method
 
     private func setAction() {
         rootView.backButtonAction = { [weak self] in

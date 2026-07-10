@@ -91,7 +91,7 @@ final class MatchingViewController: UIViewController {
         navigationController?.pushViewController(viewController, animated: true)
     }
 
-    // MARK: - Actions
+    // MARK: - Action
 
     @objc
     private func findCompanionButtonDidTap() {

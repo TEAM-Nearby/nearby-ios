@@ -38,7 +38,7 @@ final class AvatarStackView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     private func setStyle() {
         self.do {
@@ -79,7 +79,6 @@ final class AvatarStackView: UIStackView {
                 make.size.equalTo(avatarSize).priority(.high)
             }
 
-            avatarImageView.layoutIfNeeded()
             avatarImageView.layer.cornerRadius = avatarSize / 2
             avatarImageView.clipsToBounds = true
         }

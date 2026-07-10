@@ -12,11 +12,15 @@ import GoogleMaps
 import SnapKit
 
 final class CompanionViewController: BaseViewController<CompanionViewModel> {
+
     // MARK: - Properties
 
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     private var currentLocationMarker: GMSMarker?
+    private var isSpecificBottomSheetPresented = false
+    private var categoryItems: [CategoryItem] { viewModel.output.categoryItems }
+    private var tabBarHeight: CGFloat { tabBarController?.tabBar.bounds.height ?? 0 }
 
     // MARK: - UI Components
 
@@ -24,14 +28,9 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private let nearbyBottomSheetViewController: UIViewController
     private let specificBottomSheetViewController: UIViewController
     private let emptyBottomSheetViewController: UIViewController
-    private var isSpecificBottomSheetPresented = false
-    
     private weak var currentLocationDirectionView: UIView?
-    private var categoryItems: [CategoryItem] { viewModel.output.categoryItems }
     private var bottomSheetHostView: UIView { tabBarController?.view ?? view }
     private var bottomSheetParentViewController: UIViewController { tabBarController ?? self }
-    private var tabBarHeight: CGFloat { tabBarController?.tabBar.bounds.height ?? 0 }
-    
     private var companionView = CompanionView()
     
     // MARK: - Initializer
@@ -133,7 +132,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private func showNearbyBottomSheet(animated: Bool = true) {
         isSpecificBottomSheetPresented = false
         companionView.setCategoryChipsHidden(false)
-        setTabBarHidden(false)
+        setTabBarHidden(false, animated: animated)
         bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
         bottomSheetViewController.setState(content: .nearbyCompanionList, animated: animated)
     }
@@ -141,7 +140,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private func showEmptyBottomSheet(animated: Bool = true) {
         isSpecificBottomSheetPresented = false
         companionView.setCategoryChipsHidden(false)
-        setTabBarHidden(false)
+        setTabBarHidden(false, animated: animated)
         bottomSheetViewController.setContentViewController(emptyBottomSheetViewController)
         bottomSheetViewController.setState(content: .nearbyCompanionEmpty, animated: animated)
     }
@@ -149,7 +148,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private func showSpecificBottomSheet(animated: Bool = true) {
         isSpecificBottomSheetPresented = true
         companionView.setCategoryChipsHidden(true)
-        setTabBarHidden(true)
+        setTabBarHidden(true, animated: animated)
         bottomSheetViewController.setContentViewController(specificBottomSheetViewController)
         bottomSheetViewController.setState(content: .specificRestaurantCompanionList, animated: animated)
     }
@@ -174,24 +173,40 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     
     private func setBottomSheetHidden(_ isHidden: Bool) { bottomSheetViewController.view.isHidden = isHidden }
 
-    private func setTabBarHidden(_ isHidden: Bool) {
+    private func setTabBarHidden(_ isHidden: Bool, animated: Bool = false) {
         guard let tabBar = tabBarController?.tabBar else { return }
 
         tabBar.isHidden = false
-        tabBar.alpha = isHidden ? 0 : 1
         tabBar.isUserInteractionEnabled = !isHidden
-        
-        let hiddenTransform = CGAffineTransform(translationX: 0, y: tabBar.bounds.height + view.safeAreaInsets.bottom)
-        tabBar.transform = isHidden ? hiddenTransform : .identity
-        
+
         if !isHidden {
             bottomSheetHostView.bringSubviewToFront(tabBar)
         }
-        
-        tabBarController?.view.setNeedsLayout()
-        tabBarController?.view.layoutIfNeeded()
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
+
+        let animations = {
+            let hiddenTransform = CGAffineTransform(
+                translationX: 0,
+                y: tabBar.bounds.height + self.view.safeAreaInsets.bottom
+            )
+            tabBar.alpha = isHidden ? 0 : 1
+            tabBar.transform = isHidden ? hiddenTransform : .identity
+            self.tabBarController?.view.layoutIfNeeded()
+            self.view.layoutIfNeeded()
+        }
+
+        guard animated else {
+            animations()
+            return
+        }
+
+        UIView.animate(
+            withDuration: 0.28,
+            delay: 0,
+            usingSpringWithDamping: 0.86,
+            initialSpringVelocity: 0.4,
+            options: [.beginFromCurrentState, .curveEaseOut],
+            animations: animations
+        )
     }
     
     private func updateBottomSheetLayer(for state: BottomSheetState) {

@@ -11,9 +11,9 @@ import SnapKit
 import Then
 
 final class NearCompanionBottomSheetView: BaseView {
-    
+
     // MARK: - Properties
-    
+
     private let sortOptions: [SortOption]
     private var sortButtons = [SortOption: NearbyChipButton]()
     
@@ -87,11 +87,7 @@ final class NearCompanionBottomSheetView: BaseView {
         collectionView.register(NearCompanionCell.self)
     }
     
-    func updateSortButtonSelection(_ selectedOption: SortOption) {
-        sortButtons.forEach { option, button in
-            button.updateSelected(option == selectedOption)
-        }
-    }
+    // MARK: - Methods
     
     private func configureSortButtons() {
         sortOptions.forEach { option in
@@ -120,4 +116,11 @@ final class NearCompanionBottomSheetView: BaseView {
         
         return UICollectionViewCompositionalLayout(section: section)
     }
+
+    func updateSortButtonSelection(_ selectedOption: SortOption) {
+        sortButtons.forEach { option, button in
+            button.updateSelected(option == selectedOption)
+        }
+    }
+
 }

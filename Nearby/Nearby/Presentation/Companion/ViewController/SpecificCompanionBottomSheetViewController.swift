@@ -17,10 +17,10 @@ final class SpecificCompanionBottomSheetViewController: BaseViewController<Speci
     // MARK: - Life Cycle
     
     override func loadView() {
-        self.view = specificCompanionBottomSheetView
+        view = specificCompanionBottomSheetView
     }
     
-    // MARK: - Custom Method
+    // MARK: - Custom Methods
     
     override func setDelegate() {
         specificCompanionBottomSheetView.collectionView.dataSource = self

@@ -153,7 +153,7 @@ final class SpecificCompanionCell: UICollectionViewCell {
         writedTimeLabel.text = item.writtenTime
         contentLabel.text = item.content
         meetingTimeLabel.text = item.meetingTime
-        closedTimeLabel.text = "\(item.closedTime)"
+        closedTimeLabel.text = item.closedTime
         profileStackView.configure(with: item.participantImages)
         currentStatusLabel.text = item.statusText
     }

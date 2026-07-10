@@ -16,7 +16,7 @@ final class NearCompanionBottomSheetViewController: BaseViewController<NearCompa
     
     private var nearCompanionBottomSheetView = NearCompanionBottomSheetView(sortOptions: SortOption.allCases)
     
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
     
     override func loadView() {
         view = nearCompanionBottomSheetView

@@ -270,12 +270,10 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             profileImageView.isHidden = false
             profileStackView.isHidden = true
             profileImageView.image = content.profileImage ?? .imgProfileDefault
-            profileContainerWidthConstraint?.update(offset: 40)
         case .scheduleDetail:
             profileImageView.isHidden = true
             profileStackView.isHidden = false
             profileStackView.configure(with: makeProfileImages(content: content))
-            profileContainerWidthConstraint?.update(offset: profileContainerWidth())
         }
     }
 

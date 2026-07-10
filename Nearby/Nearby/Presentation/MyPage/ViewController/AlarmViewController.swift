@@ -7,11 +7,14 @@
 
 import UIKit
 
-final class AlarmViewController: BaseViewController<AlarmViewModel> {
+final class AlarmViewController:BaseViewController<AlarmViewModel> {
 
-    // MARK: - Property
+    // MARK: - Properties
 
     var onBackButtonDidTap: (() -> Void)?
+    var onRequestActionDidTap: ((AlarmRequestItem) -> Void)?
+
+    private var requestItems: [AlarmRequestItem] = []
 
     // MARK: - UI Component
 

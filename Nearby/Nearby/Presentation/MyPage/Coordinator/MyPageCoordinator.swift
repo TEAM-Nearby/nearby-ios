@@ -21,8 +21,7 @@ final class MyPageCoordinator {
 
     // MARK: - Initializer
 
-    init(navigationController: UINavigationController, appDIContainer: AppDIContainer)
-    {
+    init(navigationController: UINavigationController, appDIContainer: AppDIContainer) {
         self.navigationController = navigationController
         self.appDIContainer = appDIContainer
     }

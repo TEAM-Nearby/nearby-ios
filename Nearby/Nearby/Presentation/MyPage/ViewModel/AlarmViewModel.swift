@@ -30,7 +30,7 @@ final class AlarmViewModel: BaseViewModelType {
         var backButtonDidTap: (() -> Void)?
     }
 
-    // MARK: - Property
+    // MARK: - Properties
 
     var output = Output()
 

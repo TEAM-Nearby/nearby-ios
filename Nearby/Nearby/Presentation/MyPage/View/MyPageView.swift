@@ -312,7 +312,6 @@ final class MyPageView: BaseView {
         mannerScoreCardView.snp.makeConstraints {
             $0.top.equalTo(boardingPassImageView.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(209)
         }
 
         mannerTitleLabel.snp.makeConstraints {

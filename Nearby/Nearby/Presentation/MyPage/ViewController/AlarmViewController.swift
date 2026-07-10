@@ -60,7 +60,7 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
     }
 }
 
-// MARK: - Private Methods
+// MARK: - Private Method
 
 private extension AlarmViewController {
     func bindViewModel() {

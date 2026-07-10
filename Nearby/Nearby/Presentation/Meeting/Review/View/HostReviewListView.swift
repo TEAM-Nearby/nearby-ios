@@ -23,7 +23,9 @@ final class HostReviewListView: BaseView {
     private let contentView = UIStackView()
     
     private let companionInformationView = UIStackView()
-    private let avatarStackView = AvatarStackView()
+    private let avatarStackView = UIView()
+    private let topAvatarStackView = AvatarStackView(avatarSize: 32, avatarOverlap: 9)
+    private let bottomAvatarStackView = AvatarStackView(avatarSize: 32, avatarOverlap: 9)
     private let labelStackView = UIStackView()
     private let peopleLabel = UILabel()
     private let informationLabel = UILabel()
@@ -95,6 +97,7 @@ final class HostReviewListView: BaseView {
         addSubviews(navigationBar, contentView, completionButton)
         contentView.addArrangedSubviews(companionInformationView, dividerView, reviewListStackView)
         companionInformationView.addArrangedSubviews(avatarStackView, labelStackView)
+        avatarStackView.addSubviews(topAvatarStackView, bottomAvatarStackView)
         labelStackView.addArrangedSubviews(peopleLabel, informationLabel, locationView)
         labelStackView.setCustomSpacing(8, after: informationLabel)
         locationView.addSubviews(locationImage, locationLabel)
@@ -109,6 +112,20 @@ final class HostReviewListView: BaseView {
         contentView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(28)
             $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        avatarStackView.snp.makeConstraints {
+            $0.size.equalTo(55)
+        }
+        
+        topAvatarStackView.snp.makeConstraints {
+            $0.top.horizontalEdges.equalToSuperview()
+        }
+        
+        bottomAvatarStackView.snp.makeConstraints {
+            $0.top.equalTo(topAvatarStackView.snp.bottom).offset(-9)
+            $0.leading.equalToSuperview()
+            $0.bottom.equalToSuperview()
         }
         
         dividerView.snp.makeConstraints {
@@ -149,7 +166,12 @@ final class HostReviewListView: BaseView {
     // MARK: - Methods
     
     func configure(people: String, information: String, location: String, avatarImages: [UIImage?]) {
-        avatarStackView.configure(with: avatarImages)
+        // TODO: - 서버 연동 시 수정
+        let topImages = Array(avatarImages.prefix(2))
+        let bottomImages = Array(avatarImages.dropFirst(2).prefix(2))
+        topAvatarStackView.configure(with: topImages)
+        bottomAvatarStackView.configure(with: bottomImages)
+        bottomAvatarStackView.isHidden = bottomImages.isEmpty
         peopleLabel.text = people
         informationLabel.text = information
         locationLabel.text = location

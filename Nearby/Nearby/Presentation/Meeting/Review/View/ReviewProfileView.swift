@@ -39,7 +39,8 @@ final class ReviewProfileView: BaseView {
         }
         
         imageView.do {
-            $0.image = .imgProfileDefault
+            $0.layer.cornerRadius = 23
+            $0.clipsToBounds = true
         }
         
         labelStackView.do {

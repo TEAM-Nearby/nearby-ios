@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
-    
+
     // MARK: - UI Component
     
     private let reviewPostView = ReviewPostView()
@@ -19,7 +19,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
     weak var coordinator: MeetingTabCoordinator?
     var onReviewSaved: (() -> Void)?
     
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
     
     override func loadView() {
         view = reviewPostView

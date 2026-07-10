@@ -33,6 +33,7 @@ final class HostReviewListViewModel: BaseViewModelType {
         let people: String
         let information: String
         let location: String
+        let avatarImages: [UIImage?]
     }
     
     // MARK: - Properties
@@ -55,9 +56,10 @@ final class HostReviewListViewModel: BaseViewModelType {
             // TODO: - 서버 연동 예정
             output.headerInfo.send(
                 HeaderInfo(
-                    people: "정지영 외 1명과의 동행",
+                    people: "정지영 외 3명과의 동행",
                     information: "바르셀로나 · 2026년 6월 18일",
-                    location: "시우다드 콘달"
+                    location: "시우다드 콘달",
+                    avatarImages: [.imgProfileDefault, .imgProfileDefault, .imgProfileDefault, .imgProfileDefault]
                 )
             )
             output.items.send([

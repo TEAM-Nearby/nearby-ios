@@ -14,6 +14,7 @@ final class ReviewPostView: BaseView {
     
     // MARK: - Properties
     
+    var onBackButtonDidTap: (() -> Void)?
     var onRatingChanged: ((Int) -> Void)?
     var onReportButtonDidTap: (() -> Void)?
     var onCompletionButtonDidTap: (() -> Void)?
@@ -306,6 +307,9 @@ final class ReviewPostView: BaseView {
     }
     
     override func setAddTarget() {
+        navigationBar.leftButtonAction = { [weak self] in
+            self?.onBackButtonDidTap?()
+        }
         starRating.onRatingChanged = { [weak self] rating in
             self?.onRatingChanged?(rating)
         }

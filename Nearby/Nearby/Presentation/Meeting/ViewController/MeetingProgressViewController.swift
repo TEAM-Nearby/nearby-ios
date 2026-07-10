@@ -75,7 +75,15 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
         viewModel.output.showReviewList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showHostReviewList()
+                // TODO: - 서버 연동 후 post.hostID == myUserID 로 타입 판정
+                let mockType: NearbyUserType = .host
+                let mockItem = ReviewItem(
+                    id: 1,
+                    image: .imgProfileDefault,
+                    name: "정지영",
+                    information: "바르셀로나 · 2026년 6월 18일"
+                )
+                self?.coordinator?.showReview(type: mockType, item: mockItem)
             }
             .store(in: &cancellables)
         

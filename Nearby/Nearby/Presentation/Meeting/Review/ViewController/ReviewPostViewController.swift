@@ -41,6 +41,9 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
     }
     
     override func setAddTarget() {
+        reviewPostView.onBackButtonDidTap = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
         reviewPostView.onRatingChanged = { [weak self] rating in
             self?.viewModel.action(.ratingChanged(rating))
         }

@@ -23,8 +23,7 @@ final class HostReviewListView: BaseView {
     private let contentView = UIStackView()
     
     private let companionInformationView = UIStackView()
-    private let avatarStackView = UIStackView()
-    // TODO: - 아바타 겹침 컴포넌트
+    private let avatarStackView = AvatarStackView()
     private let labelStackView = UIStackView()
     private let peopleLabel = UILabel()
     private let informationLabel = UILabel()
@@ -58,10 +57,6 @@ final class HostReviewListView: BaseView {
             $0.axis = .horizontal
             $0.spacing = 16
             $0.alignment = .center
-        }
-        
-        avatarStackView.do {
-            $0.axis = .horizontal
         }
         
         labelStackView.do {
@@ -120,10 +115,6 @@ final class HostReviewListView: BaseView {
             $0.height.equalTo(1)
         }
         
-        avatarStackView.snp.makeConstraints {
-            $0.size.equalTo(55)
-        }
-        
         locationView.snp.makeConstraints {
             $0.height.equalTo(17)
         }
@@ -157,7 +148,8 @@ final class HostReviewListView: BaseView {
     
     // MARK: - Methods
     
-    func configure(people: String, information: String, location: String) {
+    func configure(people: String, information: String, location: String, avatarImages: [UIImage?]) {
+        avatarStackView.configure(with: avatarImages)
         peopleLabel.text = people
         informationLabel.text = information
         locationLabel.text = location

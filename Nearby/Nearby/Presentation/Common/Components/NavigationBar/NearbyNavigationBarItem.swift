@@ -27,8 +27,6 @@ extension NearbyNavigationBarItem {
             return .chevronLeftIcon
         case .down:
             return .chevronDownIcon
-        case .logo:
-            return .nearbyLogo
         case .alarm:
             return .alarmIcon
         case .setting:

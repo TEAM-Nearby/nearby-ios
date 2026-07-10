@@ -59,6 +59,7 @@ final class ReviewProfileView: BaseView {
         
         nextButton.do {
             $0.setImage(.chevronRightIcon, for: .normal)
+            $0.tintColor = .grey50
         }
     }
     

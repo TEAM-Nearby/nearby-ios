@@ -7,7 +7,6 @@
 
 import UIKit
 
-import GoogleMaps
 import SnapKit
 import Then
 
@@ -33,9 +32,7 @@ final class MatchingHostScheduleDetailView: BaseView {
     private let confirmButton = NearbyButton(style: .primary, title: "일정 확정하기")
     private let dateAndTimeButton = NearbyButton(style: .unselected, title: "")
     private let dateAndTimeImageView = UIImageView()
-    private let mapView = GMSMapView()
-    private let marker = GMSMarker()
-    private let markerImageView = UIImageView()
+    private let mapView = NearbyMapView()
 
     // MARK: - Custom Methods
 
@@ -92,12 +89,7 @@ final class MatchingHostScheduleDetailView: BaseView {
             $0.minimumDate = Date()
             $0.locale = Locale(identifier: "ko_KR")
             $0.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-            $0.tintColor = .primary50
-        }
-
-        mapView.do {
-            $0.layer.cornerRadius = 16
-            $0.clipsToBounds = true
+            $0.tintColor = .btnPrimaryBg
         }
 
         placeTitleLabel.do {
@@ -114,13 +106,6 @@ final class MatchingHostScheduleDetailView: BaseView {
             $0.setFont(.b3M14, text: "Siutat condal, Rambla de Catalunya, 16", textColor: .grey30)
         }
 
-        markerImageView.do {
-            $0.image = .smallLocationBlackIcon.withRenderingMode(.alwaysTemplate)
-            $0.tintColor = .primary50
-            $0.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
-            $0.contentMode = .scaleAspectFit
-        }
-
         confirmExplainLabel.do {
             $0.setFont(.b3M14, text: "일정을 확정하면 동행에게 알림이 가요!", textColor: .grey30)
         }
@@ -133,8 +118,8 @@ final class MatchingHostScheduleDetailView: BaseView {
         addSubviews(
             navigationBar, matchedCardView, dateAndTimeTitleLabel,
             dateAndTimeButton, dateAndTimeImageView, placeTitleLabel,
-            placeImageView, placeDetailLabel, mapView, confirmExplainLabel,
-            confirmButton, datePickerContainerView
+            placeImageView, placeDetailLabel, mapView,
+            confirmExplainLabel, confirmButton, datePickerContainerView
         )
         datePickerContainerView.addSubview(datePicker)
     }
@@ -242,14 +227,7 @@ final class MatchingHostScheduleDetailView: BaseView {
     }
 
     private func configureMapView() {
-        let coordinate = CLLocationCoordinate2D(latitude: 37.566508, longitude: 126.977945)
-        let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: 16.0)
-
-        mapView.camera = camera
-
-        marker.position = coordinate
-        marker.iconView = markerImageView
-        marker.map = mapView
+        mapView.configure(latitude: 37.566508, longitude: 126.977945)
     }
 
     // MARK: - Actions

@@ -14,9 +14,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
 
     // MARK: - Properties
 
-    static let identifier = String(
-        describing: AlarmRequestTableViewCell.self
-    )
+    static let identifier = String(describing: AlarmRequestTableViewCell.self)
 
     var onActionButtonDidTap: (() -> Void)?
 
@@ -27,9 +25,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
 
     private let cardView = UIView()
 
-    private let profileImageView = GradientCircleView(
-        diameter: 50
-    )
+    private let profileImageView = GradientCircleView(diameter: 50)
 
     private let titleStackView = UIStackView()
     private let statusIconImageView = UIImageView()
@@ -45,10 +41,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
         style: UITableViewCell.CellStyle,
         reuseIdentifier: String?
     ) {
-        super.init(
-            style: style,
-            reuseIdentifier: reuseIdentifier
-        )
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         setStyle()
         setUI()
@@ -88,29 +81,17 @@ final class AlarmRequestTableViewCell: UITableViewCell {
     // MARK: - Methods
 
     func configure(with item: AlarmRequestItem) {
-        profileImageView.configure(
-            image: item.profileImage
-        )
+        profileImageView.configure(image: item.profileImage)
 
         titleLabel.text = item.displayType.title
 
-        informationLabel.text = [
-            item.nickname,
-            item.dateText
-        ].joined(separator: " · ")
+        informationLabel.text = [item.nickname, item.dateText].joined(separator: " · ")
 
-        actionButton.setTitle(
-            item.displayType.buttonTitle,
-            for: .normal
-        )
+        actionButton.setTitle(item.displayType.buttonTitle, for: .normal)
 
-        configureIcon(
-            with: item.displayType
-        )
+        configureIcon(with: item.displayType)
 
-        configureAppearance(
-            with: item.displayType
-        )
+        configureAppearance(with: item.displayType)
     }
 }
 
@@ -145,10 +126,7 @@ private extension AlarmRequestTableViewCell {
             $0.textColor = .grey80
             $0.numberOfLines = 1
 
-            $0.setContentCompressionResistancePriority(
-                .defaultLow,
-                for: .horizontal
-            )
+            $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
 
         informationLabel.do {
@@ -168,17 +146,9 @@ private extension AlarmRequestTableViewCell {
     func setUI() {
         contentView.addSubview(cardView)
 
-        cardView.addSubviews(
-            profileImageView,
-            titleStackView,
-            informationLabel,
-            actionButton
-        )
+        cardView.addSubviews(profileImageView, titleStackView, informationLabel, actionButton)
 
-        titleStackView.addArrangedSubviews(
-            statusIconImageView,
-            titleLabel
-        )
+        titleStackView.addArrangedSubviews(statusIconImageView, titleLabel)
     }
 
     func setLayout() {
@@ -195,35 +165,27 @@ private extension AlarmRequestTableViewCell {
         titleStackView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(21)
 
-            $0.leading.equalTo(
-                profileImageView.snp.trailing
-            ).offset(16)
+            $0.leading.equalTo(profileImageView.snp.trailing).offset(16)
 
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
             $0.height.greaterThanOrEqualTo(24)
         }
 
         statusIconImageView.snp.makeConstraints {
-            statusIconWidthConstraint =
-                $0.width.equalTo(20).constraint
+            statusIconWidthConstraint = $0.width.equalTo(20).constraint
 
-            statusIconHeightConstraint =
-                $0.height.equalTo(20).constraint
+            statusIconHeightConstraint = $0.height.equalTo(20).constraint
         }
 
         informationLabel.snp.makeConstraints {
-            $0.top.equalTo(
-                titleStackView.snp.bottom
-            ).offset(6)
+            $0.top.equalTo(titleStackView.snp.bottom).offset(6)
 
             $0.leading.equalTo(titleStackView)
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
         }
 
         actionButton.snp.makeConstraints {
-            $0.top.equalTo(
-                profileImageView.snp.bottom
-            ).offset(12)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(12)
 
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(44)
@@ -232,11 +194,7 @@ private extension AlarmRequestTableViewCell {
     }
 
     func setAddTarget() {
-        actionButton.addTarget(
-            self,
-            action: #selector(actionButtonDidTap),
-            for: .touchUpInside
-        )
+        actionButton.addTarget(self, action: #selector(actionButtonDidTap), for: .touchUpInside)
     }
 
     func configureIcon(
@@ -263,14 +221,10 @@ private extension AlarmRequestTableViewCell {
         )
 
         if let tintColor = displayType.iconTintColor {
-            statusIconImageView.image =
-                icon.withRenderingMode(.alwaysTemplate)
-
+            statusIconImageView.image = icon.withRenderingMode(.alwaysTemplate)
             statusIconImageView.tintColor = tintColor
         } else {
-            statusIconImageView.image =
-                icon.withRenderingMode(.alwaysOriginal)
-
+            statusIconImageView.image = icon.withRenderingMode(.alwaysOriginal)
             statusIconImageView.tintColor = nil
         }
     }
@@ -286,8 +240,7 @@ private extension AlarmRequestTableViewCell {
     }
 
     func configureHighlightedAppearance() {
-        cardView.backgroundColor =
-            UIColor.primary50.withAlphaComponent(0.05)
+        cardView.backgroundColor = UIColor.primary50.withAlphaComponent(0.05)
 
         cardView.layer.borderColor =
             UIColor.primary50
@@ -297,10 +250,7 @@ private extension AlarmRequestTableViewCell {
         actionButton.backgroundColor =
             UIColor.primary50.withAlphaComponent(0.18)
 
-        actionButton.setTitleColor(
-            .grey80,
-            for: .normal
-        )
+        actionButton.setTitleColor(.grey80, for: .normal)
     }
 
     func configureRejectedAppearance() {
@@ -309,11 +259,7 @@ private extension AlarmRequestTableViewCell {
             UIColor.clear.cgColor
 
         actionButton.backgroundColor = .grey10
-
-        actionButton.setTitleColor(
-            .grey80,
-            for: .normal
-        )
+        actionButton.setTitleColor(.grey80, for: .normal)
     }
 }
 

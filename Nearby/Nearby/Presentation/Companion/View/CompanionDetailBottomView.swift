@@ -12,6 +12,10 @@ import Then
 
 final class CompanionDetailBottomView: BaseView {
     
+    // MARK: - Property
+    
+    private let profileAvatarCount: Int = 3
+    
     // MARK: - UI Components
 
     private let headerStackView = UIStackView()
@@ -31,7 +35,7 @@ final class CompanionDetailBottomView: BaseView {
     
     private let peopleStackView = UIStackView()
     private let peopleIconImageView = UIImageView()
-    private let peopleImageStackView = UIImageView()
+    private let peopleImageStackView = AvatarStackView()
     private let peopleStatusLabel = UILabel()
     
     private let containerView = UIView()
@@ -86,6 +90,7 @@ final class CompanionDetailBottomView: BaseView {
         
         placeLabel.do {
             $0.setFont(.b2M16, text: "장소명", textColor: .grey80)
+            $0.transform = CGAffineTransform(translationX: 0, y: 1)
         }
         
         dateStackView.do {
@@ -101,6 +106,7 @@ final class CompanionDetailBottomView: BaseView {
         
         dateLabel.do {
             $0.setFont(.b2M16, text: "6월 18일 (목) 오후 4시 30분", textColor: .grey80)
+            $0.transform = CGAffineTransform(translationX: 0, y: 1)
         }
         
         peopleStackView.do {
@@ -115,12 +121,12 @@ final class CompanionDetailBottomView: BaseView {
         }
 
         peopleImageStackView.do {
-            $0.image = .avatarStack
-            $0.contentMode = .scaleAspectFit
+            $0.configureWithDefaultAvatars(count: profileAvatarCount)
         }
         
         peopleStatusLabel.do {
             $0.setFont(.b2M16, text: "3/4명", textColor: .grey80)
+            $0.transform = CGAffineTransform(translationX: 0, y: 1)
         }
         
         containerView.do {
@@ -174,10 +180,6 @@ final class CompanionDetailBottomView: BaseView {
             $0.size.equalTo(20)
         }
 
-        peopleImageStackView.snp.makeConstraints {
-            $0.size.equalTo(16)
-        }
-        
         dateIconImageView.snp.makeConstraints {
             $0.size.equalTo(20)
         }
@@ -207,7 +209,7 @@ final class CompanionDetailBottomView: BaseView {
             expirationBannerView.isHidden = true
             expirationLabel.text = nil
         case .immediate(let expirationTime):
-            expirationLabel.text = "이 글은 \(expirationTime)에 사라져요!"
+            expirationLabel.setFont(.b3M14, text: "이 글은 \(expirationTime)에 사라져요!", textColor: .grey60)
             expirationBannerView.isHidden = false
         }
     }

@@ -27,6 +27,10 @@ final class AppDIContainer {
         CompanionCoordinator(navigationController: navigationController, diContainer: self)
     }
     
+    func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
+        MyPageCoordinator(navigationController: navigationController, appDIContainer: self)
+    }
+    
     // MARK: - Networks
     
     // MARK: - Repositories
@@ -106,8 +110,26 @@ final class AppDIContainer {
         return viewController
     }
 
-    func makeMyPageViewController() -> UIViewController {
-        MyPageViewController(viewModel: makeMyPageViewModel())
+    
+    func makeMyPageViewController() -> MyPageViewController {
+        let viewModel = MyPageViewModel()
+        return MyPageViewController(
+            viewModel: viewModel
+        )
+    }
+
+    func makeAlarmViewController() -> AlarmViewController {
+        let viewModel = AlarmViewModel()
+        return AlarmViewController(
+            viewModel: viewModel
+        )
+    }
+
+    func makeSettingViewController() -> SettingViewController {
+        let viewModel = SettingViewModel()
+        return SettingViewController(
+            viewModel: viewModel
+        )
     }
     
     func makeRecruitCompanionViewController() -> UIViewController {

@@ -8,11 +8,13 @@
 import Combine
 import UIKit
 
-final class SpecificCompanionBottomSheetViewController: BaseViewController<SpecificCompanionBottomSheetViewModel> {
+final class SpecificCompanionSheetViewController: BaseViewController<SpecificCompanionBottomSheetViewModel> {
     
     // MARK: - Property
     
     private let specificCompanionBottomSheetView = SpecificCompanionBottomSheetView()
+    var onClose: (() -> Void)?
+    var onCompanionSelected: ((SpecificCompanionCellItem) -> Void)?
     
     // MARK: - Life Cycle
     
@@ -24,6 +26,15 @@ final class SpecificCompanionBottomSheetViewController: BaseViewController<Speci
     
     override func setDelegate() {
         specificCompanionBottomSheetView.collectionView.dataSource = self
+        specificCompanionBottomSheetView.collectionView.delegate = self
+    }
+
+    override func setAddTarget() {
+        specificCompanionBottomSheetView.closeButton.addTarget(
+            self,
+            action: #selector(closeButtonDidTap),
+            for: .touchUpInside
+        )
     }
     
     override func bindState() {
@@ -34,11 +45,26 @@ final class SpecificCompanionBottomSheetViewController: BaseViewController<Speci
             }
             .store(in: &cancellables)
     }
+
+    // MARK: - Action
+
+    @objc
+    private func closeButtonDidTap() {
+        onClose?()
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension SpecificCompanionSheetViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        onCompanionSelected?(viewModel.companion(at: indexPath.item))
+    }
 }
 
 // MARK: - UICollectionViewDataSource
 
-extension SpecificCompanionBottomSheetViewController: UICollectionViewDataSource {
+extension SpecificCompanionSheetViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.companionCount
     }

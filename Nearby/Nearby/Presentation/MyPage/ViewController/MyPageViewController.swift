@@ -9,20 +9,34 @@ import UIKit
 
 final class MyPageViewController: BaseViewController<MyPageViewModel> {
 
+    // MARK: - Properties
+
+    var onAlarmButtonDidTap: (() -> Void)?
+    var onSettingButtonDidTap: (() -> Void)?
+
     // MARK: - UI Component
 
     private let myPageView = MyPageView()
 
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
 
     override func loadView() {
         view = myPageView
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        bindViewModel()
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        navigationController?.setNavigationBarHidden(
+            true,
+            animated: animated
+        )
     }
 
     // MARK: - Custom Method
@@ -34,6 +48,20 @@ final class MyPageViewController: BaseViewController<MyPageViewModel> {
 
         myPageView.navigationBar.rightSecondButtonAction = { [weak self] in
             self?.viewModel.action(.settingButtonDidTap)
+        }
+    }
+}
+
+// MARK: - Private Method
+
+private extension MyPageViewController {
+    func bindViewModel() {
+        viewModel.output.alarmButtonDidTap = { [weak self] in
+            self?.onAlarmButtonDidTap?()
+        }
+
+        viewModel.output.settingButtonDidTap = { [weak self] in
+            self?.onSettingButtonDidTap?()
         }
     }
 }

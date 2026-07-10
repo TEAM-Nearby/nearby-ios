@@ -65,14 +65,6 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             }
             .store(in: &cancellables)
         
-        viewModel.output.showMeetingVerification
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                // TODO: - 위치 인증 화면 연결 (coordinator 메서드 추가 후)
-                // self?.coordinator?.showLocationVerification(for: item)
-            }
-            .store(in: &cancellables)
-        
         viewModel.output.showReport
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in

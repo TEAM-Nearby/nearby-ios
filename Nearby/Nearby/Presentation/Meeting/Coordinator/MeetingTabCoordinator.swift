@@ -27,7 +27,6 @@ final class MeetingTabCoordinator {
 // MARK: - Coordinator
 
 extension MeetingTabCoordinator: Coordinator {
-    
     func start() {
         let viewController = diContainer.makeMeetingViewController(coordinator: self)
         navigationController.setViewControllers([viewController], animated: false)
@@ -45,13 +44,21 @@ extension MeetingTabCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
+    func showReview(type: NearbyUserType, item: ReviewItem) {
+        let viewController = diContainer.makeReviewViewController(
+            coordinator: self, type: type, reviewItem: item
+        )
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
     func showHostReviewList() {
         let viewController = diContainer.makeHostReviewListViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showReviewPost(for item: ReviewItem) {
-        let viewController = diContainer.makeReviewPostViewController(coordinator: self, reviewItem: item)
+    func showReviewPost(for item: ReviewItem, type: NearbyUserType) {
+        let viewController = diContainer.makeReviewPostViewController(coordinator: self, reviewItem: item, type: type)
         navigationController.pushViewController(viewController, animated: true)
     }
     

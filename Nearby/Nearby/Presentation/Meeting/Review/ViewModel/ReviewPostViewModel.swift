@@ -35,6 +35,7 @@ final class ReviewPostViewModel: BaseViewModelType {
     struct DisplayData {
         let name: String
         let information: String
+        let type: NearbyUserType
     }
     
     // MARK: - Properties
@@ -53,12 +54,14 @@ final class ReviewPostViewModel: BaseViewModelType {
     
     let output = Output()
     private let reviewItem: ReviewItem
+    private let type: NearbyUserType
     private var rating: Int = 0
     
     // MARK: - Initializer
     
-    init(reviewItem: ReviewItem) {
+    init(reviewItem: ReviewItem, type: NearbyUserType) {
         self.reviewItem = reviewItem
+        self.type = type
     }
     
     // MARK: - Action
@@ -67,8 +70,9 @@ final class ReviewPostViewModel: BaseViewModelType {
         switch trigger {
         case .viewDidLoad:
             output.displayData.send(
-                DisplayData(name: reviewItem.name, information: reviewItem.information)
+                DisplayData(name: reviewItem.name, information: reviewItem.information, type: type)
             )
+            updateCompletionState()
             
         case .ratingChanged(let value):
             rating = value
@@ -113,7 +117,13 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
     
     private func updateCompletionState() {
-        let isEnabled = rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
+        let isEnabled: Bool
+        switch type {
+        case .participant:
+            isEnabled = true
+        case .host:
+            isEnabled = rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
+        }
         output.isCompletionEnabled.send(isEnabled)
     }
 }

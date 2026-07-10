@@ -60,7 +60,7 @@ final class ReviewPostView: BaseView {
     private let reportSubtitleLabel = UILabel()
     private let reportButton = UIButton()
     
-    private let completionButton = NearbyButton(style: .primary, title: "동행 마치기")
+    private let completionButton = NearbyButton(style: .primary, title: "")
     
     // MARK: - Life Cycle
     
@@ -328,10 +328,11 @@ final class ReviewPostView: BaseView {
         return layout
     }
     
-    func configure(name: String, information: String) {
+    func configure(name: String, information: String, userType: NearbyUserType) {
         profileTitleLabel.text = "\(name) 님과의 여행이\n끝났어요."
         informationLabel.text = information
         reviewSubtitleLabel.text = "\(name) 님에게 좋았던 점을 남겨보세요."
+        completionButton.setTitle(userType.reviewPostCompletionTitle, for: .normal)
     }
     
     func updateCompletionButton(isEnabled: Bool) {

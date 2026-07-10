@@ -53,10 +53,11 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
             }
             .store(in: &cancellables)
         
+        // TODO: - 서버 연동 시 type 지정
         viewModel.output.showReviewWrite
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
-                self?.coordinator?.showReviewPost(for: item)
+                self?.coordinator?.showReviewPost(for: item, type: .host)
             }
             .store(in: &cancellables)
         

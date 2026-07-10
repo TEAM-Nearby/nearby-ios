@@ -58,7 +58,7 @@ final class AppDIContainer {
     }
     
     func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType) -> ReviewPostViewModel {
-        ReviewPostViewModel(reviewItem: reviewItem)
+        ReviewPostViewModel(reviewItem: reviewItem, type: type)
     }
     
     // MARK: - ViewControllers

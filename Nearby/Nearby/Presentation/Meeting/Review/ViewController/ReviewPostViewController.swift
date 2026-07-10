@@ -55,7 +55,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] data in
-                self?.reviewPostView.configure(name: data.name, information: data.information)
+                self?.reviewPostView.configure(name: data.name, information: data.information, userType: data.type)
             }
             .store(in: &cancellables)
         

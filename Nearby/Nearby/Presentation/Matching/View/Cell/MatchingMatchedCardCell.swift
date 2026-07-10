@@ -178,7 +178,11 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
         updateHeader(content: content, displayMode: displayMode)
         informationLabel.setFont(.b3M14, text: "\(content.place) · \(content.meetingTime)", textColor: .grey80)
-        contentLabel.setFont(.b3M14, text: content.description.truncated(limit: descriptionLimit(for: displayMode)), textColor: .grey30)
+        contentLabel.setFont(
+            .b3M14,
+            text: content.description.truncated(limit: descriptionLimit(for: displayMode)),
+            textColor: descriptionColor(for: displayMode)
+        )
         updateProfileTopConstraint(state: state)
     }
 
@@ -187,7 +191,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         updateContentLabelTrailingConstraint(isNextButtonHidden: isHidden)
     }
 
-    // MARK: - Private Methods
+    // MARK: - Methods
 
     private func updateHeader(content: MatchingMatchedCardContentModel, displayMode: MatchingMatchedCardDisplayMode) {
         switch displayMode {
@@ -221,6 +225,15 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
+    private func descriptionColor(for displayMode: MatchingMatchedCardDisplayMode) -> UIColor {
+        switch displayMode {
+        case .list:
+            return .grey30
+        case .scheduleDetail:
+            return .grey40
+        }
+    }
+
     private func updateProfileTopConstraint(state: MatchingMatchedCardState) {
         profileImageView.snp.remakeConstraints {
             if state.showsConfirmedLabel {
@@ -249,7 +262,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
-    // MARK: - Actions
+    // MARK: - Action
 
     @objc
     private func nextButtonDidTap() {

@@ -32,19 +32,35 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+
+        navigationController?.setNavigationBarHidden(
+            true,
+            animated: animated
+        )
     }
 
     // MARK: - Custom Method
 
     override func setAddTarget() {
-        alarmView.backButton.addTarget(self, action: #selector(backButtonDidTap), for: .touchUpInside)
-        alarmView.sentRequestButton.addTarget(self, action: #selector(sentRequestButtonDidTap), for: .touchUpInside)
-        alarmView.receivedRequestButton.addTarget(self, action: #selector(receivedRequestButtonDidTap), for: .touchUpInside)
+        alarmView.navigationBar.leftButtonAction = { [weak self] in
+            self?.viewModel.action(.backButtonDidTap)
+        }
+
+        alarmView.sentRequestButton.addTarget(
+            self,
+            action: #selector(sentRequestButtonDidTap),
+            for: .touchUpInside
+        )
+
+        alarmView.receivedRequestButton.addTarget(
+            self,
+            action: #selector(receivedRequestButtonDidTap),
+            for: .touchUpInside
+        )
     }
 }
 
-// MARK: - Private Method
+// MARK: - Private Methods
 
 private extension AlarmViewController {
     func bindViewModel() {
@@ -61,15 +77,13 @@ private extension AlarmViewController {
 // MARK: - Actions
 
 private extension AlarmViewController {
-    @objc func backButtonDidTap() {
-        viewModel.action(.backButtonDidTap)
-    }
-
-    @objc func sentRequestButtonDidTap() {
+    @objc
+    func sentRequestButtonDidTap() {
         viewModel.action(.sentRequestButtonDidTap)
     }
 
-    @objc func receivedRequestButtonDidTap() {
+    @objc
+    func receivedRequestButtonDidTap() {
         viewModel.action(.receivedRequestButtonDidTap)
     }
 }

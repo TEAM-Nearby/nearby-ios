@@ -39,7 +39,10 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
     // MARK: - Custom Method
 
     override func setAddTarget() {
-        settingView.backButton.addTarget(self, action: #selector(backButtonDidTap), for: .touchUpInside)
+        settingView.navigationBar.leftButtonAction = { [weak self] in
+            self?.viewModel.action(.backButtonDidTap)
+        }
+
         settingView.logoutButton.addTarget(self, action: #selector(logoutButtonDidTap), for: .touchUpInside)
     }
 }
@@ -51,20 +54,18 @@ private extension SettingViewController {
         viewModel.output.backButtonDidTap = { [weak self] in
             self?.onBackButtonDidTap?()
         }
+
         viewModel.output.logoutButtonDidTap = { [weak self] in
             self?.onLogoutButtonDidTap?()
         }
     }
 }
 
-// MARK: - Actions
+// MARK: - Action
 
 private extension SettingViewController {
-    @objc func backButtonDidTap() {
-        viewModel.action(.backButtonDidTap)
-    }
-    
-    @objc func logoutButtonDidTap() {
+    @objc
+    func logoutButtonDidTap() {
         viewModel.action(.logoutButtonDidTap)
     }
 }

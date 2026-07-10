@@ -222,7 +222,7 @@ final class MeetingProgressView: BaseView {
         navigationBar.leftButtonAction = { [weak self] in
             self?.onBackButtonDidTap?()
         }
-        navigationBar.rightFirstButtonAction = { [weak self] in
+        navigationBar.reportButtonAction = { [weak self] in
             self?.onReportButtonDidTap?()
         }
         verifyButton.addTarget(self, action: #selector(verifyButtonDidTap), for: .touchUpInside)

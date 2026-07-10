@@ -54,4 +54,19 @@ extension MeetingTabCoordinator: Coordinator {
         let viewController = diContainer.makeReviewPostViewController(coordinator: self, reviewItem: item)
         navigationController.pushViewController(viewController, animated: true)
     }
+    
+    func showReportPost() {
+        let viewController = diContainer.makeReportPostViewController(coordinator: self)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func showReportComplete() {
+        let viewController = diContainer.makeReportCompletionViewController(coordinator: self)
+        viewController.navigationItem.hidesBackButton = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func dismissReportFlow() {
+        navigationController.popToRootViewController(animated: true)
+    }
 }

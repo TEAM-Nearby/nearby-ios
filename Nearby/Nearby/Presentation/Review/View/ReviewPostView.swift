@@ -84,8 +84,6 @@ final class ReviewPostView: BaseView {
     // MARK: - Custom Methods
     
     override func setStyle() {
-        backgroundColor = .bgDefaultGrey
-        
         navigationBar.do {
             $0.configure(leftItem: .back, centerItem: .title("동행 후기"))
             $0.backgroundColor = .clear
@@ -202,9 +200,7 @@ final class ReviewPostView: BaseView {
         profileView.addArrangedSubviews(profileImageView, profileLabelStackView)
         profileLabelStackView.addArrangedSubviews(profileTitleLabel, informationLabel)
         starView.addSubviews(starTitleLabel, starRating)
-        reviewView.addSubviews(reviewTitleLabel, reviewSubtitleLabel,
-                               firstCategoryLabel, firstTagCollectionView,
-                               secondCategoryLabel, secondTagCollectionView)
+        reviewView.addSubviews(reviewTitleLabel, reviewSubtitleLabel, firstCategoryLabel, firstTagCollectionView, secondCategoryLabel, secondTagCollectionView)
         reportView.addSubviews(reportLabelStackView, reportButton)
         reportLabelStackView.addArrangedSubviews(reportTitleLabel, reportSubtitleLabel)
     }

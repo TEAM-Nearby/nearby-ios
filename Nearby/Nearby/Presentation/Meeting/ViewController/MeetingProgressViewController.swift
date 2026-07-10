@@ -76,7 +76,7 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
         viewModel.output.showReport
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - 신고 화면 연결 (coordinator 메서드 추가 후)
+                self?.coordinator?.showReportPost()
             }
             .store(in: &cancellables)
         

@@ -46,8 +46,8 @@ final class AppDIContainer {
     }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
-           MeetingTabViewModel()
-       }
+        MeetingTabViewModel()
+    }
     
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
@@ -55,6 +55,20 @@ final class AppDIContainer {
     
     func makeMyPageViewModel() -> MyPageViewModel {
         MyPageViewModel()
+    func makeHostReviewListViewModel() -> HostReviewListViewModel {
+        HostReviewListViewModel()
+    }
+    
+    func makeReportPostViewModel() -> ReportPostViewModel {
+        ReportPostViewModel()
+    }
+    
+    func makeReviewPostViewModel(reviewItem: ReviewItem) -> ReviewPostViewModel {
+        ReviewPostViewModel(reviewItem: reviewItem)
+    }
+    
+    func makeReportCompletionViewModel() -> ReportCompletionViewModel {
+        ReportCompletionViewModel()
     }
     
     // MARK: - ViewControllers
@@ -134,6 +148,37 @@ final class AppDIContainer {
     
     func makeRecruitCompanionViewController() -> UIViewController {
         makePlaceholderViewController(title: "동행글 작성")
+    }
+    
+    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = HostReviewListViewController(
+            viewModel: makeHostReviewListViewModel()
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeReviewPostViewController(
+        coordinator: MeetingTabCoordinator,
+        reviewItem: ReviewItem
+    ) -> UIViewController {
+        let viewController = ReviewPostViewController(
+            viewModel: makeReviewPostViewModel(reviewItem: reviewItem)
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeReportPostViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = ReportPostViewController(viewModel: makeReportPostViewModel())
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = ReportCompletionViewController(viewModel: makeReportCompletionViewModel())
+        viewController.coordinator = coordinator
+        return viewController
     }
 }
 

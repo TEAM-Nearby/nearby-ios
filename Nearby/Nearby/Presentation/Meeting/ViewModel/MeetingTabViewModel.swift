@@ -41,7 +41,7 @@ final class MeetingTabViewModel: BaseViewModelType {
                     information: "시우다드 콘달 · 오후 4:30", meetingDate: Date(), step: .verification
                 ),
                 MeetingItem(id: 2, name: "장현준", gender: "남성",
-                    information: "오사카 · 오후 2:00", meetingDate: Date().addingTimeInterval(86400 * 3), step: .verification
+                    information: "북극 · 오후 2:00", meetingDate: Date().addingTimeInterval(86400 * 3), step: .verification
                 )
             ]
             output.items.send(mockItems)

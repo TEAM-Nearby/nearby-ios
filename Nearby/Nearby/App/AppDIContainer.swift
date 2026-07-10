@@ -55,6 +55,16 @@ final class AppDIContainer {
     
     func makeMyPageViewModel() -> MyPageViewModel {
         MyPageViewModel()
+    }
+        
+    func makeAlarmViewModel() -> AlarmViewModel {
+        AlarmViewModel()
+    }
+    
+    func makeSettingViewModel() -> SettingViewModel {
+        SettingViewModel()
+    }
+    
     func makeHostReviewListViewModel() -> HostReviewListViewModel {
         HostReviewListViewModel()
     }

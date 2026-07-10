@@ -38,10 +38,6 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     }
     
     private var tabBarHeight: CGFloat {
-        if let tabBarController = parent as? UITabBarController {
-            return tabBarController.tabBar.bounds.height
-        }
-        
         return tabBarController?.tabBar.bounds.height ?? 0
     }
     
@@ -64,8 +60,6 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        guard shouldResolveHeightFromSuperview(for: currentState.level) else { return }
         
         let resolvedHeight = resolvedHeight(for: currentState)
         guard abs(containerHeight - resolvedHeight) > 0.5 else { return }
@@ -163,10 +157,6 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     
     private func resolvedHeight(for state: BottomSheetState) -> CGFloat {
         NearbyBottomSheetHeightResolver.height(for: state, context: heightContext)
-    }
-    
-    private func shouldResolveHeightFromSuperview(for level: BottomSheetLevel) -> Bool {
-        level == .expanded
     }
     
     private func nextLevel(translationY: CGFloat, velocityY: CGFloat) -> BottomSheetLevel {

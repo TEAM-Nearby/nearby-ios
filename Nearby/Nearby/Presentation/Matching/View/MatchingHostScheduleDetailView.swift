@@ -62,10 +62,7 @@ final class MatchingHostScheduleDetailView: BaseView {
         }
 
         dateAndTimeButton.do {
-            $0.setTitleColor(.btnPrimaryBg, for: .normal)
-            $0.titleLabel?.font = NearbyFont.b2M16.font
             $0.contentHorizontalAlignment = .left
-            $0.titleEdgeInsets = UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 0)
         }
 
         dateAndTimeImageView.do {
@@ -218,7 +215,16 @@ final class MatchingHostScheduleDetailView: BaseView {
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "yyyy-MM-dd  HH:mm"
 
-        dateAndTimeButton.setTitle(formatter.string(from: datePicker.date), for: .normal)
+        applyDateAndTimeButtonTitle(title: formatter.string(from: datePicker.date))
+    }
+
+    private func applyDateAndTimeButtonTitle(title: String) {
+        dateAndTimeButton.setPaddedTitle(
+            title,
+            font: .b2M16,
+            titleColor: .btnPrimaryBg,
+            titleInsets: UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
+        )
     }
 
     private func updateDatePickerVisibility() {

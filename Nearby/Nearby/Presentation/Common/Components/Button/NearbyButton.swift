@@ -13,6 +13,7 @@ final class NearbyButton: UIButton {
     
     private let style: NearbyButtonStyle
     private var gradientLayer: CAGradientLayer?
+    private var titleContentInsets: UIEdgeInsets = .zero
     
     override var isEnabled: Bool {
         didSet {
@@ -38,6 +39,11 @@ final class NearbyButton: UIButton {
     override func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer?.frame = bounds
+
+        guard titleContentInsets != .zero else { return }
+
+        titleLabel?.frame.origin.x += titleContentInsets.left - titleContentInsets.right
+        titleLabel?.frame.origin.y += titleContentInsets.top - titleContentInsets.bottom
     }
     
     // MARK: - Methods
@@ -86,5 +92,18 @@ final class NearbyButton: UIButton {
         let buttonStyle: NearbyButtonStyle = enabled ? style : .disabled
         backgroundColor = buttonStyle.backgroundColor
         setTitleColor(buttonStyle.titleColor, for: .normal)
+    }
+
+    func setPaddedTitle(
+        _ title: String,
+        font: NearbyFont,
+        titleColor: UIColor,
+        titleInsets: UIEdgeInsets
+    ) {
+        setTitle(title, for: .normal)
+        setTitleColor(titleColor, for: .normal)
+        titleLabel?.font = font.font
+        titleContentInsets = titleInsets
+        setNeedsLayout()
     }
 }

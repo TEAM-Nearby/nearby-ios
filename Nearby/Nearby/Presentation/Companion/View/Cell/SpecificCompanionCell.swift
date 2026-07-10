@@ -103,7 +103,9 @@ final class SpecificCompanionCell: UICollectionViewCell {
             $0.setFont(.b3M14, text: "3/4 모집 중", textColor: .btnPrimaryBg)
         }
         
-        profileStackView.configureWithDefaultAvatars(count: profileAvatarCount)
+        profileStackView.do {
+            $0.configureWithDefaultAvatars(count: profileAvatarCount)
+        }
     }
     
     private func setUI() {

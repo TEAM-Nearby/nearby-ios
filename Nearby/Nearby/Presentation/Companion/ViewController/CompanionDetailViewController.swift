@@ -10,7 +10,7 @@ import UIKit
 
 final class CompanionDetailViewController: BaseViewController<CompanionDetailViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let companionDetailView = CompanionDetailView()
 

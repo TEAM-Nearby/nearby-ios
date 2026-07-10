@@ -13,4 +13,5 @@ struct CompanionDetailState {
 
     let postType: PostType
     let isApplicationEnabled: Bool
+    let tags: [String]
 }

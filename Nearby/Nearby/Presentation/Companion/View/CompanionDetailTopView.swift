@@ -14,7 +14,6 @@ final class CompanionDetailTopView: BaseView {
     
     // MARK: - Properties
     
-    private let tags = ["사진에 진심", "계획파", "맛집 탐방", "카페 투어", "드라이브", "산책"]
     private var tagCollectionHeight: CGFloat = 36
     
     // MARK: - UI Components
@@ -31,7 +30,7 @@ final class CompanionDetailTopView: BaseView {
     private let containerView = UIView()
     private let introduceLabel = UILabel()
     
-    private lazy var tagCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeTagLayout())
+    lazy var tagCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
     
     // MARK: - Life Cycle
     
@@ -95,8 +94,6 @@ final class CompanionDetailTopView: BaseView {
         tagCollectionView.do {
             $0.backgroundColor = .clear
             $0.isScrollEnabled = false
-            $0.dataSource = self
-            $0.delegate = self
         }
     }
     
@@ -158,46 +155,13 @@ final class CompanionDetailTopView: BaseView {
         tagCollectionView.register(NearbyTextChipCollectionViewCell.self)
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
-    private func makeTagLayout() -> UICollectionViewFlowLayout {
+    private func makeLayout() -> UICollectionViewFlowLayout {
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 8
         layout.minimumInteritemSpacing = 8
         return layout
-    }
-}
-
-// MARK: - UICollectionViewDataSource
-
-extension CompanionDetailTopView: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tags.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(NearbyTextChipCollectionViewCell.self, for: indexPath)
-        let title = tags[indexPath.item]
-        
-        cell.configure(style: .personalityOrange, title: title, horizontalInset: 16)
-        
-        return cell
-    }
-}
-
-// MARK: - UICollectionViewDelegateFlowLayout
-
-extension CompanionDetailTopView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let title = tags[indexPath.item]
-        let font = NearbyChipStyle.personalityOrange.font
-        let titleWidth = (title as NSString).size(withAttributes: [.font: font]).width
-        let horizontalInset: CGFloat = 32
-        
-        return CGSize(
-            width: ceil(titleWidth + horizontalInset),
-            height: NearbyChipStyle.personalityOrange.height
-        )
     }
 }

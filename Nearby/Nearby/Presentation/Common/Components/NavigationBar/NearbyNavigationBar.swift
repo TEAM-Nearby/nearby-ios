@@ -40,7 +40,7 @@ final class NearbyNavigationBar: BaseView {
         }
 
         titleLabel.do {
-            $0.setFont(.b2Sb16, text: centerTitle, textColor: .grey80)
+            $0.setFont(.b2Sb16, text: centerTitle ?? "", textColor: .grey80)
         }
 
         logoLabel.do {

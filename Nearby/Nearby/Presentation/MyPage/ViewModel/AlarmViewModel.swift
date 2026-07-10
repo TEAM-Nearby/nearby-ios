@@ -7,11 +7,6 @@
 
 import Foundation
 
-enum AlarmRequestType {
-    case sent
-    case received
-}
-
 final class AlarmViewModel: BaseViewModelType {
 
     // MARK: - Input

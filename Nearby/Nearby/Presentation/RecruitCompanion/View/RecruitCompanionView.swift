@@ -1,5 +1,5 @@
 //
-//  RecruitCompanion.swift
+//  RecruitCompanionView.swift
 //  Nearby
 //
 //  Created by 장지인 on 7/6/26.

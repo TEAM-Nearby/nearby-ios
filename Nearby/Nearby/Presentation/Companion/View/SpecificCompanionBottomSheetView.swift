@@ -104,6 +104,8 @@ final class SpecificCompanionBottomSheetView: BaseView {
         collectionView.register(SpecificCompanionCell.self)
     }
     
+    // MARK: - Method
+    
     private static func makeLayout() -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),

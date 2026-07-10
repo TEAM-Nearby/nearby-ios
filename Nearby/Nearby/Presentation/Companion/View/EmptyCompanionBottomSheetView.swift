@@ -1,5 +1,5 @@
 //
-//  EmptyCompanionBottomSheetVIew.swift
+//  EmptyCompanionBottomSheetView.swift
 //  Nearby
 //
 //  Created by soomin on 7/9/26.

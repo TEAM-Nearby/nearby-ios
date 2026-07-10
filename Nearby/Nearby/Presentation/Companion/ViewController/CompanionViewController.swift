@@ -12,18 +12,18 @@ import GoogleMaps
 import SnapKit
 
 final class CompanionViewController: BaseViewController<CompanionViewModel> {
-
+    
     // MARK: - Properties
-
+    
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     private var currentLocationMarker: GMSMarker?
     private var isSpecificBottomSheetPresented = false
     private var categoryItems: [CategoryItem] { viewModel.output.categoryItems }
     private var tabBarHeight: CGFloat { tabBarController?.tabBar.bounds.height ?? 0 }
-
+    
     // MARK: - UI Components
-
+    
     private let bottomSheetViewController = NearbyBottomSheetViewController()
     private let nearbyBottomSheetViewController: UIViewController
     private let specificBottomSheetViewController: UIViewController
@@ -34,7 +34,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private var companionView = CompanionView()
     
     // MARK: - Initializer
-
+    
     init(
         viewModel: CompanionViewModel,
         nearbyBottomSheetViewController: UIViewController,
@@ -47,7 +47,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         super.init(viewModel: viewModel)
     }
     // MARK: - Life Cycles
-
+    
     override func loadView() {
         view = companionView
     }
@@ -71,7 +71,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
     
     // MARK: - Custom Methods
-
+    
     override func setUI() {
         setBottomSheet()
     }
@@ -87,7 +87,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
     
     // MARK: - Methods
-
+    
     private func setBottomSheet() {
         setBottomSheetLayout()
         bindBottomSheet()
@@ -99,7 +99,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         
         parentViewController.addChild(bottomSheetViewController)
         bottomSheetHostView.addSubview(bottomSheetViewController.view)
-
+        
         bottomSheetViewController.view.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
@@ -165,48 +165,40 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         
         transitionCoordinator.animate(alongsideTransition: nil) { [weak self] context in
             guard context.isCancelled else { return }
-
+            
             self?.setBottomSheetHidden(false)
             self?.setTabBarHidden(self?.isSpecificBottomSheetPresented == true)
         }
     }
     
     private func setBottomSheetHidden(_ isHidden: Bool) { bottomSheetViewController.view.isHidden = isHidden }
-
+    
     private func setTabBarHidden(_ isHidden: Bool, animated: Bool = false) {
         guard let tabBar = tabBarController?.tabBar else { return }
-
+        
         tabBar.isHidden = false
         tabBar.isUserInteractionEnabled = !isHidden
-
+        
         if !isHidden {
             bottomSheetHostView.bringSubviewToFront(tabBar)
         }
-
+        
         let animations = {
-            let hiddenTransform = CGAffineTransform(
-                translationX: 0,
-                y: tabBar.bounds.height + self.view.safeAreaInsets.bottom
-            )
+            let hiddenTransform = CGAffineTransform(translationX: 0, y: tabBar.bounds.height + self.view.safeAreaInsets.bottom)
             tabBar.alpha = isHidden ? 0 : 1
             tabBar.transform = isHidden ? hiddenTransform : .identity
             self.tabBarController?.view.layoutIfNeeded()
             self.view.layoutIfNeeded()
         }
-
+        
         guard animated else {
             animations()
             return
         }
-
-        UIView.animate(
-            withDuration: 0.28,
-            delay: 0,
-            usingSpringWithDamping: 0.86,
-            initialSpringVelocity: 0.4,
-            options: [.beginFromCurrentState, .curveEaseOut],
-            animations: animations
-        )
+        
+        UIView.animate(withDuration: 0.28, delay: 0, usingSpringWithDamping: 0.86, initialSpringVelocity: 0.4,
+                       options: [.beginFromCurrentState, .curveEaseOut],
+                       animations: animations)
     }
     
     private func updateBottomSheetLayer(for state: BottomSheetState) {
@@ -221,7 +213,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             if state.content == .nearbyCompanionList {
                 view.bringSubviewToFront(companionView.recruitCompanionButton)
             }
-
+            
             return
         }
     }
@@ -323,7 +315,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         
         locationManager.requestLocation()
     }
-
+    
     @objc
     private func recruitCompanionButtonDidTap() {
         viewModel.action(.recruitCompanionButtonDidTap)

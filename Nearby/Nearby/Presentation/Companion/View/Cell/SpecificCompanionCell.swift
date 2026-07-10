@@ -110,7 +110,6 @@ final class SpecificCompanionCell: UICollectionViewCell {
         hostStackView.addArrangedSubviews(hostNameLabel, hostGenderChip)
         timeStackView.addArrangedSubviews(meetingTimeLabel, closedTimeLabel)
         applyInfoStackView.addArrangedSubviews(profileStackView, currentStatusLabel)
-        
         contentView.addSubviews(profileImageView, hostStackView, writtenTimeLabel, contentLabel, timeStackView, applyInfoStackView)
     }
     

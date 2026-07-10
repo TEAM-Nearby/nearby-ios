@@ -67,7 +67,8 @@ private extension NearCompanionBottomSheetViewModel {
             content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...",
             schedule: "6월 29일 14:00",
             participantImages: [nil, nil],
-            statusText: "2/4 모집 중"
+            statusText: "2/4 모집 중",
+            detailState: scheduledDetailState
         ),
         NearCompanionCellItem(
             placeImage: .restaurantPlaceholder,
@@ -76,7 +77,8 @@ private extension NearCompanionBottomSheetViewModel {
             content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...",
             schedule: "6월 29일 18:30",
             participantImages: [nil, nil, nil],
-            statusText: "3/4 모집 중"
+            statusText: "3/4 모집 중",
+            detailState: scheduledDetailState
         ),
         NearCompanionCellItem(
             placeImage: .restaurantPlaceholder,
@@ -85,7 +87,8 @@ private extension NearCompanionBottomSheetViewModel {
             content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...",
             schedule: "6월 29일 14:00",
             participantImages: [nil, nil],
-            statusText: "2/4 모집 중"
+            statusText: "2/4 모집 중",
+            detailState: scheduledDetailState
         ),
         NearCompanionCellItem(
             placeImage: .restaurantPlaceholder,
@@ -94,7 +97,14 @@ private extension NearCompanionBottomSheetViewModel {
             content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...",
             schedule: "6월 29일 18:30",
             participantImages: [nil, nil, nil],
-            statusText: "3/4 모집 중"
+            statusText: "3/4 모집 중",
+            detailState: scheduledDetailState
         )
     ]
+
+    static let scheduledDetailState = CompanionDetailState(
+        postType: .scheduled,
+        isApplicationEnabled: true,
+        tags: ["사전에 진심", "계획파", "맛집 탐방"]
+    )
 }

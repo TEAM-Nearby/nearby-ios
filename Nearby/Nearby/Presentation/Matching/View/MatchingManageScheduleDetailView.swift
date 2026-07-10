@@ -1,5 +1,5 @@
 //
-//  MatchingHostScheduleDetailView.swift
+//  MatchingManageScheduleDetailView.swift
 //  Nearby
 //
 //  Created by 장지인 on 7/9/26.
@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class MatchingHostScheduleDetailView: BaseView {
+final class MatchingManageScheduleDetailView: BaseView {
 
     // MARK: - Properties
 

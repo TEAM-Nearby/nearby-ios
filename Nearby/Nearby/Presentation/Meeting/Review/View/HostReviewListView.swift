@@ -4,10 +4,6 @@
 //
 //  Created by h2e on 7/9/26.
 //
-//
-//  HostReviewListView.swift
-//  Nearby
-//
 
 import UIKit
 

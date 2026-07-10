@@ -41,6 +41,7 @@ final class MeetingTabView: BaseView {
             $0.collectionViewLayout = Self.makeLayout()
             $0.backgroundColor = .clear
             $0.showsVerticalScrollIndicator = false
+            $0.allowsSelection = false
         }
     }
 

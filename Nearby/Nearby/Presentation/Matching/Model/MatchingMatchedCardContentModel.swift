@@ -8,6 +8,7 @@
 import UIKit
 
 struct MatchingMatchedCardContentModel {
+    // TODO: - 여러 참여자 프로필 이미지 리스트로 변경
     let profileImage: UIImage?
     let name: String
     let participantCount: Int

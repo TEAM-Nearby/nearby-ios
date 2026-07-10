@@ -57,7 +57,7 @@ private extension SettingViewController {
     }
 }
 
-// MARK: - Action
+// MARK: - Actions
 
 private extension SettingViewController {
     @objc func backButtonDidTap() {

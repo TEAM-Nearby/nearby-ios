@@ -122,6 +122,15 @@ final class AppDIContainer {
         makePlaceholderViewController(title: "동행글 작성")
     }
     
+    func makeReviewViewController(coordinator: MeetingTabCoordinator, type: NearbyUserType, reviewItem: ReviewItem) -> UIViewController {
+        switch type {
+        case .host:
+            return makeHostReviewListViewController(coordinator: coordinator)
+        case .participant:
+            return makeReviewPostViewController(coordinator: coordinator, reviewItem: reviewItem)
+        }
+    }
+    
     func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = HostReviewListViewController(
             viewModel: makeHostReviewListViewModel()

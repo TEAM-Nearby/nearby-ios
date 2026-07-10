@@ -37,6 +37,27 @@ final class CompanionCoordinator {
 //        let viewController = diContainer.makeRecruitCompanionViewController()
 //        navigationController.pushViewController(viewController, animated: true)
     }
+
+    private func handle(_ route: CompanionDetailViewModel.Route) {
+        switch route {
+        case .close:
+            navigationController.popViewController(animated: true)
+        case .applyCompanion:
+            // TODO: 동행 신청 API 성공 후 다음 화면 연결
+            break
+        }
+    }
+
+    func showCompanionDetail(state: CompanionDetailState) {
+        let viewModel = diContainer.makeCompanionDetailViewModel(state: state)
+        viewModel.route = { [weak self] route in
+            self?.handle(route)
+        }
+
+        let viewController = diContainer.makeCompanionDetailViewController(viewModel: viewModel)
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
 }
 
 // MARK: - Coordinator

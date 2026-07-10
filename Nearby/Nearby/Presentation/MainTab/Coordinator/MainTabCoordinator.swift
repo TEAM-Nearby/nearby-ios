@@ -35,7 +35,6 @@ extension MainTabCoordinator: Coordinator {
 private extension MainTabCoordinator {
     func makeNavigationController(for item: NearbyTabItem) -> UINavigationController {
         let navigationController = UINavigationController()
-        
         configureRootViewController(for: item, navigationController: navigationController)
         navigationController.tabBarItem = UITabBarItem(
             title: item.title,
@@ -43,10 +42,8 @@ private extension MainTabCoordinator {
             selectedImage: item.selectedImage
         )
         navigationController.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
-        
         return navigationController
     }
-    
     func configureRootViewController(for item: NearbyTabItem, navigationController: UINavigationController) {
         switch item {
         case .companion:
@@ -58,17 +55,57 @@ private extension MainTabCoordinator {
             companionCoordinator.start()
             
         case .meeting:
-                let meetingCoordinator = diContainer.makeMeetingCoordinator(navigationController: navigationController)
-                meetingCoordinator.parentCoordinator = self
-                addChildCoordinator(meetingCoordinator)
-                meetingCoordinator.start()
+            let meetingCoordinator = diContainer.makeMeetingCoordinator(
+                navigationController: navigationController
+            )
+            meetingCoordinator.parentCoordinator = self
+            addChildCoordinator(meetingCoordinator)
+            meetingCoordinator.start()
+            
+        case .myPage:
+            configureMyPageCoordinator(
+                navigationController: navigationController
+            )
             
         default:
             let viewController = makeRootViewController(for: item)
             navigationController.setViewControllers([viewController], animated: false)
         }
     }
-    
+
+    func configureCompanionCoordinator(navigationController: UINavigationController) {
+        let companionCoordinator =
+            diContainer.makeCompanionCoordinator(
+                navigationController: navigationController
+            )
+
+        companionCoordinator.parentCoordinator = self
+        addChildCoordinator(companionCoordinator)
+        companionCoordinator.start()
+    }
+
+    func configureMeetingCoordinator(navigationController: UINavigationController) {
+        let meetingCoordinator =
+            diContainer.makeMeetingCoordinator(
+                navigationController: navigationController
+            )
+
+        meetingCoordinator.parentCoordinator = self
+        addChildCoordinator(meetingCoordinator)
+        meetingCoordinator.start()
+    }
+
+    func configureMyPageCoordinator(navigationController: UINavigationController) {
+        let myPageCoordinator =
+            diContainer.makeMyPageCoordinator(
+                navigationController: navigationController
+            )
+
+        myPageCoordinator.parentCoordinator = self
+        addChildCoordinator(myPageCoordinator)
+        myPageCoordinator.start()
+    }
+
     func makeRootViewController(for item: NearbyTabItem) -> UIViewController {
         switch item {
         case .companion:
@@ -80,7 +117,7 @@ private extension MainTabCoordinator {
         case .meeting:
             preconditionFailure("Meeting tab should be configured by MeetingCoordinator")
         case .myPage:
-            return diContainer.makeMyPageViewController()
+            preconditionFailure("MyPage tab should be configured by MyPageCoordinator")
         }
     }
 }

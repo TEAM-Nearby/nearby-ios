@@ -27,6 +27,10 @@ final class AppDIContainer {
         CompanionCoordinator(navigationController: navigationController, diContainer: self)
     }
     
+    func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
+        MyPageCoordinator(navigationController: navigationController, appDIContainer: self)
+    }
+    
     // MARK: - Networks
     
     // MARK: - Repositories
@@ -40,6 +44,18 @@ final class AppDIContainer {
     func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
     }
+
+    func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
+        CompanionDetailViewModel(state: state)
+    }
+
+    func makeNearCompanionBottomSheetViewModel() -> NearCompanionBottomSheetViewModel {
+        NearCompanionBottomSheetViewModel()
+    }
+    
+    func makeSpecificCompanionBottomSheetViewModel() -> SpecificCompanionBottomSheetViewModel {
+        SpecificCompanionBottomSheetViewModel()
+    }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
         MeetingTabViewModel()
@@ -47,6 +63,18 @@ final class AppDIContainer {
     
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
+    }
+    
+    func makeMyPageViewModel() -> MyPageViewModel {
+        MyPageViewModel()
+    }
+        
+    func makeAlarmViewModel() -> AlarmViewModel {
+        AlarmViewModel()
+    }
+    
+    func makeSettingViewModel() -> SettingViewModel {
+        SettingViewModel()
     }
     
     func makeHostReviewListViewModel() -> HostReviewListViewModel {
@@ -71,21 +99,27 @@ final class AppDIContainer {
         return CompanionViewController(
             viewModel: viewModel,
             nearbyBottomSheetViewController: makeNearCompanionBottomSheetViewController(),
-            specificBottomSheetViewController: makeSpecificCompanionBottomSheetViewController(),
+            specificBottomSheetViewController: makeEmptyCompanionBottomSheetViewController(),
             emptyBottomSheetViewController: makeEmptyCompanionBottomSheetViewController()
         )
     }
     
     func makeNearCompanionBottomSheetViewController() -> NearCompanionBottomSheetViewController {
-        return NearCompanionBottomSheetViewController()
+        return NearCompanionBottomSheetViewController(viewModel: makeNearCompanionBottomSheetViewModel())
     }
     
-    func makeSpecificCompanionBottomSheetViewController() -> SpecificCompanionSheetViewController {
-        return SpecificCompanionSheetViewController()
+    func makeSpecificCompanionBottomSheetViewController() -> SpecificCompanionBottomSheetViewController {
+        return SpecificCompanionBottomSheetViewController(viewModel: makeSpecificCompanionBottomSheetViewModel())
     }
     
     func makeEmptyCompanionBottomSheetViewController() -> EmptyCompanionBottomSheetViewController {
         return EmptyCompanionBottomSheetViewController()
+    }
+
+    func makeCompanionDetailViewController(
+        viewModel: CompanionDetailViewModel
+    ) -> CompanionDetailViewController {
+        CompanionDetailViewController(viewModel: viewModel)
     }
     
     func makeDiningMapViewController() -> UIViewController {
@@ -113,9 +147,26 @@ final class AppDIContainer {
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
-    
-    func makeMyPageViewController() -> UIViewController {
-        makePlaceholderViewController(title: "마이페이지")
+
+    func makeMyPageViewController() -> MyPageViewController {
+        let viewModel = makeMyPageViewModel()
+        return MyPageViewController(
+            viewModel: viewModel
+        )
+    }
+
+    func makeAlarmViewController() -> AlarmViewController {
+        let viewModel = AlarmViewModel()
+        return AlarmViewController(
+            viewModel: viewModel
+        )
+    }
+
+    func makeSettingViewController() -> SettingViewController {
+        let viewModel = SettingViewModel()
+        return SettingViewController(
+            viewModel: viewModel
+        )
     }
     
     func makeRecruitCompanionViewController() -> UIViewController {

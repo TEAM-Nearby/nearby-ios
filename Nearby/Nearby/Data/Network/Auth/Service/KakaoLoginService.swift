@@ -51,8 +51,6 @@ final class KakaoAuthService {
         completion: @escaping (Result<KakaoLoginDataDTO, Error>) -> Void
     ) {
         let nonce = UUID().uuidString
-        
-        // print("nonce: \(nonce)")
 
         UserApi.shared.loginWithKakaoAccount(nonce: nonce) { [weak self] oauthToken, error in
             if let error {

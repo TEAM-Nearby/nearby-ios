@@ -78,7 +78,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
         actionButton.setTitle(nil, for: .normal)
     }
 
-    // MARK: - Methods
+    // MARK: - Method
 
     func configure(with item: AlarmRequestItem) {
         profileImageView.configure(image: item.profileImage)
@@ -263,7 +263,7 @@ private extension AlarmRequestTableViewCell {
     }
 }
 
-// MARK: - Actions
+// MARK: - Action
 
 private extension AlarmRequestTableViewCell {
     @objc

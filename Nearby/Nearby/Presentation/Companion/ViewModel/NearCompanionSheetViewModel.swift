@@ -1,5 +1,5 @@
 //
-//  NearCompanionBottomSheetViewModel.swift
+//  NearCompanionSheetViewModel.swift
 //  Nearby
 //
 //  Created by soomin on 7/9/26.
@@ -7,7 +7,7 @@
 
 import Combine
 
-final class NearCompanionBottomSheetViewModel: BaseViewModelType {
+final class NearCompanionSheetViewModel: BaseViewModelType {
     
     // MARK: - Input
 
@@ -35,7 +35,7 @@ final class NearCompanionBottomSheetViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(companions: [NearCompanionCellItem] = NearCompanionBottomSheetViewModel.mockNearCompanions) {
+    init(companions: [NearCompanionCellItem] = NearCompanionSheetViewModel.mockNearCompanions) {
         self.output = Output(
             sortOptions: SortOption.allCases,
             companions: CurrentValueSubject(companions)
@@ -58,7 +58,7 @@ final class NearCompanionBottomSheetViewModel: BaseViewModelType {
     }
 }
 
-private extension NearCompanionBottomSheetViewModel {
+private extension NearCompanionSheetViewModel {
     static let mockNearCompanions: [NearCompanionCellItem] = [
         NearCompanionCellItem(
             placeImage: .restaurantPlaceholder,

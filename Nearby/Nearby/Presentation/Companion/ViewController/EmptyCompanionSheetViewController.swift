@@ -11,11 +11,11 @@ final class EmptyCompanionSheetViewController: BaseViewController<EmptyViewModel
     
     // MARK: - Property
     
-    private let emptyCompanionBottomSheetView = EmptyCompanionBottomSheetView()
+    private let emptyCompanionSheetView = EmptyCompanionSheetView()
     
     // MARK: - Life Cycle
     
     override func loadView() {
-        view = emptyCompanionBottomSheetView
+        view = emptyCompanionSheetView
     }
 }

@@ -1,5 +1,5 @@
 //
-//  SpecificCompanionBottomSheetViewModel.swift
+//  SpecificCompanionSheetViewModel.swift
 //  Nearby
 //
 //  Created by soomin on 7/9/26.
@@ -7,7 +7,7 @@
 
 import Combine
 
-final class SpecificCompanionBottomSheetViewModel: BaseViewModelType {
+final class SpecificCompanionSheetViewModel: BaseViewModelType {
     
     // MARK: - Input
     
@@ -29,7 +29,7 @@ final class SpecificCompanionBottomSheetViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(companions: [SpecificCompanionCellItem] = SpecificCompanionBottomSheetViewModel.mockSpecificCompanions) {
+    init(companions: [SpecificCompanionCellItem] = SpecificCompanionSheetViewModel.mockSpecificCompanions) {
         self.output = Output(companions: CurrentValueSubject(companions))
     }
     
@@ -42,7 +42,7 @@ final class SpecificCompanionBottomSheetViewModel: BaseViewModelType {
     }
 }
 
-private extension SpecificCompanionBottomSheetViewModel {
+private extension SpecificCompanionSheetViewModel {
     static let mockSpecificCompanions: [SpecificCompanionCellItem] = [
         SpecificCompanionCellItem(
             profileImage: nil,

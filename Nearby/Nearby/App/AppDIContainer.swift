@@ -49,12 +49,12 @@ final class AppDIContainer {
         CompanionDetailViewModel(state: state)
     }
 
-    func makeNearCompanionSheetViewModel() -> NearCompanionBottomSheetViewModel {
-        NearCompanionBottomSheetViewModel()
+    func makeNearCompanionSheetViewModel() -> NearCompanionSheetViewModel {
+        NearCompanionSheetViewModel()
     }
     
-    func makeSpecificCompanionSheetViewModel() -> SpecificCompanionBottomSheetViewModel {
-        SpecificCompanionBottomSheetViewModel()
+    func makeSpecificCompanionSheetViewModel() -> SpecificCompanionSheetViewModel {
+        SpecificCompanionSheetViewModel()
     }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
@@ -100,9 +100,9 @@ final class AppDIContainer {
     }
     
     func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
-        return CompanionViewController(viewModel: viewModel, nearbyBottomSheetViewController: makeNearCompanionSheetViewController(),
-                                       specificBottomSheetViewController: makeSpecificCompanionSheetViewController(),
-                                       emptyBottomSheetViewController: makeEmptyCompanionSheetViewController())
+        return CompanionViewController(viewModel: viewModel, nearbySheetViewController: makeNearCompanionSheetViewController(),
+                                       specificSheetViewController: makeSpecificCompanionSheetViewController(),
+                                       emptySheetViewController: makeEmptyCompanionSheetViewController())
     }
     
     func makeNearCompanionSheetViewController() -> NearCompanionSheetViewController {

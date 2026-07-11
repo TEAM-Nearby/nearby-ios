@@ -15,7 +15,7 @@ final class AppDIContainer {
         AppCoordinator(window: window, diContainer: self)
     }
 
-    func makeMainTabCoordinator()-> MainTabCoordinator {
+    func makeMainTabCoordinator() -> MainTabCoordinator {
         MainTabCoordinator(diContainer: self)
     }
 
@@ -37,11 +37,11 @@ final class AppDIContainer {
 
     // MARK: - ViewModels
 
-    func makeLoginViewModel()-> LoginViewModel {
+    func makeLoginViewModel() -> LoginViewModel {
         LoginViewModel()
     }
 
-    func makeCompanionViewModel()-> CompanionViewModel {
+    func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
     }
 
@@ -49,15 +49,15 @@ final class AppDIContainer {
         CompanionDetailViewModel(state: state)
     }
 
-    func makeNearCompanionSheetViewModel()-> NearCompanionSheetViewModel {
+    func makeNearCompanionSheetViewModel() -> NearCompanionSheetViewModel {
         NearCompanionSheetViewModel()
     }
 
-    func makeSpecificCompanionSheetViewModel()-> SpecificCompanionSheetViewModel {
+    func makeSpecificCompanionSheetViewModel() -> SpecificCompanionSheetViewModel {
         SpecificCompanionSheetViewModel()
     }
 
-    func makeMeetingViewModel()-> MeetingTabViewModel {
+    func makeMeetingViewModel() -> MeetingTabViewModel {
         MeetingTabViewModel()
     }
 
@@ -65,192 +65,112 @@ final class AppDIContainer {
         MeetingProgressViewModel(item: item)
     }
 
-    func makeMyPageViewModel()-> MyPageViewModel {
+    func makeMyPageViewModel() -> MyPageViewModel {
         MyPageViewModel()
     }
 
-    func makeAlarmViewModel()
-        -> AlarmViewModel {
+    func makeAlarmViewModel() -> AlarmViewModel {
         AlarmViewModel()
     }
 
-    func makeSettingViewModel()
-        -> SettingViewModel {
+    func makeSettingViewModel() -> SettingViewModel {
         SettingViewModel()
     }
 
-    func makeWrittenPostViewModel()
-        -> WrittenPostViewModel {
+    func makeWrittenPostViewModel() -> WrittenPostViewModel {
         WrittenPostViewModel()
     }
 
-    func makeHostReviewListViewModel()
-        -> HostReviewListViewModel {
+    func makeHostReviewListViewModel() -> HostReviewListViewModel {
         HostReviewListViewModel()
     }
 
-    func makeReportPostViewModel()
-        -> ReportPostViewModel {
+    func makeReportPostViewModel() -> ReportPostViewModel {
         ReportPostViewModel()
     }
 
-    func makeReviewPostViewModel(
-        reviewItem: ReviewItem,
-        type: NearbyUserType,
-        isLast: Bool
-    ) -> ReviewPostViewModel {
-        ReviewPostViewModel(
-            reviewItem: reviewItem,
-            type: type,
-            isLastReview: isLast
-        )
+    func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool) -> ReviewPostViewModel {
+        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast)
     }
 
     // MARK: - ViewControllers
 
-    func makeLoginViewController()
-        -> LoginViewController {
-        LoginViewController(
-            viewModel:
-                makeLoginViewModel()
+    func makeLoginViewController()-> LoginViewController {
+        LoginViewController(viewModel: makeLoginViewModel())
+    }
+
+    func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
+        CompanionViewController(viewModel: viewModel,
+            nearbySheetViewController: makeNearCompanionSheetViewController(),
+            specificSheetViewController: makeSpecificCompanionSheetViewController(),
+            emptySheetViewController: makeEmptyCompanionSheetViewController()
         )
     }
 
-    func makeCompanionViewController(
-        viewModel: CompanionViewModel
-    ) -> CompanionViewController {
-        CompanionViewController(
-            viewModel: viewModel,
-            nearbySheetViewController:
-                makeNearCompanionSheetViewController(),
-            specificSheetViewController:
-                makeSpecificCompanionSheetViewController(),
-            emptySheetViewController:
-                makeEmptyCompanionSheetViewController()
-        )
+    func makeNearCompanionSheetViewController() -> NearCompanionSheetViewController {
+        NearCompanionSheetViewController(viewModel: makeNearCompanionSheetViewModel())
     }
 
-    func makeNearCompanionSheetViewController()
-        -> NearCompanionSheetViewController {
-        NearCompanionSheetViewController(
-            viewModel:
-                makeNearCompanionSheetViewModel()
-        )
+    func makeSpecificCompanionSheetViewController() -> SpecificCompanionSheetViewController {
+        SpecificCompanionSheetViewController(viewModel:makeSpecificCompanionSheetViewModel())
     }
 
-    func makeSpecificCompanionSheetViewController()
-        -> SpecificCompanionSheetViewController {
-        SpecificCompanionSheetViewController(
-            viewModel:
-                makeSpecificCompanionSheetViewModel()
-        )
-    }
-
-    func makeEmptyCompanionSheetViewController()
-        -> EmptyCompanionSheetViewController {
+    func makeEmptyCompanionSheetViewController() -> EmptyCompanionSheetViewController {
         EmptyCompanionSheetViewController()
     }
 
-    func makeCompanionDetailViewController(
-        viewModel: CompanionDetailViewModel
-    ) -> CompanionDetailViewController {
-        CompanionDetailViewController(
-            viewModel: viewModel
-        )
+    func makeCompanionDetailViewController(viewModel: CompanionDetailViewModel) -> CompanionDetailViewController {
+        CompanionDetailViewController(viewModel: viewModel)
     }
 
-    func makeDiningMapViewController()
-        -> UIViewController {
-        makePlaceholderViewController(
-            title: "혼밥 지도"
-        )
+    func makeDiningMapViewController() -> UIViewController {
+        makePlaceholderViewController(title: "혼밥 지도")
     }
 
-    func makeMatchingViewController()
-        -> UIViewController {
-        makePlaceholderViewController(
-            title: "매칭"
-        )
+    func makeMatchingViewController() -> UIViewController {
+        makePlaceholderViewController(title: "매칭")
     }
 
-    func makeMeetingViewController(
-        coordinator: MeetingTabCoordinator
-    ) -> UIViewController {
-        let viewController =
-            MeetingTabViewController(
-                viewModel:
-                    makeMeetingViewModel()
-            )
+    func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = MeetingTabViewController(viewModel:makeMeetingViewModel())
 
-        viewController.coordinator =
-            coordinator
+        viewController.coordinator = coordinator
 
         return viewController
     }
 
-    func makeMeetingProgressViewController(
-        coordinator: MeetingTabCoordinator,
-        item: MeetingItem
-    ) -> UIViewController {
-        let viewController =
-            MeetingProgressViewController(
-                viewModel:
-                    makeMeetingProgressViewModel(
-                        item: item
-                    )
-            )
+    func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, item: MeetingItem) -> UIViewController {
+        let viewController = MeetingProgressViewController(viewModel:makeMeetingProgressViewModel(item: item))
 
-        viewController.coordinator =
-            coordinator
+        viewController.coordinator = coordinator
 
-        viewController
-            .hidesBottomBarWhenPushed = true
+        viewController.hidesBottomBarWhenPushed = true
 
         return viewController
     }
 
-    func makeMyPageViewController()
-        -> MyPageViewController {
-        MyPageViewController(
-            viewModel:
-                makeMyPageViewModel()
-        )
+    func makeMyPageViewController() -> MyPageViewController {
+        MyPageViewController(viewModel: makeMyPageViewModel())
     }
 
-    func makeAlarmViewController()
-        -> AlarmViewController {
-        AlarmViewController(
-            viewModel:
-                makeAlarmViewModel()
-        )
+    func makeAlarmViewController() -> AlarmViewController {
+        AlarmViewController(viewModel: makeAlarmViewModel())
     }
 
-    func makeSettingViewController()
-        -> SettingViewController {
-        SettingViewController(
-            viewModel:
-                makeSettingViewModel()
-        )
+    func makeSettingViewController() -> SettingViewController {
+        SettingViewController(viewModel: makeSettingViewModel())
     }
 
-    func makeWrittenPostViewController()
-        -> WrittenPostViewController {
-        WrittenPostViewController(
-            viewModel:
-                makeWrittenPostViewModel()
-        )
+    func makeWrittenPostViewController() -> WrittenPostViewController {
+        WrittenPostViewController(viewModel: makeWrittenPostViewModel())
     }
 
-    func makeRecruitCompanionViewController()
-        -> UIViewController {
-        makePlaceholderViewController(
-            title: "동행글 작성"
-        )
+    func makeRecruitCompanionViewController() -> UIViewController {
+        makePlaceholderViewController(title: "동행글 작성")
     }
 
     func makeReviewViewController(
-        coordinator:
-            MeetingTabCoordinator,
+        coordinator: MeetingTabCoordinator,
         type: NearbyUserType,
         reviewItem: ReviewItem
     ) -> UIViewController {
@@ -271,32 +191,22 @@ final class AppDIContainer {
         }
     }
 
-    func makeHostReviewListViewController(
-        coordinator:
-            MeetingTabCoordinator
-    ) -> UIViewController {
-        let viewController =
-            HostReviewListViewController(
-                viewModel:
-                    makeHostReviewListViewModel()
-            )
+    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel())
 
-        viewController.coordinator =
-            coordinator
+        viewController.coordinator = coordinator
 
         return viewController
     }
 
     func makeReviewPostViewController(
-        coordinator:
-            MeetingTabCoordinator,
+        coordinator: MeetingTabCoordinator,
         reviewItem: ReviewItem,
         type: NearbyUserType,
         isLast: Bool,
         onSaved: (() -> Void)?
     ) -> UIViewController {
-        let viewController =
-            ReviewPostViewController(
+        let viewController = ReviewPostViewController(
                 viewModel:
                     makeReviewPostViewModel(
                         reviewItem: reviewItem,
@@ -305,43 +215,26 @@ final class AppDIContainer {
                     )
             )
 
-        viewController.coordinator =
-            coordinator
+        viewController.coordinator = coordinator
 
-        viewController.onReviewSaved =
-            onSaved
+        viewController.onReviewSaved = onSaved
 
         return viewController
     }
 
-    func makeReportPostViewController(
-        coordinator:
-            MeetingTabCoordinator
-    ) -> UIViewController {
-        let viewController =
-            ReportPostViewController(
-                viewModel:
-                    makeReportPostViewModel()
-            )
+    func makeReportPostViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = ReportPostViewController(viewModel: makeReportPostViewModel())
 
-        viewController.coordinator =
-            coordinator
+        viewController.coordinator = coordinator
 
         return viewController
     }
 
     func makeReportCompletionViewController(
-        coordinator:
-            MeetingTabCoordinator
-    ) -> UIViewController {
-        let viewController =
-            ReportCompletionViewController(
-                viewModel:
-                    EmptyViewModel()
-            )
+        coordinator: MeetingTabCoordinator) -> UIViewController {
+        let viewController = ReportCompletionViewController(viewModel: EmptyViewModel())
 
-        viewController.coordinator =
-            coordinator
+        viewController.coordinator = coordinator
 
         return viewController
     }
@@ -350,9 +243,7 @@ final class AppDIContainer {
 // MARK: - Private Methods
 
 private extension AppDIContainer {
-    func makePlaceholderViewController(
-        title: String
-    ) -> UIViewController {
+    func makePlaceholderViewController(title: String) -> UIViewController {
         let viewController = UIViewController()
 
         viewController.title = title

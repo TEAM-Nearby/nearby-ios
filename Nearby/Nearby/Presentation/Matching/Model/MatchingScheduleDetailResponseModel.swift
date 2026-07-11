@@ -25,6 +25,7 @@ extension MatchingScheduleDetailResponseModel {
             cardItem: cardItem,
             placeName: schedule.place.name,
             placeAddress: schedule.place.address,
+            googlePlaceId: schedule.place.googlePlaceId,
             latitude: schedule.place.latitude,
             longitude: schedule.place.longitude,
             scheduledAtText: schedule.scheduledAt,

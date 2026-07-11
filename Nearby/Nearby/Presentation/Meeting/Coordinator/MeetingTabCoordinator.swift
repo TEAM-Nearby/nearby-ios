@@ -16,6 +16,8 @@ final class MeetingTabCoordinator {
     private let navigationController: UINavigationController
     private let diContainer: AppDIContainer
     
+    private weak var reportReturnViewController: UIViewController?
+    
     // MARK: - Initializer
     
     init(navigationController: UINavigationController, diContainer: AppDIContainer) {
@@ -27,7 +29,6 @@ final class MeetingTabCoordinator {
 // MARK: - Coordinator
 
 extension MeetingTabCoordinator: Coordinator {
-    
     func start() {
         let viewController = diContainer.makeMeetingViewController(coordinator: self)
         navigationController.setViewControllers([viewController], animated: false)
@@ -45,17 +46,28 @@ extension MeetingTabCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
+    func showReview(type: NearbyUserType, item: ReviewItem) {
+        let viewController = diContainer.makeReviewViewController(
+            coordinator: self, type: type, reviewItem: item
+        )
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
     func showHostReviewList() {
         let viewController = diContainer.makeHostReviewListViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showReviewPost(for item: ReviewItem) {
-        let viewController = diContainer.makeReviewPostViewController(coordinator: self, reviewItem: item)
+    func showReviewPost(for item: ReviewItem, type: NearbyUserType, isLast: Bool, onSaved: (() -> Void)?) {
+        let viewController = diContainer.makeReviewPostViewController(
+            coordinator: self, reviewItem: item, type: type, isLast: isLast, onSaved: onSaved
+        )
         navigationController.pushViewController(viewController, animated: true)
     }
     
     func showReportPost() {
+        reportReturnViewController = navigationController.topViewController
         let viewController = diContainer.makeReportPostViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
     }
@@ -67,6 +79,23 @@ extension MeetingTabCoordinator: Coordinator {
     }
 
     func dismissReportFlow() {
-        navigationController.popToRootViewController(animated: true)
+        if let target = reportReturnViewController {
+            navigationController.popToViewController(target, animated: true)
+        } else {
+            navigationController.popToRootViewController(animated: true)
+        }
+    }
+    
+    func popReportPost() {
+        navigationController.popViewController(animated: true)
+    }
+    
+    func finishCompanionReview() {
+        navigationController.popToRootViewController(animated: false)
+        (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
+    }
+    
+    func showCompanionTab() {
+        (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
     }
 }

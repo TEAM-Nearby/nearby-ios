@@ -74,7 +74,7 @@ final class NearDiningBottomSheetView: BaseView {
 
     override func setLayout() {
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(8)
+            $0.top.equalToSuperview().inset(8)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(NearbyFont.h3Sb20.property.lineHeight * 2)
         }

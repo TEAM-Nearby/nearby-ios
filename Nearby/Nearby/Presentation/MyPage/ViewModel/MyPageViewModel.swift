@@ -14,6 +14,7 @@ final class MyPageViewModel: BaseViewModelType {
     enum Input {
         case alarmButtonDidTap
         case settingButtonDidTap
+        case writtenPostRowDidTap
     }
 
     // MARK: - Output
@@ -21,6 +22,7 @@ final class MyPageViewModel: BaseViewModelType {
     struct Output {
         var alarmButtonDidTap: (() -> Void)?
         var settingButtonDidTap: (() -> Void)?
+        var writtenPostRowDidTap: (() -> Void)?
     }
 
     // MARK: - Property
@@ -36,6 +38,9 @@ final class MyPageViewModel: BaseViewModelType {
 
         case .settingButtonDidTap:
             output.settingButtonDidTap?()
+
+        case .writtenPostRowDidTap:
+            output.writtenPostRowDidTap?()
         }
     }
 }

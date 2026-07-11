@@ -64,7 +64,7 @@ enum NearbyButtonStyle {
     
     var title: String? {
         switch self {
-        case .allowed:  return "수락하기"
+        case .allowed:  return "수락하러 가기"
         case .rejected: return "거절하기"
         case .gradient: return "만남 인증하기"
         case .primary, .disabled, .selected, .unselected:

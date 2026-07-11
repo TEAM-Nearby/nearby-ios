@@ -113,13 +113,6 @@ final class MatchingManageScheduleDetailView: BaseView {
     }
 
     override func setLayout() {
-        setHeaderLayout()
-        setDateAndTimeLayout()
-        setPlaceLayout()
-        setConfirmLayout()
-    }
-
-    private func setHeaderLayout() {
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview()
@@ -130,9 +123,7 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(110)
         }
-    }
 
-    private func setDateAndTimeLayout() {
         dateAndTimeTitleLabel.snp.makeConstraints {
             $0.top.equalTo(matchedCardView.snp.bottom).offset(28)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -160,9 +151,7 @@ final class MatchingManageScheduleDetailView: BaseView {
         datePicker.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-    }
 
-    private func setPlaceLayout() {
         placeTitleLabel.snp.makeConstraints {
             $0.top.equalTo(dateAndTimeButton.snp.bottom).offset(28)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -185,9 +174,7 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(230)
         }
-    }
 
-    private func setConfirmLayout() {
         confirmButton.snp.makeConstraints {
             $0.bottom.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -213,10 +200,7 @@ final class MatchingManageScheduleDetailView: BaseView {
     }
 
     func configure(with output: MatchingManageDetailViewModel.DisplayData) {
-        matchedCardView.configure(
-            content: output.cardItem.content,
-            displayMode: .scheduleDetail
-        )
+        matchedCardView.configure(content: output.cardItem.content, displayMode: .scheduleDetail)
         matchedCardView.setNextButtonHidden(true)
         datePicker.date = output.selectedDate
         placeDetailLabel.setFont(.b3M14, text: output.placeAddress, textColor: .grey30)

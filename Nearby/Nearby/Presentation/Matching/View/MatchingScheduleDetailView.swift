@@ -54,19 +54,6 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setNextButtonHidden(true)
         }
 
-        setPlaceStyle()
-        setDateAndTimeStyle()
-        setKakaoLinkStyle()
-
-        bottomButtonStackView.do {
-            $0.axis = .horizontal
-            $0.spacing = 8
-            $0.distribution = .fill
-        }
-    }
-
-    private func setPlaceStyle() {
-
         placeImageView.do {
             $0.image = .loaction.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
@@ -89,9 +76,7 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setImage(.copyIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey30
         }
-    }
 
-    private func setDateAndTimeStyle() {
         dateAndTimeImageView.do {
             $0.image = .smallCalenderIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
@@ -109,9 +94,7 @@ final class MatchingScheduleDetailView: BaseView {
         dateDividerView.do {
             $0.backgroundColor = .grey5
         }
-    }
 
-    private func setKakaoLinkStyle() {
         kakaoLinkImageView.do {
             $0.image = .chatIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
@@ -130,6 +113,12 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setImage(.copyIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey30
         }
+
+        bottomButtonStackView.do {
+            $0.axis = .horizontal
+            $0.spacing = 8
+            $0.distribution = .fill
+        }
     }
 
     override func setUI() {
@@ -147,14 +136,6 @@ final class MatchingScheduleDetailView: BaseView {
     }
 
     override func setLayout() {
-        setHeaderLayout()
-        setPlaceLayout()
-        setDateAndTimeLayout()
-        setKakaoLinkLayout()
-        setBottomButtonLayout()
-    }
-
-    private func setHeaderLayout() {
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview()
@@ -165,9 +146,7 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(110)
         }
-    }
 
-    private func setPlaceLayout() {
         placeImageView.snp.makeConstraints {
             $0.top.equalTo(matchedCardView.snp.bottom).offset(28)
             $0.leading.equalToSuperview().inset(20)
@@ -204,9 +183,7 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(143)
         }
-    }
 
-    private func setDateAndTimeLayout() {
         dateAndTimeImageView.snp.makeConstraints {
             $0.top.equalTo(mapView.snp.bottom).offset(36)
             $0.leading.equalToSuperview().inset(20)
@@ -230,9 +207,7 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(1)
         }
-    }
 
-    private func setKakaoLinkLayout() {
         kakaoLinkImageView.snp.makeConstraints {
             $0.top.equalTo(dateDividerView.snp.bottom).offset(18)
             $0.leading.equalToSuperview().inset(20)
@@ -257,9 +232,7 @@ final class MatchingScheduleDetailView: BaseView {
             $0.trailing.equalToSuperview().inset(20)
             $0.size.equalTo(24)
         }
-    }
 
-    private func setBottomButtonLayout() {
         bottomButtonStackView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(23)
@@ -283,11 +256,8 @@ final class MatchingScheduleDetailView: BaseView {
         manageButton.addTarget(self, action: #selector(manageButtonDidTap), for: .touchUpInside)
         shareButton.addTarget(self, action: #selector(shareButtonDidTap), for: .touchUpInside)
     }
-}
 
-// MARK: - Methods
-
-extension MatchingScheduleDetailView {
+    // MARK: - Methods
 
     func configure(displayData: MatchingScheduleDetailDisplayData) {
         matchedCardView.configure(

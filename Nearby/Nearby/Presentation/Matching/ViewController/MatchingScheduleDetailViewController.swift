@@ -99,21 +99,27 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
             if let url = ShareApi.shared.makeCustomUrl(templateId: 135202) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
-                print("Failed to create Kakao sharer URL.")
+                AppLogger.error(
+                    AppError.apiError(message: "카카오톡 공유 URL 생성에 실패했습니다.")
+                )
             }
             return
         }
 
         ShareApi.shared.shareCustom(templateId: 135202) { sharingResult, error in
             if let error {
-                print(error)
+                AppLogger.error(error, message: "카카오톡 공유에 실패했습니다.")
                 return
             }
 
             if let sharingResult {
                 UIApplication.shared.open(sharingResult.url, options: [:]) { success in
                     if success == false {
-                        print("Failed to open KakaoTalk sharing URL: \(sharingResult.url)")
+                        AppLogger.error(
+                            AppError.apiError(
+                                message: "카카오톡 공유 URL 열기에 실패했습니다: \(sharingResult.url)"
+                            )
+                        )
                     }
                 }
             }

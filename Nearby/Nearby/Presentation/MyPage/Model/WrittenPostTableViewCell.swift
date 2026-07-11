@@ -152,7 +152,7 @@ private extension WrittenPostTableViewCell {
             $0.image = UIImage(named: "img_map_sample")
             $0.backgroundColor = .grey5
             $0.contentMode = .scaleAspectFill
-            $0.layer.cornerRadius = 16
+            $0.layer.cornerRadius = 12
             $0.clipsToBounds = true
         }
 
@@ -285,15 +285,15 @@ private extension WrittenPostTableViewCell {
         }
 
         placeIconImageView.snp.makeConstraints {
-            $0.size.equalTo(24)
+            $0.size.equalTo(20)
         }
 
         dateIconImageView.snp.makeConstraints {
-            $0.size.equalTo(24)
+            $0.size.equalTo(20)
         }
 
         peopleIconImageView.snp.makeConstraints {
-            $0.size.equalTo(24)
+            $0.size.equalTo(20)
         }
 
         informationStackView.snp.makeConstraints {

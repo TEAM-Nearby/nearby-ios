@@ -79,17 +79,22 @@ final class WrittenPostViewController:
 extension WrittenPostViewController:
     UITableViewDataSource {
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
-    {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return writtenPostItems.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
-    {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell =
+                tableView.dequeueReusableCell(
+                    withIdentifier: WrittenPostTableViewCell.identifier, for: indexPath
+                ) as? WrittenPostTableViewCell
+        else {
+            return UITableViewCell()
+        }
 
-        cell.selectionStyle = .none
-        cell.backgroundColor = .white
+        let item = writtenPostItems[indexPath.row]
+
+        cell.configure(with: item)
 
         return cell
     }
@@ -98,11 +103,16 @@ extension WrittenPostViewController:
 // MARK: - UITableViewDelegate
 
 extension WrittenPostViewController:
-    UITableViewDelegate {}
+    UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    { tableView.deselectRow(at: indexPath, animated: false) }
+}
 
 // MARK: - Action
 
 private extension WrittenPostViewController {
+
     @objc
     func findCompanionButtonDidTap() {viewModel.action(.findCompanionButtonDidTap)}
 }

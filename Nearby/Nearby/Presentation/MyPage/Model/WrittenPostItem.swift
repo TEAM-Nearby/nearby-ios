@@ -12,12 +12,19 @@ struct WrittenPostItem {
     // MARK: - Properties
 
     let id: UUID
+
     let cityName: String
     let createdDateText: String
+
     let placeName: String
+    let latitude: Double
+    let longitude: Double
+    let placeID: String?
+
     let meetingDateText: String
     let currentPeopleCount: Int
     let maximumPeopleCount: Int
+
     let content: String
     let keywords: [String]
 
@@ -28,6 +35,9 @@ struct WrittenPostItem {
         cityName: String,
         createdDateText: String,
         placeName: String,
+        latitude: Double,
+        longitude: Double,
+        placeID: String? = nil,
         meetingDateText: String,
         currentPeopleCount: Int,
         maximumPeopleCount: Int,
@@ -38,6 +48,9 @@ struct WrittenPostItem {
         self.cityName = cityName
         self.createdDateText = createdDateText
         self.placeName = placeName
+        self.latitude = latitude
+        self.longitude = longitude
+        self.placeID = placeID
         self.meetingDateText = meetingDateText
         self.currentPeopleCount = currentPeopleCount
         self.maximumPeopleCount = maximumPeopleCount

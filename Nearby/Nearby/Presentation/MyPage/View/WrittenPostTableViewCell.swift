@@ -21,37 +21,27 @@ final class WrittenPostTableViewCell: UITableViewCell {
     // MARK: - UI Components
 
     private let cityInformationStackView = UIStackView()
-
     private let cityNameLabel = UILabel()
-
     private let createdDateLabel = UILabel()
 
-    private let mapImageView = UIImageView()
+    private let mapCardView = NearbyMapView(cornerRadius: 12)
 
     private let informationStackView = UIStackView()
 
     private let placeStackView = UIStackView()
-
     private let placeIconImageView = UIImageView()
-
     private let placeLabel = UILabel()
 
     private let dateStackView = UIStackView()
-
     private let dateIconImageView = UIImageView()
-
     private let dateLabel = UILabel()
 
     private let peopleStackView = UIStackView()
-
     private let peopleIconImageView = UIImageView()
-
     private let peopleImageStackView = AvatarStackView()
-
     private let peopleStatusLabel = UILabel()
 
     private let contentContainerView = UIView()
-
     private let contentLabel = UILabel()
 
     private let keywordStackView = UIStackView()
@@ -98,12 +88,25 @@ final class WrittenPostTableViewCell: UITableViewCell {
         placeLabel.text = item.placeName
         dateLabel.text = item.meetingDateText
 
-        peopleStatusLabel.text = "\(item.currentPeopleCount)/\(item.maximumPeopleCount)명"
+        peopleStatusLabel.text =
+            "\(item.currentPeopleCount)/\(item.maximumPeopleCount)명"
 
         contentLabel.text = item.content
 
         peopleImageStackView.configureWithDefaultAvatars(
-            count: min(item.currentPeopleCount, profileAvatarCount)
+            count: min(
+                item.currentPeopleCount,
+                profileAvatarCount
+            )
+        )
+
+        mapCardView.configure(
+            latitude: item.latitude,
+            longitude: item.longitude,
+            placeName: item.placeName,
+            placeID: item.placeID,
+            zoom: 16,
+            showsInfoWindow: false
         )
 
         configureKeywords(item.keywords)
@@ -230,36 +233,25 @@ private extension WrittenPostTableViewCell {
 
     func setUI() {
         contentView.addSubviews(
-            cityInformationStackView, mapImageView,
-            informationStackView, contentContainerView,
-            keywordStackView, dividerView
+            cityInformationStackView, mapCardView, informationStackView,
+            contentContainerView, keywordStackView, dividerView
         )
 
-        cityInformationStackView.addArrangedSubviews(
-            cityNameLabel, createdDateLabel
-        )
+        cityInformationStackView.addArrangedSubviews(cityNameLabel, createdDateLabel)
 
-        placeStackView.addArrangedSubviews(
-            placeIconImageView, placeLabel
-        )
+        placeStackView.addArrangedSubviews(placeIconImageView, placeLabel)
 
-        dateStackView.addArrangedSubviews(
-            dateIconImageView, dateLabel
-        )
+        dateStackView.addArrangedSubviews(dateIconImageView, dateLabel)
 
         peopleStackView.addArrangedSubviews(
-            peopleIconImageView, peopleImageStackView,
-            peopleStatusLabel
+            peopleIconImageView, peopleImageStackView, peopleStatusLabel
         )
 
         informationStackView.addArrangedSubviews(
-            placeStackView, dateStackView,
-            peopleStackView
+            placeStackView, dateStackView, peopleStackView
         )
 
-        contentContainerView.addSubview(
-            contentLabel
-        )
+        contentContainerView.addSubview(contentLabel)
     }
 
     func setLayout() {
@@ -268,8 +260,9 @@ private extension WrittenPostTableViewCell {
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
-        mapImageView.snp.makeConstraints {
+        mapCardView.snp.makeConstraints {
             $0.top.equalTo(cityInformationStackView.snp.bottom).offset(24)
+
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(211)
         }
@@ -287,7 +280,7 @@ private extension WrittenPostTableViewCell {
         }
 
         informationStackView.snp.makeConstraints {
-            $0.top.equalTo(mapImageView.snp.bottom).offset(16)
+            $0.top.equalTo(mapCardView.snp.bottom).offset(16)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
@@ -316,8 +309,7 @@ private extension WrittenPostTableViewCell {
         }
     }
 
-    func configureKeywords(_ keywords: [String])
-    {
+    func configureKeywords(_ keywords: [String]) {
         keywordStackView.arrangedSubviews.forEach {
             keywordStackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
@@ -325,7 +317,6 @@ private extension WrittenPostTableViewCell {
 
         keywords.prefix(3).forEach { keyword in
             let keywordChip = makeKeywordChip(title: keyword)
-            
             keywordStackView.addArrangedSubview(keywordChip)
         }
     }

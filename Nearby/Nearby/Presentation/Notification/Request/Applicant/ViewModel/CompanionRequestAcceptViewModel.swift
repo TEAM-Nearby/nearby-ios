@@ -25,6 +25,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<DisplayData, Never>()
         let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<URL, Never>()
+        let showChatLinkPopup = PassthroughSubject<String, Never>()
     }
 
     enum Step {
@@ -86,9 +87,11 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
             showOpenChat()
 
         case .chatHelpButtonDidTap:
-            break
+            output.showChatLinkPopup.send(openChatURLString)
         }
     }
+    
+    // MARK: - Method
     
     private func showOpenChat() {
         guard let url = URL(string: openChatURLString), url.scheme == "https"

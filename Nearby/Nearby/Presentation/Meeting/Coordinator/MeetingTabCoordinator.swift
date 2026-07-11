@@ -30,9 +30,9 @@ final class MeetingTabCoordinator {
 
 extension MeetingTabCoordinator: Coordinator {
     func start() {
-            let viewController = diContainer.makeMeetingViewController(coordinator: self)
-            navigationController.setViewControllers([viewController], animated: false)
-        }
+        let viewController = diContainer.makeMeetingViewController(coordinator: self)
+        navigationController.setViewControllers([viewController], animated: false)
+    }
     
     func finish() {
         parentCoordinator?.removeChildCoordinator(self)

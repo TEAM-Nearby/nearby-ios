@@ -11,6 +11,10 @@ import SnapKit
 import Then
 
 final class MeetingTabView: BaseView {
+    
+    // MARK: - Property
+    
+    var onSearchButtonDidTap: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -26,7 +30,7 @@ final class MeetingTabView: BaseView {
         backgroundColor = .white
         
         navigationBar.do {
-            $0.configure(centerItem: .logo, rightItems: [.alarmButton])
+            $0.configure(leftItem: .logo, rightItems: [.alarmButton])
         }
         
         titleLabel.do {
@@ -37,6 +41,7 @@ final class MeetingTabView: BaseView {
             $0.collectionViewLayout = Self.makeLayout()
             $0.backgroundColor = .clear
             $0.showsVerticalScrollIndicator = false
+            $0.allowsSelection = false
         }
     }
 
@@ -64,6 +69,12 @@ final class MeetingTabView: BaseView {
         emptyView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
             $0.horizontalEdges.bottom.equalToSuperview()
+        }
+    }
+    
+    override func setAddTarget() {
+        emptyView.onSearchButtonDidTap = { [weak self] in
+            self?.onSearchButtonDidTap?()
         }
     }
 

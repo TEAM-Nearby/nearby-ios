@@ -12,6 +12,10 @@ import Then
 
 final class MeetingEmptyView: BaseView {
     
+    // MARK: - Property
+    
+    var onSearchButtonDidTap: (() -> Void)?
+    
     // MARK: - UI Components
     
     private let stackView = UIStackView()
@@ -67,5 +71,16 @@ final class MeetingEmptyView: BaseView {
             $0.height.equalTo(56)
             $0.bottom.equalTo(safeAreaLayoutGuide).offset(-16)
         }
+    }
+    
+    override func setAddTarget() {
+        searchButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
+    }
+    
+    // MARK: - Action
+    
+    @objc
+    private func searchButtonDidTap() {
+        onSearchButtonDidTap?()
     }
 }

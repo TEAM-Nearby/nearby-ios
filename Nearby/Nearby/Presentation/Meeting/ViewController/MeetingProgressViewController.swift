@@ -76,7 +76,7 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 // TODO: - 서버 연동 후 post.hostID == myUserID 로 타입 판정
-                let mockType: NearbyUserType = .participant
+                let mockType: NearbyUserType = .host
                 let mockItem = ReviewItem(
                     id: 1,
                     image: .imgProfileDefault,

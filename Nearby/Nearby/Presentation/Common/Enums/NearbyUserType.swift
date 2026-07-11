@@ -19,8 +19,4 @@ enum NearbyUserType {
     }
     
     // TODO: - model 구현 후 정의
-//    func currentType(for post: Post) {
-//        post.hostID == mockMyUserID ? .host : .participant
-//        return .host
-//    }
 }

@@ -286,7 +286,7 @@ final class HostProfileView: BaseView {
     }
 }
 
-// MARK: - Layout Methods
+// MARK: - Custom Methods
 
 private extension HostProfileView {
 

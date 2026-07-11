@@ -70,7 +70,7 @@ final class HostProfileViewModel: BaseViewModelType {
     }
 }
 
-// MARK: - Private Methods
+// MARK: - Methods
 
 private extension HostProfileViewModel {
 

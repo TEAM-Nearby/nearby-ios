@@ -35,12 +35,17 @@ final class WrittenPostView: BaseView {
         tableView.do {
             $0.backgroundColor = .white
             $0.separatorStyle = .none
+
             $0.showsVerticalScrollIndicator = false
             $0.alwaysBounceVertical = true
 
             $0.rowHeight = UITableView.automaticDimension
 
             $0.estimatedRowHeight = 600
+
+            $0.contentInset = .zero
+
+            $0.scrollIndicatorInsets = .zero
 
             $0.contentInsetAdjustmentBehavior = .never
 
@@ -69,32 +74,35 @@ final class WrittenPostView: BaseView {
         }
 
         bottomButtonContainerView.snp.makeConstraints {
-            $0.horizontalEdges.bottom.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalToSuperview()
         }
 
         findCompanionButton.snp.makeConstraints {
             $0.top.equalToSuperview().offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
-
             $0.bottom.equalTo(safeAreaLayoutGuide)
         }
 
         tableView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
-
             $0.horizontalEdges.equalToSuperview()
-
-            $0.bottom.equalTo(bottomButtonContainerView.snp.top)
+            $0.bottom.equalToSuperview()
         }
 
         emptyView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
-
             $0.horizontalEdges.equalToSuperview()
-
             $0.bottom.equalTo(bottomButtonContainerView.snp.top)
         }
+    }
+
+    override func registerCells() {
+        tableView.register(
+            WrittenPostTableViewCell.self,
+            forCellReuseIdentifier: WrittenPostTableViewCell.identifier
+        )
     }
 
     // MARK: - Methods

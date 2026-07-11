@@ -38,10 +38,7 @@ final class StarRatingInputView: StarRatingView {
     @objc
     private func tapStar(_ gesture: UITapGestureRecognizer) {
         let location = gesture.location(in: self)
-        let tappedStar = rating(at: location)
-        
-        setRating(tappedStar)
-        onRatingChanged?(rating)
+        updateRating(to: rating(at: location))
     }
     
     @objc

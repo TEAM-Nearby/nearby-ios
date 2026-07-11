@@ -30,7 +30,7 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
     }
 
     override func setAddTarget() {
-        specificCompanionSheetView.closeButton.addTarget(self, action: #selector(closeButtonDidTap),for: .touchUpInside)
+        specificCompanionSheetView.closeButton.addTarget(self, action: #selector(closeButtonDidTap), for: .touchUpInside)
     }
     
     override func bindState() {

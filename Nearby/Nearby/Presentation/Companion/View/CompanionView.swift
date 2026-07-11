@@ -15,9 +15,10 @@ final class CompanionView: BaseView {
     
     // MARK: - UI Components
     
+    let mapView = NearbyMapViewFactory.makeMapView()
     private let topSectionView = CompanionTopSectionView()
     private let recruitCompanionButtonGradientLayer = CAGradientLayer()
-    private let companionCountChip = NearbyChipButton(style: .mapInfo, title: "내 주변 12개의 동행이 있어요", horizontalInset: 12)
+    let companionCountChip = NearbyChipButton(style: .mapInfo, title: "내 주변 12개의 동행이 있어요", horizontalInset: 12)
     
     let recruitCompanionButton = UIButton()
     let mapContainerView = UIView()
@@ -26,17 +27,6 @@ final class CompanionView: BaseView {
     var categoryCollectionView: UICollectionView {
         topSectionView.categoryCollectionView
     }
-    
-    let mapView: GMSMapView = {
-        let camera = GMSCameraPosition.camera(withLatitude: 37.531821, longitude: 126.913904, zoom: 15.0)
-        let options = GMSMapViewOptions()
-        options.camera = camera
-        
-        let mapView = GMSMapView(options: options)
-        mapView.isMyLocationEnabled = false
-        mapView.settings.myLocationButton = false
-        return mapView
-    }()
     
     // MARK: - Life Cycle
     
@@ -89,7 +79,7 @@ final class CompanionView: BaseView {
     
     override func setUI() {
         mapContainerView.addSubview(mapView)
-        addSubviews(mapContainerView, topSectionView, currentLocationButton, companionCountChip, recruitCompanionButton)
+        addSubviews(mapContainerView, topSectionView, recruitCompanionButton)
     }
     
     override func setLayout() {
@@ -105,17 +95,6 @@ final class CompanionView: BaseView {
             $0.top.horizontalEdges.equalToSuperview()
         }
         
-        companionCountChip.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(safeAreaLayoutGuide).inset(70)
-        }
-        
-        currentLocationButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(companionCountChip)
-            $0.size.equalTo(40)
-        }
-
         recruitCompanionButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(12)
@@ -126,20 +105,19 @@ final class CompanionView: BaseView {
     
     // MARK: - Method
     
-    func updateMapControls(bottomInset: CGFloat, state: BottomSheetState) {
-        companionCountChip.snp.updateConstraints {
-            $0.bottom.equalTo(safeAreaLayoutGuide).inset(bottomInset)
-        }
-
+    func updateMapControls(for state: BottomSheetState) {
         let shouldShowMapControls = state.content == .nearbyCompanionList && state.level != .expanded
 
         companionCountChip.isHidden = !shouldShowMapControls
         currentLocationButton.isHidden = !shouldShowMapControls
         recruitCompanionButton.isHidden = !shouldShowMapControls || state.level == .compact
+
+        if shouldShowMapControls && !recruitCompanionButton.isHidden {
+            bringSubviewToFront(recruitCompanionButton)
+        }
     }
     
     func setCategoryChipsHidden(_ isHidden: Bool) {
         categoryCollectionView.isHidden = isHidden
     }
-    
 }

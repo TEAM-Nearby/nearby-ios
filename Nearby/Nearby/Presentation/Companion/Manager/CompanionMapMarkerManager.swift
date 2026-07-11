@@ -11,7 +11,7 @@ import UIKit
 
 final class CompanionMapMarkerManager {
     
-    // MARK: -  Properties
+    // MARK: - Properties
     
     private struct Content {
         let nickname: String
@@ -25,7 +25,7 @@ final class CompanionMapMarkerManager {
         let content: Content
     }
     
-    // MARK: -  UI Components
+    // MARK: - UI Components
     
     private weak var mapView: GMSMapView?
     private weak var currentLocationDirectionView: UIView?
@@ -34,7 +34,7 @@ final class CompanionMapMarkerManager {
     private var level: CompanionMarkerLevel
     private let configuration: CompanionMapConfiguration
     
-    // MARK: -  Initializer
+    // MARK: - Initializer
     
     init(mapView: GMSMapView, configuration: CompanionMapConfiguration) {
         self.mapView = mapView
@@ -42,7 +42,7 @@ final class CompanionMapMarkerManager {
         self.level = CompanionMarkerLevel(zoom: mapView.camera.zoom, configuration: configuration)
     }
     
-    // MARK: -  Methods
+    // MARK: - Methods
     
     private func applyAppearance(to marker: GMSMarker, content: Content, level: CompanionMarkerLevel) {
         marker.tracksViewChanges = true

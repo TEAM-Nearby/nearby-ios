@@ -106,7 +106,19 @@ final class AppDIContainer {
         HostRequestDeclineViewModel(applicantName: applicantName)
     }
     
+    func makeHostProfileViewModel() -> HostProfileViewModel {
+        HostProfileViewModel()
+    }
+    
     // MARK: - ViewControllers
+    
+    func makeHostProfileViewController() -> HostProfileViewController {
+        let viewModel = makeHostProfileViewModel()
+
+        return HostProfileViewController(
+            viewModel: viewModel
+        )
+    }
 
     func makeLoginViewController()-> LoginViewController {
         LoginViewController(viewModel: makeLoginViewModel())

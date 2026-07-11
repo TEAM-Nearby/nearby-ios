@@ -56,13 +56,7 @@ final class CompanionMapController: NSObject {
                 latitude: location.coordinate.latitude + item.latitudeOffset,
                 longitude: location.coordinate.longitude + item.longitudeOffset
             )
-            addCompanionMarker(
-                at: coordinate,
-                nickname: item.nickname,
-                written: item.written,
-                place: item.place,
-                date: item.date
-            )
+            addCompanionMarker(at: coordinate, nickname: item.nickname, written: item.written, place: item.place, date: item.date, style: item.style)
         }
     }
 
@@ -93,8 +87,8 @@ final class CompanionMapController: NSObject {
     }
 
     @discardableResult
-    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, nickname: String, written: String, place: String, date: String) -> GMSMarker {
-        markerManager.addCompanionMarker(at: coordinate, nickname: nickname, written: written, place: place, date: date)
+    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, nickname: String, written: String, place: String, date: String, style: MapMarkerStyle = .companion) -> GMSMarker {
+        markerManager.addCompanionMarker(at: coordinate, nickname: nickname, written: written, place: place, date: date, style: style)
     }
 }
 

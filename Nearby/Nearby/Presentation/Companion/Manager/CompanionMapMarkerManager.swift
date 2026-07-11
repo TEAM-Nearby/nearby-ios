@@ -18,6 +18,7 @@ final class CompanionMapMarkerManager {
         let written: String
         let place: String
         let date: String
+        let style: MapMarkerStyle
     }
     
     private struct Entry {
@@ -50,6 +51,20 @@ final class CompanionMapMarkerManager {
     
     private func applyAppearance(to marker: GMSMarker, content: Content, level: CompanionMarkerLevel) {
         marker.tracksViewChanges = true
+
+        if content.style == .restaurant {
+            marker.iconView = makeImageMarker(image: .icRestaurantMarker, size: configuration.mediumMarkerSize)
+            marker.groundAnchor = CGPoint(x: 0.5, y: 1)
+            stopTrackingViewChanges(for: marker)
+            return
+        }
+
+        if content.style == .savedRestaurant {
+            marker.iconView = makeImageMarker(image: .icStarHonbop, size: configuration.mediumMarkerSize)
+            marker.groundAnchor = CGPoint(x: 0.5, y: 1)
+            stopTrackingViewChanges(for: marker)
+            return
+        }
         
         switch level {
         case .large:
@@ -116,8 +131,8 @@ final class CompanionMapMarkerManager {
     }
     
     @discardableResult
-    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, nickname: String, written: String, place: String, date: String) -> GMSMarker {
-        let content = Content(nickname: nickname, written: written, place: place, date: date)
+    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, nickname: String, written: String, place: String, date: String, style: MapMarkerStyle = .companion) -> GMSMarker {
+        let content = Content(nickname: nickname, written: written, place: place, date: date, style: style)
         let marker = GMSMarker(position: coordinate)
         applyAppearance(to: marker, content: content, level: level)
         marker.map = mapView

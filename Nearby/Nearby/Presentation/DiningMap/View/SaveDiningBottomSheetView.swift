@@ -1,5 +1,5 @@
 //
-//  NearDiningBottomSheetView.swift
+//  SaveDiningBottomSheetView.swift
 //  Nearby
 //
 //  Created by soomin on 7/11/26.
@@ -10,18 +10,19 @@ import UIKit
 import SnapKit
 import Then
 
-final class NearDiningBottomSheetView: BaseView {
+final class SaveDiningBottomSheetView: BaseView {
 
     // MARK: - Properties
 
     private let diningCategories: [DiningCategory]
     private var categoryChips = [DiningCategory: NearbyIconChip]()
-
     var categoryDidTap: ((DiningCategory) -> Void)?
 
     // MARK: - UI Components
 
     private let titleLabel = UILabel()
+    private let markerImageView = UIImageView()
+    private let numberLabel = UILabel()
     private let categoryScrollView = UIScrollView()
     private let categoryChipStackView = UIStackView()
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
@@ -43,8 +44,16 @@ final class NearDiningBottomSheetView: BaseView {
         backgroundColor = .white
 
         titleLabel.do {
-            $0.setFont(.h3Sb20, text: "바르셀로나에서\n혼자 가기 편한 식당을 알고 싶다면?", textColor: .grey80)
-            $0.numberOfLines = 2
+            $0.setFont(.h3Sb20, text: "내가 저장한 맛집", textColor: .grey80)
+        }
+        
+        markerImageView.do {
+            $0.image = .smallLocationBlackIcon.withRenderingMode(.alwaysTemplate)
+            $0.tintColor = .grey40
+        }
+        
+        numberLabel.do {
+            $0.setFont(.b3M14, textColor: .grey40)
         }
 
         categoryScrollView.do {
@@ -69,18 +78,28 @@ final class NearDiningBottomSheetView: BaseView {
     override func setUI() {
         configureCategoryChips()
         categoryScrollView.addSubview(categoryChipStackView)
-        addSubviews(titleLabel, categoryScrollView, collectionView)
+        addSubviews(titleLabel, markerImageView, numberLabel, categoryScrollView, collectionView)
     }
 
     override func setLayout() {
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(8)
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(NearbyFont.h3Sb20.property.lineHeight * 2)
+            $0.top.equalToSuperview().offset(8)
+            $0.leading.equalToSuperview().inset(20)
+        }
+        
+        markerImageView.snp.makeConstraints {
+            $0.leading.equalTo(titleLabel)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(6)
+            $0.size.equalTo(16)
+        }
+        
+        numberLabel.snp.makeConstraints {
+            $0.leading.equalTo(markerImageView.snp.trailing).offset(6)
+            $0.centerY.equalTo(markerImageView)
         }
 
         categoryScrollView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
+            $0.top.equalTo(numberLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(NearbyChipStyle.diningCategorySelected.height)
         }
@@ -94,12 +113,12 @@ final class NearDiningBottomSheetView: BaseView {
         collectionView.snp.makeConstraints {
             $0.top.equalTo(categoryScrollView.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(12)
+            $0.bottom.equalToSuperview()
         }
     }
 
     override func registerCells() {
-        collectionView.register(NearDiningCell.self)
+        collectionView.register(SaveDiningCell.self)
     }
 
     // MARK: - Methods
@@ -120,13 +139,13 @@ final class NearDiningBottomSheetView: BaseView {
     }
 
     private static func makeLayout() -> UICollectionViewLayout {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(245))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(188))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [item])
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 16
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 68, trailing: 0)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 12, trailing: 0)
         return UICollectionViewCompositionalLayout(section: section)
     }
 
@@ -134,5 +153,9 @@ final class NearDiningBottomSheetView: BaseView {
         categoryChips.forEach { category, chip in
             chip.updateSelected(category == selectedCategory)
         }
+    }
+
+    func updateRestaurantCount(_ count: Int) {
+        numberLabel.text = "\(count)개"
     }
 }

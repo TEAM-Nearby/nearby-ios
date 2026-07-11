@@ -68,7 +68,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         self.item = item
     }
     
-    // MARK: - Methods
+    // MARK: - Action
     
     func action(_ trigger: Input) {
         switch trigger {
@@ -104,6 +104,8 @@ final class MeetingProgressViewModel: BaseViewModelType {
             output.showReport.send(())
         }
     }
+    
+    // MARK: - Methods
     
     private func updateVerifyButtonState() {
         output.verifyButtonState.send(

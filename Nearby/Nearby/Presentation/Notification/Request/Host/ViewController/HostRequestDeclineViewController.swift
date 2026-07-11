@@ -13,6 +13,10 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
     // MARK: - UI Component
 
     private let hostRequestDeclineView = HostRequestDeclineView()
+    
+    // MARK: - Property
+    
+    weak var coordinator: NotificationCoordinator?
 
     // MARK: - Life Cycle
 
@@ -44,8 +48,7 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
         viewModel.output.showDeclineComplete
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - Coordinator 연결 (거절 완료 화면 or 뒤로)
-                self?.navigationController?.popToRootViewController(animated: true)
+                self?.coordinator?.showCompanionTab()
             }
             .store(in: &cancellables)
 

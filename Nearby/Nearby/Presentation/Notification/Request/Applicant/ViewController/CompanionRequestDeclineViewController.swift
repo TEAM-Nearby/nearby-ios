@@ -13,6 +13,10 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
     // MARK: - UI Component
 
     private let companionRequestDeclineView = CompanionRequestDeclineView()
+    
+    // MARK: - Property
+    
+    weak var coordinator: NotificationCoordinator?
 
     // MARK: - Life Cycles
 
@@ -29,7 +33,6 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
     
     override func setAddTarget() {
         companionRequestDeclineView.onBackButtonDidTap = { [weak self] in
-            // TODO: - Coordinator 연결 (뒤로가기)
             self?.navigationController?.popViewController(animated: true)
         }
         companionRequestDeclineView.onWriteButtonDidTap = { [weak self] in
@@ -51,16 +54,14 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
         viewModel.output.showWriteCompanionHost
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - CoorDinator 연결 (동행 글 작성으로 이동)
-                self?.navigationController?.popToRootViewController(animated: true)
+                self?.coordinator?.showRecruitCompanion()
             }
             .store(in: &cancellables)
 
         viewModel.output.showCompanionList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - Coordinator 연결 (동행 리스트로 이동)
-                self?.navigationController?.popToRootViewController(animated: true)
+                self?.coordinator?.showCompanionTab()
             }
             .store(in: &cancellables)
 

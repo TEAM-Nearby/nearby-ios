@@ -89,6 +89,18 @@ final class AppDIContainer {
         ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast)
     }
     
+    func makeCompanionRequestSentViewModel(hostName: String) -> CompanionRequestSentViewModel {
+        CompanionRequestSentViewModel(hostName: hostName)
+    }
+
+    func makeCompanionRequestDeclineViewModel() -> CompanionRequestDeclineViewModel {
+        CompanionRequestDeclineViewModel()
+    }
+
+    func makeHostRequestDeclineViewModel(applicantName: String) -> HostRequestDeclineViewModel {
+        HostRequestDeclineViewModel(applicantName: applicantName)
+    }
+    
     // MARK: - ViewControllers
     
     func makeLoginViewController() -> LoginViewController {
@@ -197,6 +209,30 @@ final class AppDIContainer {
     
     func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = ReportCompletionViewController(viewModel: EmptyViewModel())
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeCompanionRequestSentViewController(coordinator: NotificationCoordinator, hostName: String) -> UIViewController {
+        let viewController = CompanionRequestSentViewController(
+            viewModel: makeCompanionRequestSentViewModel(hostName: hostName)
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+
+    func makeCompanionRequestDeclineViewController(coordinator: NotificationCoordinator) -> UIViewController {
+        let viewController = CompanionRequestDeclineViewController(
+            viewModel: makeCompanionRequestDeclineViewModel()
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+
+    func makeHostRequestDeclineViewController(coordinator: NotificationCoordinator, applicantName: String) -> UIViewController {
+        let viewController = HostRequestDeclineViewController(
+            viewModel: makeHostRequestDeclineViewModel(applicantName: applicantName)
+        )
         viewController.coordinator = coordinator
         return viewController
     }

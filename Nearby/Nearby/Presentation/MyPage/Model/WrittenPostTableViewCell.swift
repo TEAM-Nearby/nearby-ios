@@ -134,7 +134,7 @@ private extension WrittenPostTableViewCell {
         }
 
         cityNameLabel.do {
-            $0.font = NearbyFont.h1Sb24.font
+            $0.font = NearbyFont.h3M20.font
             $0.textColor = .grey80
             $0.numberOfLines = 1
 
@@ -150,7 +150,6 @@ private extension WrittenPostTableViewCell {
 
         mapImageView.do {
             $0.image = UIImage(named: "img_map_sample")
-
             $0.backgroundColor = .grey5
             $0.contentMode = .scaleAspectFill
             $0.layer.cornerRadius = 16

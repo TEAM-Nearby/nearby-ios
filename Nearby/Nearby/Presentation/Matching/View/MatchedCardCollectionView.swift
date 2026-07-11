@@ -30,7 +30,7 @@ final class MatchedCardCollectionView: BaseView {
     override func setStyle() {
         backgroundColor = .white
         navigationBar.do {
-            $0.configure(centerItem: .logo, rightItems: [.alarm])
+            $0.configure(centerItem: .logo, rightItems: [.alarm], logoLeadingInset: 20)
         }
 
         titleLabel.do {

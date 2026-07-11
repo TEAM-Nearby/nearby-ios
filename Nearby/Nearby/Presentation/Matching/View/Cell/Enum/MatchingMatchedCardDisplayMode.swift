@@ -19,22 +19,4 @@ enum MatchingMatchedCardDisplayMode {
             return .grey40
         }
     }
-
-    func cardBackgroundColor(state: MatchingMatchedCardState) -> UIColor {
-        switch self {
-        case .list:
-            return state.backgroundColor
-        case .scheduleDetail:
-            return .bgSurfaceGrey0
-        }
-    }
-
-    func showsConfirmedLabel(state: MatchingMatchedCardState) -> Bool {
-        switch self {
-        case .list:
-            return state.showsConfirmedLabel
-        case .scheduleDetail:
-            return false
-        }
-    }
 }

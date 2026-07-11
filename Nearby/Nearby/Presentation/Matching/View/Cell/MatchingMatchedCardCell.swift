@@ -19,7 +19,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     // MARK: - UI Components
 
-    private let confirmedLabel = UILabel()
     private let profileContainerView = UIView()
     private let profileImageView = UIImageView()
     private let profileStackView = AvatarStackView(avatarSize: 40, avatarOverlap: 12)
@@ -61,11 +60,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         contentView.do {
             $0.layer.cornerRadius = 16
             $0.clipsToBounds = true
-        }
-
-        confirmedLabel.do {
-            $0.setFont(.b2Sb16, text: "일정 확정", textColor: .highlightTextPurple)
-            $0.isHidden = true
         }
 
         profileImageView.do {
@@ -118,19 +112,13 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     private func setUI() {
         profileContainerView.addSubviews(profileImageView, profileStackView)
         contentView.addSubviews(
-            confirmedLabel, profileContainerView, nameLabel,
+            profileContainerView, nameLabel,
             genderLabel, dotLabel, uploadedTimeLabel,
             informationLabel, contentLabel, nextButton
         )
     }
 
     private func setLayout() {
-        confirmedLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(16)
-            $0.leading.equalToSuperview().inset(20)
-            $0.height.equalTo(22)
-        }
-
         profileContainerView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(19)
             $0.leading.equalToSuperview().inset(20)
@@ -210,14 +198,9 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         return "\(content.name)님 외 \(companionCount)명과의 동행"
     }
 
-    private func updateProfileTopConstraint(showsConfirmedLabel: Bool) {
+    private func updateProfileTopConstraint() {
         profileContainerView.snp.remakeConstraints {
-            if showsConfirmedLabel {
-                $0.top.equalTo(confirmedLabel.snp.bottom).offset(12)
-            } else {
-                $0.top.equalToSuperview().inset(19)
-            }
-
+            $0.top.equalToSuperview().inset(19)
             $0.leading.equalToSuperview().inset(20)
             profileContainerWidthConstraint = $0.width.equalTo(profileContainerWidth()).constraint
             $0.height.equalTo(40)
@@ -269,14 +252,10 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     func configure(
         content: MatchingMatchedCardContentModel,
-        state: MatchingMatchedCardState,
         displayMode: MatchingMatchedCardDisplayMode = .list
     ) {
-        let showsConfirmedLabel = displayMode.showsConfirmedLabel(state: state)
-
-        contentView.backgroundColor = displayMode.cardBackgroundColor(state: state)
+        contentView.backgroundColor = .bgSurfaceGrey0
         setNextButtonHidden(false)
-        confirmedLabel.isHidden = !showsConfirmedLabel
         updateProfile(content: content, displayMode: displayMode)
 
         updateHeader(content: content, displayMode: displayMode)
@@ -286,7 +265,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             text: content.description.truncated(limit: descriptionLimit),
             textColor: displayMode.descriptionColor
         )
-        updateProfileTopConstraint(showsConfirmedLabel: showsConfirmedLabel)
+        updateProfileTopConstraint()
     }
 
     func setNextButtonHidden(_ isHidden: Bool) {

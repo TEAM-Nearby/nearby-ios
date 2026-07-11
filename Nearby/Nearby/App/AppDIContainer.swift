@@ -26,6 +26,10 @@ final class AppDIContainer {
     func makeCompanionCoordinator(navigationController: UINavigationController) -> CompanionCoordinator {
         CompanionCoordinator(navigationController: navigationController, diContainer: self)
     }
+
+    func makeMatchingCoordinator(navigationController: UINavigationController) -> MatchingCoordinator {
+        MatchingCoordinator(navigationController: navigationController, diContainer: self)
+    }
     
     func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
         MyPageCoordinator(navigationController: navigationController, appDIContainer: self)
@@ -121,8 +125,26 @@ final class AppDIContainer {
         makePlaceholderViewController(title: "혼밥 지도")
     }
     
-    func makeMatchingViewController() -> UIViewController {
-        makePlaceholderViewController(title: "매칭")
+    func makeMatchingViewController(coordinator: MatchingCoordinator) -> UIViewController {
+        let viewController = MatchingViewController()
+        viewController.coordinator = coordinator
+        return viewController
+    }
+
+    func makeMatchingScheduleDetailViewController(
+        coordinator: MatchingCoordinator,
+        item: MatchingMatchedCardItem
+    ) -> UIViewController {
+        let viewController = MatchingScheduleDetailViewController(item: item)
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+
+    func makeMatchingManageScheduleDetailViewController(item: MatchingMatchedCardItem) -> UIViewController {
+        let viewController = MatchingHostScheduleDetailViewController(item: item)
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
     }
     
     func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {

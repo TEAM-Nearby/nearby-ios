@@ -11,34 +11,38 @@ final class MatchingViewController: UIViewController {
 
     // MARK: - Properties
 
+    weak var coordinator: MatchingCoordinator?
     private let matchedCardView = MatchedCardCollectionView()
-    private var cardItems: [(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState)] = [
-        (
+    private var cardItems: [MatchingMatchedCardItem] = [
+        MatchingMatchedCardItem(
             content: MatchingMatchedCardContentModel(
                 profileImage: .imgProfileDefault, name: "정지영", participantCount: 2, gender: "여성",
                 uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
                 description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
             ),
-            state: .pending
+            state: .pending,
+            isHost: false
         ),
-        (
+        MatchingMatchedCardItem(
             content: MatchingMatchedCardContentModel(
                 profileImage: .imgProfileDefault, name: "정지영", participantCount: 2, gender: "여성",
                 uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
                 description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
             ),
-            state: .pending
+            state: .pending,
+            isHost: true
         ),
-        (
+        MatchingMatchedCardItem(
             content: MatchingMatchedCardContentModel(
                 profileImage: .imgProfileDefault, name: "정지영", participantCount: 2, gender: "여성",
                 uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
                 description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
             ),
-            state: .confirmed
+            state: .confirmed,
+            isHost: true
         )
     ]
-    private var displayCardItems: [(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState)] {
+    private var displayCardItems: [MatchingMatchedCardItem] {
         return cardItems.sorted {
             $0.state.displayPriority < $1.state.displayPriority
         }
@@ -79,16 +83,14 @@ final class MatchingViewController: UIViewController {
         matchedCardView.updateEmptyState(isEmpty: displayCardItems.isEmpty)
     }
 
-    private func updateCardItems(_ items: [(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState)]) {
+    private func updateCardItems(_ items: [MatchingMatchedCardItem]) {
         cardItems = items
         matchedCardView.matchedCardCollectionView.reloadData()
         updateViewState()
     }
 
-    private func matchingCardDidTap() {
-        let viewController = MatchingHostScheduleDetailViewController()
-
-        navigationController?.pushViewController(viewController, animated: true)
+    private func matchingCardDidTap(item: MatchingMatchedCardItem) {
+        coordinator?.showScheduleDetail(item: item)
     }
 
     // MARK: - Action
@@ -115,7 +117,7 @@ extension MatchingViewController: UICollectionViewDataSource {
 
         cell.configure(content: item.content, state: item.state)
         cell.onNextButtonDidTap = { [weak self] in
-            self?.matchingCardDidTap()
+            self?.matchingCardDidTap(item: item)
         }
 
         return cell
@@ -125,6 +127,11 @@ extension MatchingViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension MatchingViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = displayCardItems[indexPath.item]
+        matchingCardDidTap(item: item)
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,

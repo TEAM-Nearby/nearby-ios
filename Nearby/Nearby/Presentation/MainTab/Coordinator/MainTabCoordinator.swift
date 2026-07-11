@@ -69,6 +69,11 @@ private extension MainTabCoordinator {
             meetingCoordinator.parentCoordinator = self
             addChildCoordinator(meetingCoordinator)
             meetingCoordinator.start()
+
+        case .matching:
+            configureMatchingCoordinator(
+                navigationController: navigationController
+            )
             
         case .myPage:
             configureMyPageCoordinator(
@@ -103,6 +108,17 @@ private extension MainTabCoordinator {
         meetingCoordinator.start()
     }
 
+    func configureMatchingCoordinator(navigationController: UINavigationController) {
+        let matchingCoordinator =
+            diContainer.makeMatchingCoordinator(
+                navigationController: navigationController
+            )
+
+        matchingCoordinator.parentCoordinator = self
+        addChildCoordinator(matchingCoordinator)
+        matchingCoordinator.start()
+    }
+
     func configureMyPageCoordinator(navigationController: UINavigationController) {
         let myPageCoordinator =
             diContainer.makeMyPageCoordinator(
@@ -121,7 +137,7 @@ private extension MainTabCoordinator {
         case .diningMap:
             return diContainer.makeDiningMapViewController()
         case .matching:
-            return diContainer.makeMatchingViewController()
+            preconditionFailure("Matching tab should be configured by MatchingCoordinator")
         case .meeting:
             preconditionFailure("Meeting tab should be configured by MeetingCoordinator")
         case .myPage:

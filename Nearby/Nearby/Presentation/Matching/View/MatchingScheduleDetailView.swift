@@ -28,7 +28,7 @@ final class MatchingScheduleDetailView: BaseView {
     private let placeNameLabel = UILabel()
     private let placeDetailLabel = UILabel()
     private let placeCopyButton = UIButton()
-    private let mapView = UIView()
+    private let mapView = NearbyMapView()
     private let dateAndTimeImageView = UIImageView()
     private let dateAndTimeTitleLabel = UILabel()
     private let dateAndTimeDetailLabel = UILabel()
@@ -51,14 +51,7 @@ final class MatchingScheduleDetailView: BaseView {
         }
 
         matchedCardView.do {
-            $0.configure(
-                content: MatchingMatchedCardContentModel(
-                    profileImage: .imgProfileDefault, name: "정지영",
-                    gender: "여성", uploadedTime: "15분 전 올림", place: "시우다드 콘달",
-                    meetingTime: "오후 4:30", description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분 구해요!"
-                ),
-                state: .pending
-            )
+            $0.setNextButtonHidden(true)
         }
         
         placeImageView.do {
@@ -82,13 +75,6 @@ final class MatchingScheduleDetailView: BaseView {
         placeCopyButton.do {
             $0.setImage(.copyIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey30
-        }
-        
-        mapView.do {
-            // TODO: - 지도 뷰 연결
-            $0.backgroundColor = .grey10
-            $0.layer.cornerRadius = 16
-            $0.clipsToBounds = true
         }
         
         dateAndTimeImageView.do {
@@ -269,6 +255,26 @@ final class MatchingScheduleDetailView: BaseView {
         kakaoLinkCopyButton.addTarget(self, action: #selector(kakaoLinkCopyButtonDidTap), for: .touchUpInside)
         manageButton.addTarget(self, action: #selector(manageButtonDidTap), for: .touchUpInside)
         shareButton.addTarget(self, action: #selector(shareButtonDidTap), for: .touchUpInside)
+    }
+
+    func configure(item: MatchingMatchedCardItem) {
+        matchedCardView.configure(
+            content: item.content,
+            state: item.state,
+            displayMode: .scheduleDetail
+        )
+        matchedCardView.setNextButtonHidden(true)
+        configure(isHost: item.isHost)
+    }
+
+    private func configure(isHost: Bool) {
+        if isHost {
+            guard manageButton.superview == nil else { return }
+            bottomButtonStackView.insertArrangedSubview(manageButton, at: 0)
+        } else {
+            bottomButtonStackView.removeArrangedSubview(manageButton)
+            manageButton.removeFromSuperview()
+        }
     }
 
     // MARK: - Actions

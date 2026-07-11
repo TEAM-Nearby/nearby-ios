@@ -44,15 +44,6 @@ final class MatchingManageScheduleDetailView: BaseView {
         }
 
         matchedCardView.do {
-            $0.configure(
-                content: MatchingMatchedCardContentModel(
-                    profileImage: .imgProfileDefault, name: "정지영", participantCount: 2,
-                    gender: "여성", uploadedTime: "15분 전 올림", place: "시우다드 콘달",
-                    meetingTime: "오후 4:30", description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분 구해요!"
-                ),
-                state: .pending,
-                displayMode: .scheduleDetail
-            )
             $0.setNextButtonHidden(true)
         }
 
@@ -206,6 +197,15 @@ final class MatchingManageScheduleDetailView: BaseView {
         dateAndTimeButton.addTarget(self, action: #selector(dateAndTimeButtonDidTap), for: .touchUpInside)
         datePicker.addTarget(self, action: #selector(datePickerValueDidChange), for: .valueChanged)
         confirmButton.addTarget(self, action: #selector(confirmButtonDidTap), for: .touchUpInside)
+    }
+
+    func configure(item: MatchingMatchedCardItem) {
+        matchedCardView.configure(
+            content: item.content,
+            state: item.state,
+            displayMode: .scheduleDetail
+        )
+        matchedCardView.setNextButtonHidden(true)
     }
 
     // MARK: - Methods

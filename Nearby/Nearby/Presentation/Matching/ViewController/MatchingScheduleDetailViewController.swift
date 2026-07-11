@@ -1,17 +1,18 @@
 //
-//  MatchingHostScheduleDetailViewController.swift
+//  MatchingScheduleDetailViewController.swift
 //  Nearby
 //
-//  Created by 장지인 on 7/9/26.
+//  Created by 장지인 on 7/11/26.
 //
 
 import UIKit
 
-final class MatchingHostScheduleDetailViewController: BaseViewController<EmptyViewModel> {
+final class MatchingScheduleDetailViewController: BaseViewController<EmptyViewModel> {
 
     // MARK: - Properties
 
-    private let rootView = MatchingManageScheduleDetailView()
+    weak var coordinator: MatchingCoordinator?
+    private let rootView = MatchingScheduleDetailView()
     private let item: MatchingMatchedCardItem
 
     // MARK: - Initializer
@@ -50,6 +51,15 @@ final class MatchingHostScheduleDetailViewController: BaseViewController<EmptyVi
 
         rootView.alarmButtonAction = {
             // TODO: - 알림뷰 연결
+        }
+
+        rootView.editButtonAction = { [weak self] in
+            guard let self else { return }
+            coordinator?.showManageScheduleDetail(item: item)
+        }
+
+        rootView.shareButtonAction = {
+            // TODO: - 카카오톡 공유하기 SDK 연결
         }
     }
 }

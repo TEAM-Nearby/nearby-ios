@@ -12,9 +12,10 @@ import Then
 
 final class MatchingMatchedCardCell: UICollectionViewCell {
 
-    // MARK: - Property
+    // MARK: - Properties
 
     var onNextButtonDidTap: (() -> Void)?
+    private let descriptionLimit = 29
 
     // MARK: - UI Components
 
@@ -209,27 +210,9 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         return "\(content.name)님 외 \(companionCount)명과의 동행"
     }
 
-    private func descriptionLimit(for displayMode: MatchingMatchedCardDisplayMode) -> Int {
-        switch displayMode {
-        case .list:
-            return 26
-        case .scheduleDetail:
-            return 30
-        }
-    }
-
-    private func descriptionColor(for displayMode: MatchingMatchedCardDisplayMode) -> UIColor {
-        switch displayMode {
-        case .list:
-            return .grey30
-        case .scheduleDetail:
-            return .grey40
-        }
-    }
-
-    private func updateProfileTopConstraint(state: MatchingMatchedCardState) {
+    private func updateProfileTopConstraint(showsConfirmedLabel: Bool) {
         profileContainerView.snp.remakeConstraints {
-            if state.showsConfirmedLabel {
+            if showsConfirmedLabel {
                 $0.top.equalTo(confirmedLabel.snp.bottom).offset(12)
             } else {
                 $0.top.equalToSuperview().inset(19)
@@ -289,19 +272,21 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         state: MatchingMatchedCardState,
         displayMode: MatchingMatchedCardDisplayMode = .list
     ) {
-        contentView.backgroundColor = state.backgroundColor
+        let showsConfirmedLabel = displayMode.showsConfirmedLabel(state: state)
+
+        contentView.backgroundColor = displayMode.cardBackgroundColor(state: state)
         setNextButtonHidden(false)
-        confirmedLabel.isHidden = !state.showsConfirmedLabel
+        confirmedLabel.isHidden = !showsConfirmedLabel
         updateProfile(content: content, displayMode: displayMode)
 
         updateHeader(content: content, displayMode: displayMode)
         informationLabel.setFont(.b3M14, text: "\(content.place) · \(content.meetingTime)", textColor: .grey80)
         contentLabel.setFont(
             .b3M14,
-            text: content.description.truncated(limit: descriptionLimit(for: displayMode)),
-            textColor: descriptionColor(for: displayMode)
+            text: content.description.truncated(limit: descriptionLimit),
+            textColor: displayMode.descriptionColor
         )
-        updateProfileTopConstraint(state: state)
+        updateProfileTopConstraint(showsConfirmedLabel: showsConfirmedLabel)
     }
 
     func setNextButtonHidden(_ isHidden: Bool) {

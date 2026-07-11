@@ -23,7 +23,7 @@ final class WrittenPostViewController:
 
     // MARK: - Life Cycles
 
-    override func loadView() {view = writtenPostView}
+    override func loadView() { view = writtenPostView }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,8 +76,7 @@ final class WrittenPostViewController:
 
 // MARK: - UITableViewDataSource
 
-extension WrittenPostViewController:
-    UITableViewDataSource {
+extension WrittenPostViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return writtenPostItems.count
@@ -112,7 +111,6 @@ extension WrittenPostViewController:
 // MARK: - Action
 
 private extension WrittenPostViewController {
-
     @objc
     func findCompanionButtonDidTap() {viewModel.action(.findCompanionButtonDidTap)}
 }

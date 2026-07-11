@@ -206,14 +206,7 @@ final class AppDIContainer {
         isLast: Bool,
         onSaved: (() -> Void)?
     ) -> UIViewController {
-        let viewController = ReviewPostViewController(
-                viewModel:
-                    makeReviewPostViewModel(
-                        reviewItem: reviewItem,
-                        type: type,
-                        isLast: isLast
-                    )
-            )
+        let viewController = ReviewPostViewController( viewModel: makeReviewPostViewModel(reviewItem: reviewItem, type: type, isLast: isLast))
 
         viewController.coordinator = coordinator
 

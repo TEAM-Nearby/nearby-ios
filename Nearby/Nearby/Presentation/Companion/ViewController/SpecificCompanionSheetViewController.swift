@@ -10,7 +10,7 @@ import UIKit
 
 final class SpecificCompanionSheetViewController: BaseViewController<SpecificCompanionSheetViewModel> {
     
-    // MARK: - Property
+    // MARK: - Properties
     
     private let specificCompanionSheetView = SpecificCompanionSheetView()
     var onClose: (() -> Void)?
@@ -30,11 +30,7 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
     }
 
     override func setAddTarget() {
-        specificCompanionSheetView.closeButton.addTarget(
-            self,
-            action: #selector(closeButtonDidTap),
-            for: .touchUpInside
-        )
+        specificCompanionSheetView.closeButton.addTarget(self, action: #selector(closeButtonDidTap),for: .touchUpInside)
     }
     
     override func bindState() {

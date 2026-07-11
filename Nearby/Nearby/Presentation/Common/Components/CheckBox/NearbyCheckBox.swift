@@ -33,7 +33,7 @@ final class NearbyCheckBox: BaseView {
         super.init(frame: .zero)
 
         checkButton.isSelected = isChecked
-        titleLabel.text = text
+        titleLabel.setFont(.b3M14, text: text, textColor: .grey30)
     }
 
     required init?(coder: NSCoder) {

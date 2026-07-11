@@ -51,7 +51,7 @@ final class CompanionDetailTopView: BaseView {
     // MARK: - Custom Methods
     
     override func setStyle() {
-        self.backgroundColor = .bgDefaultGrey
+        backgroundColor = .bgDefaultGrey
         
         hostMainInfoStackView.do {
             $0.axis = .horizontal

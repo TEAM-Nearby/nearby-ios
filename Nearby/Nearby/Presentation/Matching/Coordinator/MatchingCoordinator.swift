@@ -27,10 +27,6 @@ final class MatchingCoordinator {
 // MARK: - Coordinator
 
 extension MatchingCoordinator: Coordinator {
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/feat/#76
     func start() {
         let viewController = diContainer.makeMatchingViewController(coordinator: self)
         navigationController.setViewControllers([viewController], animated: false)

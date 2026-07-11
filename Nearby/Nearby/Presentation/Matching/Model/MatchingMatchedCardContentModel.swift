@@ -21,7 +21,6 @@ struct MatchingMatchedCardContentModel {
 
 struct MatchingMatchedCardItem {
     let content: MatchingMatchedCardContentModel
-    let state: MatchingMatchedCardState
     let isHost: Bool
 }
 
@@ -37,7 +36,6 @@ extension MatchingMatchedCardItem {
             meetingTime: "오후 4:30",
             description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분 구해요!"
         ),
-        state: .pending,
         isHost: true
     )
 }

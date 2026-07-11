@@ -51,9 +51,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError(
-            "init(coder:) has not been implemented"
-        )
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Life Cycle
@@ -242,21 +240,16 @@ private extension AlarmRequestTableViewCell {
     func configureHighlightedAppearance() {
         cardView.backgroundColor = UIColor.primary50.withAlphaComponent(0.05)
 
-        cardView.layer.borderColor =
-            UIColor.primary50
-                .withAlphaComponent(0.25)
-                .cgColor
+        cardView.layer.borderColor = UIColor.primary50.withAlphaComponent(0.25).cgColor
 
-        actionButton.backgroundColor =
-            UIColor.primary50.withAlphaComponent(0.18)
+        actionButton.backgroundColor = UIColor.primary50.withAlphaComponent(0.18)
 
         actionButton.setTitleColor(.grey80, for: .normal)
     }
 
     func configureRejectedAppearance() {
         cardView.backgroundColor = .grey5
-        cardView.layer.borderColor =
-            UIColor.clear.cgColor
+        cardView.layer.borderColor = UIColor.clear.cgColor
 
         actionButton.backgroundColor = .grey10
         actionButton.setTitleColor(.grey80, for: .normal)

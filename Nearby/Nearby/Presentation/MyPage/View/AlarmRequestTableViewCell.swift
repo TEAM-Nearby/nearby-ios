@@ -37,10 +37,8 @@ final class AlarmRequestTableViewCell: UITableViewCell {
 
     // MARK: - Initializer
 
-    override init(
-        style: UITableViewCell.CellStyle,
-        reuseIdentifier: String?
-    ) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?)
+    {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         setStyle()
@@ -88,8 +86,14 @@ final class AlarmRequestTableViewCell: UITableViewCell {
         actionButton.setTitle(item.displayType.buttonTitle, for: .normal)
 
         configureIcon(with: item.displayType)
-
         configureAppearance(with: item.displayType)
+    }
+    
+    // MARK: - Action
+
+    @objc
+    private func actionButtonDidTap() {
+        onActionButtonDidTap?()
     }
 }
 
@@ -143,9 +147,7 @@ private extension AlarmRequestTableViewCell {
 
     func setUI() {
         contentView.addSubview(cardView)
-
         cardView.addSubviews(profileImageView, titleStackView, informationLabel, actionButton)
-
         titleStackView.addArrangedSubviews(statusIconImageView, titleLabel)
     }
 
@@ -253,14 +255,5 @@ private extension AlarmRequestTableViewCell {
 
         actionButton.backgroundColor = .grey10
         actionButton.setTitleColor(.grey80, for: .normal)
-    }
-}
-
-// MARK: - Action
-
-private extension AlarmRequestTableViewCell {
-    @objc
-    func actionButtonDidTap() {
-        onActionButtonDidTap?()
     }
 }

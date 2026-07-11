@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AlarmViewController:BaseViewController<AlarmViewModel> {
+final class AlarmViewController: BaseViewController<AlarmViewModel> {
 
     // MARK: - Properties
 

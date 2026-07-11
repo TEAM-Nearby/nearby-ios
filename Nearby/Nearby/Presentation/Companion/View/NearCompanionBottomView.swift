@@ -122,5 +122,4 @@ final class NearCompanionBottomView: BaseView {
             button.updateSelected(option == selectedOption)
         }
     }
-
 }

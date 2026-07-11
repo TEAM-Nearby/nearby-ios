@@ -13,7 +13,7 @@ final class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
         configureTabBarAppearance()
     }
     
@@ -49,10 +49,10 @@ final class MainTabBarController: UITabBarController {
         
         tabBar.standardAppearance = barAppearance
         tabBar.scrollEdgeAppearance = barAppearance
-        tabBar.backgroundColor = .white
+        tabBar.backgroundColor = .clear
         tabBar.tintColor = .grey80
         tabBar.unselectedItemTintColor = .grey60
-        tabBar.isTranslucent = false
+        tabBar.isTranslucent = true
         tabBar.layer.cornerRadius = 30
         tabBar.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         tabBar.layer.borderWidth = 0.5

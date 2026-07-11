@@ -16,6 +16,7 @@ class StarRatingView: BaseView {
     
     let maxRating = 5
     private(set) var rating: Int = 0
+    private var filledStarColor: UIColor?
     
     private var starImageViews: [UIImageView] = []
     private let stackView = UIStackView()
@@ -55,12 +56,25 @@ class StarRatingView: BaseView {
     private func updateStars() {
         for (index, imageView) in starImageViews.enumerated() {
             let isFilled = index < rating
-            imageView.image = UIImage(resource: isFilled ? .bigStarSelect : .bigStarDefault)
+            let image = UIImage(resource: isFilled ? .bigStarSelect : .bigStarDefault)
+            imageView.image = isFilled && filledStarColor != nil
+                ? image.withRenderingMode(.alwaysTemplate)
+                : image
+            imageView.tintColor = isFilled ? filledStarColor : nil
         }
     }
     
     func setRating(_ value: Int) {
         rating = max(0, min(value, maxRating))
+        updateStars()
+    }
+
+    func setSpacing(_ spacing: CGFloat) {
+        stackView.spacing = spacing
+    }
+
+    func setFilledStarColor(_ color: UIColor) {
+        filledStarColor = color
         updateStars()
     }
     

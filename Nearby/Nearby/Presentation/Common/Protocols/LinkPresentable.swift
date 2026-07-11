@@ -15,7 +15,6 @@ protocol LinkPresentable {
 }
 
 extension LinkPresentable where Self: UIViewController {
-    
     func presentSafariViewController(url: URL, asBottomSheet: Bool = false) {
         let safariViewController = SFSafariViewController(url: url)
         
@@ -29,11 +28,7 @@ extension LinkPresentable where Self: UIViewController {
     }
     
     func presentLinkCopyPopup(title: String = "오픈채팅 링크", link: String) {
-        let alert = UIAlertController(
-            title: title,
-            message: link,
-            preferredStyle: .alert
-        )
+        let alert = UIAlertController(title: title, message: link, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "링크 복사", style: .default) { _ in
             UIPasteboard.general.string = link
         })

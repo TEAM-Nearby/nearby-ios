@@ -12,12 +12,15 @@ final class MyPageCoordinator {
     // MARK: - Properties
 
     weak var parentCoordinator: Coordinator?
+
     var childCoordinators = [Coordinator]()
 
     private let navigationController: UINavigationController
+
     private let appDIContainer: AppDIContainer
 
     var onLogoutDidFinish: (() -> Void)?
+    var onFindCompanionDidTap: (() -> Void)?
 
     // MARK: - Initializer
 
@@ -31,8 +34,7 @@ final class MyPageCoordinator {
 
 extension MyPageCoordinator: Coordinator {
     func start() {
-        let myPageViewController =
-            appDIContainer.makeMyPageViewController()
+        let myPageViewController = appDIContainer.makeMyPageViewController()
 
         myPageViewController.onAlarmButtonDidTap = { [weak self] in
             self?.showAlarm()
@@ -42,36 +44,29 @@ extension MyPageCoordinator: Coordinator {
             self?.showSetting()
         }
 
-        navigationController.setViewControllers(
-            [myPageViewController],
-            animated: false
-        )
+        myPageViewController.onWrittenPostRowDidTap = { [weak self] in
+            self?.showWrittenPost()
+        }
+
+        navigationController.setViewControllers([myPageViewController], animated: false)
     }
 
-    func finish() {
-        parentCoordinator?.removeChildCoordinator(self)
-    }
+    func finish() {parentCoordinator?.removeChildCoordinator(self)}
 }
 
 // MARK: - Coordinator
 
 private extension MyPageCoordinator {
     func showAlarm() {
-        let alarmViewController =
-            appDIContainer.makeAlarmViewController()
+        let alarmViewController = appDIContainer.makeAlarmViewController()
 
         alarmViewController.hidesBottomBarWhenPushed = true
 
         alarmViewController.onBackButtonDidTap = { [weak self] in
-            self?.navigationController.popViewController(
-                animated: true
-            )
+            self?.navigationController.popViewController(animated: true)
         }
 
-        navigationController.pushViewController(
-            alarmViewController,
-            animated: true
-        )
+        navigationController.pushViewController(alarmViewController, animated: true)
     }
 
     func showSetting() {
@@ -80,18 +75,29 @@ private extension MyPageCoordinator {
         settingViewController.hidesBottomBarWhenPushed = true
 
         settingViewController.onBackButtonDidTap = { [weak self] in
-            self?.navigationController.popViewController(
-                animated: true
-            )
+            self?.navigationController.popViewController(animated: true)
         }
 
-        settingViewController.onLogoutButtonDidTap = { [weak self] in
+        settingViewController.onLogoutButtonDidTap = {[weak self] in
             self?.onLogoutDidFinish?()
         }
 
-        navigationController.pushViewController(
-            settingViewController,
-            animated: true
-        )
+        navigationController.pushViewController(settingViewController, animated: true)
+    }
+
+    func showWrittenPost() {
+        let writtenPostViewController = appDIContainer.makeWrittenPostViewController()
+
+        writtenPostViewController.hidesBottomBarWhenPushed = true
+
+        writtenPostViewController.onBackButtonDidTap = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        writtenPostViewController.onFindCompanionButtonDidTap = { [weak self] in
+            self?.onFindCompanionDidTap?()
+        }
+
+        navigationController.pushViewController(writtenPostViewController, animated: true)
     }
 }

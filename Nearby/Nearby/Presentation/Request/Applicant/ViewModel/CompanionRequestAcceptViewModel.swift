@@ -78,6 +78,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
             case .matched:
                 output.step.send(.chat)
             case .chat:
+                // TODO: - 지인이 화면으로 교체
                 showOpenChat()
             }
 

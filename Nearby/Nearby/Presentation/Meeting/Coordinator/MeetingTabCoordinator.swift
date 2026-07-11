@@ -29,17 +29,8 @@ final class MeetingTabCoordinator {
 extension MeetingTabCoordinator: Coordinator {
     
     func start() {
-        // TODO: - 확인용 임시 코드, 확인 후 원복
-            let viewModel = CompanionRequestAcceptViewModel(
-                hostName: "정지영",
-                locationName: "시우다드 콘달"
-            )
-            let viewController = CompanionRequestAcceptViewController(viewModel: viewModel)
+            let viewController = diContainer.makeMeetingViewController(coordinator: self)
             navigationController.setViewControllers([viewController], animated: false)
-            
-            // 원래 코드 (확인 후 복구)
-            // let viewController = diContainer.makeMeetingViewController(coordinator: self)
-            // navigationController.setViewControllers([viewController], animated: false)
         }
     
     func finish() {

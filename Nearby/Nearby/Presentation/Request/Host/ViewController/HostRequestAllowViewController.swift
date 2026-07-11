@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import SafariServices
 
 final class HostRequestAllowViewController: BaseViewController<HostRequestAllowViewModel> {
 
@@ -58,8 +59,9 @@ final class HostRequestAllowViewController: BaseViewController<HostRequestAllowV
 
         viewModel.output.showOpenChat
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.navigationController?.popToRootViewController(animated: true)
+            .sink { [weak self] url in
+                let safariViewController = SFSafariViewController(url: url)
+                self?.present(safariViewController, animated: true)
             }
             .store(in: &cancellables)
 

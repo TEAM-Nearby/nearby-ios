@@ -12,6 +12,10 @@ import Then
 
 final class MeetingProfileView: BaseView {
     
+    // MARK: - Property
+    
+    var onNextButtonDidTap: (() -> Void)?
+    
     // MARK: - UI Components
     
     private let profileView = UIView()
@@ -104,11 +108,22 @@ final class MeetingProfileView: BaseView {
         }
     }
     
+    override func setAddTarget() {
+        nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
+    }
+    
     // MARK: - Method
     
     func configure(name: String, gender: String, information: String) {
         nameLabel.text = name
         genderLabel.text = gender
         informationLabel.text = information
+    }
+    
+    // MARK: - Action
+    
+    @objc
+    private func nextButtonDidTap() {
+        onNextButtonDidTap?()
     }
 }

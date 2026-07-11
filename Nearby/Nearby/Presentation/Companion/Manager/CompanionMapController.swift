@@ -19,7 +19,6 @@ final class CompanionMapController: NSObject {
     private let markerManager: CompanionMapMarkerManager
     private let configuration: CompanionMapConfiguration
     private var currentLocation: CLLocation?
-    private var companionMarkers: [GMSMarker] = []
     
     // MARK: - Initializer
 
@@ -51,13 +50,13 @@ final class CompanionMapController: NSObject {
     }
 
     private func addConfiguredMarkersIfNeeded(near location: CLLocation) {
-        guard companionMarkers.isEmpty else { return }
-        companionMarkers = configuration.markerItems.map { item in
+        guard !markerManager.hasCompanionMarkers else { return }
+        configuration.markerItems.forEach { item in
             let coordinate = CLLocationCoordinate2D(
                 latitude: location.coordinate.latitude + item.latitudeOffset,
                 longitude: location.coordinate.longitude + item.longitudeOffset
             )
-            return addCompanionMarker(
+            addCompanionMarker(
                 at: coordinate,
                 nickname: item.nickname,
                 written: item.written,

@@ -8,29 +8,29 @@
 import UIKit
 import Combine
 
-final class NearCompanionSheetViewController: BaseViewController<NearCompanionBottomSheetViewModel> {
+final class NearCompanionSheetViewController: BaseViewController<NearCompanionSheetViewModel> {
     
     // MARK: - Properties
 
     var onCompanionSelected: ((NearCompanionCellItem) -> Void)?
     
-    private var nearCompanionBottomSheetView = NearCompanionBottomSheetView(sortOptions: SortOption.allCases)
+    private var nearCompanionSheetView = NearCompanionBottomView(sortOptions: SortOption.allCases)
     
     // MARK: - Life Cycle
     
     override func loadView() {
-        view = nearCompanionBottomSheetView
+        view = nearCompanionSheetView
     }
     
     // MARK: - Custom Methods
 
     override func setDelegate() {
-        nearCompanionBottomSheetView.collectionView.dataSource = self
-        nearCompanionBottomSheetView.collectionView.delegate = self
+        nearCompanionSheetView.collectionView.dataSource = self
+        nearCompanionSheetView.collectionView.delegate = self
     }
 
     override func bindAction() {
-        nearCompanionBottomSheetView.sortOptionDidTap = { [weak self] option in
+        nearCompanionSheetView.sortOptionDidTap = { [weak self] option in
             self?.viewModel.action(.sortOptionDidTap(option))
         }
     }
@@ -39,14 +39,14 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionBo
         viewModel.output.selectedSortOption
             .receive(on: DispatchQueue.main)
             .sink { [weak self] selectedOption in
-                self?.nearCompanionBottomSheetView.updateSortButtonSelection(selectedOption)
+                self?.nearCompanionSheetView.updateSortButtonSelection(selectedOption)
             }
             .store(in: &cancellables)
 
         viewModel.output.companions
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.nearCompanionBottomSheetView.collectionView.reloadData()
+                self?.nearCompanionSheetView.collectionView.reloadData()
             }
             .store(in: &cancellables)
         

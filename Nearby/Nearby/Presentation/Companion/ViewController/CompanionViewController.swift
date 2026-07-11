@@ -19,9 +19,9 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     // MARK: - UI Components
 
     private let bottomSheetViewController = NearbyBottomSheetViewController()
-    private let nearbyBottomSheetViewController: UIViewController
-    private let specificBottomSheetViewController: UIViewController
-    private let emptyBottomSheetViewController: UIViewController
+    private let nearbySheetViewController: UIViewController
+    private let specificSheetViewController: UIViewController
+    private let emptySheetViewController: UIViewController
     private lazy var mapController = CompanionMapController(mapView: companionView.mapView, configuration: viewModel.output.mapConfiguration)
     private var bottomSheetHostView: UIView { tabBarController?.view ?? view }
     private var bottomSheetParentViewController: UIViewController { tabBarController ?? self }
@@ -31,13 +31,13 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
 
     init(
         viewModel: CompanionViewModel,
-        nearbyBottomSheetViewController: UIViewController,
-        specificBottomSheetViewController: UIViewController,
-        emptyBottomSheetViewController: UIViewController
+        nearbySheetViewController: UIViewController,
+        specificSheetViewController: UIViewController,
+        emptySheetViewController: UIViewController
     ) {
-        self.nearbyBottomSheetViewController = nearbyBottomSheetViewController
-        self.specificBottomSheetViewController = specificBottomSheetViewController
-        self.emptyBottomSheetViewController = emptyBottomSheetViewController
+        self.nearbySheetViewController = nearbySheetViewController
+        self.specificSheetViewController = specificSheetViewController
+        self.emptySheetViewController = emptySheetViewController
         super.init(viewModel: viewModel)
     }
 
@@ -118,24 +118,24 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             companionView.updateMapControls(for: state)
         }
 
-        if let nearbyBottomSheetViewController = nearbyBottomSheetViewController as? NearCompanionSheetViewController {
-            nearbyBottomSheetViewController.onCompanionSelected = { [weak self] item in
+        if let nearbySheetViewController = nearbySheetViewController as? NearCompanionSheetViewController {
+            nearbySheetViewController.onCompanionSelected = { [weak self] item in
                 self?.showCompanionDetail(for: item)
             }
         }
 
-        if let specificBottomSheetViewController = specificBottomSheetViewController as? SpecificCompanionSheetViewController {
-            specificBottomSheetViewController.onClose = { [weak self] in
+        if let specificSheetViewController = specificSheetViewController as? SpecificCompanionSheetViewController {
+            specificSheetViewController.onClose = { [weak self] in
                 self?.showNearbyBottomSheet()
             }
-            specificBottomSheetViewController.onCompanionSelected = { [weak self] item in
+            specificSheetViewController.onCompanionSelected = { [weak self] item in
                 self?.showCompanionDetail(for: item)
             }
         }
     }
 
     private func initializeBottomSheetState() {
-        bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
+        bottomSheetViewController.setContentViewController(nearbySheetViewController)
         bottomSheetViewController.setState(content: .nearbyCompanionList, animated: false)
     }
 
@@ -143,7 +143,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         isSpecificBottomSheetPresented = false
         companionView.setCategoryChipsHidden(false)
         setTabBarHidden(false, animated: animated)
-        bottomSheetViewController.setContentViewController(nearbyBottomSheetViewController)
+        bottomSheetViewController.setContentViewController(nearbySheetViewController)
         bottomSheetViewController.setState(content: .nearbyCompanionList, animated: animated)
     }
 
@@ -151,7 +151,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         isSpecificBottomSheetPresented = false
         companionView.setCategoryChipsHidden(false)
         setTabBarHidden(false, animated: animated)
-        bottomSheetViewController.setContentViewController(emptyBottomSheetViewController)
+        bottomSheetViewController.setContentViewController(emptySheetViewController)
         bottomSheetViewController.setState(content: .nearbyCompanionEmpty, animated: animated)
     }
 
@@ -159,7 +159,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         isSpecificBottomSheetPresented = true
         companionView.setCategoryChipsHidden(true)
         setTabBarHidden(true, animated: animated)
-        bottomSheetViewController.setContentViewController(specificBottomSheetViewController)
+        bottomSheetViewController.setContentViewController(specificSheetViewController)
         bottomSheetViewController.setState(content: .specificRestaurantCompanionList, animated: animated)
     }
 

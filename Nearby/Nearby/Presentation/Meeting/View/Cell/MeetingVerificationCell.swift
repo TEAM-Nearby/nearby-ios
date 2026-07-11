@@ -12,9 +12,10 @@ import Then
 
 final class MeetingVerificationCell: UICollectionViewCell {
 
-    // MARK: - Property
+    // MARK: - Properties
 
     var onVerifyButtonDidTap: (() -> Void)?
+    var onNextButtonDidTap: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -47,6 +48,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        onNextButtonDidTap = nil
         onVerifyButtonDidTap = nil
     }
 
@@ -112,6 +114,9 @@ final class MeetingVerificationCell: UICollectionViewCell {
     }
 
     private func setAddTarget() {
+        profileView.onNextButtonDidTap = { [weak self] in
+            self?.onNextButtonDidTap?()
+        }
         verifyButton.addTarget(self, action: #selector(verifyButtonDidTap), for: .touchUpInside)
     }
 

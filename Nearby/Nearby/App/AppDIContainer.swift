@@ -49,12 +49,12 @@ final class AppDIContainer {
         CompanionDetailViewModel(state: state)
     }
 
-    func makeNearCompanionSheetViewModel() -> NearCompanionBottomSheetViewModel {
-        NearCompanionBottomSheetViewModel()
+    func makeNearCompanionSheetViewModel() -> NearCompanionSheetViewModel {
+        NearCompanionSheetViewModel()
     }
     
-    func makeSpecificCompanionSheetViewModel() -> SpecificCompanionBottomSheetViewModel {
-        SpecificCompanionBottomSheetViewModel()
+    func makeSpecificCompanionSheetViewModel() -> SpecificCompanionSheetViewModel {
+        SpecificCompanionSheetViewModel()
     }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
@@ -85,12 +85,8 @@ final class AppDIContainer {
         ReportPostViewModel()
     }
     
-    func makeReviewPostViewModel(reviewItem: ReviewItem) -> ReviewPostViewModel {
-        ReviewPostViewModel(reviewItem: reviewItem)
-    }
-    
-    func makeReportCompletionViewModel() -> ReportCompletionViewModel {
-        ReportCompletionViewModel()
+    func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool) -> ReviewPostViewModel {
+        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast)
     }
     
     // MARK: - ViewControllers
@@ -100,9 +96,9 @@ final class AppDIContainer {
     }
     
     func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
-        return CompanionViewController(viewModel: viewModel, nearbyBottomSheetViewController: makeNearCompanionSheetViewController(),
-                                       specificBottomSheetViewController: makeSpecificCompanionSheetViewController(),
-                                       emptyBottomSheetViewController: makeEmptyCompanionSheetViewController())
+        return CompanionViewController(viewModel: viewModel, nearbySheetViewController: makeNearCompanionSheetViewController(),
+                                       specificSheetViewController: makeSpecificCompanionSheetViewController(),
+                                       emptySheetViewController: makeEmptyCompanionSheetViewController())
     }
     
     func makeNearCompanionSheetViewController() -> NearCompanionSheetViewController {
@@ -169,17 +165,27 @@ final class AppDIContainer {
         makePlaceholderViewController(title: "동행글 작성")
     }
     
+    func makeReviewViewController(coordinator: MeetingTabCoordinator, type: NearbyUserType, reviewItem: ReviewItem) -> UIViewController {
+        switch type {
+        case .host:
+            return makeHostReviewListViewController(coordinator: coordinator)
+        case .participant:
+            return makeReviewPostViewController(coordinator: coordinator, reviewItem: reviewItem, type: type, isLast: false, onSaved: nil)
+        }
+    }
+    
     func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel())
         viewController.coordinator = coordinator
         return viewController
     }
     
-    func makeReviewPostViewController(coordinator: MeetingTabCoordinator, reviewItem: ReviewItem) -> UIViewController {
+    func makeReviewPostViewController(coordinator: MeetingTabCoordinator, reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool, onSaved: (() -> Void)?) -> UIViewController {
         let viewController = ReviewPostViewController(
-            viewModel: makeReviewPostViewModel(reviewItem: reviewItem)
+            viewModel: makeReviewPostViewModel(reviewItem: reviewItem, type: type, isLast: isLast)
         )
         viewController.coordinator = coordinator
+        viewController.onReviewSaved = onSaved
         return viewController
     }
     
@@ -190,7 +196,7 @@ final class AppDIContainer {
     }
     
     func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
-        let viewController = ReportCompletionViewController(viewModel: makeReportCompletionViewModel())
+        let viewController = ReportCompletionViewController(viewModel: EmptyViewModel())
         viewController.coordinator = coordinator
         return viewController
     }

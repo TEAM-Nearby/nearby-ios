@@ -8,40 +8,36 @@
 import Combine
 import UIKit
 
-final class SpecificCompanionSheetViewController: BaseViewController<SpecificCompanionBottomSheetViewModel> {
+final class SpecificCompanionSheetViewController: BaseViewController<SpecificCompanionSheetViewModel> {
     
-    // MARK: - Property
+    // MARK: - Properties
     
-    private let specificCompanionBottomSheetView = SpecificCompanionBottomSheetView()
+    private let specificCompanionSheetView = SpecificCompanionSheetView()
     var onClose: (() -> Void)?
     var onCompanionSelected: ((SpecificCompanionCellItem) -> Void)?
     
     // MARK: - Life Cycle
     
     override func loadView() {
-        view = specificCompanionBottomSheetView
+        view = specificCompanionSheetView
     }
     
     // MARK: - Custom Methods
     
     override func setDelegate() {
-        specificCompanionBottomSheetView.collectionView.dataSource = self
-        specificCompanionBottomSheetView.collectionView.delegate = self
+        specificCompanionSheetView.collectionView.dataSource = self
+        specificCompanionSheetView.collectionView.delegate = self
     }
 
     override func setAddTarget() {
-        specificCompanionBottomSheetView.closeButton.addTarget(
-            self,
-            action: #selector(closeButtonDidTap),
-            for: .touchUpInside
-        )
+        specificCompanionSheetView.closeButton.addTarget(self, action: #selector(closeButtonDidTap),for: .touchUpInside)
     }
     
     override func bindState() {
         viewModel.output.companions
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.specificCompanionBottomSheetView.collectionView.reloadData()
+                self?.specificCompanionSheetView.collectionView.reloadData()
             }
             .store(in: &cancellables)
     }

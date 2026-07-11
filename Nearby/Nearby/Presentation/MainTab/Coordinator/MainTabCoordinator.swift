@@ -32,6 +32,13 @@ extension MainTabCoordinator: Coordinator {
      }
  }
 
+extension MainTabCoordinator {
+    func switchTab(to item: NearbyTabItem) {
+        guard let index = NearbyTabItem.allCases.firstIndex(of: item) else { return }
+        rootViewController.selectedIndex = index
+    }
+}
+
 private extension MainTabCoordinator {
     func makeNavigationController(for item: NearbyTabItem) -> UINavigationController {
         let navigationController = UINavigationController()
@@ -47,6 +54,7 @@ private extension MainTabCoordinator {
         navigationController.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         return navigationController
     }
+    
     func configureRootViewController(for item: NearbyTabItem, navigationController: UINavigationController) {
         switch item {
         case .companion:

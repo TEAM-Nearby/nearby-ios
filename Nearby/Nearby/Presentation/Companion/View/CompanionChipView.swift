@@ -142,7 +142,7 @@ final class CompanionChipView: BaseView {
         }
         
         contentStackView.snp.makeConstraints {
-            $0.horizontalEdges.equalTo(balloonBackgroundImageView).inset(20)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.centerY.equalTo(balloonBackgroundImageView).offset(-2)
         }
         
@@ -166,7 +166,7 @@ final class CompanionChipView: BaseView {
     
     func configure(nickname: String, written: String, place: String, date: String) {
         nicknameLabel.setFont(.b3Sb14, text: nickname, textColor: .grey80)
-        writtenLabel.setFont(.b3M14, text: written, textColor: .grey30)
+        writtenLabel.setFont(.b3M14, text: written, textColor: .grey20)
         placeLabel.setFont(.b3M14, text: place, textColor: .grey60)
         dateLabel.setFont(.b3M14, text: date, textColor: .grey60)
         invalidateIntrinsicContentSize()

@@ -55,7 +55,7 @@ final class HostRequestRecieveView: BaseView {
     private let calendarImageView = UIImageView()
     private let dateLabel = UILabel()
     
-    private let allowButton = NearbyButton(style: .allowed, title: "수락하기")
+    private let allowButton = NearbyButton(style: .allowed, title: "수락하러 가기")
     private let rejectButton = NearbyButton(style: .rejected, title: "거절하기")
     
     // MARK: - Custom Methods

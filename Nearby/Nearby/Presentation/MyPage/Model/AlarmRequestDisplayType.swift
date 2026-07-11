@@ -34,7 +34,7 @@ enum AlarmRequestDisplayType {
             return "확인하기"
 
         case .receivedPending:
-            return "수락하기"
+            return "수락하러 가기"
         }
     }
 

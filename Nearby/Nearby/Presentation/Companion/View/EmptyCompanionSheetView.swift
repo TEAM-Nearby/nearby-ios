@@ -1,5 +1,5 @@
 //
-//  EmptyCompanionBottomSheetView.swift
+//  EmptyCompanionSheetView.swift
 //  Nearby
 //
 //  Created by soomin on 7/9/26.
@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class EmptyCompanionBottomSheetView: BaseView {
+final class EmptyCompanionSheetView: BaseView {
     
     // MARK: - UI Components
     

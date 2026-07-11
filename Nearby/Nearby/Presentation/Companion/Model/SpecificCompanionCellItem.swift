@@ -17,4 +17,5 @@ struct SpecificCompanionCellItem {
     let closedTime: String
     let participantImages: [UIImage?]
     let statusText: String
+    let detailState: CompanionDetailState
 }

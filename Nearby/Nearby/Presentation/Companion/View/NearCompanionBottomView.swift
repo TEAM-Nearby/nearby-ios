@@ -1,5 +1,5 @@
 //
-//  NearCompanionBottomSheetView.swift
+//  NearCompanionBottomView.swift
 //  Nearby
 //
 //  Created by soomin on 7/9/26.
@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class NearCompanionBottomSheetView: BaseView {
+final class NearCompanionBottomView: BaseView {
 
     // MARK: - Properties
 

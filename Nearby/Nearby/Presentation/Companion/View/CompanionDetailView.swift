@@ -87,7 +87,7 @@ final class CompanionDetailView: BaseView {
         }
         
         applyCompanionButton.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(12)
+            $0.top.equalToSuperview().inset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
             $0.bottom.equalTo(safeAreaLayoutGuide)

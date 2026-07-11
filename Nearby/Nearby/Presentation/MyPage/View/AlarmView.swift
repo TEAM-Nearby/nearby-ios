@@ -26,16 +26,15 @@ final class AlarmView: BaseView {
     private let sentRequestIndicatorView = UIView()
     private let receivedRequestIndicatorView = UIView()
 
-    private let contentContainerView = UIView()
+    let requestTableView = UITableView(frame: .zero, style: .plain)
 
-    private let sentRequestContentView = UIView()
-    private let receivedRequestContentView = UIView()
+    private let emptyView = AlarmEmptyView()
 
     // MARK: - Custom Methods
 
     override func setStyle() {
         backgroundColor = .white
-        
+
         navigationBar.do {
             $0.configure(leftItem: .back, centerItem: .title("알림"))
         }
@@ -66,30 +65,34 @@ final class AlarmView: BaseView {
             $0.backgroundColor = .grey80
         }
 
-        contentContainerView.do {
+        requestTableView.do {
             $0.backgroundColor = .white
-            $0.clipsToBounds = true
+            $0.separatorStyle = .none
+
+            $0.rowHeight = UITableView.automaticDimension
+            $0.estimatedRowHeight = 150
+
+            $0.showsVerticalScrollIndicator = false
+            $0.alwaysBounceVertical = true
+
+            $0.contentInset = UIEdgeInsets(top: 18, left: 0, bottom: 24, right: 0)
+
+            $0.contentInsetAdjustmentBehavior = .never
         }
 
-        sentRequestContentView.do {
-            $0.backgroundColor = .white
-        }
-
-        receivedRequestContentView.do {
-            $0.backgroundColor = .white
+        emptyView.do {
+            $0.isHidden = true
         }
     }
 
     override func setUI() {
-        addSubviews(navigationBar, tabContainerView, contentContainerView)
+        addSubviews(navigationBar, tabContainerView, requestTableView, emptyView)
 
         tabContainerView.addSubviews(
             sentRequestButton, receivedRequestButton,
             bottomDividerView, sentRequestIndicatorView,
             receivedRequestIndicatorView
         )
-
-        contentContainerView.addSubviews(sentRequestContentView, receivedRequestContentView)
     }
 
     override func setLayout() {
@@ -106,13 +109,17 @@ final class AlarmView: BaseView {
 
         sentRequestButton.snp.makeConstraints {
             $0.leading.top.equalToSuperview()
+
             $0.bottom.equalTo(bottomDividerView.snp.top).offset(9)
+
             $0.width.equalToSuperview().multipliedBy(0.5)
         }
 
         receivedRequestButton.snp.makeConstraints {
             $0.trailing.top.equalToSuperview()
+
             $0.bottom.equalTo(bottomDividerView.snp.top).offset(9)
+
             $0.width.equalToSuperview().multipliedBy(0.5)
         }
 
@@ -123,55 +130,83 @@ final class AlarmView: BaseView {
 
         sentRequestIndicatorView.snp.makeConstraints {
             $0.leading.equalTo(sentRequestButton.snp.leading).offset(20)
+
             $0.trailing.equalTo(sentRequestButton.snp.trailing)
+
             $0.bottom.equalToSuperview()
             $0.height.equalTo(2)
         }
 
         receivedRequestIndicatorView.snp.makeConstraints {
             $0.leading.equalTo(receivedRequestButton.snp.leading)
+
             $0.trailing.equalTo(receivedRequestButton.snp.trailing).inset(20)
+
             $0.bottom.equalToSuperview()
             $0.height.equalTo(2)
         }
 
-        contentContainerView.snp.makeConstraints {
+        requestTableView.snp.makeConstraints {
+            $0.top.equalTo(tabContainerView.snp.bottom)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalToSuperview()
+        }
+
+        emptyView.snp.makeConstraints {
             $0.top.equalTo(tabContainerView.snp.bottom)
             $0.horizontalEdges.bottom.equalToSuperview()
         }
-
-        sentRequestContentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-
-        receivedRequestContentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
     }
-    
-    // MARK: - Method
 
-    func updateSelectedRequestType(_ requestType: AlarmRequestType) {
-        switch requestType {
+    override func registerCells() {
+        requestTableView.register(AlarmRequestTableViewCell.self, forCellReuseIdentifier: AlarmRequestTableViewCell.identifier)
+    }
+
+    // MARK: - Methods
+
+    func updateSelectedTab(_ tab: AlarmTab) {
+        switch tab {
         case .sent:
             sentRequestButton.setTitleColor(.grey80, for: .normal)
+
             receivedRequestButton.setTitleColor(.grey40, for: .normal)
 
             sentRequestIndicatorView.isHidden = false
             receivedRequestIndicatorView.isHidden = true
 
-            sentRequestContentView.isHidden = false
-            receivedRequestContentView.isHidden = true
-
         case .received:
             sentRequestButton.setTitleColor(.grey40, for: .normal)
+
             receivedRequestButton.setTitleColor(.grey80, for: .normal)
 
             sentRequestIndicatorView.isHidden = true
             receivedRequestIndicatorView.isHidden = false
-
-            sentRequestContentView.isHidden = true
-            receivedRequestContentView.isHidden = false
         }
+    }
+
+    func updateContent(
+        items: [AlarmRequestItem],
+        selectedTab: AlarmTab
+    ) {
+        let isEmpty = items.isEmpty
+
+        requestTableView.isHidden = isEmpty
+        emptyView.isHidden = !isEmpty
+
+        guard isEmpty else {
+            return
+        }
+
+        emptyView.configure(tab: selectedTab)
+    }
+
+    func scrollToTop() {
+        guard !requestTableView.isHidden else {
+            return
+        }
+
+        requestTableView.setContentOffset(
+            CGPoint(x: 0, y: -requestTableView.adjustedContentInset.top), animated: false
+        )
     }
 }

@@ -12,7 +12,7 @@ import Then
 
 final class CompanionDetailTopView: BaseView {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     private var tagCollectionHeight: CGFloat = 36
     

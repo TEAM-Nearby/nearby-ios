@@ -145,14 +145,6 @@ private extension WrittenPostTableViewCell {
             $0.numberOfLines = 1
         }
 
-        mapImageView.do {
-            $0.image = UIImage(named: "img_map_sample")
-            $0.backgroundColor = .grey5
-            $0.contentMode = .scaleAspectFill
-            $0.layer.cornerRadius = 12
-            $0.clipsToBounds = true
-        }
-
         informationStackView.do {
             $0.axis = .vertical
             $0.alignment = .fill

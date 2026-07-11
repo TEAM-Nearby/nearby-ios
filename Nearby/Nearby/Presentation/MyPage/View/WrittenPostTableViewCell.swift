@@ -14,9 +14,7 @@ final class WrittenPostTableViewCell: UITableViewCell {
 
     // MARK: - Properties
 
-    static let identifier = String(
-        describing: WrittenPostTableViewCell.self
-    )
+    static let identifier = String(describing: WrittenPostTableViewCell.self)
 
     private let profileAvatarCount = 3
 
@@ -62,10 +60,7 @@ final class WrittenPostTableViewCell: UITableViewCell {
 
     // MARK: - Initializer
 
-    override init(
-        style: UITableViewCell.CellStyle,
-        reuseIdentifier: String?
-    ) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         setStyle()
@@ -103,8 +98,7 @@ final class WrittenPostTableViewCell: UITableViewCell {
         placeLabel.text = item.placeName
         dateLabel.text = item.meetingDateText
 
-        peopleStatusLabel.text =
-            "\(item.currentPeopleCount)/\(item.maximumPeopleCount)명"
+        peopleStatusLabel.text = "\(item.currentPeopleCount)/\(item.maximumPeopleCount)명"
 
         contentLabel.text = item.content
 
@@ -163,11 +157,7 @@ private extension WrittenPostTableViewCell {
             $0.spacing = 11
         }
 
-        [
-            placeStackView,
-            dateStackView,
-            peopleStackView
-        ].forEach {
+        [placeStackView, dateStackView, peopleStackView].forEach {
             $0.axis = .horizontal
             $0.alignment = .center
             $0.distribution = .fill
@@ -315,7 +305,6 @@ private extension WrittenPostTableViewCell {
             $0.top.equalTo(contentContainerView.snp.bottom).offset(18)
             $0.leading.equalToSuperview().offset(20)
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
-
             $0.height.equalTo(36)
         }
 

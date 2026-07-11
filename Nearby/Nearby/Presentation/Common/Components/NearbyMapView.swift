@@ -17,6 +17,11 @@ final class NearbyMapView: BaseView {
 
     private let cornerRadius: CGFloat
     private let markerSize: CGSize
+    
+    private var latitude: Double?
+    private var longitude: Double?
+    
+    var onMapDidTap: ((_ latitude: Double, _ logitude: Double) -> Void)?
 
     // MARK: - UI Components
 
@@ -53,6 +58,10 @@ final class NearbyMapView: BaseView {
             $0.frame = CGRect(origin: .zero, size: markerSize)
             $0.contentMode = .scaleAspectFit
         }
+        
+        mapView.do {
+            $0.delegate = self
+        }
     }
 
     override func setUI() {
@@ -68,6 +77,9 @@ final class NearbyMapView: BaseView {
     // MARK: - Method
 
     func configure(latitude: Double, longitude: Double, zoom: Float = 16.0) {
+        self.latitude = latitude
+        self.longitude = longitude
+        
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: zoom)
 
@@ -76,5 +88,20 @@ final class NearbyMapView: BaseView {
         marker.position = coordinate
         marker.iconView = markerImageView
         marker.map = mapView
+    }
+}
+
+// MARK: - GMSMapViewDelegate
+
+extension NearbyMapView: GMSMapViewDelegate {
+    func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
+        guard let latitude, let longitude else { return }
+        onMapDidTap?(latitude, longitude)
+    }
+
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+        guard let latitude, let longitude else { return false }
+        onMapDidTap?(latitude, longitude)
+        return true
     }
 }

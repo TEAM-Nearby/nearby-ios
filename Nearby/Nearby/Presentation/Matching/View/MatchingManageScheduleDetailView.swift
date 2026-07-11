@@ -213,14 +213,7 @@ final class MatchingManageScheduleDetailView: BaseView {
     }
 
     func configure(with output: MatchingManageDetailViewModel.DisplayData) {
-<<<<<<< HEAD
         matchedCardView.configure(content: output.cardItem.content, displayMode: .scheduleDetail)
-=======
-        matchedCardView.configure(
-            content: output.cardItem.content,
-            displayMode: .scheduleDetail
-        )
->>>>>>> origin/feat/#76
         matchedCardView.setNextButtonHidden(true)
         datePicker.date = output.selectedDate
         placeDetailLabel.setFont(.b3M14, text: output.placeAddress, textColor: .grey30)

@@ -26,6 +26,10 @@ final class AppDIContainer {
     func makeCompanionCoordinator(navigationController: UINavigationController) -> CompanionCoordinator {
         CompanionCoordinator(navigationController: navigationController, diContainer: self)
     }
+
+    func makeDiningMapCoordinator(navigationController: UINavigationController) -> DiningMapCoordinator {
+        DiningMapCoordinator(navigationController: navigationController, diContainer: self)
+    }
     
     func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
         MyPageCoordinator(navigationController: navigationController, appDIContainer: self)
@@ -43,6 +47,18 @@ final class AppDIContainer {
     
     func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
+    }
+
+    func makeDiningMapViewModel() -> DiningMapViewModel {
+        DiningMapViewModel()
+    }
+
+    func makeNearDiningBottomSheetViewModel() -> NearDiningBottomSheetViewModel {
+        NearDiningBottomSheetViewModel()
+    }
+
+    func makeSaveDiningSheetViewModel() -> SaveDiningSheetViewModel {
+        SaveDiningSheetViewModel()
     }
 
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
@@ -117,8 +133,20 @@ final class AppDIContainer {
         CompanionDetailViewController(viewModel: viewModel)
     }
     
-    func makeDiningMapViewController() -> UIViewController {
-        makePlaceholderViewController(title: "혼밥 지도")
+    func makeDiningMapViewController() -> DiningMapViewController {
+        DiningMapViewController(
+            viewModel: makeDiningMapViewModel(),
+            nearDiningSheetViewController: makeNearDiningSheetViewController(),
+            saveDiningSheetViewController: makeSaveDiningSheetViewController()
+        )
+    }
+
+    func makeNearDiningSheetViewController() -> NearDiningSheetViewController {
+        NearDiningSheetViewController(viewModel: makeNearDiningBottomSheetViewModel())
+    }
+
+    func makeSaveDiningSheetViewController() -> SaveDiningSheetViewController {
+        SaveDiningSheetViewController(viewModel: makeSaveDiningSheetViewModel())
     }
     
     func makeMatchingViewController() -> UIViewController {

@@ -23,6 +23,7 @@ enum NearbyFont {
     
     case c1Sb12
     case c1M12
+    case c1M14
     case c1R12
     
     var property: FontProperty {
@@ -42,6 +43,7 @@ enum NearbyFont {
             
         case .c1Sb12: return FontProperty(fontType: .semibold, size: 12)
         case .c1M12:  return FontProperty(fontType: .medium, size: 12)
+        case .c1M14:  return FontProperty(fontType: .medium, size: 14)
         case .c1R12:  return FontProperty(fontType: .regular, size: 12)
         }
     }

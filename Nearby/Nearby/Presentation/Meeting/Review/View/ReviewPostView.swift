@@ -44,12 +44,14 @@ final class ReviewPostView: BaseView {
     private let reviewSubtitleLabel = UILabel()
     
     private let firstCategoryLabel = UILabel()
+    private let firstCategoryDescriptionLabel = UILabel()
     let firstTagCollectionView = UICollectionView(
         frame: .zero,
         collectionViewLayout: ReviewPostView.makeTagLayout()
     )
     
     private let secondCategoryLabel = UILabel()
+    private let secondCategoryDescriptionLabel = UILabel()
     let secondTagCollectionView = UICollectionView(
         frame: .zero,
         collectionViewLayout: ReviewPostView.makeTagLayout()
@@ -155,6 +157,16 @@ final class ReviewPostView: BaseView {
             $0.textAlignment = .left
         }
         
+        firstCategoryDescriptionLabel.do {
+            $0.setFont(.b3M14, text: "최대 3개 선택할 수 있어요", textColor: .grey30)
+            $0.textAlignment = .left
+        }
+        
+        secondCategoryDescriptionLabel.do {
+            $0.setFont(.b3M14, text: "최대 1개 선택할 수 있어요", textColor: .grey30)
+            $0.textAlignment = .left
+        }
+        
         firstTagCollectionView.do {
             $0.backgroundColor = .clear
             $0.isScrollEnabled = false
@@ -201,7 +213,7 @@ final class ReviewPostView: BaseView {
         profileView.addArrangedSubviews(profileImageView, profileLabelStackView)
         profileLabelStackView.addArrangedSubviews(profileTitleLabel, informationLabel)
         starView.addSubviews(starTitleLabel, starRating)
-        reviewView.addSubviews(reviewTitleLabel, reviewSubtitleLabel, firstCategoryLabel, firstTagCollectionView, secondCategoryLabel, secondTagCollectionView)
+        reviewView.addSubviews(reviewTitleLabel, reviewSubtitleLabel, firstCategoryLabel, firstCategoryDescriptionLabel, firstTagCollectionView, secondCategoryLabel, secondCategoryDescriptionLabel, secondTagCollectionView)
         reportView.addSubviews(reportLabelStackView, reportButton)
         reportLabelStackView.addArrangedSubviews(reportTitleLabel, reportSubtitleLabel)
     }
@@ -265,8 +277,13 @@ final class ReviewPostView: BaseView {
             $0.leading.equalToSuperview().inset(12)
         }
         
+        firstCategoryDescriptionLabel.snp.makeConstraints {
+            $0.top.equalTo(firstCategoryLabel.snp.bottom).offset(2)
+            $0.leading.equalToSuperview().inset(12)
+        }
+        
         firstTagCollectionView.snp.makeConstraints {
-            $0.top.equalTo(firstCategoryLabel.snp.bottom).offset(12)
+            $0.top.equalTo(firstCategoryDescriptionLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(12)
             firstTagHeightConstraint = $0.height.equalTo(0).constraint
         }
@@ -276,8 +293,13 @@ final class ReviewPostView: BaseView {
             $0.leading.equalToSuperview().inset(12)
         }
         
+        secondCategoryDescriptionLabel.snp.makeConstraints {
+            $0.top.equalTo(secondCategoryLabel.snp.bottom).offset(2)
+            $0.leading.equalToSuperview().inset(12)
+        }
+        
         secondTagCollectionView.snp.makeConstraints {
-            $0.top.equalTo(secondCategoryLabel.snp.bottom).offset(12)
+            $0.top.equalTo(secondCategoryDescriptionLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(12)
             $0.bottom.equalToSuperview().inset(16)
             secondTagHeightConstraint = $0.height.equalTo(0).constraint

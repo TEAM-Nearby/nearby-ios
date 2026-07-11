@@ -41,4 +41,13 @@ extension NotificationCoordinator: Coordinator {
     func showCompanionTab() {
         (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
     }
+    
+    func showRecruitCompanion() {
+        let viewController = diContainer.makeRecruitCompanionViewController()
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func showMeetingList() {
+        (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .meeting)
+    }
 }

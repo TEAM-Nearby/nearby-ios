@@ -13,6 +13,10 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
     // MARK: - UI Component
 
     private let companionRequestSentView = CompanionRequestSentView()
+    
+    // MARK: - Property
+    
+    weak var coordinator: NotificationCoordinator?
 
     // MARK: - Life Cycles
 
@@ -24,7 +28,6 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
 
     override func setAddTarget() {
         companionRequestSentView.onBackButtonDidTap = { [weak self] in
-                // TODO: - Coordinator 연결 (뒤로가기)
             self?.navigationController?.popViewController(animated: true)
         }
         companionRequestSentView.onSearchButtonDidTap = { [weak self] in
@@ -43,8 +46,7 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
         viewModel.output.showCompanionList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - Coordinator 연결 (동행 리스트로 이동)
-                self?.navigationController?.popToRootViewController(animated: true)
+                self?.coordinator?.showMeetingList()
             }
             .store(in: &cancellables)
 

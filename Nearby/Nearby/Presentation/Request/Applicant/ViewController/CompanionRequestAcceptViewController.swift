@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import SafariServices
 
 final class CompanionRequestAcceptViewController: BaseViewController<CompanionRequestAcceptViewModel> {
 
@@ -58,8 +59,9 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
 
         viewModel.output.showOpenChat
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.navigationController?.popToRootViewController(animated: true)
+            .sink { [weak self] url in
+                let safariViewController = SFSafariViewController(url: url)
+                self?.present(safariViewController, animated: true)
             }
             .store(in: &cancellables)
 

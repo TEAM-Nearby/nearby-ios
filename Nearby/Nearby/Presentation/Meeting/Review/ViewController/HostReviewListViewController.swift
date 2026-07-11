@@ -66,7 +66,7 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
         viewModel.output.showCompletion
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.finishCompanonReview()
+                self?.coordinator?.finishCompanionReview()
             }
             .store(in: &cancellables)
         

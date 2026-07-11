@@ -40,7 +40,7 @@ final class MyPageView: BaseView {
     private let statsStackView = UIStackView()
 
     private let mealStatView = MyPageStatItemView(icon: .icRestaurant, title: "함께한 식사", value: "8회")
-    private let cityStatView = MyPageStatItemView(icon: .cancelIcon, title: "방문한 도시", value: "4곳")
+    private let cityStatView = MyPageStatItemView(icon: .cityIcon, title: "방문한 도시", value: "4곳")
     private let reviewStatView = MyPageStatItemView(icon: .starIcon, title: "받은 후기", value: "12개")
 
     private let firstDividerView = UIView()

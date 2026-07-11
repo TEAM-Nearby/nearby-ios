@@ -90,7 +90,7 @@ extension MeetingTabCoordinator: Coordinator {
         navigationController.popViewController(animated: true)
     }
     
-    func finishCompanonReview() {
+    func finishCompanionReview() {
         navigationController.popToRootViewController(animated: false)
         (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
     }

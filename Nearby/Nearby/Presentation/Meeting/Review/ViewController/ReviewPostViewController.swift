@@ -102,7 +102,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         viewModel.output.companionCompleted
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.finishCompanonReview()
+                self?.coordinator?.finishCompanionReview()
             }
             .store(in: &cancellables)
         

@@ -105,7 +105,7 @@ final class WrittenPostView: BaseView {
         )
     }
 
-    // MARK: - Methods
+    // MARK: - Method
 
     func updateContent(items: [WrittenPostItem])
     {

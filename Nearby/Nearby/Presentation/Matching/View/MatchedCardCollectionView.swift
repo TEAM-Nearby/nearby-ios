@@ -12,6 +12,10 @@ import Then
 
 final class MatchedCardCollectionView: BaseView {
 
+    // MARK: - Properties
+
+    var alarmButtonAction: (() -> Void)?
+
     // MARK: - UI Components
 
     private let navigationBar = NearbyNavigationBar()
@@ -77,6 +81,12 @@ final class MatchedCardCollectionView: BaseView {
 
     override func registerCells() {
         matchedCardCollectionView.register(MatchingMatchedCardCell.self)
+    }
+
+    override func setAddTarget() {
+        navigationBar.rightFirstButtonAction = { [weak self] in
+            self?.alarmButtonAction?()
+        }
     }
 
     // MARK: - Methods

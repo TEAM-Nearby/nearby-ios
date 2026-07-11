@@ -5,27 +5,22 @@
 //  Created by 장지인 on 7/11/26.
 //
 
+import Combine
 import UIKit
 
 import KakaoSDKShare
 
-final class MatchingScheduleDetailViewController: BaseViewController<EmptyViewModel> {
+final class MatchingScheduleDetailViewController: BaseViewController<MatchingScheduleDetailViewModel> {
 
     // MARK: - Properties
 
     weak var coordinator: MatchingCoordinator?
     private let rootView = MatchingScheduleDetailView()
-    private let item: MatchingMatchedCardItem
 
     // MARK: - Initializer
 
     init(item: MatchingMatchedCardItem) {
-        self.item = item
-        super.init(viewModel: EmptyViewModel())
-    }
-
-    convenience init() {
-        self.init(item: MatchingMatchedCardItem.sample)
+        super.init(viewModel: MatchingScheduleDetailViewModel(item: item))
     }
 
     // MARK: - Life Cycles
@@ -42,34 +37,67 @@ final class MatchingScheduleDetailViewController: BaseViewController<EmptyViewMo
 
     // MARK: - Methods
 
-    override func setStyle() {
-        rootView.configure(item: item)
-    }
-
     override func setAddTarget() {
         rootView.backButtonAction = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.viewModel.action(.backButtonDidTap)
         }
 
-        rootView.alarmButtonAction = {
-            // TODO: - 알림뷰 연결
+        rootView.alarmButtonAction = { [weak self] in
+            self?.viewModel.action(.alarmButtonDidTap)
         }
 
         rootView.editButtonAction = { [weak self] in
-            guard let self else { return }
-            coordinator?.showManageScheduleDetail(item: item)
+            self?.viewModel.action(.editButtonDidTap)
         }
 
         rootView.shareButtonAction = { [weak self] in
-            self?.share()
+            self?.viewModel.action(.shareButtonDidTap)
         }
     }
 
-    func share() {
+    override func bindState() {
+        viewModel.output.displayData
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] displayData in
+                self?.rootView.configure(displayData: displayData)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.showBack
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.showAlarm
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.coordinator?.showAlarm()
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.showEdit
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] item in
+                self?.coordinator?.showManageScheduleDetail(item: item)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.showShare
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.share()
+            }
+            .store(in: &cancellables)
+
+        viewModel.action(.viewDidLoad)
+    }
+
+    private func share() {
         guard ShareApi.isKakaoTalkSharingAvailable() else {
             if let url = ShareApi.shared.makeCustomUrl(templateId: 135202) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                print("url 성공")
             } else {
                 print("Failed to create Kakao sharer URL.")
             }
@@ -79,11 +107,9 @@ final class MatchingScheduleDetailViewController: BaseViewController<EmptyViewMo
         ShareApi.shared.shareCustom(templateId: 135202) { sharingResult, error in
             if let error {
                 print(error)
-                print("에러 발생")
                 return
             }
 
-            print("shareCustom() success.")
             if let sharingResult {
                 UIApplication.shared.open(sharingResult.url, options: [:]) { success in
                     if success == false {

@@ -29,7 +29,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     private let contentLabel = UILabel()
     private let nextButton = UIButton()
     private let dotLabel = UILabel()
-    private var profileContainerWidthConstraint: Constraint?
 
     // MARK: - Initializer
 
@@ -65,12 +64,10 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         profileImageView.do {
             $0.image = .imgProfileDefault
             $0.contentMode = .scaleAspectFill
-            $0.layer.cornerRadius = 20
             $0.clipsToBounds = true
         }
 
         profileStackView.do {
-            $0.configureWithDefaultAvatars(count: 1)
             $0.isHidden = true
         }
 
@@ -122,7 +119,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         profileContainerView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(19)
             $0.leading.equalToSuperview().inset(20)
-            profileContainerWidthConstraint = $0.width.equalTo(40).constraint
+            $0.width.equalTo(40)
             $0.height.equalTo(40)
         }
 
@@ -173,8 +170,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
-    // MARK: - Methods
-
     private func updateHeader(content: MatchingMatchedCardContentModel, displayMode: MatchingMatchedCardDisplayMode) {
         switch displayMode {
         case .list:
@@ -202,7 +197,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         profileContainerView.snp.remakeConstraints {
             $0.top.equalToSuperview().inset(19)
             $0.leading.equalToSuperview().inset(20)
-            profileContainerWidthConstraint = $0.width.equalTo(profileContainerWidth()).constraint
+            $0.width.equalTo(profileContainerWidth())
             $0.height.equalTo(40)
         }
     }
@@ -278,6 +273,5 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     @objc
     private func nextButtonDidTap() {
         onNextButtonDidTap?()
-        // TODO: - 뷰 연결
     }
 }

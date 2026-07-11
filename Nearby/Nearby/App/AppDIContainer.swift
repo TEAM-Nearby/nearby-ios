@@ -64,6 +64,10 @@ final class AppDIContainer {
     func makeMeetingViewModel() -> MeetingTabViewModel {
         MeetingTabViewModel()
     }
+
+    func makeMatchingViewModel() -> MatchingViewModel {
+        MatchingViewModel()
+    }
     
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
@@ -126,7 +130,7 @@ final class AppDIContainer {
     }
     
     func makeMatchingViewController(coordinator: MatchingCoordinator) -> UIViewController {
-        let viewController = MatchingViewController()
+        let viewController = MatchingViewController(viewModel: makeMatchingViewModel())
         viewController.coordinator = coordinator
         return viewController
     }
@@ -141,8 +145,12 @@ final class AppDIContainer {
         return viewController
     }
 
-    func makeMatchingManageScheduleDetailViewController(item: MatchingMatchedCardItem) -> UIViewController {
-        let viewController = MatchingHostScheduleDetailViewController(item: item)
+    func makeMatchingManageScheduleDetailViewController(
+        coordinator: MatchingCoordinator,
+        item: MatchingMatchedCardItem
+    ) -> UIViewController {
+        let viewController = MatchingManageDetailViewController(item: item)
+        viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }

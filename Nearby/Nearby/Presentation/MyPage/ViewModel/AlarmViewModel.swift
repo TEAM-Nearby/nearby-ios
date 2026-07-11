@@ -7,11 +7,6 @@
 
 import Foundation
 
-enum AlarmRequestType {
-    case sent
-    case received
-}
-
 final class AlarmViewModel: BaseViewModelType {
 
     // MARK: - Input
@@ -21,51 +16,91 @@ final class AlarmViewModel: BaseViewModelType {
         case backButtonDidTap
         case sentRequestButtonDidTap
         case receivedRequestButtonDidTap
+        case requestActionButtonDidTap(id: UUID)
     }
 
     // MARK: - Output
 
     struct Output {
-        var selectedRequestType: ((AlarmRequestType) -> Void)?
+        var selectedTab: ((AlarmTab) -> Void)?
+        var requestItems: (([AlarmRequestItem]) -> Void)?
         var backButtonDidTap: (() -> Void)?
+        var requestActionDidTap: ((AlarmRequestItem) -> Void)?
     }
 
     // MARK: - Properties
 
     var output = Output()
 
-    private var selectedRequestType: AlarmRequestType = .sent
+    private var selectedTab: AlarmTab = .sent
+
+    private var sentRequestItems:
+        [AlarmRequestItem] = []
+
+    private var receivedRequestItems:
+        [AlarmRequestItem] = []
 
     // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            output.selectedRequestType?(selectedRequestType)
+            emitCurrentState()
 
         case .backButtonDidTap:
             output.backButtonDidTap?()
 
         case .sentRequestButtonDidTap:
-            updateSelectedRequestType(.sent)
+            updateSelectedTab(.sent)
 
         case .receivedRequestButtonDidTap:
-            updateSelectedRequestType(.received)
+            updateSelectedTab(.received)
+
+        case .requestActionButtonDidTap(let id):
+            handleRequestActionButtonDidTap(id: id)
         }
     }
 }
 
-// MARK: - Private Method
+// MARK: - Private Methods
 
 private extension AlarmViewModel {
-    func updateSelectedRequestType(
-        _ requestType: AlarmRequestType
-    ) {
-        guard selectedRequestType != requestType else {
+    func updateSelectedTab(_ tab: AlarmTab) {
+        guard selectedTab != tab else {
             return
         }
 
-        selectedRequestType = requestType
-        output.selectedRequestType?(requestType)
+        selectedTab = tab
+        emitCurrentState()
+    }
+
+    func emitCurrentState() {
+        output.selectedTab?(selectedTab)
+        output.requestItems?(currentRequestItems)
+    }
+
+    func handleRequestActionButtonDidTap(
+        id: UUID
+    ) {
+        guard let requestItem =
+                currentRequestItems.first(
+                    where: { $0.id == id }
+                ) else {
+            return
+        }
+
+        output.requestActionDidTap?(requestItem)
+    }
+
+    var currentRequestItems:
+        [AlarmRequestItem] {
+
+        switch selectedTab {
+        case .sent:
+            return sentRequestItems
+
+        case .received:
+            return receivedRequestItems
+        }
     }
 }

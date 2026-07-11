@@ -1,5 +1,5 @@
 //
-//  NorificationCoordinator.swift
+//  NotificationCoordinator.swift
 //  Nearby
 //
 //  Created by h2e on 7/11/26.
@@ -30,12 +30,34 @@ final class NotificationCoordinator {
 
 extension NotificationCoordinator: Coordinator {
     func start() {
+        // TODO: - 서연 님 개발 후 구현
 //        let viewController = diContainer.makeAlarmViewController()(coordinator: self)
 //        navigationController.setViewControllers([viewController], animated: false)
     }
     
     func finish() {
         parentCoordinator?.removeChildCoordinator(self)
+    }
+    
+    func showCompanionRequestSent(hostName: String) {
+        let viewController = diContainer.makeCompanionRequestSentViewController(
+            coordinator: self,
+            hostName: hostName
+        )
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showCompanionRequestDecline() {
+        let viewController = diContainer.makeCompanionRequestDeclineViewController(coordinator: self)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showHostRequestDecline(applicantName: String) {
+        let viewController = diContainer.makeHostRequestDeclineViewController(
+            coordinator: self,
+            applicantName: applicantName
+        )
+        navigationController.pushViewController(viewController, animated: true)
     }
     
     func showCompanionTab() {

@@ -124,8 +124,7 @@ final class HostReviewListView: BaseView {
         
         bottomAvatarStackView.snp.makeConstraints {
             $0.top.equalTo(topAvatarStackView.snp.bottom).offset(-9)
-            $0.leading.equalToSuperview()
-            $0.bottom.equalToSuperview()
+            $0.leading.bottom.equalToSuperview()
         }
         
         dividerView.snp.makeConstraints {

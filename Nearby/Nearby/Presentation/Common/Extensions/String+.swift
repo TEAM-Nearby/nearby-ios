@@ -21,7 +21,7 @@ extension String {
             return self
         }
 
-        return String(prefix(limit)) + trailingText
+        return String(prefix(max(limit - 1, 0))) + trailingText
     }
     
     func withLineHeightMultiple(_ multiple: CGFloat, font: UIFont, color: UIColor) -> NSAttributedString {

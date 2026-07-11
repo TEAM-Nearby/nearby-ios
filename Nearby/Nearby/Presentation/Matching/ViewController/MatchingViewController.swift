@@ -20,7 +20,6 @@ final class MatchingViewController: UIViewController {
                 uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
                 description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
             ),
-            state: .pending,
             isHost: false
         ),
         MatchingMatchedCardItem(
@@ -29,7 +28,6 @@ final class MatchingViewController: UIViewController {
                 uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
                 description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
             ),
-            state: .pending,
             isHost: true
         ),
         MatchingMatchedCardItem(
@@ -38,16 +36,9 @@ final class MatchingViewController: UIViewController {
                 uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
                 description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
             ),
-            state: .confirmed,
             isHost: true
         )
     ]
-    private var displayCardItems: [MatchingMatchedCardItem] {
-        return cardItems.sorted {
-            $0.state.displayPriority < $1.state.displayPriority
-        }
-    }
-
     // MARK: - Life Cycles
 
     override func loadView() {
@@ -80,7 +71,7 @@ final class MatchingViewController: UIViewController {
     }
 
     private func updateViewState() {
-        matchedCardView.updateEmptyState(isEmpty: displayCardItems.isEmpty)
+        matchedCardView.updateEmptyState(isEmpty: cardItems.isEmpty)
     }
 
     private func updateCardItems(_ items: [MatchingMatchedCardItem]) {
@@ -105,7 +96,7 @@ final class MatchingViewController: UIViewController {
 
 extension MatchingViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return displayCardItems.count
+        return cardItems.count
     }
 
     func collectionView(
@@ -113,9 +104,9 @@ extension MatchingViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(MatchingMatchedCardCell.self, for: indexPath)
-        let item = displayCardItems[indexPath.item]
+        let item = cardItems[indexPath.item]
 
-        cell.configure(content: item.content, state: item.state)
+        cell.configure(content: item.content)
         cell.onNextButtonDidTap = { [weak self] in
             self?.matchingCardDidTap(item: item)
         }
@@ -128,7 +119,7 @@ extension MatchingViewController: UICollectionViewDataSource {
 
 extension MatchingViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let item = displayCardItems[indexPath.item]
+        let item = cardItems[indexPath.item]
         matchingCardDidTap(item: item)
     }
 
@@ -137,9 +128,6 @@ extension MatchingViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let state = displayCardItems[indexPath.item].state
-        let height: CGFloat = state == .confirmed ? 148 : 110
-
-        return CGSize(width: collectionView.bounds.width, height: height)
+        return CGSize(width: collectionView.bounds.width, height: 110)
     }
 }

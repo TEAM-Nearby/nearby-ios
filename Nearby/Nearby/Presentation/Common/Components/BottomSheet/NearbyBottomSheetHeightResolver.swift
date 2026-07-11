@@ -40,8 +40,10 @@ enum NearbyBottomSheetHeightResolver {
         switch content {
         case .nearbyCompanionEmpty:
             return NearbyBottomSheetValue.nearbyCompanionEmptyStandardHeight + context.tabBarHeight
-        case .specificRestaurantCompanionList, .nearbyCompanionList:
+        case .specificRestaurantCompanionList:
             return companionListStandardHeight(context: context) + NearbyBottomSheetValue.companionListStandardHeightAddition
+        case .nearbyCompanionList:
+            return max(0, companionListStandardHeight(context: context) + NearbyBottomSheetValue.companionListStandardHeightAddition)
         case .diningMapList, .savedRestaurantList:
             return NearbyBottomSheetValue.diningListStandardHeight
         }

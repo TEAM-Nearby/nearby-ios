@@ -183,6 +183,21 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
         
         return nearestLevel(to: projectedHeight)
     }
+
+    func setTopOverlayViews(centerView: UIView, trailingView: UIView) {
+        view.addSubviews(centerView, trailingView)
+
+        centerView.snp.remakeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(containerView.snp.top).offset(-12)
+        }
+
+        trailingView.snp.remakeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalTo(centerView)
+            $0.size.equalTo(40)
+        }
+    }
     
     func setState(
         content: BottomSheetContent,

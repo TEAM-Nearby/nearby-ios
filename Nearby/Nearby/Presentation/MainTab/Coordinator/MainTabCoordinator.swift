@@ -35,6 +35,9 @@ extension MainTabCoordinator: Coordinator {
 private extension MainTabCoordinator {
     func makeNavigationController(for item: NearbyTabItem) -> UINavigationController {
         let navigationController = UINavigationController()
+        navigationController.view.backgroundColor = .clear
+        navigationController.edgesForExtendedLayout = [.bottom]
+        navigationController.extendedLayoutIncludesOpaqueBars = true
         configureRootViewController(for: item, navigationController: navigationController)
         navigationController.tabBarItem = UITabBarItem(
             title: item.title,

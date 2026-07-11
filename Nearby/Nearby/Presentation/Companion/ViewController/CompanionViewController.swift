@@ -15,7 +15,6 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
 
     private var isSpecificBottomSheetPresented = false
     private var categoryItems: [CategoryItem] { viewModel.output.categoryItems }
-    private var tabBarHeight: CGFloat { tabBarController?.tabBar.bounds.height ?? 0 }
 
     // MARK: - UI Components
 
@@ -103,15 +102,20 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             $0.edges.equalToSuperview()
         }
 
+        bottomSheetViewController.setTopOverlayViews(
+            centerView: companionView.companionCountChip,
+            trailingView: companionView.currentLocationButton
+        )
+
         bottomSheetViewController.didMove(toParent: parentViewController)
     }
 
     private func bindBottomSheet() {
-        bottomSheetViewController.onStateChange = { [weak self] height, state in
+        bottomSheetViewController.onStateChange = { [weak self] _, state in
             guard let self else { return }
 
             updateBottomSheetLayer(for: state)
-            companionView.updateMapControls(bottomInset: max(12, height + 12 - tabBarHeight), state: state)
+            companionView.updateMapControls(for: state)
         }
 
         if let nearbyBottomSheetViewController = nearbyBottomSheetViewController as? NearCompanionSheetViewController {

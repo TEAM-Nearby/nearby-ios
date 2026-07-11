@@ -46,10 +46,14 @@ final class DiningMapViewModel: BaseViewModelType {
 private extension CompanionMapConfiguration {
     static let diningMap = CompanionMapConfiguration(
         initialZoom: 16.2,
-        smallMarkerMaximumZoom: 14,
-        largeMarkerMinimumZoom: 15.6,
+        smallMarkerMaximumZoom: -1,
+        largeMarkerMinimumZoom: 100,
         mediumMarkerSize: 24,
         smallMarkerSize: 10,
-        markerItems: []
+        markerItems: [
+            CompanionMapMarkerItem(latitudeOffset: 0, longitudeOffset: 0.001, nickname: "일반 식당 1", written: "", place: "", date: "", style: .restaurant),
+            CompanionMapMarkerItem(latitudeOffset: 0.0007, longitudeOffset: -0.0007, nickname: "일반 식당 2", written: "", place: "", date: "", style: .restaurant),
+            CompanionMapMarkerItem(latitudeOffset: -0.0007, longitudeOffset: -0.0007, nickname: "저장 식당", written: "", place: "", date: "", style: .savedRestaurant)
+        ]
     )
 }

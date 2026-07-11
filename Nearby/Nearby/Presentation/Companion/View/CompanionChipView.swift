@@ -142,7 +142,7 @@ final class CompanionChipView: BaseView {
         }
         
         contentStackView.snp.makeConstraints {
-            $0.horizontalEdges.equalTo(balloonBackgroundImageView).inset(20)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.centerY.equalTo(balloonBackgroundImageView).offset(-2)
         }
         

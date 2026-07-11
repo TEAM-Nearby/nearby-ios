@@ -7,6 +7,8 @@
 
 import UIKit
 
+import KakaoSDKShare
+
 final class MatchingScheduleDetailViewController: BaseViewController<EmptyViewModel> {
 
     // MARK: - Properties
@@ -58,8 +60,37 @@ final class MatchingScheduleDetailViewController: BaseViewController<EmptyViewMo
             coordinator?.showManageScheduleDetail(item: item)
         }
 
-        rootView.shareButtonAction = {
-            // TODO: - 카카오톡 공유하기 SDK 연결
+        rootView.shareButtonAction = { [weak self] in
+            self?.share()
+        }
+    }
+
+    func share() {
+        guard ShareApi.isKakaoTalkSharingAvailable() else {
+            if let url = ShareApi.shared.makeCustomUrl(templateId: 135202) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                print("url 성공")
+            } else {
+                print("Failed to create Kakao sharer URL.")
+            }
+            return
+        }
+
+        ShareApi.shared.shareCustom(templateId: 135202) { sharingResult, error in
+            if let error {
+                print(error)
+                print("에러 발생")
+                return
+            }
+
+            print("shareCustom() success.")
+            if let sharingResult {
+                UIApplication.shared.open(sharingResult.url, options: [:]) { success in
+                    if success == false {
+                        print("Failed to open KakaoTalk sharing URL: \(sharingResult.url)")
+                    }
+                }
+            }
         }
     }
 }

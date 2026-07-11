@@ -119,6 +119,8 @@ final class MatchingScheduleDetailView: BaseView {
             $0.spacing = 8
             $0.distribution = .fill
         }
+
+        configureMapView()
     }
 
     override func setUI() {
@@ -260,7 +262,6 @@ final class MatchingScheduleDetailView: BaseView {
     func configure(item: MatchingMatchedCardItem) {
         matchedCardView.configure(
             content: item.content,
-            state: item.state,
             displayMode: .scheduleDetail
         )
         matchedCardView.setNextButtonHidden(true)
@@ -275,6 +276,10 @@ final class MatchingScheduleDetailView: BaseView {
             bottomButtonStackView.removeArrangedSubview(manageButton)
             manageButton.removeFromSuperview()
         }
+    }
+
+    private func configureMapView() {
+        mapView.configure(latitude: 37.566508, longitude: 126.977945)
     }
 
     // MARK: - Actions

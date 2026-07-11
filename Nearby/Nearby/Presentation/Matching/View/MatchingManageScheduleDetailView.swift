@@ -202,7 +202,6 @@ final class MatchingManageScheduleDetailView: BaseView {
     func configure(item: MatchingMatchedCardItem) {
         matchedCardView.configure(
             content: item.content,
-            state: item.state,
             displayMode: .scheduleDetail
         )
         matchedCardView.setNextButtonHidden(true)

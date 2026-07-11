@@ -7,12 +7,14 @@
 
 import UIKit
 
-final class MyPageViewController: BaseViewController<MyPageViewModel> {
+final class MyPageViewController:
+    BaseViewController<MyPageViewModel> {
 
     // MARK: - Properties
 
     var onAlarmButtonDidTap: (() -> Void)?
     var onSettingButtonDidTap: (() -> Void)?
+    var onWrittenPostRowDidTap: (() -> Void)?
 
     // MARK: - UI Component
 
@@ -24,19 +26,13 @@ final class MyPageViewController: BaseViewController<MyPageViewModel> {
         view = myPageView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        bindViewModel()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool)
+    {
         super.viewWillAppear(animated)
-
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
-    // MARK: - Custom Method
+    // MARK: - Custom Methods
 
     override func setAddTarget() {
         myPageView.navigationBar.rightFirstButtonAction = { [weak self] in
@@ -46,19 +42,23 @@ final class MyPageViewController: BaseViewController<MyPageViewModel> {
         myPageView.navigationBar.rightSecondButtonAction = { [weak self] in
             self?.viewModel.action(.settingButtonDidTap)
         }
+
+        myPageView.onWrittenPostRowDidTap = { [weak self] in
+            self?.viewModel.action(.writtenPostRowDidTap)
+        }
     }
-}
 
-// MARK: - Private Method
-
-private extension MyPageViewController {
-    func bindViewModel() {
+    override func bindState() {
         viewModel.output.alarmButtonDidTap = { [weak self] in
             self?.onAlarmButtonDidTap?()
         }
 
         viewModel.output.settingButtonDidTap = { [weak self] in
             self?.onSettingButtonDidTap?()
+        }
+
+        viewModel.output.writtenPostRowDidTap = { [weak self] in
+            self?.onWrittenPostRowDidTap?()
         }
     }
 }

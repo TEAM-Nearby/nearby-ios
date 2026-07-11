@@ -19,5 +19,5 @@ struct NearDiningCellItem {
     let rating: Double
     let reviewCount: Int
     let images: [UIImage?]
-    let isBookmarked: Bool
+    var isBookmarked: Bool
 }

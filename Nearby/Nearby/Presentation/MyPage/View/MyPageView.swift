@@ -14,10 +14,10 @@ final class MyPageView: BaseView {
 
     // MARK: - Properties
 
+    var onWrittenPostRowDidTap: (() -> Void)?
+
     private let gradientLayer = CAGradientLayer()
-
     private let personalityKeywords = ["외향형", "내향형", "절약형", "새벽형", "대화좋아", "자연힐링"]
-
     private let mannerKeywords = ["연락이 빨라요", "매너가 좋아요", "시간 약속을 잘 지켜요", "늦어도 미리 알려줘요"]
 
     // MARK: - UI Components
@@ -177,30 +177,27 @@ final class MyPageView: BaseView {
     override func setUI() {
         layer.insertSublayer(gradientLayer, at: 0)
 
-        addSubview(scrollView)
-        addSubview(navigationBar)
+        addSubviews(scrollView, navigationBar)
 
         scrollView.addSubview(contentView)
 
-        contentView.addSubview(boardingPassImageView)
-        contentView.addSubview(mannerScoreCardView)
-        contentView.addSubview(menuCardView)
+        contentView.addSubviews(boardingPassImageView, mannerScoreCardView, menuCardView)
 
-        boardingPassImageView.addSubview(profileImageView)
-        boardingPassImageView.addSubview(nameStackView)
-        boardingPassImageView.addSubview(verificationChip)
-        boardingPassImageView.addSubview(personalityChipContainerView)
-        boardingPassImageView.addSubview(statsStackView)
-        boardingPassImageView.addSubview(firstDividerView)
-        boardingPassImageView.addSubview(secondDividerView)
+        boardingPassImageView.addSubviews(
+            profileImageView, nameStackView, verificationChip,
+            personalityChipContainerView, statsStackView,
+            firstDividerView, secondDividerView
+        )
 
         nameStackView.addArrangedSubviews(nicknameLabel, genderLabel)
 
-        personalityChipContainerView.addSubview(personalityFirstLineStackView)
-        personalityChipContainerView.addSubview(personalitySecondLineStackView)
+        personalityChipContainerView.addSubviews(
+            personalityFirstLineStackView, personalitySecondLineStackView
+        )
 
         personalityKeywords.enumerated().forEach {
             let chip = makePersonalityChip(title: $0.element)
+
             if $0.offset < 3 {
                 personalityFirstLineStackView.addArrangedSubview(chip)
             } else {
@@ -208,21 +205,17 @@ final class MyPageView: BaseView {
             }
         }
 
-        statsStackView.addArrangedSubviews(
-            mealStatView,
-            cityStatView,
-            reviewStatView
+        statsStackView.addArrangedSubviews(mealStatView, cityStatView, reviewStatView)
+
+        mannerScoreCardView.addSubviews(
+            mannerTitleLabel, starRatingView, mannerChipContainerView
         )
 
-        mannerScoreCardView.addSubview(mannerTitleLabel)
-        mannerScoreCardView.addSubview(starRatingView)
-        mannerScoreCardView.addSubview(mannerChipContainerView)
-
-        mannerChipContainerView.addSubview(mannerFirstLineStackView)
-        mannerChipContainerView.addSubview(mannerSecondLineStackView)
+        mannerChipContainerView.addSubviews(mannerFirstLineStackView, mannerSecondLineStackView)
 
         mannerKeywords.enumerated().forEach {
             let chip = makeMannerChip(title: $0.element)
+
             if $0.offset < 2 {
                 mannerFirstLineStackView.addArrangedSubview(chip)
             } else {
@@ -230,9 +223,7 @@ final class MyPageView: BaseView {
             }
         }
 
-        menuCardView.addSubview(writtenPostRowView)
-        menuCardView.addSubview(sentRequestRowView)
-        menuCardView.addSubview(receivedRequestRowView)
+        menuCardView.addSubviews(writtenPostRowView, sentRequestRowView, receivedRequestRowView)
     }
 
     override func setLayout() {
@@ -369,11 +360,20 @@ final class MyPageView: BaseView {
             $0.bottom.equalToSuperview()
         }
     }
+
+    override func setAddTarget() {
+        writtenPostRowView.onTap = { [weak self] in
+            self?.onWrittenPostRowDidTap?()
+        }
+    }
 }
+
+// MARK: - Private Methods
 
 private extension MyPageView {
     func makePersonalityChip(title: String) -> NearbyChipButton {
         let chip = NearbyChipButton(style: .personalityOrange, title: title, horizontalInset: 16)
+
         chip.isUserInteractionEnabled = false
 
         chip.snp.makeConstraints {
@@ -395,6 +395,8 @@ private extension MyPageView {
     }
 }
 
+// MARK: - MyPageStatItemView
+
 private final class MyPageStatItemView: UIView {
 
     // MARK: - UI Components
@@ -405,7 +407,8 @@ private final class MyPageStatItemView: UIView {
 
     // MARK: - Initializer
 
-    init(icon: UIImage?, title: String, value: String) {
+    init(icon: UIImage?, title: String, value: String)
+    {
         super.init(frame: .zero)
 
         setStyle(icon: icon, title: title, value: value)
@@ -413,13 +416,15 @@ private final class MyPageStatItemView: UIView {
         setLayout()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
+// MARK: - Private Methods
+
 private extension MyPageStatItemView {
-    func setStyle(icon: UIImage?, title: String, value: String) {
+    func setStyle(icon: UIImage?, title: String, value: String)
+    {
         backgroundColor = .clear
 
         iconImageView.do {
@@ -465,12 +470,19 @@ private extension MyPageStatItemView {
     }
 }
 
+// MARK: - MyPageMenuRowView
+
 private final class MyPageMenuRowView: UIView {
+
+    // MARK: - Properties
+
+    var onTap: (() -> Void)?
 
     // MARK: - UI Components
 
     private let titleLabel = UILabel()
     private let arrowImageView = UIImageView()
+    private let tapButton = UIButton(type: .system)
 
     // MARK: - Initializer
 
@@ -480,12 +492,16 @@ private final class MyPageMenuRowView: UIView {
         setStyle(title: title)
         setUI()
         setLayout()
+        setAddTarget()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+// MARK: - Private Methods
 
 private extension MyPageMenuRowView {
     func setStyle(title: String) {
@@ -500,11 +516,14 @@ private extension MyPageMenuRowView {
             $0.tintColor = .black
             $0.contentMode = .scaleAspectFit
         }
+
+        tapButton.do {
+            $0.backgroundColor = .clear
+        }
     }
 
     func setUI() {
-        addSubview(titleLabel)
-        addSubview(arrowImageView)
+        addSubviews(titleLabel, arrowImageView, tapButton)
     }
 
     func setLayout() {
@@ -519,5 +538,22 @@ private extension MyPageMenuRowView {
             $0.width.equalTo(13)
             $0.height.equalTo(23)
         }
+
+        tapButton.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+    }
+
+    func setAddTarget() {
+        tapButton.addTarget(self, action: #selector(rowDidTap), for: .touchUpInside)
+    }
+}
+
+// MARK: - Action
+
+private extension MyPageMenuRowView {
+    @objc
+    func rowDidTap() {
+        onTap?()
     }
 }

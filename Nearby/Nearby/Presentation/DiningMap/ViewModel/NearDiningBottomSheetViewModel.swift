@@ -25,7 +25,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
         let selectedRestaurant = PassthroughSubject<NearDiningCellItem, Never>()
     }
     
-    // MARK: - Property
+    // MARK: - Properties
 
     let output: Output
 
@@ -47,8 +47,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
             output.selectedRestaurant.send(restaurant(at: index))
         case .bookmarkDidTap(let index):
             var restaurants = output.restaurants.value
-            let item = restaurants[index]
-            restaurants[index] = NearDiningCellItem(name: item.name, category: item.category, businessStatus: item.businessStatus, distance: item.distance, address: item.address, rating: item.rating, reviewCount: item.reviewCount, images: item.images, isBookmarked: !item.isBookmarked)
+            restaurants[index].isBookmarked.toggle()
             output.restaurants.send(restaurants)
         }
     }

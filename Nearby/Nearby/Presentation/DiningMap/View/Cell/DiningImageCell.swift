@@ -12,7 +12,7 @@ import Then
 
 final class DiningImageCell: UICollectionViewCell {
     
-    // MARK: - UI Components
+    // MARK: - UI Component
     
     private let imageView = UIImageView()
 
@@ -34,14 +34,14 @@ final class DiningImageCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
     
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
     }
 
-    // MARK: - Methods
+    // MARK: - Method
     
     func configure(image: UIImage?) {
         imageView.image = image ?? .restaurantPlaceholder

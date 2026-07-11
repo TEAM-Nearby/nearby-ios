@@ -47,7 +47,7 @@ enum NearbyBottomSheetHeightResolver {
         case .specificRestaurantCompanionList:
             return companionListStandardHeight(context: context) + NearbyBottomSheetValue.companionListStandardHeightAddition
         case .nearbyCompanionList:
-            return max(0, companionListStandardHeight(context: context) + NearbyBottomSheetValue.companionListStandardHeightAddition)
+            return companionListStandardHeight(context: context) + NearbyBottomSheetValue.companionListStandardHeightAddition
         case .diningMapList:
             return NearbyBottomSheetValue.diningListStandardHeight
         case .savedRestaurantList:

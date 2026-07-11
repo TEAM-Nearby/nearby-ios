@@ -64,6 +64,14 @@ private extension MainTabCoordinator {
             companionCoordinator.parentCoordinator = self
             addChildCoordinator(companionCoordinator)
             companionCoordinator.start()
+
+        case .diningMap:
+            let diningMapCoordinator = diContainer.makeDiningMapCoordinator(
+                navigationController: navigationController
+            )
+            diningMapCoordinator.parentCoordinator = self
+            addChildCoordinator(diningMapCoordinator)
+            diningMapCoordinator.start()
             
         case .meeting:
             let meetingCoordinator = diContainer.makeMeetingCoordinator(
@@ -122,7 +130,7 @@ private extension MainTabCoordinator {
         case .companion:
             preconditionFailure("Companion tab should be configured by CompanionCoordinator")
         case .diningMap:
-            return diContainer.makeDiningMapViewController()
+            preconditionFailure("Dining map tab should be configured by DiningMapCoordinator")
         case .matching:
             return diContainer.makeMatchingViewController()
         case .meeting:

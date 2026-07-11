@@ -9,7 +9,7 @@ import GoogleMaps
 
 enum NearbyMapViewFactory {
     
-    // MARK: - Methods
+    // MARK: - Method
     
     static func makeMapView() -> GMSMapView {
         let camera = GMSCameraPosition.camera(withLatitude: 37.531821, longitude: 126.913904, zoom: 15)

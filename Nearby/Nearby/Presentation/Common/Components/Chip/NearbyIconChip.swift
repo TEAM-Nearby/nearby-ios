@@ -15,7 +15,6 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
     private let style: NearbyChipStyle
     private let title: String
     private let icon: UIImage
-    private let spacing: CGFloat = 0
     private let iconColor: UIColor
     
     // MARK: - UI Components
@@ -26,11 +25,11 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
     
     // MARK: - Initializer
     
-    init(style: NearbyChipStyle, title: String, icon: UIImage, iconColor: UIColor) {
+    init(style: NearbyChipStyle, title: String, icon: UIImage, iconColor: UIColor? = nil) {
         self.style = style
         self.title = title
         self.icon = icon
-        self.iconColor = iconColor
+        self.iconColor = iconColor ?? style.titleColor
         super.init(frame: .zero)
         
         isSelected = style.isSelected
@@ -60,7 +59,7 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
         
         contentStackView.axis = .horizontal
         contentStackView.alignment = .center
-        contentStackView.spacing = spacing
+        contentStackView.spacing = style.iconTextSpacing
         contentStackView.isUserInteractionEnabled = false
         
         chipIconImageView.image = icon.withRenderingMode(.alwaysTemplate)
@@ -78,13 +77,12 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
     
     private func setLayout() {
         self.snp.makeConstraints {
-            $0.height.equalTo(32)
+            $0.height.equalTo(style.height)
         }
         
         contentStackView.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.leading.equalToSuperview().inset(12)
-            $0.trailing.equalToSuperview().inset(12)
+            $0.horizontalEdges.equalToSuperview().inset(10)
         }
         
         chipIconImageView.snp.makeConstraints {
@@ -99,7 +97,7 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
     private func setChipStyle(_ style: NearbyChipStyle) {
         backgroundColor = style.backgroundColor
         layer.borderColor = style.borderColor.cgColor
-        chipIconImageView.tintColor = iconColor
+        chipIconImageView.tintColor = style.titleColorForIcon ? style.titleColor : iconColor
         chipTextLabel.textColor = style.titleColor
         chipTextLabel.font = style.font
         invalidateIntrinsicContentSize()
@@ -108,6 +106,11 @@ final class NearbyIconChip: UIButton, NearbyChipShadowStyling {
     private func updateChipButton() {
         let toggleChipButton: NearbyChipStyle = isSelected ? style.selectedStyle : style.unselectedStyle
         setChipStyle(toggleChipButton)
+    }
+
+    func updateSelected(_ isSelected: Bool) {
+        self.isSelected = isSelected
+        updateChipButton()
     }
     
     // MARK: - Action

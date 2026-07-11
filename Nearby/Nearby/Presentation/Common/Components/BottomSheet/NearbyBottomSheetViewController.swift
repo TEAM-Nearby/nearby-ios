@@ -147,41 +147,71 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
         return min(maxHeight, max(minHeight, height))
     }
     
-    private func nearestLevel(to height: CGFloat) -> BottomSheetLevel {
-        currentState.availableLevels.min {
-            let leftState = BottomSheetState(content: currentState.content, level: $0)
-            let rightState = BottomSheetState(content: currentState.content, level: $1)
-            return abs(resolvedHeight(for: leftState) - height) < abs(resolvedHeight(for: rightState) - height)
-        } ?? currentState.level
-    }
-    
     private func resolvedHeight(for state: BottomSheetState) -> CGFloat {
         NearbyBottomSheetHeightResolver.height(for: state, context: heightContext)
     }
     
     private func nextLevel(translationY: CGFloat, velocityY: CGFloat) -> BottomSheetLevel {
         let levels = currentState.availableLevels
-        guard let firstLevel = levels.first,
-              let lastLevel = levels.last,
-              levels.count >= 2 else {
+        guard levels.count >= 2,
+              let currentIndex = levels.firstIndex(of: currentState.level) else {
             return currentState.level
         }
-        
-        let projectedHeight = clampedHeight(panStartHeight - translationY - velocityY * 0.18)
-        let firstHeight = resolvedHeight(for: BottomSheetState(content: currentState.content, level: firstLevel))
-        let lastHeight = resolvedHeight(for: BottomSheetState(content: currentState.content, level: lastLevel))
-        
-        if currentState.level == firstLevel,
-           translationY < -(lastHeight - firstHeight) * 0.35 || velocityY < -1200 {
-            return lastLevel
+
+        if translationY < 0, currentIndex < levels.count - 1 {
+            let nextLevel = levels[currentIndex + 1]
+            let nextHeight = resolvedHeight(
+                for: BottomSheetState(content: currentState.content, level: nextLevel)
+            )
+            let requiredTranslation = abs(nextHeight - panStartHeight) * 0.35
+            if abs(translationY) >= requiredTranslation || velocityY < -1200 {
+                return nextLevel
+            }
         }
-        
-        if currentState.level == lastLevel,
-           translationY > (lastHeight - firstHeight) * 0.35 || velocityY > 1200 {
-            return firstLevel
+
+        if translationY > 0, currentIndex > 0 {
+            let previousLevel = levels[currentIndex - 1]
+            let previousHeight = resolvedHeight(
+                for: BottomSheetState(content: currentState.content, level: previousLevel)
+            )
+            let requiredTranslation = abs(panStartHeight - previousHeight) * 0.35
+            if translationY >= requiredTranslation || velocityY > 1200 {
+                return previousLevel
+            }
         }
-        
-        return nearestLevel(to: projectedHeight)
+
+        return currentState.level
+    }
+
+    func setTopOverlayViews(centerView: UIView, trailingView: UIView) {
+        view.addSubviews(centerView, trailingView)
+
+        centerView.snp.remakeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(containerView.snp.top).offset(-12)
+        }
+
+        trailingView.snp.remakeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalTo(centerView)
+            $0.size.equalTo(40)
+        }
+    }
+
+    func setTrailingOverlayViews(lowerView: UIView, upperView: UIView) {
+        view.addSubviews(lowerView, upperView)
+
+        lowerView.snp.remakeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalTo(containerView.snp.top).offset(-12)
+            $0.size.equalTo(40)
+        }
+
+        upperView.snp.remakeConstraints {
+            $0.trailing.equalTo(lowerView)
+            $0.bottom.equalTo(lowerView.snp.top).offset(-8)
+            $0.size.equalTo(40)
+        }
     }
     
     func setState(

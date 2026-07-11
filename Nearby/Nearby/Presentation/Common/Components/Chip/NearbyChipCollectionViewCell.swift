@@ -39,7 +39,7 @@ final class NearbyChipCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Method
     
-    func configure(style: NearbyChipStyle, title: String, icon: UIImage, iconColor: UIColor) {
+    func configure(style: NearbyChipStyle, title: String, icon: UIImage, iconColor: UIColor? = nil) {
         iconChip?.removeFromSuperview()
         
         let iconChip = NearbyIconChip(style: style, title: title, icon: icon, iconColor: iconColor)

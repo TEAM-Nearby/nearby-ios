@@ -12,13 +12,13 @@ import Then
 
 final class MatchingMatchedCardCell: UICollectionViewCell {
 
-    // MARK: - Property
+    // MARK: - Properties
 
     var onNextButtonDidTap: (() -> Void)?
+    private let descriptionLimit = 29
 
     // MARK: - UI Components
 
-    private let confirmedLabel = UILabel()
     private let profileContainerView = UIView()
     private let profileImageView = UIImageView()
     private let profileStackView = AvatarStackView(avatarSize: 40, avatarOverlap: 12)
@@ -29,7 +29,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     private let contentLabel = UILabel()
     private let nextButton = UIButton()
     private let dotLabel = UILabel()
-    private var profileContainerWidthConstraint: Constraint?
 
     // MARK: - Initializer
 
@@ -62,20 +61,13 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.clipsToBounds = true
         }
 
-        confirmedLabel.do {
-            $0.setFont(.b2Sb16, text: "일정 확정", textColor: .highlightTextPurple)
-            $0.isHidden = true
-        }
-
         profileImageView.do {
             $0.image = .imgProfileDefault
             $0.contentMode = .scaleAspectFill
-            $0.layer.cornerRadius = 20
             $0.clipsToBounds = true
         }
 
         profileStackView.do {
-            $0.configureWithDefaultAvatars(count: 1)
             $0.isHidden = true
         }
 
@@ -117,24 +109,17 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     private func setUI() {
         profileContainerView.addSubviews(profileImageView, profileStackView)
         contentView.addSubviews(
-            confirmedLabel, profileContainerView, nameLabel,
+            profileContainerView, nameLabel,
             genderLabel, dotLabel, uploadedTimeLabel,
             informationLabel, contentLabel, nextButton
         )
     }
 
     private func setLayout() {
-        confirmedLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(16)
-            $0.leading.equalToSuperview().inset(20)
-            $0.height.equalTo(22)
-        }
-
         profileContainerView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(19)
             $0.leading.equalToSuperview().inset(20)
-            profileContainerWidthConstraint = $0.width.equalTo(40).constraint
-            $0.height.equalTo(40)
+            $0.size.equalTo(40)
         }
 
         profileImageView.snp.makeConstraints {
@@ -184,8 +169,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
-    // MARK: - Methods
-
     private func updateHeader(content: MatchingMatchedCardContentModel, displayMode: MatchingMatchedCardDisplayMode) {
         switch displayMode {
         case .list:
@@ -209,34 +192,11 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         return "\(content.name)님 외 \(companionCount)명과의 동행"
     }
 
-    private func descriptionLimit(for displayMode: MatchingMatchedCardDisplayMode) -> Int {
-        switch displayMode {
-        case .list:
-            return 26
-        case .scheduleDetail:
-            return 30
-        }
-    }
-
-    private func descriptionColor(for displayMode: MatchingMatchedCardDisplayMode) -> UIColor {
-        switch displayMode {
-        case .list:
-            return .grey30
-        case .scheduleDetail:
-            return .grey40
-        }
-    }
-
-    private func updateProfileTopConstraint(state: MatchingMatchedCardState) {
+    private func updateProfileTopConstraint() {
         profileContainerView.snp.remakeConstraints {
-            if state.showsConfirmedLabel {
-                $0.top.equalTo(confirmedLabel.snp.bottom).offset(12)
-            } else {
-                $0.top.equalToSuperview().inset(19)
-            }
-
+            $0.top.equalToSuperview().inset(19)
             $0.leading.equalToSuperview().inset(20)
-            profileContainerWidthConstraint = $0.width.equalTo(profileContainerWidth()).constraint
+            $0.width.equalTo(profileContainerWidth())
             $0.height.equalTo(40)
         }
     }
@@ -286,22 +246,20 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     func configure(
         content: MatchingMatchedCardContentModel,
-        state: MatchingMatchedCardState,
         displayMode: MatchingMatchedCardDisplayMode = .list
     ) {
-        contentView.backgroundColor = state.backgroundColor
+        contentView.backgroundColor = .bgSurfaceGrey0
         setNextButtonHidden(false)
-        confirmedLabel.isHidden = !state.showsConfirmedLabel
         updateProfile(content: content, displayMode: displayMode)
 
         updateHeader(content: content, displayMode: displayMode)
         informationLabel.setFont(.b3M14, text: "\(content.place) · \(content.meetingTime)", textColor: .grey80)
         contentLabel.setFont(
             .b3M14,
-            text: content.description.truncated(limit: descriptionLimit(for: displayMode)),
-            textColor: descriptionColor(for: displayMode)
+            text: content.description.truncated(limit: descriptionLimit),
+            textColor: displayMode.descriptionColor
         )
-        updateProfileTopConstraint(state: state)
+        updateProfileTopConstraint()
     }
 
     func setNextButtonHidden(_ isHidden: Bool) {
@@ -314,6 +272,5 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     @objc
     private func nextButtonDidTap() {
         onNextButtonDidTap?()
-        // TODO: - 뷰 연결
     }
 }

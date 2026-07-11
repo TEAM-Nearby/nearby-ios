@@ -25,7 +25,7 @@ final class RecruitCompanionView: BaseView {
     override func setStyle() {
         backgroundColor = .white
 
-        navigationBar.do{
+        navigationBar.do {
             $0.configure(leftItem: .back, centerItem: .title("동행 모집하기"))
         }
 

@@ -26,9 +26,13 @@ final class AppDIContainer {
     func makeCompanionCoordinator(navigationController: UINavigationController) -> CompanionCoordinator {
         CompanionCoordinator( navigationController: navigationController, diContainer: self)
     }
-
+    
     func makeDiningMapCoordinator(navigationController: UINavigationController) -> DiningMapCoordinator {
-        DiningMapCoordinator(navigationController: navigationController, diContainer: self)
+        DiningMapCoordinator( navigationController: navigationController, diContainer: self)
+    }
+    
+    func makeMatchingCoordinator(navigationController: UINavigationController) -> MatchingCoordinator {
+        MatchingCoordinator(navigationController: navigationController, diContainer: self)
     }
     
     func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
@@ -75,6 +79,10 @@ final class AppDIContainer {
 
     func makeMeetingViewModel() -> MeetingTabViewModel {
         MeetingTabViewModel()
+    }
+
+    func makeMatchingViewModel() -> MatchingViewModel {
+        MatchingViewModel()
     }
 
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
@@ -141,7 +149,7 @@ final class AppDIContainer {
     }
 
     func makeSpecificCompanionSheetViewController() -> SpecificCompanionSheetViewController {
-        SpecificCompanionSheetViewController(viewModel:makeSpecificCompanionSheetViewModel())
+        SpecificCompanionSheetViewController(viewModel: makeSpecificCompanionSheetViewModel())
     }
 
     func makeEmptyCompanionSheetViewController() -> EmptyCompanionSheetViewController {
@@ -167,15 +175,33 @@ final class AppDIContainer {
     func makeSaveDiningSheetViewController() -> SaveDiningSheetViewController {
         SaveDiningSheetViewController(viewModel: makeSaveDiningSheetViewModel())
     }
-  
-    func makeDiningMapViewController() -> UIViewController {
-        makePlaceholderViewController(title: "혼밥 지도")
+    
+    func makeMatchingViewController(coordinator: MatchingCoordinator) -> UIViewController {
+        let viewController = MatchingViewController(viewModel: makeMatchingViewModel())
+        viewController.coordinator = coordinator
+        return viewController
     }
 
-    func makeMatchingViewController() -> UIViewController {
-        makePlaceholderViewController(title: "매칭")
+    func makeMatchingScheduleDetailViewController(
+        coordinator: MatchingCoordinator,
+        item: MatchingMatchedCardItem
+    ) -> UIViewController {
+        let viewController = MatchingScheduleDetailViewController(item: item)
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
     }
 
+    func makeMatchingManageScheduleDetailViewController(
+        coordinator: MatchingCoordinator,
+        item: MatchingMatchedCardItem
+    ) -> UIViewController {
+        let viewController = MatchingManageDetailViewController(item: item)
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+    
     func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = MeetingTabViewController(viewModel:makeMeetingViewModel())
 

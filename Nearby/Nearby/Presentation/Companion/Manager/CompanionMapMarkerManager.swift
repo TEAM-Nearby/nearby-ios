@@ -33,6 +33,10 @@ final class CompanionMapMarkerManager {
     private var entries: [Entry] = []
     private var level: CompanionMarkerLevel
     private let configuration: CompanionMapConfiguration
+
+    var hasCompanionMarkers: Bool {
+        !entries.isEmpty
+    }
     
     // MARK: - Initializer
     

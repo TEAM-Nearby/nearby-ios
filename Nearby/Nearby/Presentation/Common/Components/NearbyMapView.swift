@@ -5,6 +5,7 @@
 //  Created by 장지인 on 7/10/26.
 //
 
+import SafariServices
 import UIKit
 
 import GoogleMaps
@@ -20,8 +21,10 @@ final class NearbyMapView: BaseView {
     
     private var latitude: Double?
     private var longitude: Double?
+    private var placeName: String?
+    private var placeID: String?
     
-    var onMapDidTap: ((_ latitude: Double, _ logitude: Double) -> Void)?
+    var onMapDidTap: ((_ latitude: Double, _ longitude: Double) -> Void)?
 
     // MARK: - UI Components
 
@@ -50,6 +53,7 @@ final class NearbyMapView: BaseView {
         mapView.do {
             $0.layer.cornerRadius = cornerRadius
             $0.clipsToBounds = true
+            $0.delegate = self
         }
 
         markerImageView.do {
@@ -57,10 +61,6 @@ final class NearbyMapView: BaseView {
             $0.tintColor = .primary50
             $0.frame = CGRect(origin: .zero, size: markerSize)
             $0.contentMode = .scaleAspectFit
-        }
-        
-        mapView.do {
-            $0.delegate = self
         }
     }
 
@@ -74,11 +74,40 @@ final class NearbyMapView: BaseView {
         }
     }
 
-    // MARK: - Method
+    // MARK: - Methods
+    
+    private func openGoogleMaps() {
+        guard let latitude, let longitude else { return }
 
-    func configure(latitude: Double, longitude: Double, zoom: Float = 16.0) {
+        if let onMapDidTap {
+            onMapDidTap(latitude, longitude)
+            return
+        }
+
+        let name = placeName?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        var urlString = "https://www.google.com/maps/search/?api=1&query="
+        urlString += name.isEmpty ? "\(latitude),\(longitude)" : "\(name)%20\(latitude),\(longitude)"
+        if let placeID {
+            urlString += "&query_place_id=\(placeID)"
+        }
+        guard let url = URL(string: urlString) else { return }
+
+        let safariViewController = SFSafariViewController(url: url)
+        
+        if let sheet = safariViewController.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        }
+        
+        owningViewController?.present(safariViewController, animated: true)
+    }
+
+    func configure(latitude: Double, longitude: Double, placeName: String? = nil, placeID: String? = nil, zoom: Float = 16.0, showsInfoWindow: Bool = false) {
         self.latitude = latitude
         self.longitude = longitude
+        self.placeName = placeName
+        self.placeID = placeID
         
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: zoom)
@@ -86,8 +115,13 @@ final class NearbyMapView: BaseView {
         mapView.camera = camera
 
         marker.position = coordinate
+        marker.title = placeName
         marker.iconView = markerImageView
         marker.map = mapView
+        
+        if showsInfoWindow {
+            mapView.selectedMarker = marker
+        }
     }
 }
 
@@ -95,13 +129,24 @@ final class NearbyMapView: BaseView {
 
 extension NearbyMapView: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
-        guard let latitude, let longitude else { return }
-        onMapDidTap?(latitude, longitude)
+        openGoogleMaps()
     }
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-        guard let latitude, let longitude else { return false }
-        onMapDidTap?(latitude, longitude)
+        openGoogleMaps()
         return true
+    }
+}
+
+// MARK: - Responder Chain
+
+private extension UIView {
+    var owningViewController: UIViewController? {
+        var responder: UIResponder? = next
+        while let current = responder {
+            if let viewController = current as? UIViewController { return viewController }
+            responder = current.next
+        }
+        return nil
     }
 }

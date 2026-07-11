@@ -119,7 +119,12 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         profileContainerView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(19)
             $0.leading.equalToSuperview().inset(20)
+<<<<<<< HEAD
             $0.size.equalTo(40)
+=======
+            $0.width.equalTo(40)
+            $0.height.equalTo(40)
+>>>>>>> origin/feat/#76
         }
 
         profileImageView.snp.makeConstraints {

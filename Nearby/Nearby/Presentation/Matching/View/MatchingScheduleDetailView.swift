@@ -54,6 +54,22 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setNextButtonHidden(true)
         }
 
+<<<<<<< HEAD
+=======
+        setPlaceStyle()
+        setDateAndTimeStyle()
+        setKakaoLinkStyle()
+
+        bottomButtonStackView.do {
+            $0.axis = .horizontal
+            $0.spacing = 8
+            $0.distribution = .fill
+        }
+    }
+
+    private func setPlaceStyle() {
+
+>>>>>>> origin/feat/#76
         placeImageView.do {
             $0.image = .loaction.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
@@ -76,7 +92,13 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setImage(.copyIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey30
         }
+<<<<<<< HEAD
 
+=======
+    }
+
+    private func setDateAndTimeStyle() {
+>>>>>>> origin/feat/#76
         dateAndTimeImageView.do {
             $0.image = .smallCalenderIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
@@ -94,7 +116,13 @@ final class MatchingScheduleDetailView: BaseView {
         dateDividerView.do {
             $0.backgroundColor = .grey5
         }
+<<<<<<< HEAD
 
+=======
+    }
+
+    private func setKakaoLinkStyle() {
+>>>>>>> origin/feat/#76
         kakaoLinkImageView.do {
             $0.image = .chatIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
@@ -113,12 +141,15 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setImage(.copyIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey30
         }
+<<<<<<< HEAD
 
         bottomButtonStackView.do {
             $0.axis = .horizontal
             $0.spacing = 8
             $0.distribution = .fill
         }
+=======
+>>>>>>> origin/feat/#76
     }
 
     override func setUI() {
@@ -136,6 +167,17 @@ final class MatchingScheduleDetailView: BaseView {
     }
 
     override func setLayout() {
+<<<<<<< HEAD
+=======
+        setHeaderLayout()
+        setPlaceLayout()
+        setDateAndTimeLayout()
+        setKakaoLinkLayout()
+        setBottomButtonLayout()
+    }
+
+    private func setHeaderLayout() {
+>>>>>>> origin/feat/#76
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview()
@@ -146,7 +188,13 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(110)
         }
+<<<<<<< HEAD
 
+=======
+    }
+
+    private func setPlaceLayout() {
+>>>>>>> origin/feat/#76
         placeImageView.snp.makeConstraints {
             $0.top.equalTo(matchedCardView.snp.bottom).offset(28)
             $0.leading.equalToSuperview().inset(20)
@@ -183,7 +231,13 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(143)
         }
+<<<<<<< HEAD
 
+=======
+    }
+
+    private func setDateAndTimeLayout() {
+>>>>>>> origin/feat/#76
         dateAndTimeImageView.snp.makeConstraints {
             $0.top.equalTo(mapView.snp.bottom).offset(36)
             $0.leading.equalToSuperview().inset(20)
@@ -207,7 +261,13 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(1)
         }
+<<<<<<< HEAD
 
+=======
+    }
+
+    private func setKakaoLinkLayout() {
+>>>>>>> origin/feat/#76
         kakaoLinkImageView.snp.makeConstraints {
             $0.top.equalTo(dateDividerView.snp.bottom).offset(18)
             $0.leading.equalToSuperview().inset(20)
@@ -232,7 +292,13 @@ final class MatchingScheduleDetailView: BaseView {
             $0.trailing.equalToSuperview().inset(20)
             $0.size.equalTo(24)
         }
+<<<<<<< HEAD
 
+=======
+    }
+
+    private func setBottomButtonLayout() {
+>>>>>>> origin/feat/#76
         bottomButtonStackView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(23)
@@ -256,8 +322,16 @@ final class MatchingScheduleDetailView: BaseView {
         manageButton.addTarget(self, action: #selector(manageButtonDidTap), for: .touchUpInside)
         shareButton.addTarget(self, action: #selector(shareButtonDidTap), for: .touchUpInside)
     }
+<<<<<<< HEAD
 
     // MARK: - Methods
+=======
+}
+
+// MARK: - Methods
+
+extension MatchingScheduleDetailView {
+>>>>>>> origin/feat/#76
 
     func configure(displayData: MatchingScheduleDetailDisplayData) {
         matchedCardView.configure(

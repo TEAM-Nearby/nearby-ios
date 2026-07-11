@@ -30,6 +30,10 @@ final class AppDIContainer {
     func makeMatchingCoordinator(navigationController: UINavigationController) -> MatchingCoordinator {
         MatchingCoordinator(navigationController: navigationController, diContainer: self)
     }
+
+    func makeMatchingCoordinator(navigationController: UINavigationController) -> MatchingCoordinator {
+        MatchingCoordinator(navigationController: navigationController, diContainer: self)
+    }
     
     func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
         MyPageCoordinator( navigationController: navigationController, appDIContainer: self)
@@ -78,12 +82,19 @@ final class AppDIContainer {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     func makeMatchingViewModel() -> MatchingViewModel {
         MatchingViewModel()
     }
     
 >>>>>>> 39a23cd ([feat] #76 MVVM 패턴 적용)
+=======
+    func makeMatchingViewModel() -> MatchingViewModel {
+        MatchingViewModel()
+    }
+
+>>>>>>> origin/feat/#76
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
     }
@@ -183,6 +194,33 @@ final class AppDIContainer {
         let viewController = MatchingViewController(viewModel: makeMatchingViewModel())
         viewController.coordinator = coordinator
         return viewController
+<<<<<<< HEAD
+=======
+    }
+
+    func makeMatchingScheduleDetailViewController(
+        coordinator: MatchingCoordinator,
+        item: MatchingMatchedCardItem
+    ) -> UIViewController {
+        let viewController = MatchingScheduleDetailViewController(item: item)
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+
+    func makeMatchingManageScheduleDetailViewController(
+        coordinator: MatchingCoordinator,
+        item: MatchingMatchedCardItem
+    ) -> UIViewController {
+        let viewController = MatchingManageDetailViewController(item: item)
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+
+    func makeMatchingViewController() -> UIViewController {
+        makePlaceholderViewController(title: "매칭")
+>>>>>>> origin/feat/#76
     }
 
     func makeMatchingScheduleDetailViewController(

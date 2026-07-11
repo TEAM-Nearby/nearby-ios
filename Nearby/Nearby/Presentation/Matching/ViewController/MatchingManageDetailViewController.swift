@@ -86,7 +86,11 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
             .receive(on: DispatchQueue.main)
             .sink { request in
                 // TODO: - 일정 확정 API 연결
+<<<<<<< HEAD
                 AppLogger.data(request)
+=======
+                print(request)
+>>>>>>> origin/feat/#76
             }
             .store(in: &cancellables)
 

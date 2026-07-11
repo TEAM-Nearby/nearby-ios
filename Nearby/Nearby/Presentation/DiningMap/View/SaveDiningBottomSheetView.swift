@@ -113,7 +113,7 @@ final class SaveDiningBottomSheetView: BaseView {
         collectionView.snp.makeConstraints {
             $0.top.equalTo(categoryScrollView.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(12)
+            $0.bottom.equalToSuperview()
         }
     }
 

@@ -126,7 +126,7 @@ final class NearDiningBottomSheetView: BaseView {
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 16
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 12, trailing: 0)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 68, trailing: 0)
         return UICollectionViewCompositionalLayout(section: section)
     }
 

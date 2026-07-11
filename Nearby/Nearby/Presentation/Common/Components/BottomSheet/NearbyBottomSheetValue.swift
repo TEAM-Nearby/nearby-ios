@@ -21,7 +21,7 @@ enum NearbyBottomSheetValue {
     static let savedDiningListStandardHeight = contentTopOffset + savedDiningTitleTopOffset + savedDiningTitleHeight
                                                + diningCategoryTopOffset + diningCategoryHeight
                                                + savedDiningCollectionTopOffset + savedDiningCellHeight
-                                               + savedDiningCollectionBottomInset
+                                               + savedDiningCollectionBottomInset + savedDiningDividerBottomSpacing
 
     static let diningListCompactHeight = contentTopOffset + diningTitleTopOffset + diningTitleHeight
                                          + diningCategoryTopOffset + diningCategoryHeight
@@ -53,9 +53,10 @@ enum NearbyBottomSheetValue {
     static let savedDiningCollectionTopOffset: CGFloat = 20
     static let savedDiningCellTextHeight: CGFloat = NearbyFont.b1Sb18.property.lineHeight + 4
                                                     + NearbyFont.b3R14.property.lineHeight + 8
-    static let savedDiningImagePeekHeight: CGFloat = 24
+    static let savedDiningImagePeekHeight: CGFloat = 42
     static let savedDiningCellHeight: CGFloat = 245
-    static let savedDiningCollectionBottomInset: CGFloat = 12
+    static let savedDiningCollectionBottomInset: CGFloat = 0
+    static let savedDiningDividerBottomSpacing: CGFloat = 2
     
     static let specificCompanionTitleTopOffset: CGFloat = 14
     static let specificCompanionTitleHeight: CGFloat = NearbyFont.h3Sb20.property.lineHeight

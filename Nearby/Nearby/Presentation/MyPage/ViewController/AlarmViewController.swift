@@ -7,13 +7,16 @@
 
 import UIKit
 
-final class AlarmViewController: BaseViewController<AlarmViewModel> {
+final class AlarmViewController:
+    BaseViewController<AlarmViewModel> {
 
     // MARK: - Properties
 
     var onBackButtonDidTap: (() -> Void)?
-    var onRequestActionDidTap: ((AlarmRequestItem) -> Void)?
+    var onRequestActionDidTap:
+        ((AlarmRequestItem) -> Void)?
 
+    private var selectedTab: AlarmTab = .sent
     private var requestItems: [AlarmRequestItem] = []
 
     // MARK: - UI Component
@@ -35,7 +38,10 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        navigationController?.setNavigationBarHidden(
+            true,
+            animated: animated
+        )
     }
 
     // MARK: - Custom Methods
@@ -44,12 +50,26 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
         alarmView.navigationBar.leftButtonAction = {
             [weak self] in
 
-            self?.viewModel.action(.backButtonDidTap)
+            self?.viewModel.action(
+                .backButtonDidTap
+            )
         }
 
-        alarmView.sentRequestButton.addTarget(self, action: #selector(sentRequestButtonDidTap), for: .touchUpInside)
+        alarmView.sentRequestButton.addTarget(
+            self,
+            action: #selector(
+                sentRequestButtonDidTap
+            ),
+            for: .touchUpInside
+        )
 
-        alarmView.receivedRequestButton.addTarget(self, action: #selector(receivedRequestButtonDidTap), for: .touchUpInside)
+        alarmView.receivedRequestButton.addTarget(
+            self,
+            action: #selector(
+                receivedRequestButtonDidTap
+            ),
+            for: .touchUpInside
+        )
     }
 
     override func setDelegate() {
@@ -61,8 +81,14 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
         viewModel.output.selectedTab = {
             [weak self] tab in
 
-            self?.alarmView.updateSelectedTab(tab)
-            self?.alarmView.scrollToTop()
+            guard let self else {
+                return
+            }
+
+            selectedTab = tab
+
+            alarmView.updateSelectedTab(tab)
+            alarmView.scrollToTop()
         }
 
         viewModel.output.requestItems = {
@@ -73,7 +99,13 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
             }
 
             requestItems = items
+
             alarmView.requestTableView.reloadData()
+
+            alarmView.updateContent(
+                items: items,
+                selectedTab: selectedTab
+            )
         }
 
         viewModel.output.backButtonDidTap = {
@@ -85,14 +117,18 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
         viewModel.output.requestActionDidTap = {
             [weak self] requestItem in
 
-            self?.onRequestActionDidTap?(requestItem)
+            self?.onRequestActionDidTap?(
+                requestItem
+            )
         }
     }
 }
 
 // MARK: - UITableViewDataSource
 
-extension AlarmViewController: UITableViewDataSource {
+extension AlarmViewController:
+    UITableViewDataSource {
+
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
@@ -132,7 +168,9 @@ extension AlarmViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 
-extension AlarmViewController: UITableViewDelegate {
+extension AlarmViewController:
+    UITableViewDelegate {
+
     func tableView(
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
@@ -152,11 +190,15 @@ extension AlarmViewController: UITableViewDelegate {
 private extension AlarmViewController {
     @objc
     func sentRequestButtonDidTap() {
-        viewModel.action(.sentRequestButtonDidTap)
+        viewModel.action(
+            .sentRequestButtonDidTap
+        )
     }
 
     @objc
     func receivedRequestButtonDidTap() {
-        viewModel.action(.receivedRequestButtonDidTap)
+        viewModel.action(
+            .receivedRequestButtonDidTap
+        )
     }
 }

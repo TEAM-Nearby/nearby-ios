@@ -5,7 +5,6 @@
 //  Created by 신서연 on 7/11/26.
 //
 
-
 import UIKit
 
 import SnapKit
@@ -33,7 +32,7 @@ final class AlarmEmptyView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     func configure(tab: AlarmTab) {
         switch tab {
@@ -64,8 +63,6 @@ private extension AlarmEmptyView {
         }
 
         descriptionLabel.do {
-            $0.font = NearbyFont.b2M16.font
-            $0.textColor = .grey40
             $0.textAlignment = .center
             $0.numberOfLines = 0
         }
@@ -82,10 +79,12 @@ private extension AlarmEmptyView {
 
         titleLabel.text = "보낸 요청이 없어요"
 
-        descriptionLabel.text = """
-        동행 지도에서 함께하고 싶은
-        여행자를 찾아보세요!
-        """
+        setDescriptionText(
+            """
+            동행 지도에서 함께하고 싶은
+            여행자를 찾아보세요!
+            """
+        )
 
         setLayout(
             imageTopOffset: 164,
@@ -101,10 +100,12 @@ private extension AlarmEmptyView {
 
         titleLabel.text = "받은 요청이 없어요"
 
-        descriptionLabel.text = """
-        아직 받은 합류 요청이 없어요.
-        새 요청이 오면 알려드릴게요!
-        """
+        setDescriptionText(
+            """
+            아직 받은 합류 요청이 없어요.
+            새 요청이 오면 알려드릴게요!
+            """
+        )
 
         setLayout(
             imageTopOffset: 156,
@@ -113,8 +114,35 @@ private extension AlarmEmptyView {
         )
     }
 
-    func setLayout(imageTopOffset: CGFloat, imageSize: CGSize, titleToDescriptionSpacing: CGFloat)
-    {
+    func setDescriptionText(_ text: String) {
+        let font = NearbyFont.b2M16.font
+        let lineHeight = font.pointSize * 1.4
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+        paragraphStyle.minimumLineHeight = lineHeight
+        paragraphStyle.maximumLineHeight = lineHeight
+
+        let baselineOffset = (
+            lineHeight - font.lineHeight
+        ) / 4
+
+        descriptionLabel.attributedText = NSAttributedString(
+            string: text,
+            attributes: [
+                .font: font,
+                .foregroundColor: UIColor.grey40,
+                .paragraphStyle: paragraphStyle,
+                .baselineOffset: baselineOffset
+            ]
+        )
+    }
+
+    func setLayout(
+        imageTopOffset: CGFloat,
+        imageSize: CGSize,
+        titleToDescriptionSpacing: CGFloat
+    ) {
         emptyImageView.snp.remakeConstraints {
             $0.top.equalToSuperview().offset(imageTopOffset)
             $0.centerX.equalToSuperview()
@@ -123,14 +151,15 @@ private extension AlarmEmptyView {
 
         titleLabel.snp.remakeConstraints {
             $0.top.equalTo(emptyImageView.snp.bottom).offset(40)
+
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
         descriptionLabel.snp.remakeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom)
-                .offset(titleToDescriptionSpacing)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(titleToDescriptionSpacing)
 
             $0.horizontalEdges.equalToSuperview().inset(40)
+
             $0.bottom.lessThanOrEqualToSuperview()
         }
     }

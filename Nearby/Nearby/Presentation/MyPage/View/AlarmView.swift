@@ -28,6 +28,8 @@ final class AlarmView: BaseView {
 
     let requestTableView = UITableView(frame: .zero, style: .plain)
 
+    private let emptyView = AlarmEmptyView()
+
     // MARK: - Custom Methods
 
     override func setStyle() {
@@ -77,12 +79,14 @@ final class AlarmView: BaseView {
 
             $0.contentInsetAdjustmentBehavior = .never
         }
+
+        emptyView.do {
+            $0.isHidden = true
+        }
     }
 
     override func setUI() {
-        addSubviews(
-            navigationBar, tabContainerView, requestTableView
-        )
+        addSubviews(navigationBar, tabContainerView, requestTableView, emptyView)
 
         tabContainerView.addSubviews(
             sentRequestButton, receivedRequestButton,
@@ -147,14 +151,15 @@ final class AlarmView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview()
         }
+
+        emptyView.snp.makeConstraints {
+            $0.top.equalTo(tabContainerView.snp.bottom)
+            $0.horizontalEdges.bottom.equalToSuperview()
+        }
     }
 
     override func registerCells() {
-        requestTableView.register(
-            AlarmRequestTableViewCell.self,
-            forCellReuseIdentifier:
-                AlarmRequestTableViewCell.identifier
-        )
+        requestTableView.register(AlarmRequestTableViewCell.self, forCellReuseIdentifier: AlarmRequestTableViewCell.identifier)
     }
 
     // MARK: - Methods
@@ -179,10 +184,29 @@ final class AlarmView: BaseView {
         }
     }
 
+    func updateContent(
+        items: [AlarmRequestItem],
+        selectedTab: AlarmTab
+    ) {
+        let isEmpty = items.isEmpty
+
+        requestTableView.isHidden = isEmpty
+        emptyView.isHidden = !isEmpty
+
+        guard isEmpty else {
+            return
+        }
+
+        emptyView.configure(tab: selectedTab)
+    }
+
     func scrollToTop() {
+        guard !requestTableView.isHidden else {
+            return
+        }
+
         requestTableView.setContentOffset(
-            CGPoint(x: 0, y: -requestTableView.adjustedContentInset.top),
-            animated: false
+            CGPoint(x: 0, y: -requestTableView.adjustedContentInset.top), animated: false
         )
     }
 }

@@ -34,41 +34,11 @@ final class AlarmViewModel: BaseViewModelType {
 
     private var selectedTab: AlarmTab = .sent
 
-    private var sentRequestItems: [AlarmRequestItem] = [
-        AlarmRequestItem(
-            tab: .sent,
-            displayType: .sentAccepted,
-            nickname: "오노테라",
-            dateText: "2026년 6월 18일"
-        ),
-        AlarmRequestItem(
-            tab: .sent,
-            displayType: .sentRejected,
-            nickname: "오노테라",
-            dateText: "2026년 6월 18일"
-        )
-    ]
+    private var sentRequestItems:
+        [AlarmRequestItem] = []
 
-    private var receivedRequestItems: [AlarmRequestItem] = [
-        AlarmRequestItem(
-            tab: .received,
-            displayType: .receivedPending,
-            nickname: "오노테라",
-            dateText: "2026년 6월 18일"
-        ),
-        AlarmRequestItem(
-            tab: .received,
-            displayType: .receivedPending,
-            nickname: "오노테라",
-            dateText: "2026년 6월 18일"
-        ),
-        AlarmRequestItem(
-            tab: .received,
-            displayType: .receivedPending,
-            nickname: "오노테라",
-            dateText: "2026년 6월 18일"
-        )
-    ]
+    private var receivedRequestItems:
+        [AlarmRequestItem] = []
 
     // MARK: - Action
 
@@ -109,17 +79,22 @@ private extension AlarmViewModel {
         output.requestItems?(currentRequestItems)
     }
 
-    func handleRequestActionButtonDidTap(id: UUID) {
-        guard let requestItem = currentRequestItems.first(
-            where: { $0.id == id }
-        ) else {
+    func handleRequestActionButtonDidTap(
+        id: UUID
+    ) {
+        guard let requestItem =
+                currentRequestItems.first(
+                    where: { $0.id == id }
+                ) else {
             return
         }
 
         output.requestActionDidTap?(requestItem)
     }
 
-    var currentRequestItems: [AlarmRequestItem] {
+    var currentRequestItems:
+        [AlarmRequestItem] {
+
         switch selectedTab {
         case .sent:
             return sentRequestItems

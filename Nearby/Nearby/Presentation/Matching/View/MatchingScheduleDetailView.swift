@@ -53,30 +53,45 @@ final class MatchingScheduleDetailView: BaseView {
         matchedCardView.do {
             $0.setNextButtonHidden(true)
         }
-        
+
+        setPlaceStyle()
+        setDateAndTimeStyle()
+        setKakaoLinkStyle()
+
+        bottomButtonStackView.do {
+            $0.axis = .horizontal
+            $0.spacing = 8
+            $0.distribution = .fill
+        }
+    }
+
+    private func setPlaceStyle() {
+
         placeImageView.do {
             $0.image = .loaction.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
         }
-        
+
         placeTitleLabel.do {
             $0.setFont(.b3M14, text: "장소", textColor: .grey50)
             $0.textAlignment = .left
         }
-        
+
         placeNameLabel.do {
-            $0.setFont(.b2M16, text: "시우다드 콘달", textColor: .grey80)
+            $0.setFont(.b2M16, textColor: .grey80)
         }
-        
+
         placeDetailLabel.do {
-            $0.setFont(.b3M14, text: "Siutat condal, Rambla de Catalunya, 16", textColor: .grey30)
+            $0.setFont(.b3M14, textColor: .grey30)
         }
-        
+
         placeCopyButton.do {
             $0.setImage(.copyIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey30
         }
-        
+    }
+
+    private func setDateAndTimeStyle() {
         dateAndTimeImageView.do {
             $0.image = .smallCalenderIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
@@ -88,39 +103,33 @@ final class MatchingScheduleDetailView: BaseView {
         }
 
         dateAndTimeDetailLabel.do {
-            $0.setFont(.b2M16, text: "6월 18일 (목) 오후 4시 30분", textColor: .grey80)
+            $0.setFont(.b2M16, textColor: .grey80)
         }
-        
+
         dateDividerView.do {
             $0.backgroundColor = .grey5
         }
-        
+    }
+
+    private func setKakaoLinkStyle() {
         kakaoLinkImageView.do {
             $0.image = .chatIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
         }
-        
+
         kakaoLinkTitleLabel.do {
             $0.setFont(.b3M14, text: "카카오톡 url", textColor: .grey50)
             $0.textAlignment = .left
         }
-        
+
         kakaoLinkDetailLabel.do {
-            $0.setFont(.b2M16, text: "kakaotalk.hcmvietnam.tistory.com/36", textColor: .grey80)
+            $0.setFont(.b2M16, textColor: .grey80)
         }
-        
+
         kakaoLinkCopyButton.do {
             $0.setImage(.copyIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey30
         }
-        
-        bottomButtonStackView.do {
-            $0.axis = .horizontal
-            $0.spacing = 8
-            $0.distribution = .fill
-        }
-
-        configureMapView()
     }
 
     override func setUI() {
@@ -138,6 +147,14 @@ final class MatchingScheduleDetailView: BaseView {
     }
 
     override func setLayout() {
+        setHeaderLayout()
+        setPlaceLayout()
+        setDateAndTimeLayout()
+        setKakaoLinkLayout()
+        setBottomButtonLayout()
+    }
+
+    private func setHeaderLayout() {
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview()
@@ -148,7 +165,9 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(110)
         }
+    }
 
+    private func setPlaceLayout() {
         placeImageView.snp.makeConstraints {
             $0.top.equalTo(matchedCardView.snp.bottom).offset(28)
             $0.leading.equalToSuperview().inset(20)
@@ -185,7 +204,9 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(143)
         }
+    }
 
+    private func setDateAndTimeLayout() {
         dateAndTimeImageView.snp.makeConstraints {
             $0.top.equalTo(mapView.snp.bottom).offset(36)
             $0.leading.equalToSuperview().inset(20)
@@ -209,7 +230,9 @@ final class MatchingScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(1)
         }
+    }
 
+    private func setKakaoLinkLayout() {
         kakaoLinkImageView.snp.makeConstraints {
             $0.top.equalTo(dateDividerView.snp.bottom).offset(18)
             $0.leading.equalToSuperview().inset(20)
@@ -234,7 +257,9 @@ final class MatchingScheduleDetailView: BaseView {
             $0.trailing.equalToSuperview().inset(20)
             $0.size.equalTo(24)
         }
+    }
 
+    private func setBottomButtonLayout() {
         bottomButtonStackView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(23)
@@ -258,14 +283,24 @@ final class MatchingScheduleDetailView: BaseView {
         manageButton.addTarget(self, action: #selector(manageButtonDidTap), for: .touchUpInside)
         shareButton.addTarget(self, action: #selector(shareButtonDidTap), for: .touchUpInside)
     }
+}
 
-    func configure(item: MatchingMatchedCardItem) {
+// MARK: - Methods
+
+extension MatchingScheduleDetailView {
+
+    func configure(displayData: MatchingScheduleDetailDisplayData) {
         matchedCardView.configure(
-            content: item.content,
+            content: displayData.cardItem.content,
             displayMode: .scheduleDetail
         )
         matchedCardView.setNextButtonHidden(true)
-        configure(isHost: item.isHost)
+        placeNameLabel.setFont(.b2M16, text: displayData.placeName, textColor: .grey80)
+        placeDetailLabel.setFont(.b3M14, text: displayData.placeAddress, textColor: .grey30)
+        dateAndTimeDetailLabel.setFont(.b2M16, text: displayData.scheduledAtText, textColor: .grey80)
+        kakaoLinkDetailLabel.setFont(.b2M16, text: displayData.openChatUrl, textColor: .grey80)
+        mapView.configure(latitude: displayData.latitude, longitude: displayData.longitude)
+        configure(isHost: displayData.isHost)
     }
 
     private func configure(isHost: Bool) {
@@ -276,10 +311,6 @@ final class MatchingScheduleDetailView: BaseView {
             bottomButtonStackView.removeArrangedSubview(manageButton)
             manageButton.removeFromSuperview()
         }
-    }
-
-    private func configureMapView() {
-        mapView.configure(latitude: 37.566508, longitude: 126.977945)
     }
 
     // MARK: - Actions

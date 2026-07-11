@@ -46,7 +46,23 @@ extension MatchingCoordinator: Coordinator {
     }
 
     func showManageScheduleDetail(item: MatchingMatchedCardItem) {
-        let viewController = diContainer.makeMatchingManageScheduleDetailViewController(item: item)
+        let viewController = diContainer.makeMatchingManageScheduleDetailViewController(
+            coordinator: self,
+            item: item
+        )
         navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showAlarm() {
+        let viewController = diContainer.makeAlarmViewController()
+        viewController.hidesBottomBarWhenPushed = true
+        viewController.onBackButtonDidTap = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showCompanionTab() {
+        (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
     }
 }

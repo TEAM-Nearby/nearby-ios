@@ -16,6 +16,8 @@ final class MatchingManageScheduleDetailView: BaseView {
 
     var backButtonAction: (() -> Void)?
     var alarmButtonAction: (() -> Void)?
+    var dateDidChange: ((Date) -> Void)?
+    var confirmButtonAction: (() -> Void)?
     private var isDatePickerVisible = false
 
     // MARK: - UI Components
@@ -91,15 +93,13 @@ final class MatchingManageScheduleDetailView: BaseView {
         }
 
         placeDetailLabel.do {
-            $0.setFont(.b3M14, text: "Siutat condal, Rambla de Catalunya, 16", textColor: .grey30)
+            $0.setFont(.b3M14, textColor: .grey30)
         }
 
         confirmExplainLabel.do {
             $0.setFont(.b3M14, text: "일정을 확정하면 동행에게 알림이 가요!", textColor: .grey30)
         }
 
-        configureMapView()
-        updateDateAndTimeButtonTitle()
     }
 
     override func setUI() {
@@ -113,6 +113,13 @@ final class MatchingManageScheduleDetailView: BaseView {
     }
 
     override func setLayout() {
+        setHeaderLayout()
+        setDateAndTimeLayout()
+        setPlaceLayout()
+        setConfirmLayout()
+    }
+
+    private func setHeaderLayout() {
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview()
@@ -123,7 +130,9 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(110)
         }
+    }
 
+    private func setDateAndTimeLayout() {
         dateAndTimeTitleLabel.snp.makeConstraints {
             $0.top.equalTo(matchedCardView.snp.bottom).offset(28)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -151,7 +160,9 @@ final class MatchingManageScheduleDetailView: BaseView {
         datePicker.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+    }
 
+    private func setPlaceLayout() {
         placeTitleLabel.snp.makeConstraints {
             $0.top.equalTo(dateAndTimeButton.snp.bottom).offset(28)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -174,7 +185,9 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(230)
         }
+    }
 
+    private func setConfirmLayout() {
         confirmButton.snp.makeConstraints {
             $0.bottom.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -199,25 +212,21 @@ final class MatchingManageScheduleDetailView: BaseView {
         confirmButton.addTarget(self, action: #selector(confirmButtonDidTap), for: .touchUpInside)
     }
 
-    func configure(item: MatchingMatchedCardItem) {
+    func configure(with output: MatchingManageDetailViewModel.DisplayData) {
         matchedCardView.configure(
-            content: item.content,
+            content: output.cardItem.content,
             displayMode: .scheduleDetail
         )
         matchedCardView.setNextButtonHidden(true)
+        datePicker.date = output.selectedDate
+        placeDetailLabel.setFont(.b3M14, text: output.placeAddress, textColor: .grey30)
+        mapView.configure(latitude: output.latitude, longitude: output.longitude)
+        updateDateAndTimeButtonTitle(output.dateButtonTitle)
     }
 
     // MARK: - Methods
 
-    private func updateDateAndTimeButtonTitle() {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy-MM-dd  HH:mm"
-
-        applyDateAndTimeButtonTitle(title: formatter.string(from: datePicker.date))
-    }
-
-    private func applyDateAndTimeButtonTitle(title: String) {
+    func updateDateAndTimeButtonTitle(_ title: String) {
         dateAndTimeButton.setPaddedTitle(
             title,
             font: .b2M16,
@@ -229,10 +238,6 @@ final class MatchingManageScheduleDetailView: BaseView {
     private func updateDatePickerVisibility() {
         datePickerContainerView.isHidden = !isDatePickerVisible
         bringSubviewToFront(datePickerContainerView)
-    }
-
-    private func configureMapView() {
-        mapView.configure(latitude: 37.566508, longitude: 126.977945)
     }
 
     // MARK: - Actions
@@ -253,11 +258,11 @@ final class MatchingManageScheduleDetailView: BaseView {
 
     @objc
     private func datePickerValueDidChange() {
-        updateDateAndTimeButtonTitle()
+        dateDidChange?(datePicker.date)
     }
 
     @objc
     private func confirmButtonDidTap() {
-        // TODO: - 일정 확정 API 연결
+        confirmButtonAction?()
     }
 }

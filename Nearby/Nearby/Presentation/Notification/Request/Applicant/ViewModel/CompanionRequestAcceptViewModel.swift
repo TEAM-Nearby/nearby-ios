@@ -21,7 +21,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
 
     // MARK: - Output
 
-    struct Output {
+    struct Output: OpenChatDisplayable {
         let displayData = PassthroughSubject<DisplayData, Never>()
         let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<URL, Never>()
@@ -49,7 +49,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
     private let hostName: String
     private let locationName: String
     // TODO: - 서버 연동 시 응답값으로 교체
-    private let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
+    let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
@@ -84,10 +84,10 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
             }
 
         case .enterChatButtonDidTap:
-            showOpenChat()
+            sendOpenChatURL()
 
         case .chatHelpButtonDidTap:
-            output.showChatLinkPopup.send(openChatURLString)
+            sendChatLinkPopup()
         }
     }
     
@@ -97,5 +97,13 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         guard let url = URL(string: openChatURLString), url.scheme == "https"
                 || url.scheme == "http" else { return }
         output.showOpenChat.send(url)
+    }
+}
+
+// MARK: - OpenChatDiplayable
+
+extension CompanionRequestAcceptViewModel: OpenChatSendable {
+    var openChatOutput: OpenChatDisplayable {
+        output
     }
 }

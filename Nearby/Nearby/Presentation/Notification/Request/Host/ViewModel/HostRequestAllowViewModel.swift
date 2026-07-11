@@ -9,30 +9,30 @@ import Combine
 import UIKit
 
 final class HostRequestAllowViewModel: BaseViewModelType {
-
+    
     // MARK: - Input
-
+    
     enum Input {
         case viewDidLoad
         case confirmButtonDidTap
         case enterChatButtonDidTap
         case chatHelpButtonDidTap
     }
-
+    
     // MARK: - Output
-
-    struct Output {
+    
+    struct Output: OpenChatDisplayable {
         let displayData = PassthroughSubject<DisplayData, Never>()
         let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<URL, Never>()
         let showChatLinkPopup = PassthroughSubject<String, Never>()
     }
-
+    
     enum Step {
         case matched
         case chat
     }
-
+    
     struct DisplayData {
         let image: UIImage
         let title: String
@@ -40,26 +40,26 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         let date: String
         let chatTitle: String
     }
-
+    
     // MARK: - Properties
-
+    
     let output = Output()
-
+    
     private let applicantName: String
     private let locationName: String
     // TODO: - 서버 연동 시 응답값으로 교체
-    private let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
+    let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
     private var cancellables = Set<AnyCancellable>()
-
+    
     // MARK: - Initializer
-
+    
     init(applicantName: String, locationName: String) {
         self.applicantName = applicantName
         self.locationName = locationName
     }
-
+    
     // MARK: - Action
-
+    
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
@@ -71,29 +71,29 @@ final class HostRequestAllowViewModel: BaseViewModelType {
                 chatTitle: "\(applicantName) 님과 대화를 나눠보세요"
             )
             output.displayData.send(data)
-
+            
         case .confirmButtonDidTap:
             switch output.step.value {
             case .matched:
                 output.step.send(.chat)
             case .chat:
                 // TODO: - 지인이 화면으로 교체
-                showOpenChat()
+                sendOpenChatURL()
             }
-
+            
         case .enterChatButtonDidTap:
-            showOpenChat()
-
+            sendOpenChatURL()
+            
         case .chatHelpButtonDidTap:
-            output.showChatLinkPopup.send(openChatURLString)
+            sendChatLinkPopup()
         }
     }
-    
-    // MARK: - Method
-    
-    private func showOpenChat() {
-        guard let url = URL(string: openChatURLString), url.scheme == "https"
-                || url.scheme == "http" else { return }
-        output.showOpenChat.send(url)
+}
+
+// MARK: - OpenChatSendable
+
+extension HostRequestAllowViewModel: OpenChatSendable {
+    var openChatOutput: OpenChatDisplayable {
+        output
     }
 }

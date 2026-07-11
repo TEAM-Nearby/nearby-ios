@@ -5,7 +5,6 @@
 //  Created by 장지인 on 7/10/26.
 //
 
-import SafariServices
 import UIKit
 
 import GoogleMaps
@@ -92,17 +91,9 @@ final class NearbyMapView: BaseView {
         }
         guard let url = URL(string: urlString) else { return }
 
-        let safariViewController = SFSafariViewController(url: url)
-        
-        if let sheet = safariViewController.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersGrabberVisible = true
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-        }
-        
-        owningViewController?.present(safariViewController, animated: true)
+        owningViewController?.presentSafariViewController(url: url, asBottomSheet: true)
     }
-
+    
     func configure(latitude: Double, longitude: Double, placeName: String? = nil, placeID: String? = nil, zoom: Float = 16.0, showsInfoWindow: Bool = false) {
         self.latitude = latitude
         self.longitude = longitude

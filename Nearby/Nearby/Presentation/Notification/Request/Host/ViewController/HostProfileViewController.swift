@@ -10,7 +10,7 @@ import UIKit
 
 final class HostProfileViewController: BaseViewController<HostProfileViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let hostProfileView = HostProfileView()
 

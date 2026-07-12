@@ -12,7 +12,12 @@ struct RecruitCompanionDraft {
     var meetingAt: Date?
     var maxParticipants = 2
     var styleKeywords = Set<String>()
+<<<<<<< HEAD
     var placeQuery = ""
     var content = ""
     var openChatURL = ""
+=======
+    var content = ""
+    var openChatUrl = ""
+>>>>>>> origin/refactor/#104
 }

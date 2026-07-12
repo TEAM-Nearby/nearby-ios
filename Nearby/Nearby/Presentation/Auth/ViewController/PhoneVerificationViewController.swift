@@ -16,13 +16,19 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
     // MARK: - Life Cycles
 
     override func loadView() {
-        self.view = phoneVerificationView
+        view = phoneVerificationView
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         bindViewModel()
-        setAddTarget()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     // MARK: - Custom Method
@@ -43,11 +49,6 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
     }
 
     // MARK: - Actions
-
-    @objc
-    private func backButtonDidTap() {
-        navigationController?.popViewController(animated: true)
-    }
 
     @objc
     private func bottomButtonDidTap() {

@@ -31,13 +31,9 @@ final class AppCoordinator {
 // MARK: - Coordinator
 
 extension AppCoordinator: Coordinator {
-     func start() {
-         if diContainer.hasStoredSession {
-             showMainTab()
-         } else {
-             showLogin()
-         }
-     }
+    func start() {
+        showSplash()
+    }
      
      func finish() {
          childCoordinators.removeAll()
@@ -113,5 +109,17 @@ extension AppCoordinator: Coordinator {
         }
 
         navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    private func showSplash() {
+        let splashViewController =
+            diContainer.makeSplashViewController()
+
+        splashViewController.onAnimationCompleted = { [weak self] in
+            self?.showLogin()
+        }
+
+        window.rootViewController = splashViewController
+        window.makeKeyAndVisible()
     }
  }

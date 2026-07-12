@@ -182,6 +182,10 @@ final class AppDIContainer {
     
     // MARK: - ViewControllers
     
+    func makeSplashViewController() -> SplashViewController {
+        SplashViewController()
+    }
+    
     func makeHostProfileViewController() -> HostProfileViewController {
         let viewModel = makeHostProfileViewModel()
         

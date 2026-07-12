@@ -77,19 +77,25 @@ final class PhoneVerificationViewModel: BaseViewModelType {
 
     func action(_ trigger: Input) {
         switch trigger {
+        case .phoneNumberDidChange(let phoneNumber):
+            self.phoneNumber = phoneNumber
+
+        case .verificationCodeDidChange(let verificationCode):
+            self.verificationCode = verificationCode
+
         case .bottomButtonDidTap:
             if isVerificationMode {
-                action(.nextButtonDidTap)
+                guard !verificationCode.isEmpty else { return }
+
+                // TODO: - 인증번호 검증 API 성공후에 호출
+                output.verificationDidComplete?()
             } else {
+                guard !phoneNumber.isEmpty else { return }
+
+                // TODO: - 인증문자 발송 API 성공후에 실행
                 isVerificationMode = true
                 output.isVerificationMode?(true)
-
-                // TODO: - 인증문자 발송 로직
             }
-
-        case .nextButtonDidTap:
-            // TODO: - 다음 버튼 탭 로직
-            break
         }
     }
 }

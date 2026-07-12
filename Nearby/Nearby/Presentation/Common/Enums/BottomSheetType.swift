@@ -13,15 +13,24 @@ enum BottomSheetContent {
     case specificRestaurantCompanionList
     case diningMapList
     case savedRestaurantList
+    case diningInfo
 
     var defaultLevel: BottomSheetLevel {
-        .standard
+        switch self {
+        case .diningInfo:
+            return .expanded
+        case .nearbyCompanionList, .nearbyCompanionEmpty,
+             .specificRestaurantCompanionList, .diningMapList, .savedRestaurantList:
+            return .standard
+        }
     }
 
     var availableLevels: [BottomSheetLevel] {
         switch self {
         case .nearbyCompanionEmpty:
             return [.standard]
+        case .diningInfo:
+            return [.standard, .expanded]
         case .nearbyCompanionList,
              .specificRestaurantCompanionList,
              .diningMapList,

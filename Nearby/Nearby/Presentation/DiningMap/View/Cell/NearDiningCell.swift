@@ -15,6 +15,7 @@ final class NearDiningCell: UICollectionViewCell {
     // MARK: - Property
     
     var onBookmarkTap: (() -> Void)?
+    var onImageTap: (() -> Void)?
 
     // MARK: - UI Components
     
@@ -51,6 +52,7 @@ final class NearDiningCell: UICollectionViewCell {
         super.prepareForReuse()
         
         onBookmarkTap = nil
+        onImageTap = nil
         restaurantImages = []
         resetImageCollectionViewOffset()
         imageCollectionView.reloadData()
@@ -105,6 +107,7 @@ final class NearDiningCell: UICollectionViewCell {
         
         imageCollectionView.do {
             $0.dataSource = self
+            $0.delegate = self
             $0.showsHorizontalScrollIndicator = false
             $0.alwaysBounceHorizontal = true
             $0.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
@@ -115,6 +118,8 @@ final class NearDiningCell: UICollectionViewCell {
             $0.backgroundColor = .grey20
         }
     }
+    
+    // MARK: - Methods
 
     private func setUI() {
         contentView.addSubviews(nameLabel, categoryLabel, statusLabel, distanceLabel, addressLabel, starRatingView, ratingLabel, reviewCountLabel, bookmarkButton, imageCollectionView, dividerView)
@@ -234,5 +239,11 @@ extension NearDiningCell: UICollectionViewDataSource {
         cell.configure(image: restaurantImages[indexPath.item])
         
         return cell
+    }
+}
+
+extension NearDiningCell: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        onImageTap?()
     }
 }

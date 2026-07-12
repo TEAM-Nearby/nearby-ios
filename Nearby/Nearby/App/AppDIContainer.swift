@@ -65,6 +65,10 @@ final class AppDIContainer {
         SaveDiningSheetViewModel()
     }
 
+    func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
+        DiningInfoSheetViewModel()
+    }
+
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
         CompanionDetailViewModel(state: state)
     }
@@ -137,9 +141,12 @@ final class AppDIContainer {
         HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
     }
 
-    
     func makeHostProfileViewModel() -> HostProfileViewModel {
         HostProfileViewModel()
+    }
+    
+    func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
+        PhoneVerificationViewModel()
     }
     
     // MARK: - ViewControllers
@@ -184,7 +191,8 @@ final class AppDIContainer {
         DiningMapViewController(
             viewModel: makeDiningMapViewModel(),
             nearDiningSheetViewController: makeNearDiningSheetViewController(),
-            saveDiningSheetViewController: makeSaveDiningSheetViewController()
+            saveDiningSheetViewController: makeSaveDiningSheetViewController(),
+            diningInfoSheetViewController: makeDiningInfoSheetViewController()
         )
     }
 
@@ -194,6 +202,10 @@ final class AppDIContainer {
 
     func makeSaveDiningSheetViewController() -> SaveDiningSheetViewController {
         SaveDiningSheetViewController(viewModel: makeSaveDiningSheetViewModel())
+    }
+
+    func makeDiningInfoSheetViewController() -> DiningInfoSheetViewController {
+        DiningInfoSheetViewController(viewModel: makeDiningInfoSheetViewModel())
     }
     
     func makeMatchingViewController(coordinator: MatchingCoordinator) -> UIViewController {
@@ -347,6 +359,10 @@ final class AppDIContainer {
         return viewController
     }
     
+    func makePhoneVerificationViewController() -> PhoneVerificationViewController {
+        PhoneVerificationViewController(
+            viewModel: makePhoneVerificationViewModel()
+        )
     func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
         let viewController = CompanionRequestAcceptViewController(
             viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)

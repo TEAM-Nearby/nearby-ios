@@ -9,5 +9,5 @@ import Foundation
 
 enum PostType: String, Decodable {
     case scheduled = "SCHEDULED"
-    case immediate = "IMMEDIATE"
+    case immediate = "NOW"
 }

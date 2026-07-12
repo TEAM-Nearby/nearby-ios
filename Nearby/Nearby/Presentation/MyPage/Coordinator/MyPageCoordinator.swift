@@ -65,15 +65,30 @@ extension MyPageCoordinator: Coordinator {
 // MARK: - Coordinator
 
 private extension MyPageCoordinator {
-    func showAlarm(
-        initialTab: AlarmTab = .sent
-    ) {
+    func showAlarm(initialTab: AlarmTab = .sent) {
         let alarmViewController = appDIContainer.makeAlarmViewController(initialTab: initialTab)
 
         alarmViewController.hidesBottomBarWhenPushed = true
 
         alarmViewController.onBackButtonDidTap = { [weak self] in
             self?.navigationController.popViewController(animated: true)
+        }
+
+        alarmViewController.onRequestActionDidTap = { [weak self] requestItem in
+            guard let self else { return }
+
+            switch requestItem.displayType {
+            case .sentAccepted:
+                showCompanionRequestAccept(
+                    hostName: requestItem.nickname
+                )
+
+            case .sentRejected:
+                showCompanionRequestDecline()
+
+            case .receivedPending:
+                break
+            }
         }
 
         navigationController.pushViewController(alarmViewController, animated: true)
@@ -112,5 +127,25 @@ private extension MyPageCoordinator {
         }
 
         navigationController.pushViewController(writtenPostViewController, animated: true)
+    }
+    
+    func showCompanionRequestAccept(hostName: String) {
+        let notificationCoordinator = appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
+
+        notificationCoordinator.parentCoordinator = self
+
+        addChildCoordinator(notificationCoordinator)
+
+        notificationCoordinator.showCompanionRequestAccept(hostName: hostName, locationName: "시우다드 콘달")
+    }
+    
+    func showCompanionRequestDecline() {
+        let notificationCoordinator = appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
+
+        notificationCoordinator.parentCoordinator = self
+
+        addChildCoordinator(notificationCoordinator)
+
+        notificationCoordinator.showCompanionRequestDecline()
     }
 }

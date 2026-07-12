@@ -107,14 +107,12 @@ final class CompanionView: BaseView {
     
     func updateMapControls(for state: BottomSheetState) {
         let shouldShowMapControls = state.content == .nearbyCompanionList && state.level != .expanded
+        let shouldShowRecruitButton = state.content == .nearbyCompanionList
+            && (state.level == .standard || state.level == .expanded)
 
         companionCountChip.isHidden = !shouldShowMapControls
         currentLocationButton.isHidden = !shouldShowMapControls
-        recruitCompanionButton.isHidden = !shouldShowMapControls || state.level == .compact
-
-        if shouldShowMapControls && !recruitCompanionButton.isHidden {
-            bringSubviewToFront(recruitCompanionButton)
-        }
+        recruitCompanionButton.isHidden = !shouldShowRecruitButton
     }
     
     func setCategoryChipsHidden(_ isHidden: Bool) {

@@ -4,45 +4,6 @@
 //
 //  Created by 신서연 on 7/6/26.
 //
-/*
-import Foundation
-
-final class PhoneVerificationViewModel: BaseViewModelType {
-
-    // MARK: - Input
-
-    enum Input {
-        case sendVerificationButtonDidTap
-        case nextButtonDidTap
-    }
-
-    // MARK: - Output
-
-    struct Output { }
-
-    // MARK: - Properties
-
-    let output: Output
-
-    // MARK: - Initializer
-
-    init() {
-        self.output = Output()
-    }
-
-    // MARK: - Action
-
-    func action(_ trigger: Input) {
-        switch trigger {
-        case .sendVerificationButtonDidTap:
-            break
-
-        case .nextButtonDidTap:
-            break
-        }
-    }
-}
-*/
 
 import Foundation
 
@@ -51,14 +12,16 @@ final class PhoneVerificationViewModel: BaseViewModelType {
     // MARK: - Input
 
     enum Input {
+        case phoneNumberDidChange(String)
+        case verificationCodeDidChange(String)
         case bottomButtonDidTap
-        case nextButtonDidTap
     }
 
     // MARK: - Output
 
     struct Output {
         var isVerificationMode: ((Bool) -> Void)?
+        var verificationDidComplete: (() -> Void)?
     }
 
     // MARK: - Property
@@ -66,6 +29,8 @@ final class PhoneVerificationViewModel: BaseViewModelType {
     var output: Output
 
     private var isVerificationMode = false
+    private var phoneNumber = ""
+    private var verificationCode = ""
 
     // MARK: - Initializer
 

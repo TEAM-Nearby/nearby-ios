@@ -8,7 +8,14 @@
 import UIKit
 
 final class AppDIContainer {
-    
+    private lazy var tokenStorage: TokenStorage = KeychainTokenStorage()
+    private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
+
+    var hasStoredSession: Bool {
+        guard let accessToken = tokenStorage.accessToken else { return false }
+        return !accessToken.isEmpty
+    }
+
     // MARK: - Coordinators
     
     func makeAppCoordinator(window: UIWindow) -> AppCoordinator {
@@ -40,13 +47,29 @@ final class AppDIContainer {
     }
     
     // MARK: - Networks
-    
+
+    private func makeKakaoOAuthProvider() -> KakaoOAuthProvider {
+        DefaultKakaoOAuthProvider()
+    }
+
+    private func makeAuthService() -> AuthService {
+        DefaultAuthService(networkProvider: networkProvider)
+    }
+
     // MARK: - Repositories
-    
+
+    private func makeAuthRepository() -> AuthRepository {
+        DefaultAuthRepository(
+            oauthProvider: makeKakaoOAuthProvider(),
+            authService: makeAuthService(),
+            tokenStorage: tokenStorage
+        )
+    }
+
     // MARK: - ViewModels
     
     func makeLoginViewModel() -> LoginViewModel {
-        LoginViewModel()
+        LoginViewModel(authRepository: makeAuthRepository())
     }
     
     func makeCompanionViewModel() -> CompanionViewModel {

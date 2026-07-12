@@ -81,9 +81,9 @@ final class NearbyTextView: BaseView {
         remakeTextViewConstraints()
         
         placeholderLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(contentInsets.top)
-            $0.leading.equalToSuperview().offset(contentInsets.left)
-            $0.trailing.equalToSuperview().inset(contentInsets.right)
+            $0.top.equalTo(textView.snp.top)
+            $0.leading.equalTo(textView.snp.leading)
+            $0.trailing.equalTo(textView.snp.trailing)
             $0.bottom.lessThanOrEqualToSuperview().inset(contentInsets.bottom)
         }
         

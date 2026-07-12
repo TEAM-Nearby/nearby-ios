@@ -34,6 +34,12 @@ final class RecruitCompanionBottomView: BaseView {
     private var descriptionTextViewMinimumHeight: CGFloat {
         return ceil(NearbyFont.b3M14.font.lineHeight * 3) + 32
     }
+
+    var placeSearchButtonAction: (() -> Void)?
+    var placeQueryDidChange: ((String) -> Void)?
+    var contentDidChange: ((String) -> Void)?
+    var openChatURLDidChange: ((String) -> Void)?
+    var completeButtonAction: (() -> Void)?
     
     // MARK: - Custom Methods
     
@@ -46,7 +52,7 @@ final class RecruitCompanionBottomView: BaseView {
             $0.updatePlaceholder(isHidden: false)
             $0.clearButton.setImage(.searchIcon, for: .normal)
             $0.clearButton.tintColor = .grey40
-            $0.clearButton.isHidden = false
+            $0.isClearButtonHidden = false
             $0.setPlaceholderTruncation(numberOfLines: 1)
             $0.textView.isScrollEnabled = false
         }
@@ -57,7 +63,7 @@ final class RecruitCompanionBottomView: BaseView {
         
         descriptionTextView.do {
             $0.updatePlaceholder(isHidden: false)
-            $0.clearButton.isHidden = true
+            $0.isClearButtonHidden = true
             $0.setPlaceholderTruncation(numberOfLines: 3)
             $0.textView.isScrollEnabled = false
         }
@@ -68,11 +74,11 @@ final class RecruitCompanionBottomView: BaseView {
         
         kakaoLinkTextView.do {
             $0.updatePlaceholder(isHidden: false)
-            $0.clearButton.isHidden = true
+            $0.isClearButtonHidden = true
             $0.setPlaceholderTruncation(numberOfLines: 1)
         }
 
-        updateCompleteButtonState()
+        completeButton.setEnabled(false)
     }
 
     override func setUI() {
@@ -151,30 +157,24 @@ final class RecruitCompanionBottomView: BaseView {
         }
     }
 
-    private func hasText(_ textView: NearbyTextView) -> Bool {
-        let text = textView.textView.text ?? ""
-
-        return !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-
-    private func updateCompleteButtonState() {
-        let isEnabled = hasText(meetingPlaceTextView)
-            && hasText(descriptionTextView)
-            && hasText(kakaoLinkTextView)
-
-        completeButton.setEnabled(isEnabled)
+    func update(state: RecruitCompanionViewModel.State) {
+        if meetingPlaceTextView.textView.text != state.placeQuery {
+            meetingPlaceTextView.textView.text = state.placeQuery
+        }
+        meetingPlaceTextView.updatePlaceholder(isHidden: !state.placeQuery.isEmpty)
+        completeButton.setEnabled(state.isCompleteButtonEnabled)
     }
     
     // MARK: - Actions
     
     @objc
     private func searchButtonDidTap() {
-        // TODO: - 장소 검색 API 연결
+        placeSearchButtonAction?()
     }
 
     @objc
     private func completeButtonDidTap() {
-        // TODO: - 다음 뷰 연결
+        completeButtonAction?()
     }
 }
 
@@ -186,13 +186,14 @@ extension RecruitCompanionBottomView: UITextViewDelegate {
 
         if textView == meetingPlaceTextView.textView {
             meetingPlaceTextView.updatePlaceholder(isHidden: shouldHidePlaceholder)
+            placeQueryDidChange?(textView.text)
         } else if textView == descriptionTextView.textView {
             descriptionTextView.updatePlaceholder(isHidden: shouldHidePlaceholder)
             updateDescriptionTextViewHeight()
+            contentDidChange?(textView.text)
         } else if textView == kakaoLinkTextView.textView {
             kakaoLinkTextView.updatePlaceholder(isHidden: shouldHidePlaceholder)
+            openChatURLDidChange?(textView.text)
         }
-
-        updateCompleteButtonState()
     }
 }

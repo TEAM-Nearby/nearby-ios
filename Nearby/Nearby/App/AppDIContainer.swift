@@ -89,6 +89,10 @@ final class AppDIContainer {
         MatchingViewModel()
     }
     
+    func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
+        RecruitCompanionViewModel()
+    }
+    
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
     }
@@ -248,11 +252,8 @@ final class AppDIContainer {
     
     func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, item: MeetingItem) -> UIViewController {
         let viewController = MeetingProgressViewController(viewModel: makeMeetingProgressViewModel(item: item))
-        
         viewController.coordinator = coordinator
-        
         viewController.hidesBottomBarWhenPushed = true
-        
         return viewController
     }
     
@@ -300,25 +301,14 @@ final class AppDIContainer {
     
     func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel())
-        
         viewController.coordinator = coordinator
-        
         return viewController
     }
     
-    func makeReviewPostViewController(
-        coordinator: MeetingTabCoordinator,
-        reviewItem: ReviewItem,
-        type: NearbyUserType,
-        isLast: Bool,
-        onSaved: (() -> Void)?
-    ) -> UIViewController {
+    func makeReviewPostViewController(coordinator: MeetingTabCoordinator, reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool, onSaved: (() -> Void)?) -> UIViewController {
         let viewController = ReviewPostViewController( viewModel: makeReviewPostViewModel(reviewItem: reviewItem, type: type, isLast: isLast))
-        
         viewController.coordinator = coordinator
-        
         viewController.onReviewSaved = onSaved
-        
         return viewController
     }
     
@@ -407,4 +397,4 @@ final class AppDIContainer {
             return viewController
         }
     }
-
+}

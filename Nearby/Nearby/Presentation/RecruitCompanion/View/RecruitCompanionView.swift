@@ -19,6 +19,19 @@ final class RecruitCompanionView: BaseView {
     private let contentView = UIView()
     private let topView = RecruitCompanionTopView()
     private let bottomView = RecruitCompanionBottomView()
+
+    // MARK: - Properties
+
+    var backButtonAction: (() -> Void)?
+    var timeTypeDidSelect: ((RecruitMeetingTimeType) -> Void)?
+    var meetingAtDidChange: ((Date) -> Void)?
+    var participantCountDidChange: ((Int) -> Void)?
+    var styleKeywordDidTap: ((String) -> Void)?
+    var placeSearchButtonAction: (() -> Void)?
+    var placeQueryDidChange: ((String) -> Void)?
+    var contentDidChange: ((String) -> Void)?
+    var openChatURLDidChange: ((String) -> Void)?
+    var completeButtonAction: (() -> Void)?
     
     // MARK: - Custom Methods
     
@@ -64,5 +77,45 @@ final class RecruitCompanionView: BaseView {
             $0.top.equalTo(topView.snp.bottom)
             $0.horizontalEdges.bottom.equalToSuperview()
         }
+    }
+
+    override func setAddTarget() {
+        navigationBar.leftButtonAction = { [weak self] in
+            self?.backButtonAction?()
+        }
+        topView.timeTypeDidSelect = { [weak self] type in
+            self?.timeTypeDidSelect?(type)
+        }
+        topView.meetingAtDidChange = { [weak self] date in
+            self?.meetingAtDidChange?(date)
+        }
+        topView.participantCountDidChange = { [weak self] count in
+            self?.participantCountDidChange?(count)
+        }
+        topView.styleKeywordDidTap = { [weak self] keyword in
+            self?.styleKeywordDidTap?(keyword)
+        }
+        bottomView.placeSearchButtonAction = { [weak self] in
+            self?.placeSearchButtonAction?()
+        }
+        bottomView.placeQueryDidChange = { [weak self] query in
+            self?.placeQueryDidChange?(query)
+        }
+        bottomView.contentDidChange = { [weak self] content in
+            self?.contentDidChange?(content)
+        }
+        bottomView.openChatURLDidChange = { [weak self] url in
+            self?.openChatURLDidChange?(url)
+        }
+        bottomView.completeButtonAction = { [weak self] in
+            self?.completeButtonAction?()
+        }
+    }
+
+    // MARK: - Method
+
+    func update(state: RecruitCompanionViewModel.State) {
+        topView.update(state: state)
+        bottomView.update(state: state)
     }
 }

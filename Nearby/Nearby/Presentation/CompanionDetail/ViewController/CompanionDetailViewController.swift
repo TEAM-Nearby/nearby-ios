@@ -28,6 +28,15 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        tabBarController?.tabBar.isHidden = false
+        tabBarController?.tabBar.alpha = 1
+        tabBarController?.tabBar.transform = .identity
     }
     
     // MARK: - Custom Methods

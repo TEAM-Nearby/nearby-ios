@@ -299,9 +299,15 @@ extension CompanionViewController: UICollectionViewDelegateFlowLayout {
         let iconWidth: CGFloat = 24
         let horizontalInset: CGFloat = 24
 
-        return CGSize(
-            width: ceil(titleWidth + iconWidth + horizontalInset),
-            height: NearbyChipStyle.category.height
-        )
+        return CGSize(width: ceil(titleWidth + iconWidth + horizontalInset), height: NearbyChipStyle.category.height)
+    }
+}
+
+// MARK: - MainTabSwitchPreparing
+
+extension CompanionViewController: MainTabSwitchPreparing {
+    func prepareForTabSwitch() {
+        bottomSheetViewController.view.isHidden = true
+        companionView.recruitCompanionButton.isHidden = true
     }
 }

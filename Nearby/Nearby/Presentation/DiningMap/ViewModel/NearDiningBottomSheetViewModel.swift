@@ -25,7 +25,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
         let selectedRestaurant = PassthroughSubject<NearDiningCellItem, Never>()
     }
     
-    // MARK: - Property
+    // MARK: - Properties
 
     let output: Output
 
@@ -65,7 +65,7 @@ private extension NearDiningBottomSheetViewModel {
         NearDiningCellItem(
             name: "시우다드 콘달",
             category: "마라탕",
-            businessStatus: "영업중",
+            businessStatus: "영업 중",
             distance: "0.8km",
             address: "Rambla de Catalunya, 18, Eixample, 08007 Barcelona",
             rating: 5,

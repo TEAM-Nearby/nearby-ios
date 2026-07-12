@@ -42,6 +42,11 @@ final class RecruitCompanionTopView: BaseView {
     private var peopleExplainTopFromTitleConstraint: Constraint?
     private var peopleExplainTopFromStepperConstraint: Constraint?
     private var selectedTagIndexes = Set<Int>()
+
+    var timeTypeDidSelect: ((RecruitMeetingTimeType) -> Void)?
+    var meetingAtDidChange: ((Date) -> Void)?
+    var participantCountDidChange: ((Int) -> Void)?
+    var styleKeywordDidTap: ((String) -> Void)?
     
     // MARK: - Custom Methods
     
@@ -196,9 +201,13 @@ final class RecruitCompanionTopView: BaseView {
         nowButton.addTarget(self, action: #selector(nowButtonDidTap), for: .touchUpInside)
         timeButton.addTarget(self, action: #selector(timeButtonDidTap), for: .touchUpInside)
         peopleButton.addTarget(self, action: #selector(peopleButtonDidTap), for: .touchUpInside)
+
+        datePicker.dateDidChange = { [weak self] date in
+            self?.meetingAtDidChange?(date)
+        }
         
         peopleStepper.countDidChange = { [weak self] count in
-            self?.peopleNumber.text = "\(count)명"
+            self?.participantCountDidChange?(count)
         }
     }
     
@@ -216,25 +225,39 @@ final class RecruitCompanionTopView: BaseView {
     private func tagChipStyle(at index: Int) -> NearbyChipStyle {
         return selectedTagIndexes.contains(index) ? .tagStateSelected : .tagStateUnselected
     }
+
+    func update(state: RecruitCompanionViewModel.State) {
+        let isNow = state.meetingTimeType == .now
+        nowButton.setSelected(isNow)
+        timeButton.setSelected(!isNow)
+        datePicker.isHidden = !state.isDatePickerVisible
+        peopleNumber.text = "\(state.maxParticipants)명"
+
+        if state.isDatePickerVisible {
+            peopleTitleTopFromButtonConstraint?.deactivate()
+            peopleTitleTopFromDatePickerConstraint?.activate()
+        } else {
+            peopleTitleTopFromDatePickerConstraint?.deactivate()
+            peopleTitleTopFromButtonConstraint?.activate()
+        }
+
+        selectedTagIndexes = Set(
+            tagTitles.indices.filter { state.styleKeywords.contains(tagTitles[$0]) }
+        )
+        tagCollectionView.reloadData()
+    }
     
     // MARK: - Actions
 
     @objc
     private func nowButtonDidTap() {
-        nowButton.setSelected(true)
-        timeButton.setSelected(false)
-        datePicker.isHidden = true
-        peopleTitleTopFromDatePickerConstraint?.deactivate()
-        peopleTitleTopFromButtonConstraint?.activate()
+        timeTypeDidSelect?(.now)
     }
 
     @objc
     private func timeButtonDidTap() {
-        nowButton.setSelected(false)
-        timeButton.setSelected(true)
-        datePicker.isHidden = false
-        peopleTitleTopFromButtonConstraint?.deactivate()
-        peopleTitleTopFromDatePickerConstraint?.activate()
+        timeTypeDidSelect?(.scheduled)
+        meetingAtDidChange?(datePicker.selectedDate)
     }
 
     @objc
@@ -296,15 +319,6 @@ extension RecruitCompanionTopView: UICollectionViewDelegateFlowLayout {
 
 extension RecruitCompanionTopView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if selectedTagIndexes.contains(indexPath.item) {
-            selectedTagIndexes.remove(indexPath.item)
-        } else {
-            selectedTagIndexes.insert(indexPath.item)
-        }
-
-        UIView.performWithoutAnimation {
-            collectionView.reloadItems(at: [indexPath])
-            collectionView.layoutIfNeeded()
-        }
+        styleKeywordDidTap?(tagTitles[indexPath.item])
     }
 }

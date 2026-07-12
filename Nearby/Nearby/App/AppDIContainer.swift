@@ -89,6 +89,10 @@ final class AppDIContainer {
         MatchingViewModel()
     }
 
+    func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
+        RecruitCompanionViewModel()
+    }
+
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
     }
@@ -269,7 +273,11 @@ final class AppDIContainer {
     }
 
     func makeRecruitCompanionViewController() -> UIViewController {
-        makePlaceholderViewController(title: "동행글 작성")
+        let viewController = RecruitCompanionViewController(
+            viewModel: makeRecruitCompanionViewModel()
+        )
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
     }
 
     func makeReviewViewController(

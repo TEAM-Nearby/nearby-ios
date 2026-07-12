@@ -327,6 +327,7 @@ final class CompanionRequestAcceptView: BaseView {
         chatImageView.image = output.image
         chatTitleLabel.text = output.title
         confirmButton.setTitle(output.buttonTitle, for: .normal)
+        avatarClusterView.configure(with: output.avatarImages)
     }
     
     func updateStep(_ step: CompanionRequestAcceptViewModel.Step) {

@@ -9,16 +9,13 @@ import UIKit
 
 import SnapKit
 import Then
-import GooglePlaces
 
 final class RecruitCompanionBottomView: BaseView {
 
     // MARK: - UI Components
 
     private let meetingPlaceTitleLabel = UILabel()
-    private let meetingPlaceTextView = NearbyTextView(
-        placeholder: "입력창입력창입력창입력창입력창입력창입력창..."
-    )
+    private let meetingPlaceTextView = NearbyTextView(placeholder: "장소를 입력해주세요")
     private let descriptionTitleLabel = UILabel()
     private let descriptionTextView = NearbyTextView(
         placeholder: "ex) 20대 여자입니다. 맛집 탐방하는 걸 좋아해요 :)\n"
@@ -26,7 +23,7 @@ final class RecruitCompanionBottomView: BaseView {
             + "같이 재미있게 놀아요..."
     )
     private let kakaoLinkTitleLabel = UILabel()
-    private let kakaoLinkTextView = NearbyTextView(placeholder: "오픈채팅방 링크(URL)를 입력해 주세요")
+    private let kakaoLinkTextView = NearbyTextView(placeholder: "오픈채팅방 링크(URL)를 입력해주세요")
     private let completeButton = NearbyButton(style: .primary, title: "작성 완료하기")
     private let placeSearchResultTableView = UITableView()
 
@@ -35,9 +32,9 @@ final class RecruitCompanionBottomView: BaseView {
     private var placeSearchResultTableViewHeightConstraint: Constraint?
     private var descriptionTextViewHeightConstraint: Constraint?
     private var descriptionTextViewMinimumHeight: CGFloat {
-        return ceil(NearbyFont.b3M14.font.lineHeight * 3) + 32
+        return ceil(NearbyFont.b3M14.property.lineHeight * 3) + 32
     }
-    private var placeSuggestions: [GMSAutocompleteSuggestion] = []
+    private var placeSuggestions: [PlaceSearchResultItem] = []
 
     var placeDidSelect: ((SelectedPlace) -> Void)?
     var placeSearchButtonAction: (() -> Void)?
@@ -163,7 +160,10 @@ final class RecruitCompanionBottomView: BaseView {
         completeButton.addTarget(self, action: #selector(completeButtonDidTap), for: .touchUpInside)
         placeSearchResultTableView.dataSource = self
         placeSearchResultTableView.delegate = self
-        placeSearchResultTableView.register(UITableViewCell.self, forCellReuseIdentifier: "PlaceSearchResultCell")
+        placeSearchResultTableView.register(
+            PlaceSearchResultCell.self,
+            forCellReuseIdentifier: PlaceSearchResultCell.identifier
+        )
     }
 
     // MARK: - Methods
@@ -187,13 +187,9 @@ final class RecruitCompanionBottomView: BaseView {
         completeButton.setEnabled(state.isCompleteButtonEnabled)
     }
 
-    // MARK: - Methods
-
-    func updatePlaceSuggestions(_ suggestions: [GMSAutocompleteSuggestion]) {
+    func updatePlaceSuggestions(_ suggestions: [PlaceSearchResultItem]) {
         placeSuggestions = suggestions
-        let placeSuggestionCount = suggestions
-            .compactMap(\.placeSuggestion)
-            .count
+        let placeSuggestionCount = suggestions.count
         let tableViewHeight = min(CGFloat(placeSuggestionCount) * 60, 300)
         placeSearchResultTableView.isHidden = placeSuggestionCount == 0
         placeSearchResultTableViewHeightConstraint?.update(
@@ -255,23 +251,17 @@ extension RecruitCompanionBottomView: UITextViewDelegate {
 
 extension RecruitCompanionBottomView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return placeSuggestions.compactMap(\.placeSuggestion).count
+        return placeSuggestions.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "PlaceSearchResultCell", for: indexPath)
-
-        let suggestions = placeSuggestions.compactMap(\.placeSuggestion)
-        let suggestion = suggestions[indexPath.row]
-
-        var configuration = cell.defaultContentConfiguration()
-        configuration.text = suggestion.attributedPrimaryText.string
-        configuration.secondaryText = suggestion.attributedSecondaryText?.string
-        configuration.secondaryTextProperties.numberOfLines = 1
-
-        cell.contentConfiguration = configuration
-        cell.selectionStyle = .none
-
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: PlaceSearchResultCell.identifier,
+            for: indexPath
+        ) as? PlaceSearchResultCell else {
+            return UITableViewCell()
+        }
+        cell.configure(with: placeSuggestions[indexPath.row])
         return cell
     }
 }
@@ -280,13 +270,12 @@ extension RecruitCompanionBottomView: UITableViewDataSource {
 
 extension RecruitCompanionBottomView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let placeSuggestions = placeSuggestions.compactMap(\.placeSuggestion)
         let selectedSuggestion = placeSuggestions[indexPath.row]
 
         let selectedPlace = SelectedPlace(
             placeID: selectedSuggestion.placeID,
-            name: selectedSuggestion.attributedPrimaryText.string,
-            address: selectedSuggestion.attributedSecondaryText?.string ?? ""
+            name: selectedSuggestion.name,
+            address: selectedSuggestion.address
         )
 
         updateSelectedPlace(selectedPlace.name)

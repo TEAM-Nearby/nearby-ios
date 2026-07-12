@@ -15,12 +15,12 @@ final class GooglePlaceService {
     // MARK: - Properties
 
     private let placesClient = GMSPlacesClient.shared()
-    private let sessionToken = GMSAutocompleteSessionToken.init()
+    private var sessionToken = GMSAutocompleteSessionToken()
 
-    // MARK: - Public Methods
+    // MARK: - Methods
 
     func searchPlaces(query: String, latitude: Double, longitude: Double, completion: @escaping (
-            Result<[GMSAutocompleteSuggestion], Error>
+            Result<[PlaceSearchResultItem], Error>
         ) -> Void
     ) {
         let trimmedQuery = query.trimmingCharacters(
@@ -50,7 +50,21 @@ final class GooglePlaceService {
                 return
             }
 
-            completion(.success(suggestions ?? []))
+            let items = suggestions?
+                .compactMap(\.placeSuggestion)
+                .map {
+                    PlaceSearchResultItem(
+                        placeID: $0.placeID,
+                        name: $0.attributedPrimaryText.string,
+                        address: $0.attributedSecondaryText?.string ?? ""
+                    )
+                } ?? []
+
+            completion(.success(items))
         }
+    }
+
+    func refreshSessionToken() {
+        sessionToken = GMSAutocompleteSessionToken()
     }
 }

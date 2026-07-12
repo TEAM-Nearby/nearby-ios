@@ -30,25 +30,47 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     struct Output {
         let state = CurrentValueSubject<State, Never>(.initial)
+        let placeSuggestions = CurrentValueSubject<[PlaceSearchResultItem], Never>([])
         let completeButtonDidTap = PassthroughSubject<Void, Never>()
         let showBack = PassthroughSubject<Void, Never>()
     }
 
     struct State {
         let meetingTimeType: RecruitMeetingTimeType
+        let meetingAt: Date?
         let isDatePickerVisible: Bool
         let maxParticipants: Int
         let styleKeywords: Set<String>
         let placeQuery: String
         let selectedPlaceID: String?
+        let content: String
+        let openChatURL: String
 
         static let initial = State(
-            meetingTimeType: .now, isDatePickerVisible: false, maxParticipants: 2,
-            styleKeywords: [], placeQuery: "", selectedPlaceID: nil
+            meetingTimeType: .now,
+            meetingAt: nil,
+            isDatePickerVisible: false,
+            maxParticipants: 2,
+            styleKeywords: [],
+            placeQuery: "",
+            selectedPlaceID: nil,
+            content: "",
+            openChatURL: ""
         )
 
         var isCompleteButtonEnabled: Bool {
-            return selectedPlaceID != nil && !placeQuery.isEmpty
+            return isFormValid
+        }
+
+        var isFormValid: Bool {
+            let hasMeetingAt = meetingTimeType == .now || meetingAt != nil
+            let hasPlace = selectedPlaceID != nil
+
+            return hasMeetingAt
+                && hasPlace
+                && !styleKeywords.isEmpty
+                && !content.trimmed.isEmpty
+                && !openChatURL.trimmed.isEmpty
         }
     }
 
@@ -56,7 +78,21 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     let output = Output()
 
+    private let googlePlaceService: GooglePlaceService
+    private let searchCoordinate: (latitude: Double, longitude: Double)
     private var draft = RecruitCompanionDraft()
+    private var placeSearchWorkItem: DispatchWorkItem?
+    private var latestPlaceSearchQuery = ""
+
+    // MARK: - Initializer
+
+    init(
+        googlePlaceService: GooglePlaceService,
+        searchCoordinate: (latitude: Double, longitude: Double)
+    ) {
+        self.googlePlaceService = googlePlaceService
+        self.searchCoordinate = searchCoordinate
+    }
 
     // MARK: - Action
 
@@ -96,6 +132,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             draft.selectedPlaceID = nil
             draft.selectedPlaceAddress = ""
             publishState()
+            searchPlacesWithDebounce(query: query)
 
         case .contentDidChange(let content):
             draft.content = content
@@ -111,9 +148,12 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             output.completeButtonDidTap.send(())
 
         case .placeDidSelect(let place):
+            placeSearchWorkItem?.cancel()
+            latestPlaceSearchQuery = ""
             draft.placeQuery = place.name
             draft.selectedPlaceID = place.placeID
             draft.selectedPlaceAddress = place.address
+            googlePlaceService.refreshSessionToken()
             publishState()
         }
     }
@@ -121,26 +161,67 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     // MARK: - Methods
 
     private var isFormValid: Bool {
-        let hasMeetingAt = draft.meetingTimeType == .now || draft.meetingAt != nil
-        let hasPlace = draft.selectedPlaceID != nil
-
-        return hasMeetingAt
-            && hasPlace
-            && !draft.styleKeywords.isEmpty
-            && !draft.content.trimmed.isEmpty
-            && !draft.openChatURL.trimmed.isEmpty
+        return output.state.value.isFormValid
     }
 
     private func publishState() {
         output.state.send(
             State(
                 meetingTimeType: draft.meetingTimeType,
+                meetingAt: draft.meetingAt,
                 isDatePickerVisible: draft.meetingTimeType == .scheduled,
                 maxParticipants: draft.maxParticipants,
                 styleKeywords: draft.styleKeywords,
                 placeQuery: draft.placeQuery,
-                selectedPlaceID: draft.selectedPlaceID
+                selectedPlaceID: draft.selectedPlaceID,
+                content: draft.content,
+                openChatURL: draft.openChatURL
             )
         )
+    }
+
+    private func searchPlacesWithDebounce(query: String) {
+        placeSearchWorkItem?.cancel()
+
+        let trimmedQuery = query.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+        latestPlaceSearchQuery = trimmedQuery
+
+        guard !trimmedQuery.isEmpty else {
+            output.placeSuggestions.send([])
+            googlePlaceService.refreshSessionToken()
+            return
+        }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.searchPlaces(query: trimmedQuery)
+        }
+
+        placeSearchWorkItem = workItem
+
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + 0.4,
+            execute: workItem
+        )
+    }
+
+    private func searchPlaces(query: String) {
+        googlePlaceService.searchPlaces(
+            query: query,
+            latitude: searchCoordinate.latitude,
+            longitude: searchCoordinate.longitude
+        ) { [weak self] result in
+            guard let self, latestPlaceSearchQuery == query else { return }
+
+            switch result {
+            case .success(let suggestions):
+                output.placeSuggestions.send(suggestions)
+
+            case .failure(let error):
+                AppLogger.error(error, message: "장소 검색에 실패했습니다.")
+                output.placeSuggestions.send([])
+            }
+        }
     }
 }

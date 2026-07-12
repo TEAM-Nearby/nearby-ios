@@ -15,12 +15,6 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
     weak var coordinator: CompanionCoordinator?
 
     private let rootView = RecruitCompanionView()
-    private let googlePlaceService = GooglePlaceService()
-
-    private var placeSearchWorkItem: DispatchWorkItem?
-
-    private let userLatitude = 41.389458
-    private let userLongitude = 2.168289
 
     // MARK: - Life Cycles
 
@@ -61,10 +55,7 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
         }
 
         rootView.placeQueryDidChange = { [weak self] query in
-            guard let self else { return }
-
-            viewModel.action(.placeQueryDidChange(query))
-            searchPlacesWithDebounce(query: query)
+            self?.viewModel.action(.placeQueryDidChange(query))
         }
 
         rootView.contentDidChange = { [weak self] content in
@@ -92,6 +83,13 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
             }
             .store(in: &cancellables)
 
+        viewModel.output.placeSuggestions
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] suggestions in
+                self?.rootView.updatePlaceSuggestions(suggestions)
+            }
+            .store(in: &cancellables)
+
         viewModel.output.completeButtonDidTap
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
@@ -107,51 +105,5 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
             .store(in: &cancellables)
 
         viewModel.action(.viewDidLoad)
-    }
-}
-
-private extension RecruitCompanionViewController {
-    func searchPlacesWithDebounce(query: String) {
-        placeSearchWorkItem?.cancel()
-
-        let trimmedQuery = query.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-
-        guard !trimmedQuery.isEmpty else {
-            rootView.updatePlaceSuggestions([])
-            return
-        }
-
-        let workItem = DispatchWorkItem { [weak self] in
-            self?.searchPlaces(query: trimmedQuery)
-        }
-
-        placeSearchWorkItem = workItem
-
-        DispatchQueue.main.asyncAfter(
-            deadline: .now() + 0.4,
-            execute: workItem
-        )
-    }
-
-    func searchPlaces(query: String) {
-        googlePlaceService.searchPlaces(
-            query: query,
-            latitude: userLatitude,
-            longitude: userLongitude
-        ) { [weak self] result in
-            DispatchQueue.main.async {
-                guard let self else { return }
-
-                switch result {
-                case .success(let suggestions):
-                    self.rootView.updatePlaceSuggestions(suggestions)
-
-                case .failure:
-                    self.rootView.updatePlaceSuggestions([])
-                }
-            }
-        }
     }
 }

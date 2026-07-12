@@ -9,7 +9,6 @@ import UIKit
 
 import SnapKit
 import Then
-import GooglePlaces
 
 final class RecruitCompanionView: BaseView {
 
@@ -124,7 +123,7 @@ final class RecruitCompanionView: BaseView {
         bottomView.update(state: state)
     }
 
-    func updatePlaceSuggestions(_ suggestions: [GMSAutocompleteSuggestion]) {
+    func updatePlaceSuggestions(_ suggestions: [PlaceSearchResultItem]) {
         bottomView.updatePlaceSuggestions(suggestions)
     }
 }

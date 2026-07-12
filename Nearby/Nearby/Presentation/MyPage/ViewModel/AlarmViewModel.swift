@@ -34,11 +34,35 @@ final class AlarmViewModel: BaseViewModelType {
 
     private var selectedTab: AlarmTab
 
-    private var sentRequestItems:
-        [AlarmRequestItem] = []
+    private var sentRequestItems: [AlarmRequestItem] = [
+        AlarmRequestItem(
+            tab: .sent,
+            displayType: .sentAccepted,
+            nickname: "조예원",
+            dateText: "2026년 7월 12일"
+        ),
+        AlarmRequestItem(
+            tab: .sent,
+            displayType: .sentRejected,
+            nickname: "장현준",
+            dateText: "2026년 7월 11일"
+        )
+    ]
 
-    private var receivedRequestItems:
-        [AlarmRequestItem] = []
+    private var receivedRequestItems: [AlarmRequestItem] = [
+        AlarmRequestItem(
+            tab: .received,
+            displayType: .receivedPending,
+            nickname: "김민수",
+            dateText: "2026년 7월 10일"
+        ),
+        AlarmRequestItem(
+            tab: .received,
+            displayType: .receivedPending,
+            nickname: "이서준",
+            dateText: "2026년 7월 9일"
+        )
+    ]
     
     // MARK: - Initializer
 

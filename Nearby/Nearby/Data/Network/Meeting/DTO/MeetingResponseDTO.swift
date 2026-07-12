@@ -17,7 +17,7 @@ struct MeetingResponseDTO: Decodable {
     let companion: Companion
     let placeName: String
     let meetingAt: String
-    let meetingTimeType: String
+    let meetingTimeType: PostType
     let isCheckedIn: Bool
     let meetingStatus: String
     

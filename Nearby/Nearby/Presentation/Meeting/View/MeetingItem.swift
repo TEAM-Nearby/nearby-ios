@@ -11,20 +11,24 @@ struct MeetingItem {
     let id: Int
     let name: String
     let gender: String
+    let profileImageUrl: String?
     let information: String
     let meetingDate: Date
-    let step: MeetingStep
-}
-
-// MARK: - Cell Type
-
-extension MeetingItem {
+    let postType: PostType
+    let isCheckedIn: Bool
+    
+    private static let verifiableWindow: TimeInterval = 3600
+    
     var isWithinVerifiableWindow: Bool {
-        abs(meetingDate.timeIntervalSinceNow) <= 3600
+        abs(meetingDate.timeIntervalSinceNow) <= Self.verifiableWindow
     }
+    
+    var step: MeetingStep {
+        if isCheckedIn { return .completion }
+        return isWithinVerifiableWindow ? .verification : .match
+    }
+    
     var cellType: MeetingVerificationCellType {
-        guard step == .verification else { return .notYet }
-        
-        return isWithinVerifiableWindow ? .verifiable : .notYet
+        (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
     }
 }

@@ -48,7 +48,7 @@ final class CompanionRequestAcceptView: BaseView {
     private let chatProfileView = UIView()
     private let chatImageView = UIImageView()
     private let chatTitleLabel = UILabel()
-    private let chatTitleView = UIStackView()
+    private let chatTitleView = UIView()
     
     private let chatCardView = UIStackView()
     private let chatDescriptionLabel = UILabel()
@@ -174,8 +174,6 @@ final class CompanionRequestAcceptView: BaseView {
         chatTitleView.do {
             $0.backgroundColor = .bgSurfaceGrey0
             $0.layer.cornerRadius = 16
-            $0.isLayoutMarginsRelativeArrangement = true
-            $0.layoutMargins = UIEdgeInsets(top: 32, left: 20, bottom: 32, right: 20)
         }
         
         chatDescriptionLabel.do {
@@ -218,7 +216,7 @@ final class CompanionRequestAcceptView: BaseView {
         chatContainer.addSubviews(chatProfileView, chatCardView, chatTitleView)
         chatProfileView.addSubviews(chatImageView, chatTitleLabel)
         chatCardView.addArrangedSubviews(enterChatButton, chatHelpButton)
-        chatTitleView.addArrangedSubview(chatDescriptionLabel)
+        chatTitleView.addSubview(chatDescriptionLabel)
     }
     
     override func setLayout() {
@@ -310,7 +308,8 @@ final class CompanionRequestAcceptView: BaseView {
         }
         
         chatDescriptionLabel.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.verticalEdges.equalToSuperview().inset(32)
         }
     }
     

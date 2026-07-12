@@ -14,7 +14,7 @@ final class LoginViewModel: BaseViewModelType {
     enum Input {
         case kakaoLoginButtonDidTap
     }
-    
+
     // MARK: - Output
     
     struct Output {
@@ -26,41 +26,34 @@ final class LoginViewModel: BaseViewModelType {
     
     var output: Output
     
-    private let kakaoAuthService = KakaoAuthService()
+    private let authRepository: AuthRepository
     
     // MARK: - Initializer
     
-    init() {
+    init(authRepository: AuthRepository) {
+        self.authRepository = authRepository
         self.output = Output()
     }
     
     // MARK: - Action
-    
+
     func action(_ trigger: Input) {
         switch trigger {
         case .kakaoLoginButtonDidTap:
             loginWithKakaoAccount()
         }
     }
-}
 
-// MARK: - Private Method
+    // MARK: - Method
 
-private extension LoginViewModel {
-    
     func loginWithKakaoAccount() {
-        kakaoAuthService.loginWithKakaoAccount { [weak self] result in
-            switch result {
-            case .success(let loginData):
-                print("Nearby Access Token:", loginData.accessToken)
-                print("Nearby Refresh Token:", loginData.refreshToken)
-                print("Nearby User ID:", loginData.userId)
-                print("Onboarding Status:", loginData.onboardingStatus.rawValue)
-                
-                self?.output.loginDidSucceed?(loginData.onboardingStatus)
-                
-            case .failure(let error):
-                self?.output.loginDidFail?(error)
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                let onboardingStatus = try await authRepository.loginWithKakao()
+                output.loginDidSucceed?(onboardingStatus)
+            } catch {
+                output.loginDidFail?(error)
             }
         }
     }

@@ -65,6 +65,10 @@ final class AppDIContainer {
         SaveDiningSheetViewModel()
     }
 
+    func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
+        DiningInfoSheetViewModel()
+    }
+
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
         CompanionDetailViewModel(state: state)
     }
@@ -184,7 +188,8 @@ final class AppDIContainer {
         DiningMapViewController(
             viewModel: makeDiningMapViewModel(),
             nearDiningSheetViewController: makeNearDiningSheetViewController(),
-            saveDiningSheetViewController: makeSaveDiningSheetViewController()
+            saveDiningSheetViewController: makeSaveDiningSheetViewController(),
+            diningInfoSheetViewController: makeDiningInfoSheetViewController()
         )
     }
 
@@ -194,6 +199,10 @@ final class AppDIContainer {
 
     func makeSaveDiningSheetViewController() -> SaveDiningSheetViewController {
         SaveDiningSheetViewController(viewModel: makeSaveDiningSheetViewModel())
+    }
+
+    func makeDiningInfoSheetViewController() -> DiningInfoSheetViewController {
+        DiningInfoSheetViewController(viewModel: makeDiningInfoSheetViewModel())
     }
     
     func makeMatchingViewController(coordinator: MatchingCoordinator) -> UIViewController {

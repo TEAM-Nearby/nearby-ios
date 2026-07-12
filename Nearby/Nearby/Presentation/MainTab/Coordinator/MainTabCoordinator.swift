@@ -12,6 +12,7 @@ final class MainTabCoordinator {
     var childCoordinators = [Coordinator]()
     let rootViewController = MainTabBarController()
     private let diContainer: AppDIContainer
+    var onLogoutDidFinish: (() -> Void)?
     
     init(diContainer: AppDIContainer) {
         self.diContainer = diContainer
@@ -137,6 +138,11 @@ private extension MainTabCoordinator {
             )
 
         myPageCoordinator.parentCoordinator = self
+        
+        myPageCoordinator.onLogoutDidFinish = { [weak self] in
+            self?.onLogoutDidFinish?()
+        }
+
         addChildCoordinator(myPageCoordinator)
         myPageCoordinator.start()
     }

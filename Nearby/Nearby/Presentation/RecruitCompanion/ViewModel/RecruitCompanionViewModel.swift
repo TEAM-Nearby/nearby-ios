@@ -20,7 +20,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         case participantCountDidChange(Int)
         case styleKeywordDidTap(String)
         case placeQueryDidChange(String)
-        case placeSearchButtonDidTap
+        case placeDidSelect(SelectedPlace)
         case contentDidChange(String)
         case openChatURLDidChange(String)
         case completeButtonDidTap
@@ -30,7 +30,6 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     struct Output {
         let state = CurrentValueSubject<State, Never>(.initial)
-        let showPlaceSearch = PassthroughSubject<Void, Never>()
         let completeButtonDidTap = PassthroughSubject<Void, Never>()
         let showBack = PassthroughSubject<Void, Never>()
     }
@@ -41,16 +40,16 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         let maxParticipants: Int
         let styleKeywords: Set<String>
         let placeQuery: String
-        let isCompleteButtonEnabled: Bool
+        let selectedPlaceID: String?
 
         static let initial = State(
-            meetingTimeType: .now,
-            isDatePickerVisible: false,
-            maxParticipants: 2,
-            styleKeywords: [],
-            placeQuery: "",
-            isCompleteButtonEnabled: false
+            meetingTimeType: .now, isDatePickerVisible: false, maxParticipants: 2,
+            styleKeywords: [], placeQuery: "", selectedPlaceID: nil
         )
+
+        var isCompleteButtonEnabled: Bool {
+            return selectedPlaceID != nil && !placeQuery.isEmpty
+        }
     }
 
     // MARK: - Properties
@@ -94,10 +93,9 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
         case .placeQueryDidChange(let query):
             draft.placeQuery = query
+            draft.selectedPlaceID = nil
+            draft.selectedPlaceAddress = ""
             publishState()
-
-        case .placeSearchButtonDidTap:
-            output.showPlaceSearch.send(())
 
         case .contentDidChange(let content):
             draft.content = content
@@ -111,6 +109,12 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             guard isFormValid else { return }
             // TODO: - 동행글 작성 API POST 연결
             output.completeButtonDidTap.send(())
+
+        case .placeDidSelect(let place):
+            draft.placeQuery = place.name
+            draft.selectedPlaceID = place.placeID
+            draft.selectedPlaceAddress = place.address
+            publishState()
         }
     }
 
@@ -118,7 +122,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     private var isFormValid: Bool {
         let hasMeetingAt = draft.meetingTimeType == .now || draft.meetingAt != nil
-        let hasPlace = !draft.placeQuery.trimmed.isEmpty
+        let hasPlace = draft.selectedPlaceID != nil
 
         return hasMeetingAt
             && hasPlace
@@ -135,7 +139,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
                 maxParticipants: draft.maxParticipants,
                 styleKeywords: draft.styleKeywords,
                 placeQuery: draft.placeQuery,
-                isCompleteButtonEnabled: isFormValid
+                selectedPlaceID: draft.selectedPlaceID
             )
         )
     }

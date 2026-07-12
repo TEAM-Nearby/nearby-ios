@@ -9,9 +9,10 @@ import UIKit
 
 import SnapKit
 import Then
+import GooglePlaces
 
 final class RecruitCompanionView: BaseView {
-    
+
     // MARK: - UI Components
 
     private let navigationBar = NearbyNavigationBar()
@@ -32,9 +33,10 @@ final class RecruitCompanionView: BaseView {
     var contentDidChange: ((String) -> Void)?
     var openChatURLDidChange: ((String) -> Void)?
     var completeButtonAction: (() -> Void)?
-    
+    var placeDidSelect: ((SelectedPlace) -> Void)?
+
     // MARK: - Custom Methods
-    
+
     override func setStyle() {
         backgroundColor = .white
 
@@ -110,6 +112,9 @@ final class RecruitCompanionView: BaseView {
         bottomView.completeButtonAction = { [weak self] in
             self?.completeButtonAction?()
         }
+        bottomView.placeDidSelect = { [weak self] place in
+            self?.placeDidSelect?(place)
+        }
     }
 
     // MARK: - Method
@@ -117,5 +122,9 @@ final class RecruitCompanionView: BaseView {
     func update(state: RecruitCompanionViewModel.State) {
         topView.update(state: state)
         bottomView.update(state: state)
+    }
+
+    func updatePlaceSuggestions(_ suggestions: [GMSAutocompleteSuggestion]) {
+        bottomView.updatePlaceSuggestions(suggestions)
     }
 }

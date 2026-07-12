@@ -13,7 +13,14 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
     // MARK: - Properties
 
     weak var coordinator: CompanionCoordinator?
+
     private let rootView = RecruitCompanionView()
+    private let googlePlaceService = GooglePlaceService()
+
+    private var placeSearchWorkItem: DispatchWorkItem?
+
+    private let userLatitude = 41.389458
+    private let userLongitude = 2.168289
 
     // MARK: - Life Cycles
 
@@ -23,7 +30,6 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
@@ -33,32 +39,48 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
         rootView.backButtonAction = { [weak self] in
             self?.viewModel.action(.backButtonDidTap)
         }
+
         rootView.timeTypeDidSelect = { [weak self] type in
             self?.viewModel.action(.timeTypeDidSelect(type))
         }
+
         rootView.meetingAtDidChange = { [weak self] date in
             self?.viewModel.action(.meetingAtDidChange(date))
         }
+
         rootView.participantCountDidChange = { [weak self] count in
             self?.viewModel.action(.participantCountDidChange(count))
         }
+
         rootView.styleKeywordDidTap = { [weak self] keyword in
             self?.viewModel.action(.styleKeywordDidTap(keyword))
         }
+
         rootView.placeSearchButtonAction = { [weak self] in
-            self?.viewModel.action(.placeSearchButtonDidTap)
+            self?.view.endEditing(true)
         }
+
         rootView.placeQueryDidChange = { [weak self] query in
-            self?.viewModel.action(.placeQueryDidChange(query))
+            guard let self else { return }
+
+            viewModel.action(.placeQueryDidChange(query))
+            searchPlacesWithDebounce(query: query)
         }
+
         rootView.contentDidChange = { [weak self] content in
             self?.viewModel.action(.contentDidChange(content))
         }
+
         rootView.openChatURLDidChange = { [weak self] url in
             self?.viewModel.action(.openChatURLDidChange(url))
         }
+
         rootView.completeButtonAction = { [weak self] in
             self?.viewModel.action(.completeButtonDidTap)
+        }
+
+        rootView.placeDidSelect = { [weak self] place in
+            self?.viewModel.action(.placeDidSelect(place))
         }
     }
 
@@ -67,13 +89,6 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 self?.rootView.update(state: state)
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.showPlaceSearch
-            .receive(on: DispatchQueue.main)
-            .sink {
-                // TODO: - 장소 검색 화면 연결
             }
             .store(in: &cancellables)
 
@@ -92,5 +107,51 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
             .store(in: &cancellables)
 
         viewModel.action(.viewDidLoad)
+    }
+}
+
+private extension RecruitCompanionViewController {
+    func searchPlacesWithDebounce(query: String) {
+        placeSearchWorkItem?.cancel()
+
+        let trimmedQuery = query.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+
+        guard !trimmedQuery.isEmpty else {
+            rootView.updatePlaceSuggestions([])
+            return
+        }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.searchPlaces(query: trimmedQuery)
+        }
+
+        placeSearchWorkItem = workItem
+
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + 0.4,
+            execute: workItem
+        )
+    }
+
+    func searchPlaces(query: String) {
+        googlePlaceService.searchPlaces(
+            query: query,
+            latitude: userLatitude,
+            longitude: userLongitude
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+
+                switch result {
+                case .success(let suggestions):
+                    self.rootView.updatePlaceSuggestions(suggestions)
+
+                case .failure:
+                    self.rootView.updatePlaceSuggestions([])
+                }
+            }
+        }
     }
 }

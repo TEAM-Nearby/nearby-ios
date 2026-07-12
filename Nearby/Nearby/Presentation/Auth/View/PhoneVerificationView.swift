@@ -139,15 +139,9 @@ final class PhoneVerificationView: BaseView {
 
         progressContainerView.addSubview(progressView)
 
-        phoneTextFieldContainerView.addSubviews(
-            phoneTextField,
-            phoneClearButton
-        )
+        phoneTextFieldContainerView.addSubviews(phoneTextField, phoneClearButton)
 
-        verificationTextFieldContainerView.addSubviews(
-            verificationTextField,
-            verificationClearButton
-        )
+        verificationTextFieldContainerView.addSubviews(verificationTextField, verificationClearButton)
     }
 
     override func setLayout() {
@@ -246,10 +240,7 @@ final class PhoneVerificationView: BaseView {
         verificationTextFieldContainerView.isHidden = !isVerificationMode
         verificationErrorLabel.isHidden = true
 
-        bottomButton.setTitle(
-            isVerificationMode ? "다음" : "인증문자 발송하기",
-            for: .normal
-        )
+        bottomButton.setTitle(isVerificationMode ? "다음" : "인증문자 발송하기", for: .normal)
     }
 
     func clearPhoneText() {

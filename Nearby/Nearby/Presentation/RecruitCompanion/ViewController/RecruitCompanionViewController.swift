@@ -12,6 +12,7 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
 
     // MARK: - Properties
 
+    weak var coordinator: CompanionCoordinator?
     private let rootView = RecruitCompanionView()
 
     // MARK: - Life Cycles
@@ -86,7 +87,7 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
         viewModel.output.showBack
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                self?.coordinator?.showPrevious()
             }
             .store(in: &cancellables)
 

@@ -35,8 +35,12 @@ final class CompanionCoordinator {
     }
     
     private func showRecruitCompanion() {
-        let viewController = diContainer.makeRecruitCompanionViewController()
+        let viewController = diContainer.makeRecruitCompanionViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showPrevious() {
+        navigationController.popViewController(animated: true)
     }
 
     private func handle(_ route: CompanionDetailViewModel.Route) {

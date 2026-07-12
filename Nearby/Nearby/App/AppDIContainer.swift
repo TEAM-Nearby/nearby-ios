@@ -272,10 +272,11 @@ final class AppDIContainer {
         WrittenPostViewController(viewModel: makeWrittenPostViewModel())
     }
 
-    func makeRecruitCompanionViewController() -> UIViewController {
+    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator? = nil) -> UIViewController {
         let viewController = RecruitCompanionViewController(
             viewModel: makeRecruitCompanionViewModel()
         )
+        viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }

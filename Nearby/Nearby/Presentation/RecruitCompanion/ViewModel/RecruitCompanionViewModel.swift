@@ -58,7 +58,6 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     let output = Output()
 
     private var draft = RecruitCompanionDraft()
-    private var placeQuery = ""
 
     // MARK: - Action
 
@@ -94,7 +93,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             publishState()
 
         case .placeQueryDidChange(let query):
-            placeQuery = query
+            draft.placeQuery = query
             publishState()
 
         case .placeSearchButtonDidTap:
@@ -105,7 +104,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             publishState()
 
         case .openChatURLDidChange(let url):
-            draft.openChatUrl = url
+            draft.openChatURL = url
             publishState()
 
         case .completeButtonDidTap:
@@ -119,13 +118,13 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     private var isFormValid: Bool {
         let hasMeetingAt = draft.meetingTimeType == .now || draft.meetingAt != nil
-        let hasPlace = !placeQuery.trimmed.isEmpty
+        let hasPlace = !draft.placeQuery.trimmed.isEmpty
 
         return hasMeetingAt
             && hasPlace
             && !draft.styleKeywords.isEmpty
             && !draft.content.trimmed.isEmpty
-            && !draft.openChatUrl.trimmed.isEmpty
+            && !draft.openChatURL.trimmed.isEmpty
     }
 
     private func publishState() {
@@ -135,7 +134,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
                 isDatePickerVisible: draft.meetingTimeType == .scheduled,
                 maxParticipants: draft.maxParticipants,
                 styleKeywords: draft.styleKeywords,
-                placeQuery: placeQuery,
+                placeQuery: draft.placeQuery,
                 isCompleteButtonEnabled: isFormValid
             )
         )

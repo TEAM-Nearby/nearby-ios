@@ -17,6 +17,10 @@ final class CompanionDetailView: BaseView {
     var onBackButtonDidTap: (() -> Void)?
     var onApplyButtonDidTap: (() -> Void)?
     
+    var tagCollectionView: UICollectionView {
+        topView.tagCollectionView
+    }
+    
     // MARK: - UI Components
     
     private let backButton = UIButton()
@@ -116,9 +120,5 @@ final class CompanionDetailView: BaseView {
     func configure(state: CompanionDetailState) {
         applyCompanionButton.setEnabled(state.isApplicationEnabled)
         bottomView.configure(postType: state.postType)
-    }
-
-    var tagCollectionView: UICollectionView {
-        topView.tagCollectionView
     }
 }

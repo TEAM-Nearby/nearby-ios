@@ -78,7 +78,7 @@ private extension MatchingViewModel {
                 description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
             ),
             matchStatus: "MATCHED",
-            isHost: false
+            type: .participant
         )
     ]
 }

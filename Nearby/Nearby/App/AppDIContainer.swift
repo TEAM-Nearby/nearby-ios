@@ -65,6 +65,10 @@ final class AppDIContainer {
         SaveDiningSheetViewModel()
     }
 
+    func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
+        DiningInfoSheetViewModel()
+    }
+
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
         CompanionDetailViewModel(state: state)
     }
@@ -129,6 +133,15 @@ final class AppDIContainer {
         HostRequestDeclineViewModel(applicantName: applicantName)
     }
     
+    func makeCompanionRequestAcceptViewModel(hostName: String, locationName: String) -> CompanionRequestAcceptViewModel {
+        CompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
+    }
+
+    func makeHostRequestAllowViewModel(applicantName: String, locationName: String, postType: PostType) -> HostRequestAllowViewModel {
+        HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
+    }
+
+    
     func makeHostProfileViewModel() -> HostProfileViewModel {
         HostProfileViewModel()
     }
@@ -179,7 +192,8 @@ final class AppDIContainer {
         DiningMapViewController(
             viewModel: makeDiningMapViewModel(),
             nearDiningSheetViewController: makeNearDiningSheetViewController(),
-            saveDiningSheetViewController: makeSaveDiningSheetViewController()
+            saveDiningSheetViewController: makeSaveDiningSheetViewController(),
+            diningInfoSheetViewController: makeDiningInfoSheetViewController()
         )
     }
 
@@ -189,6 +203,10 @@ final class AppDIContainer {
 
     func makeSaveDiningSheetViewController() -> SaveDiningSheetViewController {
         SaveDiningSheetViewController(viewModel: makeSaveDiningSheetViewModel())
+    }
+
+    func makeDiningInfoSheetViewController() -> DiningInfoSheetViewController {
+        DiningInfoSheetViewController(viewModel: makeDiningInfoSheetViewModel())
     }
     
     func makeMatchingViewController(coordinator: MatchingCoordinator) -> UIViewController {
@@ -346,6 +364,28 @@ final class AppDIContainer {
         PhoneVerificationViewController(
             viewModel: makePhoneVerificationViewModel()
         )
+    func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
+        let viewController = CompanionRequestAcceptViewController(
+            viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+
+    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, locationName: String, postType: PostType) -> UIViewController {
+        let viewController = HostRequestAllowViewController(
+            viewModel: makeHostRequestAllowViewModel(
+                applicantName: applicantName,
+                locationName: locationName,
+                postType: postType
+            )
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeNotificationCoordinator(navigationController: UINavigationController) -> NotificationCoordinator {
+        NotificationCoordinator(navigationController: navigationController, diContainer: self)
     }
 }
 

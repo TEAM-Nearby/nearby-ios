@@ -37,7 +37,7 @@ final class CompanionRequestAcceptView: BaseView {
     
     private let peopleStackView = UIStackView()
     private let peopleImageView = UIImageView()
-    private let avatarStackView = AvatarStackView()
+    private let avatarClusterView = AvatarClusterView()
     private let peopleLabel = UILabel()
     
     private let checkListView = UIStackView()
@@ -206,11 +206,8 @@ final class CompanionRequestAcceptView: BaseView {
         informationView.addArrangedSubviews(locationStackView, dateStackView, peopleStackView)
         locationStackView.addArrangedSubviews(locationImageView, locationLabel)
         dateStackView.addArrangedSubviews(calendarImageView, dateLabel)
-        
-        avatarStackView.configureWithDefaultAvatars(count: 3)
-        
-        peopleStackView.addArrangedSubviews(peopleImageView, avatarStackView, peopleLabel)
-        peopleStackView.setCustomSpacing(6, after: avatarStackView)
+        peopleStackView.addArrangedSubviews(peopleImageView, avatarClusterView, peopleLabel)
+        peopleStackView.setCustomSpacing(6, after: avatarClusterView)
         checkListView.addArrangedSubviews(checkListTitleLabel, checkListDescriptionLabel)
         
         chatContainer.addSubviews(chatProfileView, chatCardView, chatTitleView)
@@ -330,6 +327,7 @@ final class CompanionRequestAcceptView: BaseView {
         chatImageView.image = output.image
         chatTitleLabel.text = output.title
         confirmButton.setTitle(output.buttonTitle, for: .normal)
+        avatarClusterView.configure(with: output.avatarImages)
     }
     
     func updateStep(_ step: CompanionRequestAcceptViewModel.Step) {

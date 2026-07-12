@@ -35,9 +35,12 @@ final class CompanionCoordinator {
     }
     
     private func showRecruitCompanion() {
-        // TODO: 동행글 작성 View로 이동
-//        let viewController = diContainer.makeRecruitCompanionViewController()
-//        navigationController.pushViewController(viewController, animated: true)
+        let viewController = diContainer.makeRecruitCompanionViewController(coordinator: self)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showPrevious() {
+        navigationController.popViewController(animated: true)
     }
 
     private func handle(_ route: CompanionDetailViewModel.Route) {

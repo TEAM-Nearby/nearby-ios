@@ -15,6 +15,8 @@ final class MyPageViewModel: BaseViewModelType {
         case alarmButtonDidTap
         case settingButtonDidTap
         case writtenPostRowDidTap
+        case sentRequestRowDidTap
+        case receivedRequestRowDidTap
     }
 
     // MARK: - Output
@@ -23,6 +25,8 @@ final class MyPageViewModel: BaseViewModelType {
         var alarmButtonDidTap: (() -> Void)?
         var settingButtonDidTap: (() -> Void)?
         var writtenPostRowDidTap: (() -> Void)?
+        var sentRequestRowDidTap: (() -> Void)?
+        var receivedRequestRowDidTap: (() -> Void)?
     }
 
     // MARK: - Property
@@ -41,6 +45,12 @@ final class MyPageViewModel: BaseViewModelType {
 
         case .writtenPostRowDidTap:
             output.writtenPostRowDidTap?()
+
+        case .sentRequestRowDidTap:
+            output.sentRequestRowDidTap?()
+
+        case .receivedRequestRowDidTap:
+            output.receivedRequestRowDidTap?()
         }
     }
 }

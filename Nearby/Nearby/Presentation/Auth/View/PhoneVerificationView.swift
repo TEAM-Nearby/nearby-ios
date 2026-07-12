@@ -237,6 +237,10 @@ final class PhoneVerificationView: BaseView {
         verificationErrorLabel.isHidden = true
 
         bottomButton.setTitle(isVerificationMode ? "다음" : "인증문자 발송하기", for: .normal)
+        
+        if !isVerificationMode {
+            verificationTextField.text = nil
+        }
     }
 
     func clearPhoneText() {

@@ -39,7 +39,8 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
 
     override func setAddTarget() {
         phoneVerificationView.navigationBar.leftButtonAction = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.view.endEditing(true)
+            self?.viewModel.action(.backButtonDidTap)
         }
         phoneVerificationView.bottomButton.addTarget(self, action: #selector(bottomButtonDidTap), for: .touchUpInside)
         phoneVerificationView.phoneClearButton.addTarget(self, action: #selector(phoneClearButtonDidTap), for: .touchUpInside)
@@ -57,6 +58,9 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
             guard let self else { return }
             view.endEditing(true)
             onVerificationCompleted?()
+        }
+        viewModel.output.shouldPopViewController = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
         }
     }
 

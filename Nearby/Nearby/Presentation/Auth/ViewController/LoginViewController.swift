@@ -8,22 +8,22 @@
 import UIKit
 
 final class LoginViewController: BaseViewController<LoginViewModel> {
-    
+
     // MARK: - Property
-    
+
     var onLoginDidSucceed: ((OnboardingStatus) -> Void)?
-    
+
     // MARK: - UI Component
-    
+
     private let loginView = LoginView()
-    
+
     // MARK: - Life Cycles
-    
+
     override func loadView() {
         self.view = loginView
     }
 
-    // MARK: - Custom Method
+    // MARK: - Custom Methods
 
     override func setAddTarget() {
         loginView.kakaoLoginButton.addTarget(
@@ -40,7 +40,9 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
             print("카카오 로그인 실패:", error)
         }
     }
-    
+
+    // MARK: - Action
+
     @objc
     func kakaoLoginButtonDidTap() {
         viewModel.action(.kakaoLoginButtonDidTap)

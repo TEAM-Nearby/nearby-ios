@@ -172,10 +172,6 @@ final class AppDIContainer {
         HostProfileViewModel()
     }
     
-    func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
-        PhoneVerificationViewModel()
-    }
-    
     func makeHostRequestRecieveViewModel(applicantName: String, locationName: String) -> HostRequestRecieveViewModel {
         HostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName)
     }
@@ -377,7 +373,11 @@ final class AppDIContainer {
     }
     
     func makePhoneVerificationViewController() -> PhoneVerificationViewController {
-        PhoneVerificationViewController(viewModel: makePhoneVerificationViewModel())
+        let service = DefaultPhoneVerificationService(networkProvider: networkProvider)
+        let repository = DefaultPhoneVerificationRepository(phoneVerificationService: service)
+        let viewModel = PhoneVerificationViewModel(phoneVerificationRepository: repository)
+        
+        return PhoneVerificationViewController(viewModel: viewModel)
     }
 
     func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {

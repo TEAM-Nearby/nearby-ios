@@ -14,4 +14,10 @@ extension Date {
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.string(from: self)
     }
+    
+    var meetingDisplayText: String {
+        let formatter = DateFormatter.cached(format: "M월 d일 (E) a h시 m분")
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: self)
+    }
 }

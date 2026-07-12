@@ -35,6 +35,7 @@
 				Data/Network/Matching/DTO/.gitkeep,
 				Data/Network/MyPage/DTO/.gitkeep,
 				Data/Network/RecruitCompanion/DTO/.gitkeep,
+				Presentation/Matching/Coordinator/.gitkeep,
 				Presentation/Notification/View/.gitkeep,
 				Presentation/Notification/ViewController/.gitkeep,
 				Presentation/Notification/ViewModel/.gitkeep,

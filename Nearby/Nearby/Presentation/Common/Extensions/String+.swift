@@ -37,4 +37,8 @@ extension String {
             ]
         )
     }
+    
+    func toDate(format: String = "yyyy-MM-dd'T'HH:mm:ss") -> Date? {
+        DateFormatter.cached(format: format).date(from: self)
+    }
 }

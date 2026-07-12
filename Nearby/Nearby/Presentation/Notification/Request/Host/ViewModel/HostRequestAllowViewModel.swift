@@ -49,6 +49,8 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     
     private let applicantName: String
     private let locationName: String
+    private let meetingAt: String
+    private let matchId: Int?
     private let postType: PostType
     // TODO: - 서버 연동 시 응답값으로 교체
     let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
@@ -56,9 +58,11 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(applicantName: String, locationName: String, postType: PostType) {
+    init(applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
         self.applicantName = applicantName
         self.locationName = locationName
+        self.meetingAt = meetingAt
+        self.matchId = matchId
         self.postType = postType
     }
     
@@ -71,7 +75,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
                 image: .imgProfileDefault,
                 title: "\(applicantName) 님과 동행이 매칭됐어요!",
                 location: "\(locationName)",
-                date: "6월 18일 (목) 오후 4시 30분",
+                date: meetingAt.toDate()?.meetingDisplayText ?? "",
                 chatTitle: "\(applicantName) 님과 대화를 나눠보세요"
             )
             output.displayData.send(data)

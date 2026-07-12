@@ -51,7 +51,7 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
                 self?.coordinator?.showCompanionTab()
             }
             .store(in: &cancellables)
-
+        
         viewModel.action(.viewDidLoad)
     }
 }

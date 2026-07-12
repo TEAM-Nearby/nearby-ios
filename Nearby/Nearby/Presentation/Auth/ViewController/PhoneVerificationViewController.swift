@@ -71,6 +71,10 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
         viewModel.output.isLoading = { [weak self] isLoading in
             self?.phoneVerificationView.updateLoadingState(isLoading)
         }
+        
+        viewModel.output.verificationCodeDidFail = { [weak self] message in
+            self?.phoneVerificationView.updateVerificationError(message: message, isHidden: false)
+        }
     }
 
     // MARK: - Actions
@@ -89,6 +93,9 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
     @objc
     private func verificationClearButtonDidTap() {
         phoneVerificationView.clearVerificationText()
+
+        phoneVerificationView.updateVerificationError(message: nil, isHidden: true)
+
         viewModel.action(.verificationCodeDidChange(""))
     }
     
@@ -103,6 +110,9 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
     @objc
     private func verificationTextFieldDidChange() {
         let verificationCode = phoneVerificationView.verificationTextField.text ?? ""
+
+        phoneVerificationView.updateVerificationError(message: nil, isHidden: true)
+        
         viewModel.action(.verificationCodeDidChange(verificationCode))
     }
 }

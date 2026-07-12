@@ -25,6 +25,7 @@ final class PhoneVerificationViewModel: BaseViewModelType {
         var verificationDidComplete: (() -> Void)?
         var shouldPopViewController: (() -> Void)?
         var phoneVerificationDidFail: ((String) -> Void)?
+        var verificationCodeDidFail: ((String) -> Void)?
         var isLoading: ((Bool) -> Void)?
     }
 
@@ -59,8 +60,7 @@ final class PhoneVerificationViewModel: BaseViewModelType {
 
         case .bottomButtonDidTap:
             if isVerificationMode {
-                guard !verificationCode.isEmpty else { return }
-                output.verificationDidComplete?()
+                verifyVerificationCode()
             } else {
                 sendVerificationCode()
             }
@@ -151,5 +151,20 @@ private extension PhoneVerificationViewModel {
         phoneNumber.count == 11
             && phoneNumber.hasPrefix("010")
             && phoneNumber.allSatisfy(\.isNumber)
+    }
+    
+    func verifyVerificationCode() {
+        guard !verificationCode.isEmpty else {
+            output.verificationCodeDidFail?("인증번호를 입력해주세요")
+            return
+        }
+
+        // TODO: - 인증번호 검증 API 연동 후 제거
+        guard verificationCode == "123456" else {
+            output.verificationCodeDidFail?("인증번호가 일치하지 않아요")
+            return
+        }
+
+        output.verificationDidComplete?()
     }
 }

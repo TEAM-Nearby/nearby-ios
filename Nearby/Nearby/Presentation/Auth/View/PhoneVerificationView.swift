@@ -270,6 +270,14 @@ final class PhoneVerificationView: BaseView {
     func hidePhoneError() {
         phoneErrorLabel.isHidden = true
     }
+    
+    func updateVerificationError(message: String?, isHidden: Bool) {
+        if let message {
+            verificationErrorLabel.text = message
+        }
+
+        verificationErrorLabel.isHidden = isHidden
+    }
 }
 
 // MARK: - UILabel Extensions

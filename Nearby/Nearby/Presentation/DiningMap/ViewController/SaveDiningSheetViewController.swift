@@ -71,6 +71,9 @@ extension SaveDiningSheetViewController: UICollectionViewDataSource {
         cell.onBookmarkTap = { [weak self] in
             self?.viewModel.action(.bookmarkDidTap(indexPath.item))
         }
+        cell.onImageTap = { [weak self] in
+            self?.viewModel.action(.restaurantDidSelect(indexPath.item))
+        }
         return cell
     }
 }

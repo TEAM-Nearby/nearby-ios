@@ -145,6 +145,10 @@ final class AppDIContainer {
         HostProfileViewModel()
     }
     
+    func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
+        PhoneVerificationViewModel()
+    }
+    
     // MARK: - ViewControllers
     
     func makeHostProfileViewController() -> HostProfileViewController {
@@ -355,6 +359,10 @@ final class AppDIContainer {
         return viewController
     }
     
+    func makePhoneVerificationViewController() -> PhoneVerificationViewController {
+        PhoneVerificationViewController(
+            viewModel: makePhoneVerificationViewModel()
+        )
     func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
         let viewController = CompanionRequestAcceptViewController(
             viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)

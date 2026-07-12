@@ -23,7 +23,7 @@ final class AppCoordinator {
 
 extension AppCoordinator: Coordinator {
      func start() {
-         showMainTab()
+         showLogin()
      }
      
      func finish() {
@@ -44,6 +44,17 @@ extension AppCoordinator: Coordinator {
     
     func showLogin() {
         let loginViewController = diContainer.makeLoginViewController()
+        
+        loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in
+            guard let self else { return }
+
+            switch onboardingStatus {
+            case .started: self.showPhoneVerification()
+            case .phoneVerified: self.showPhoneVerification()
+            case .completed: self.showMainTab()
+            }
+        }
+        
         let navigationController = UINavigationController(rootViewController: loginViewController)
 
         window.rootViewController = navigationController
@@ -62,5 +73,20 @@ extension AppCoordinator: Coordinator {
         
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
+    }
+    
+    private func showPhoneVerification() {
+        guard let navigationController = window.rootViewController as? UINavigationController else {
+            return
+        }
+
+        let viewController =
+            diContainer.makePhoneVerificationViewController()
+
+        viewController.onVerificationCompleted = { [weak self] in
+            self?.showMainTab()
+        }
+
+        navigationController.pushViewController(viewController, animated: true)
     }
  }

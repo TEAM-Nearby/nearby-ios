@@ -49,4 +49,18 @@ extension AppCoordinator: Coordinator {
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
     }
+    
+    private func showHostProfileTest() {
+        let hostProfileViewController =
+        diContainer.makeHostProfileViewController()
+        
+        let navigationController = UINavigationController(
+            rootViewController: hostProfileViewController
+        )
+        
+        navigationController.setNavigationBarHidden(true, animated: false)
+        
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+    }
  }

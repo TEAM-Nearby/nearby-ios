@@ -141,9 +141,12 @@ final class AppDIContainer {
         HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
     }
 
-    
     func makeHostProfileViewModel() -> HostProfileViewModel {
         HostProfileViewModel()
+    }
+    
+    func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
+        PhoneVerificationViewModel()
     }
     
     // MARK: - ViewControllers
@@ -356,6 +359,10 @@ final class AppDIContainer {
         return viewController
     }
     
+    func makePhoneVerificationViewController() -> PhoneVerificationViewController {
+        PhoneVerificationViewController(
+            viewModel: makePhoneVerificationViewModel()
+        )
     func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
         let viewController = CompanionRequestAcceptViewController(
             viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)

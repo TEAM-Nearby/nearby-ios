@@ -9,6 +9,10 @@ import UIKit
 
 final class LoginViewController: BaseViewController<LoginViewModel> {
     
+    // MARK: - Property
+    
+    var onLoginDidSucceed: ((OnboardingStatus) -> Void)?
+    
     // MARK: - UI Component
     
     private let loginView = LoginView()
@@ -40,19 +44,7 @@ private extension LoginViewController {
     
     func bindViewModel() {
         viewModel.output.loginDidSucceed = { [weak self] onboardingStatus in
-            switch onboardingStatus {
-            case .started:
-                print("휴대폰인증 화면으로 이동해야됨")
-                // TODO: - 코디네이터 연결후에 PhoneVerificationViewController로 이동
-                
-            case .phoneVerified:
-                print("동행 프로필 설정 화면으로 이동해야됨")
-                // TODO: - 코디네이터 연결후에 CompanionProfileViewController로 이동
-                
-            case .completed:
-                print("메인탭 화면으로 이동해야됨")
-                // TODO: - 코디네이터 연결후에 메인탭으로 이동
-            }
+            self?.onLoginDidSucceed?(onboardingStatus)
         }
         
         viewModel.output.loginDidFail = { error in

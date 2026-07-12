@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "progressbar_step_01.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

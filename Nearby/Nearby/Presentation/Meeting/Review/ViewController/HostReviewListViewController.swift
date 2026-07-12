@@ -27,6 +27,12 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
     // MARK: - Custom Methods
     
     override func setAddTarget() {
+        hostReviewListView.onBackButtonDidTap = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        hostReviewListView.onNotificationButtonDidTap = { [weak self] in
+            self?.coordinator?.showNotification()
+        }
         hostReviewListView.onCompletionButtonDidTap = { [weak self] in
             self?.viewModel.action(.completionButtonDidTap)
         }

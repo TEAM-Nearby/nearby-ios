@@ -59,10 +59,12 @@ extension MyPageCoordinator: Coordinator {
         navigationController.setViewControllers([myPageViewController], animated: false)
     }
 
-    func finish() {parentCoordinator?.removeChildCoordinator(self)}
+    func finish() {
+        parentCoordinator?.removeChildCoordinator(self)
+    }
 }
 
-// MARK: - Coordinator
+// MARK: - Private Methods
 
 private extension MyPageCoordinator {
     func showAlarm(initialTab: AlarmTab = .sent) {
@@ -85,7 +87,7 @@ private extension MyPageCoordinator {
                 showCompanionRequestDecline()
 
             case .receivedPending:
-                showHostRequestRecieve(applicantName: requestItem.nickname)
+                showHostRequestRecieve()
             }
         }
 
@@ -101,7 +103,7 @@ private extension MyPageCoordinator {
             self?.navigationController.popViewController(animated: true)
         }
 
-        settingViewController.onLogoutButtonDidTap = {[weak self] in
+        settingViewController.onLogoutButtonDidTap = { [weak self] in
             self?.onLogoutDidFinish?()
         }
 
@@ -126,35 +128,31 @@ private extension MyPageCoordinator {
 
         navigationController.pushViewController(writtenPostViewController, animated: true)
     }
-    
+
     func showCompanionRequestAccept(hostName: String) {
-        let notificationCoordinator = appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
-
-        notificationCoordinator.parentCoordinator = self
-
-        addChildCoordinator(notificationCoordinator)
-
-        notificationCoordinator.showCompanionRequestAccept(hostName: hostName, locationName: "시우다드 콘달")
+        // TODO: - 서버 연동 시 알림 아이템의 locationName으로 교체
+        makeChildNotificationCoordinator()
+            .showCompanionRequestAccept(hostName: hostName, locationName: "시우다드 콘달")
     }
-    
+
     func showCompanionRequestDecline() {
+        makeChildNotificationCoordinator()
+            .showCompanionRequestDecline()
+    }
+
+    func showHostRequestRecieve() {
+        // TODO: - 서버 연동 시 알림 아이템의 applicationId로 교체
+        makeChildNotificationCoordinator()
+            .showHostRequestRecieve(applicationId: 3)
+    }
+
+    func makeChildNotificationCoordinator() -> NotificationCoordinator {
         let notificationCoordinator = appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
 
         notificationCoordinator.parentCoordinator = self
 
         addChildCoordinator(notificationCoordinator)
 
-        notificationCoordinator.showCompanionRequestDecline()
-    }
-    
-    func showHostRequestRecieve(applicantName: String) {
-        let notificationCoordinator =
-            appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
-
-        notificationCoordinator.parentCoordinator = self
-
-        addChildCoordinator(notificationCoordinator)
-
-        notificationCoordinator.showHostRequestRecieve(applicantName: applicantName, locationName: "시우다드 콘달")
+        return notificationCoordinator
     }
 }

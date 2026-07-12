@@ -22,6 +22,7 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
     struct Output {
         let displayData = PassthroughSubject<DisplayData, Never>()
         let showDeclineComplete = PassthroughSubject<Void, Never>()
+        let errorMessage = PassthroughSubject<String, Never>()
     }
 
     struct DisplayData {
@@ -72,11 +73,11 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
         Task {
             do {
                 let rejectionReason = reason.isBlank ? nil : reason
-                try await
-                repository.rejectApplcation(applicationId: applicationId, reason: rejectionReason)
+                try await repository.rejectApplication(applicationId: applicationId, reason: rejectionReason)
                 output.showDeclineComplete.send(())
             } catch {
                 AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
             }
         }
     }

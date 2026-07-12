@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct HostCompanionDeclineRequestDTO {
+struct HostCompanionRejectRequestDTO {
     let rejectionReason: String?
 }

@@ -8,14 +8,14 @@
 import Foundation
 
 protocol HostCompanionRepository {
-    func fetchHostCompanionDetail(applicatonId: Int) async throws -> HostCompanionDetailResponseDTO
-    func allowApplication(applicationId: Int) async throws
-    func rejectApplcation(applicationId: Int, reason: String?) async throws
+    func fetchHostCompanionDetail(applicationId: Int) async throws -> HostCompanionDetailResponseDTO
+    func allowApplication(applicationId: Int) async throws -> HostCompanionAllowResponseDTO
+    func rejectApplication(applicationId: Int, reason: String?) async throws
 }
 
-final class DefaultHostComapnionRepository {
+final class DefaultHostCompanionRepository {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     private let hostCompanionService: HostCompanionService
     
@@ -28,16 +28,19 @@ final class DefaultHostComapnionRepository {
 
 // MARK: - HostCompanionRepository
 
-extension DefaultHostComapnionRepository: HostCompanionRepository {
-    func fetchHostCompanionDetail(applicatonId: Int) async throws -> HostCompanionDetailResponseDTO {
-        let response = try await hostCompanionService.fetchDetail(applicationId: applicatonId)
+extension DefaultHostCompanionRepository: HostCompanionRepository {
+    func fetchHostCompanionDetail(applicationId: Int) async throws -> HostCompanionDetailResponseDTO {
+        try await hostCompanionService.fetchDetail(applicationId: applicationId)
     }
     
-    func allowApplication(applicationId: Int) async throws {
-        _ = try await hostCompanionService.allow(applicationId: applicationId)
+    func allowApplication(applicationId: Int) async throws -> HostCompanionAllowResponseDTO {
+        try await hostCompanionService.allow(applicationId: applicationId)
     }
     
-    func rejectApplcation(applicationId: Int, reason: String?) async throws {
-        _ = try await hostCompanionService.reject(applicationId: applicationId, rejectionReason: reason)
+    func rejectApplication(applicationId: Int, reason: String?) async throws {
+        _ = try await hostCompanionService.reject(
+            applicationId: applicationId,
+            request: HostCompanionRejectRequestDTO(rejectionReason: reason)
+        )
     }
 }

@@ -9,17 +9,13 @@ import Combine
 import UIKit
 
 final class HostRequestRecieveViewController: BaseViewController<HostRequestRecieveViewModel> {
-
-    // MARK: - Property
-
-    weak var coordinator: NotificationCoordinator?
     
     // MARK: - UI Component
 
     private let hostRequestRecieveView = HostRequestRecieveView()
     
     // MARK: - Property
-    
+
     weak var coordinator: NotificationCoordinator?
 
     // MARK: - Life Cycles
@@ -71,11 +67,12 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
         viewModel.output.showHostAllowView
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - postType도 알림 페이로드/응답에서 전달
                 self?.coordinator?.showHostRequestAllow(
                     applicantName: self?.viewModel.applicantNickname ?? "",
                     locationName: self?.viewModel.placeName ?? "",
-                    postType: .scheduled
+                    meetingAt: self?.viewModel.meetingAt ?? "",
+                    matchId: self?.viewModel.matchId,
+                    postType: .scheduled   // TODO: 서버에서 postType 받으면 교체
                 )
             }
             .store(in: &cancellables)

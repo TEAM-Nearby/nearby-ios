@@ -45,6 +45,8 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     let applicationId: Int
     private(set) var applicantNickname: String = ""
     private(set) var placeName: String = ""
+    private(set) var meetingAt: String = ""
+    private(set) var matchId: Int?
     private let repository: HostCompanionRepository
     private var cancellables = Set<AnyCancellable>()
     
@@ -67,7 +69,6 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
             
         case .allowButtonDidTap:
             allowApplication()
-            output.showHostAllowView.send(())
         }
     }
     
@@ -76,7 +77,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     private func fetchDetail() {
         Task {
             do {
-                let DTO = try await repository.fetchHostCompanionDetail(applicatonId: applicationId)
+                let DTO = try await repository.fetchHostCompanionDetail(applicationId: applicationId)
                 let data = DisplayData(
                     image: .illustLetterProfile,
                     name: DTO.applicantProfile.nickname,
@@ -90,6 +91,9 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
                 )
                 applicantNickname = DTO.applicantProfile.nickname
                 placeName = DTO.placeName
+                applicantNickname = DTO.applicantProfile.nickname
+                placeName = DTO.placeName
+                meetingAt = DTO.meetingAt
                 output.displayData.send(data)
             } catch {
                 AppLogger.error(error)
@@ -102,7 +106,8 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     private func allowApplication() {
         Task {
             do {
-                try await repository.allowApplication(applicationId: applicationId)
+                let response = try await repository.allowApplication(applicationId: applicationId)
+                matchId = response.matchId
                 output.showHostAllowView.send(())
             } catch {
                 AppLogger.error(error)

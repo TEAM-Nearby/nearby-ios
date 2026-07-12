@@ -46,7 +46,7 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
         viewModel.output.showCompanionList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showMeetingList()
+                self?.coordinator?.showCompanionTab()
             }
             .store(in: &cancellables)
 

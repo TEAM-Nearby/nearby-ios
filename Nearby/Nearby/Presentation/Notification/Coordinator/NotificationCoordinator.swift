@@ -30,10 +30,27 @@ final class NotificationCoordinator {
 
 extension NotificationCoordinator: Coordinator {
     func start() {
-        // TODO: - 서연 님 개발 후 구현
-        showHostRequestAllow(applicantName: "장현준", locationName: "시우다드 콘달", postType: .scheduled)
-//        let viewController = diContainer.makeAlarmViewController()(coordinator: self)
-//        navigationController.setViewControllers([viewController], animated: false)
+        let alarmViewController = diContainer.makeAlarmViewController()
+
+        alarmViewController.onBackButtonDidTap = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        alarmViewController.onRequestActionDidTap = { [weak self] requestItem in
+            guard let self else { return }
+            switch requestItem.displayType {
+            case .sentAccepted:
+                // TODO: - 서버 연동 시 알림 아이템 값으로 교체
+                self.showCompanionRequestAccept(hostName: requestItem.nickname, locationName: "시우다드 콘달")
+            case .sentRejected:
+                self.showCompanionRequestDecline()
+            case .receivedPending:
+                // TODO: - requestItem.applicationId로 교체
+                self.showHostRequestRecieve(applicationId: 3)
+            }
+        }
+
+        navigationController.setViewControllers([alarmViewController], animated: false)
     }
     
     func finish() {
@@ -47,17 +64,26 @@ extension NotificationCoordinator: Coordinator {
         )
         navigationController.pushViewController(viewController, animated: true)
     }
-
+    
     func showCompanionRequestDecline() {
         let viewController = diContainer.makeCompanionRequestDeclineViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
     }
-
-    func showHostRequestDecline(applicantName: String) {
-        let viewController = diContainer.makeHostRequestDeclineViewController(
+    
+    func showHostRequestAllow(applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
+        let viewController = diContainer.makeHostRequestAllowViewController(
             coordinator: self,
-            applicantName: applicantName
+            applicantName: applicantName,
+            locationName: locationName,
+            meetingAt: meetingAt,
+            matchId: matchId,
+            postType: postType
         )
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func showHostRequestDecline(applicantName: String, applicationId: Int) {
+        let viewController = diContainer.makeHostRequestDeclineViewController(coordinator: self, applicantName: applicantName, applicationId: applicationId)
         navigationController.pushViewController(viewController, animated: true)
     }
     
@@ -82,7 +108,7 @@ extension NotificationCoordinator: Coordinator {
         )
         navigationController.pushViewController(viewController, animated: true)
     }
-
+    
     func showMatchingManageDetail(item: MatchingMatchedCardItem) {
         let matchingCoordinator = makeChildMatchingCoordinator()
         let viewController = diContainer.makeMatchingManageScheduleDetailViewController(
@@ -91,7 +117,7 @@ extension NotificationCoordinator: Coordinator {
         )
         navigationController.pushViewController(viewController, animated: true)
     }
-
+    
     private func makeChildMatchingCoordinator() -> MatchingCoordinator {
         let matchingCoordinator = diContainer.makeMatchingCoordinator(navigationController: navigationController)
         matchingCoordinator.parentCoordinator = self
@@ -107,22 +133,13 @@ extension NotificationCoordinator: Coordinator {
         )
         navigationController.pushViewController(viewController, animated: true)
     }
-
-    func showHostRequestAllow(applicantName: String, locationName: String, postType: PostType) {
-        let viewController = diContainer.makeHostRequestAllowViewController(
-            coordinator: self,
-            applicantName: applicantName,
-            locationName: locationName,
-            postType: postType
-        )
-        navigationController.pushViewController(viewController, animated: true)
-    }
     
-    func showHostRequestRecieve(applicantName: String, locationName: String) {
-        let viewController = diContainer.makeHostRequestRecieveViewController(coordinator: self, applicantName: applicantName, locationName: locationName)
-
+    func showHostRequestRecieve(applicationId: Int) {
+        let viewController = diContainer.makeHostRequestRecieveViewController(
+            coordinator: self,
+            applicationId: applicationId
+        )
         viewController.hidesBottomBarWhenPushed = true
-
         navigationController.pushViewController(viewController, animated: true)
     }
 }

@@ -10,11 +10,10 @@ import Foundation
 protocol HostCompanionService {
     func fetchDetail(applicationId: Int) async throws -> HostCompanionDetailResponseDTO
     func allow(applicationId: Int) async throws -> HostCompanionAllowResponseDTO
-    func decline(applicationId: Int, rejectionReason: String?) async throws -> HostCompanionDeclineResponseDTO
+    func reject(applicationId: Int, rejectionReason: String?) async throws -> HostCompanionRejectResponseDTO
 }
 
 final class DefaultHostCompanionService: HostCompanionService {
-    
     private let provider: NetworkProvider
     
     init(provider: NetworkProvider) {
@@ -35,10 +34,10 @@ final class DefaultHostCompanionService: HostCompanionService {
         )
     }
     
-    func decline(applicationId: Int, rejectionReason: String?) async throws -> HostCompanionDeclineResponseDTO {
+    func reject(applicationId: Int, rejectionReason: String?) async throws -> HostCompanionRejectResponseDTO {
         try await provider.request(
-            HostCompanionTargetType.decline(applicationId: applicationId, rejectionReason: rejectionReason),
-            responseType: HostCompanionDeclineResponseDTO.self
+            HostCompanionTargetType.reject(applicationId: applicationId, rejectionReason: rejectionReason),
+            responseType: HostCompanionRejectResponseDTO.self
         )
     }
 }

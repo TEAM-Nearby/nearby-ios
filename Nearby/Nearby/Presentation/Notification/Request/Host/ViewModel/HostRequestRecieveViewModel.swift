@@ -42,15 +42,17 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
 
     let output = Output()
 
-    private let applicantName: String
-    private let locationName: String
+    let applicationId: Int
+    private(set) var applicantNickname: String = ""
+    private(set) var placeName: String = ""
+    private let repository: HostCompanionRepository
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
 
-    init(applicantName: String, locationName: String) {
-        self.applicantName = applicantName
-        self.locationName = locationName
+    init(applicationId: Int, repository: HostCompanionRepository) {
+        self.applicationId = applicationId
+        self.repository = repository
     }
 
     // MARK: - Action
@@ -58,23 +60,53 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            let data = DisplayData(
-                image: .illustLetterProfile,
-                name: "\(applicantName)",
-                profile: .imgProfileDefault,
-                gender: "여성",
-                level: "4",
-                title: "함께 동행을 원하는 분이 있어요",
-                subtitle: "대화를 나눈 후 일정을 확정해보세요",
-                location: "\(locationName)",
-                date: "6월 18일 (목) 오후 4시 30분"
-            )
-            output.displayData.send(data)
+            fetchDetail()
 
         case .rejectButtonDidTap:
             output.showHostRejectView.send(())
+            
         case .allowButtonDidTap:
+            allowApplication()
             output.showHostAllowView.send(())
+        }
+    }
+    
+    // MARK: - Methods
+
+    private func fetchDetail() {
+        Task {
+            do {
+                let DTO = try await repository.fetchHostCompanionDetail(applicatonId: applicationId)
+                let data = DisplayData(
+                    image: .illustLetterProfile,
+                    name: DTO.applicantProfile.nickname,
+                    profile: .imgProfileDefault,   // TODO: kingfisher 적용 후 교체
+                    gender: DTO.applicantProfile.gender,
+                    level: "\(DTO.applicantProfile.mannerScore)",
+                    title: "함께 동행을 원하는 분이 있어요",
+                    subtitle: "대화를 나눈 후 일정을 확정해보세요",
+                    location: DTO.placeName,
+                    date: DTO.meetingAt.toDate()?.meetingDisplayText ?? ""
+                )
+                applicantNickname = DTO.applicantProfile.nickname
+                placeName = DTO.placeName
+                output.displayData.send(data)
+            } catch {
+                AppLogger.error(error)
+            }
+        }
+    }
+    
+    // MARK: - Method
+
+    private func allowApplication() {
+        Task {
+            do {
+                try await repository.allowApplication(applicationId: applicationId)
+                output.showHostAllowView.send(())
+            } catch {
+                AppLogger.error(error)
+            }
         }
     }
 }

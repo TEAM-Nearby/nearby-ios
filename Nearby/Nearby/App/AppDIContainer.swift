@@ -42,6 +42,10 @@ final class AppDIContainer {
     // MARK: - Networks
 
     // MARK: - Repositories
+    
+    func makeHostCompanionRepository() -> HostCompanionRepository {
+        DefaultHostComapnionRepository(hostCompanionService: makeHostCompanionService())
+    }
 
     // MARK: - ViewModels
 
@@ -128,9 +132,17 @@ final class AppDIContainer {
     func makeCompanionRequestDeclineViewModel() -> CompanionRequestDeclineViewModel {
         CompanionRequestDeclineViewModel()
     }
+    
+    func makeHostRequestRecieveViewModel(applicationId: Int) -> HostRequestRecieveViewModel {
+        HostRequestRecieveViewModel(
+            applicationId: applicationId,
+            repository: makeHostCompanionRepository()
+        )
+    }
 
-    func makeHostRequestDeclineViewModel(applicantName: String) -> HostRequestDeclineViewModel {
-        HostRequestDeclineViewModel(applicantName: applicantName)
+    func makeHostRequestDeclineViewModel(applicantName: String, applicationId: Int) -> HostRequestDeclineViewModel {
+        HostRequestDeclineViewModel(applicantName: applicantName, applicationId: applicationId, repository: makeHostCompanionRepository()
+        )
     }
     
     func makeCompanionRequestAcceptViewModel(hostName: String, locationName: String) -> CompanionRequestAcceptViewModel {
@@ -353,7 +365,7 @@ final class AppDIContainer {
 
     func makeHostRequestDeclineViewController(coordinator: NotificationCoordinator, applicantName: String) -> UIViewController {
         let viewController = HostRequestDeclineViewController(
-            viewModel: makeHostRequestDeclineViewModel(applicantName: applicantName)
+            viewModel: makeHostRequestDeclineViewModel(applicantName: applicantName, applicationId: 
         )
         viewController.coordinator = coordinator
         return viewController
@@ -363,6 +375,8 @@ final class AppDIContainer {
         PhoneVerificationViewController(
             viewModel: makePhoneVerificationViewModel()
         )
+    }
+    
     func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
         let viewController = CompanionRequestAcceptViewController(
             viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)

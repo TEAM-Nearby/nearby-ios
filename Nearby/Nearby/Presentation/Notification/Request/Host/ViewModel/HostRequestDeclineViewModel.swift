@@ -36,12 +36,16 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
     let output = Output()
 
     private let applicantName: String
+    private let applicationId: Int
+    private let repository: HostCompanionRepository
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
 
-    init(applicantName: String) {
+    init(applicantName: String, applicationId: Int, repository: HostCompanionRepository) {
         self.applicantName = applicantName
+        self.applicationId = applicationId
+        self.repository = repository
     }
 
     // MARK: - Action
@@ -58,9 +62,22 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
             output.displayData.send(data)
 
         case .rejectButtonDidTap(let reason):
-            // TODO: - CoorDinator 연결
-            print("거절 사유: \(reason)")
-            output.showDeclineComplete.send(())
+            rejectApplication(reason: reason)
+        }
+    }
+    
+    // MARK: - Method
+    
+    private func rejectApplication(reason: String) {
+        Task {
+            do {
+                let rejectionReason = reason.isBlank ? nil : reason
+                try await
+                repository.rejectApplcation(applicationId: applicationId, reason: rejectionReason)
+                output.showDeclineComplete.send(())
+            } catch {
+                AppLogger.error(error)
+            }
         }
     }
 }

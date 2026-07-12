@@ -17,7 +17,7 @@ struct HostCompanionDetailResponseDTO: Decodable {
     let applicantAccount: ApplicantAccount
     
     struct ApplicantProfile: Decodable {
-        let profileImageUrl: String
+        let profileImageUrl: String?
         let nickname: String
         let gender: String
         let birthYear: Int
@@ -25,7 +25,7 @@ struct HostCompanionDetailResponseDTO: Decodable {
     }
 
     struct ApplicantAccount: Decodable {
-        let phoneVerifiedAt: String
+        let phoneVerifiedAt: String?
     }
 }
 
@@ -37,7 +37,7 @@ struct HostCompanionAllowResponseDTO: Decodable {
     let matchStatus: String
 }
 
-struct HostCompanionDeclineResponseDTO: Decodable {
+struct HostCompanionRejectResponseDTO: Decodable {
     let applicationId: Int
     let postId: Int
     let applicationStatus: String

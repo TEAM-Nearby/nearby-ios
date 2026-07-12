@@ -364,30 +364,26 @@ final class AppDIContainer {
     }
     
     func makePhoneVerificationViewController() -> PhoneVerificationViewController {
-        PhoneVerificationViewController(
-            viewModel: makePhoneVerificationViewModel()
-        )
+        PhoneVerificationViewController(viewModel: makePhoneVerificationViewModel())
     }
 
-    func makeCompanionRequestAcceptViewController(
-        coordinator: NotificationCoordinator,
-        hostName: String,
-        locationName: String
-    ) -> UIViewController {
-            let viewController = CompanionRequestAcceptViewController(
-                viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
-            )
+    func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
+            let viewController = CompanionRequestAcceptViewController(viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName))
             viewController.coordinator = coordinator
             return viewController
         }
+    
+    func makeHostRequestRecieveViewController(coordinator: NotificationCoordinator, applicantName: String, locationName: String) -> HostRequestRecieveViewController {
+        let viewController = HostRequestRecieveViewController(viewModel: makeHostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName))
+
+        viewController.coordinator = coordinator
+
+        return viewController
+    }
         
         func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, locationName: String, postType: PostType) -> UIViewController {
             let viewController = HostRequestAllowViewController(
-                viewModel: makeHostRequestAllowViewModel(
-                    applicantName: applicantName,
-                    locationName: locationName,
-                    postType: postType
-                )
+                viewModel: makeHostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
             )
             viewController.coordinator = coordinator
             return viewController
@@ -397,6 +393,7 @@ final class AppDIContainer {
             NotificationCoordinator(navigationController: navigationController, diContainer: self)
         }
     }
+
     
     // MARK: - Private Methods
     

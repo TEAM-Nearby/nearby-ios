@@ -117,4 +117,12 @@ extension NotificationCoordinator: Coordinator {
         )
         navigationController.pushViewController(viewController, animated: true)
     }
+    
+    func showHostRequestRecieve(applicantName: String, locationName: String) {
+        let viewController = diContainer.makeHostRequestRecieveViewController(coordinator: self, applicantName: applicantName, locationName: locationName)
+
+        viewController.hidesBottomBarWhenPushed = true
+
+        navigationController.pushViewController(viewController, animated: true)
+    }
 }

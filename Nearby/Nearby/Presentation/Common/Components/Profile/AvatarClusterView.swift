@@ -40,20 +40,6 @@ final class AvatarClusterView: UIView {
     
     // MARK: - Methods
     
-    func configure(with images: [UIImage?]) {
-        subviews.forEach { $0.removeFromSuperview() }
-        
-        zip(images.prefix(4), offsets(for: images.count)).forEach { image, offset in
-            let avatarView = makeAvatarView(image: image)
-            addSubview(avatarView)
-            avatarView.snp.makeConstraints {
-                $0.leading.equalToSuperview().offset(offset.x)
-                $0.top.equalToSuperview().offset(offset.y)
-                $0.size.equalTo(avatarSize)
-            }
-        }
-    }
-    
     private func offsets(for count: Int) -> [CGPoint] {
         switch count {
         case ...1:
@@ -88,6 +74,20 @@ final class AvatarClusterView: UIView {
             $0.clipsToBounds = true
             $0.image = image
             $0.backgroundColor = image == nil ? .grey20 : .clear
+        }
+    }
+    
+    func configure(with images: [UIImage?]) {
+        subviews.forEach { $0.removeFromSuperview() }
+        
+        zip(images.prefix(4), offsets(for: images.count)).forEach { image, offset in
+            let avatarView = makeAvatarView(image: image)
+            addSubview(avatarView)
+            avatarView.snp.makeConstraints {
+                $0.leading.equalToSuperview().offset(offset.x)
+                $0.top.equalToSuperview().offset(offset.y)
+                $0.size.equalTo(avatarSize)
+            }
         }
     }
 }

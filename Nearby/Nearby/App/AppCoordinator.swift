@@ -48,6 +48,15 @@ extension AppCoordinator: Coordinator {
     func showMainTab() {
         let mainTabCoordinator = diContainer.makeMainTabCoordinator()
         mainTabCoordinator.parentCoordinator = self
+
+        mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in
+            guard let self else { return }
+
+            if let mainTabCoordinator { removeChildCoordinator(mainTabCoordinator) }
+
+            showLogin()
+        }
+
         addChildCoordinator(mainTabCoordinator)
 
         mainTabCoordinator.start()

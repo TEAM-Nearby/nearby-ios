@@ -48,6 +48,14 @@ extension MyPageCoordinator: Coordinator {
             self?.showWrittenPost()
         }
 
+        myPageViewController.onSentRequestRowDidTap = { [weak self] in
+            self?.showAlarm(initialTab: .sent)
+        }
+
+        myPageViewController.onReceivedRequestRowDidTap = { [weak self] in
+            self?.showAlarm(initialTab: .received)
+        }
+
         navigationController.setViewControllers([myPageViewController], animated: false)
     }
 
@@ -57,13 +65,28 @@ extension MyPageCoordinator: Coordinator {
 // MARK: - Coordinator
 
 private extension MyPageCoordinator {
-    func showAlarm() {
-        let alarmViewController = appDIContainer.makeAlarmViewController()
+    func showAlarm(initialTab: AlarmTab = .sent) {
+        let alarmViewController = appDIContainer.makeAlarmViewController(initialTab: initialTab)
 
         alarmViewController.hidesBottomBarWhenPushed = true
 
         alarmViewController.onBackButtonDidTap = { [weak self] in
             self?.navigationController.popViewController(animated: true)
+        }
+
+        alarmViewController.onRequestActionDidTap = { [weak self] requestItem in
+            guard let self else { return }
+
+            switch requestItem.displayType {
+            case .sentAccepted:
+                showCompanionRequestAccept(hostName: requestItem.nickname)
+
+            case .sentRejected:
+                showCompanionRequestDecline()
+
+            case .receivedPending:
+                showHostRequestRecieve(applicantName: requestItem.nickname)
+            }
         }
 
         navigationController.pushViewController(alarmViewController, animated: true)
@@ -95,9 +118,43 @@ private extension MyPageCoordinator {
         }
 
         writtenPostViewController.onFindCompanionButtonDidTap = { [weak self] in
-            self?.onFindCompanionDidTap?()
+            guard let self else { return }
+
+            navigationController.popToRootViewController(animated: false)
+            onFindCompanionDidTap?()
         }
 
         navigationController.pushViewController(writtenPostViewController, animated: true)
+    }
+    
+    func showCompanionRequestAccept(hostName: String) {
+        let notificationCoordinator = appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
+
+        notificationCoordinator.parentCoordinator = self
+
+        addChildCoordinator(notificationCoordinator)
+
+        notificationCoordinator.showCompanionRequestAccept(hostName: hostName, locationName: "시우다드 콘달")
+    }
+    
+    func showCompanionRequestDecline() {
+        let notificationCoordinator = appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
+
+        notificationCoordinator.parentCoordinator = self
+
+        addChildCoordinator(notificationCoordinator)
+
+        notificationCoordinator.showCompanionRequestDecline()
+    }
+    
+    func showHostRequestRecieve(applicantName: String) {
+        let notificationCoordinator =
+            appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
+
+        notificationCoordinator.parentCoordinator = self
+
+        addChildCoordinator(notificationCoordinator)
+
+        notificationCoordinator.showHostRequestRecieve(applicantName: applicantName, locationName: "시우다드 콘달")
     }
 }

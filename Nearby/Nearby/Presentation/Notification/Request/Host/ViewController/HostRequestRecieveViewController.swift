@@ -10,6 +10,10 @@ import UIKit
 
 final class HostRequestRecieveViewController: BaseViewController<HostRequestRecieveViewModel> {
 
+    // MARK: - Property
+
+    weak var coordinator: NotificationCoordinator?
+    
     // MARK: - UI Component
 
     private let hostRequestRecieveView = HostRequestRecieveView()

@@ -15,6 +15,8 @@ final class MyPageView: BaseView {
     // MARK: - Properties
 
     var onWrittenPostRowDidTap: (() -> Void)?
+    var onSentRequestRowDidTap: (() -> Void)?
+    var onReceivedRequestRowDidTap: (() -> Void)?
 
     private let gradientLayer = CAGradientLayer()
     private let personalityKeywords = ["외향형", "내향형", "절약형", "새벽형", "대화좋아", "자연힐링"]
@@ -364,6 +366,14 @@ final class MyPageView: BaseView {
     override func setAddTarget() {
         writtenPostRowView.onTap = { [weak self] in
             self?.onWrittenPostRowDidTap?()
+        }
+
+        sentRequestRowView.onTap = { [weak self] in
+            self?.onSentRequestRowDidTap?()
+        }
+
+        receivedRequestRowView.onTap = { [weak self] in
+            self?.onReceivedRequestRowDidTap?()
         }
     }
 }

@@ -35,6 +35,8 @@ enum NearbyBottomSheetHeightResolver {
             return NearbyBottomSheetValue.diningListCompactHeight + context.tabBarHeight
         case .savedRestaurantList:
             return NearbyBottomSheetValue.savedDiningListCompactHeight
+        case .diningInfo:
+            return NearbyBottomSheetValue.diningInfoSummaryHeight
         case .nearbyCompanionEmpty:
             return NearbyBottomSheetValue.nearbyCompanionEmptyCompactHeight
         }
@@ -52,6 +54,8 @@ enum NearbyBottomSheetHeightResolver {
             return NearbyBottomSheetValue.diningListStandardHeight
         case .savedRestaurantList:
             return NearbyBottomSheetValue.savedDiningListStandardHeight
+        case .diningInfo:
+            return NearbyBottomSheetValue.diningInfoSummaryHeight
         }
     }
     
@@ -64,6 +68,8 @@ enum NearbyBottomSheetHeightResolver {
         switch content {
         case .specificRestaurantCompanionList:
             return max(0, baseHeight - NearbyBottomSheetValue.specificCompanionExpandedHeightReduction)
+        case .diningInfo:
+            return NearbyBottomSheetValue.diningInfoExpandedHeight
         case .nearbyCompanionList, .nearbyCompanionEmpty, .diningMapList, .savedRestaurantList:
             return baseHeight
         }

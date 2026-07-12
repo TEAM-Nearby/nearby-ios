@@ -8,10 +8,37 @@
 import Alamofire
 import Foundation
 
+private enum AuthErrorCode {
+    static let tokenExpired = "TOKEN_EXPIRED"
+    static let accessTokenExpired = "ACCESS_TOKEN_EXPIRED"
+    static let invalidToken = "INVALID_TOKEN"
+    static let invalidRefreshToken = "INVALID_REFRESH_TOKEN"
+    static let refreshTokenAlreadyRevoked = "REFRESH_TOKEN_ALREADY_REVOKED"
+    static let invalidTokenRefreshRequest = "INVALID_TOKEN_REFRESH_REQUEST"
+    static let missingRefreshToken = "MISSING_REFRESH_TOKEN"
+
+    static let refreshable: Set<String> = [
+        tokenExpired,
+        accessTokenExpired
+    ]
+
+    static let invalidAuthorization: Set<String> = [
+        invalidToken,
+        invalidRefreshToken,
+        missingRefreshToken
+    ]
+}
+
 final class NetworkProvider {
+    private struct RefreshOperation {
+        let id: UUID
+        let task: Task<Void, Error>
+    }
+
     private let session: Session
     private let tokenStorage: TokenStorage
-    private var refreshTask: Task<Void, Error>?
+    private let refreshLock = NSLock()
+    private var refreshOperation: RefreshOperation?
     
     init(session: Session = .default, tokenStorage: TokenStorage) {
         self.session = session
@@ -155,56 +182,87 @@ private extension NetworkProvider {
 
     func shouldRefreshToken(for error: NetworkError) -> Bool {
         guard case .unauthorized(let code, _) = error else { return false }
-        return ["TOKEN_EXPIRED", "ACCESS_TOKEN_EXPIRED"].contains(code)
+        return AuthErrorCode.refreshable.contains(code)
     }
 
     func shouldInvalidateSession(for error: NetworkError) -> Bool {
         switch error {
         case .unauthorized(let code, _):
-            return ["INVALID_TOKEN", "INVALID_REFRESH_TOKEN"].contains(code)
+            return AuthErrorCode.invalidAuthorization.contains(code)
         case .conflict(let code, _):
-            return code == "REFRESH_TOKEN_ALREADY_REVOKED"
+            return code == AuthErrorCode.refreshTokenAlreadyRevoked
         case .badRequest(let code, _):
-            return code == "INVALID_TOKEN_REFRESH_REQUEST"
+            return code == AuthErrorCode.invalidTokenRefreshRequest
         default:
             return false
         }
     }
 
     func refreshTokens() async throws {
-        if let refreshTask {
-            return try await refreshTask.value
+        let operation = refreshOperationOrCreate()
+
+        defer { clearRefreshOperationIfNeeded(id: operation.id) }
+        try await operation.task.value
+    }
+
+    private func refreshOperationOrCreate() -> RefreshOperation {
+        refreshLock.lock()
+        defer { refreshLock.unlock() }
+
+        if let refreshOperation {
+            return refreshOperation
         }
 
-        let task = Task { [weak self] in
-            guard let self else { throw NetworkError.unknown }
-            guard let refreshToken = tokenStorage.refreshToken, !refreshToken.isEmpty else {
-                throw NetworkError.unauthorized(code: "MISSING_REFRESH_TOKEN", message: "리프레시 토큰이 없습니다.")
+        let operation = RefreshOperation(
+            id: UUID(),
+            task: Task { [weak self] in
+                guard let self else { throw NetworkError.unknown }
+
+                do {
+                    try await performTokenRefresh()
+                } catch {
+                    if let networkError = error as? NetworkError,
+                       shouldInvalidateSession(for: networkError) {
+                        invalidateSession()
+                    }
+                    throw error
+                }
             }
-            let response: BaseResponseDTO<TokenRefreshResponseDTO> = try await requestBaseResponse(
-                AuthTarget.refresh(TokenRefreshRequestDTO(refreshToken: refreshToken)),
-                responseType: TokenRefreshResponseDTO.self,
-                canRefreshToken: false
-            )
-            guard let tokens = response.data else { throw NetworkError.decoding }
-            try tokenStorage.save(
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken
+        )
+        refreshOperation = operation
+        return operation
+    }
+
+    func clearRefreshOperationIfNeeded(id: UUID) {
+        refreshLock.lock()
+        defer { refreshLock.unlock() }
+
+        guard refreshOperation?.id == id else { return }
+        refreshOperation = nil
+    }
+
+    func performTokenRefresh() async throws {
+        guard let refreshToken = tokenStorage.refreshToken, !refreshToken.isEmpty else {
+            throw NetworkError.unauthorized(
+                code: AuthErrorCode.missingRefreshToken,
+                message: "리프레시 토큰이 없습니다."
             )
         }
-
-        refreshTask = task
-        defer { refreshTask = nil }
-
-        do {
-            try await task.value
-        } catch {
-            invalidateSession()
-            throw error
-        }
+        let response: BaseResponseDTO<TokenRefreshResponseDTO> = try await requestBaseResponse(
+            AuthTarget.refresh(TokenRefreshRequestDTO(refreshToken: refreshToken)),
+            responseType: TokenRefreshResponseDTO.self,
+            canRefreshToken: false
+        )
+        guard let tokens = response.data else { throw NetworkError.decoding }
+        try tokenStorage.save(
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken
+        )
     }
 
     func invalidateSession() {
+        guard tokenStorage.accessToken != nil || tokenStorage.refreshToken != nil else { return }
+
         try? tokenStorage.clear()
         NotificationCenter.default.post(name: .authenticationExpired, object: nil)
     }

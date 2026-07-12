@@ -24,19 +24,26 @@ final class PhoneVerificationViewModel: BaseViewModelType {
         var isVerificationMode: ((Bool) -> Void)?
         var verificationDidComplete: (() -> Void)?
         var shouldPopViewController: (() -> Void)?
+        var phoneVerificationDidFail: ((String) -> Void)?
+        var isLoading: ((Bool) -> Void)?
     }
 
-    // MARK: - Property
+    // MARK: - Properties
 
     var output: Output
+
+    private let phoneVerificationRepository: PhoneVerificationRepository
 
     private var isVerificationMode = false
     private var phoneNumber = ""
     private var verificationCode = ""
+    private var phoneVerificationID: Int?
+    private var expiresIn = 0
 
     // MARK: - Initializer
 
-    init() {
+    init(phoneVerificationRepository: PhoneVerificationRepository) {
+        self.phoneVerificationRepository = phoneVerificationRepository
         self.output = Output()
     }
 
@@ -53,25 +60,96 @@ final class PhoneVerificationViewModel: BaseViewModelType {
         case .bottomButtonDidTap:
             if isVerificationMode {
                 guard !verificationCode.isEmpty else { return }
-
-                // TODO: - 인증번호 검증 API 성공후에 호출
                 output.verificationDidComplete?()
             } else {
-                guard !phoneNumber.isEmpty else { return }
+                sendVerificationCode()
+            }
 
-                // TODO: - 인증문자 발송 API 성공후에 실행
+        case .backButtonDidTap:
+            handleBackButtonDidTap()
+        }
+    }
+}
+
+// MARK: - Methods
+
+private extension PhoneVerificationViewModel {
+    func sendVerificationCode() {
+        guard isValidPhoneNumber else {
+            output.phoneVerificationDidFail?("올바른 전화번호 형식이 아니에요")
+            return
+        }
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            output.isLoading?(true)
+
+            defer {
+                output.isLoading?(false)
+            }
+
+            do {
+                let response = try await phoneVerificationRepository.sendVerificationCode(phoneNumber: phoneNumber)
+
+                phoneVerificationID = response.phoneVerificationId
+                expiresIn = response.expiresIn
+
                 isVerificationMode = true
                 output.isVerificationMode?(true)
-            }
-            
-        case .backButtonDidTap:
-            if isVerificationMode {
-                isVerificationMode = false
-                verificationCode = ""
-                output.isVerificationMode?(false)
-            } else {
-                output.shouldPopViewController?()
+
+            } catch {
+                handleVerificationError(error)
             }
         }
+    }
+
+    func handleBackButtonDidTap() {
+        if isVerificationMode {
+            isVerificationMode = false
+            verificationCode = ""
+            phoneVerificationID = nil
+            expiresIn = 0
+            output.isVerificationMode?(false)
+        } else {
+            output.shouldPopViewController?()
+        }
+    }
+
+    func handleVerificationError(_ error: Error) {
+        AppLogger.error(error, message: "휴대폰 인증 문자 발송 실패")
+
+        guard let networkError = error as? NetworkError else {
+            output.phoneVerificationDidFail?("인증 문자 발송에 실패했습니다.")
+            return
+        }
+
+        switch networkError {
+        case .badRequest(let code, let message):
+            if code == "VALIDATION_ERROR" {
+                output.phoneVerificationDidFail?("올바른 전화번호 형식이 아니에요")
+            } else {
+                output.phoneVerificationDidFail?(message)
+            }
+
+        case .internalServerError(let code, let message):
+            if code == "PHONE_VERIFICATION_SEND_LIMIT_EXCEEDED" {
+                output.phoneVerificationDidFail?("인증 문자 발송 횟수를 초과했습니다.")
+            } else {
+                output.phoneVerificationDidFail?(message)
+            }
+
+        case .unauthorized(_, let message):
+            output.phoneVerificationDidFail?(message)
+
+        default:
+            output.phoneVerificationDidFail?(networkError.localizedDescription)
+        }
+    }
+
+    var isValidPhoneNumber: Bool {
+        phoneNumber.count == 11
+            && phoneNumber.hasPrefix("010")
+            && phoneNumber.allSatisfy(\.isNumber)
     }
 }

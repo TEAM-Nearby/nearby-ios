@@ -9,17 +9,26 @@ protocol AuthRepository {
     func loginWithKakao() async throws -> OnboardingStatus
 }
 
-final class DefaultAuthRepository: AuthRepository {
+final class DefaultAuthRepository {
+
+    // MARK: - Properties
+
     private let oauthProvider: KakaoOAuthProvider
     private let authService: AuthService
     private let tokenStorage: TokenStorage
+
+    // MARK: - Initializer
 
     init(oauthProvider: KakaoOAuthProvider, authService: AuthService, tokenStorage: TokenStorage) {
         self.oauthProvider = oauthProvider
         self.authService = authService
         self.tokenStorage = tokenStorage
     }
+}
 
+// MARK: - AuthRepository
+
+extension DefaultAuthRepository: AuthRepository {
     func loginWithKakao() async throws -> OnboardingStatus {
         let credential = try await oauthProvider.requestCredential()
         let response = try await authService.loginWithKakao(

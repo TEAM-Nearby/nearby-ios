@@ -11,6 +11,9 @@ import KakaoSDKAuth
 import KakaoSDKUser
 
 struct KakaoCredential {
+
+    // MARK: - Properties
+
     let idToken: String
     let nonce: String
 }
@@ -21,7 +24,11 @@ protocol KakaoOAuthProvider {
     func requestCredential() async throws -> KakaoCredential
 }
 
-final class DefaultKakaoOAuthProvider: KakaoOAuthProvider {
+final class DefaultKakaoOAuthProvider {}
+
+// MARK: - KakaoOAuthProvider
+
+extension DefaultKakaoOAuthProvider: KakaoOAuthProvider {
     func requestCredential() async throws -> KakaoCredential {
         let nonce = UUID().uuidString
         return try await withCheckedThrowingContinuation { continuation in

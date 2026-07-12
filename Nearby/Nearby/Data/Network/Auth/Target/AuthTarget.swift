@@ -1,5 +1,5 @@
 //
-//  AuthService.swift
+//  AuthTarget.swift
 //  Nearby
 //
 //  Created by soomin on 7/12/26.

@@ -8,20 +8,33 @@
 import Foundation
 import Security
 
-final class KeychainTokenStorage: TokenStorage {
+final class KeychainTokenStorage {
     private enum Key {
         static let accessToken = "nearby.auth.accessToken"
         static let refreshToken = "nearby.auth.refreshToken"
     }
 
+    // MARK: - Property
+
     private let service: String
+
+    // MARK: - Initializer
 
     init(service: String = Bundle.main.bundleIdentifier ?? "com.dewby.Nearby") {
         self.service = service
     }
+}
+
+// MARK: - TokenStorage
+
+extension KeychainTokenStorage: TokenStorage {
+
+    // MARK: - Properties
 
     var accessToken: String? { try? read(for: Key.accessToken) }
     var refreshToken: String? { try? read(for: Key.refreshToken) }
+
+    // MARK: - Methods
 
     func save(accessToken: String, refreshToken: String) throws {
         try save(accessToken, for: Key.accessToken)
@@ -32,9 +45,7 @@ final class KeychainTokenStorage: TokenStorage {
         try delete(for: Key.accessToken)
         try delete(for: Key.refreshToken)
     }
-}
 
-private extension KeychainTokenStorage {
     func baseQuery(for key: String) -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,
@@ -58,6 +69,18 @@ private extension KeychainTokenStorage {
             var addQuery = query
             attributes.forEach { addQuery[$0.key] = $0.value }
             let addStatus = SecItemAdd(addQuery as CFDictionary, nil)
+
+            if addStatus == errSecDuplicateItem {
+                let retryStatus = SecItemUpdate(
+                    query as CFDictionary,
+                    attributes as CFDictionary
+                )
+                guard retryStatus == errSecSuccess else {
+                    throw KeychainTokenStorageError.unhandledStatus(retryStatus)
+                }
+                return
+            }
+
             guard addStatus == errSecSuccess else {
                 throw KeychainTokenStorageError.unhandledStatus(addStatus)
             }

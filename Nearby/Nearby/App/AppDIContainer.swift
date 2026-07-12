@@ -141,7 +141,6 @@ final class AppDIContainer {
         HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
     }
 
-    
     func makeHostProfileViewModel() -> HostProfileViewModel {
         HostProfileViewModel()
     }

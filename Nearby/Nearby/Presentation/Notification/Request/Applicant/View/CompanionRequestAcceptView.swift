@@ -48,6 +48,7 @@ final class CompanionRequestAcceptView: BaseView {
     private let chatProfileView = UIView()
     private let chatImageView = UIImageView()
     private let chatTitleLabel = UILabel()
+    private let chatTitleView = UIView()
     
     private let chatCardView = UIStackView()
     private let chatDescriptionLabel = UILabel()
@@ -143,16 +144,15 @@ final class CompanionRequestAcceptView: BaseView {
         }
         
         checkListDescriptionLabel.do {
-            $0.setFont(.b3M14, text:
-            """
-            1. 숙소 정보는 공유하지 마세요.
-            2. 오픈채팅을 제외한 개인 연락처를 강요하거나 반복적으로 요구하지 마세요.
-            3. 사람이 많은 곳에서 처음 만나세요.
-            4.금전 거래를 요구하는 경우 동행을 중단해주세요.
-            5. 불쾌한 언행이나 위험을 느낄 시 즉시 대화와 동행을 종료하고 신고 기능을 이용해주세요.
-            6.가족이나 친구에게 일정을 미리 공유하세요.
-            """, textColor: .grey40)
             $0.numberOfLines = 8
+            $0.attributedText = """
+                1. 숙소 정보는 공유하지 마세요.
+                2. 오픈채팅을 제외한 개인 연락처를 강요하거나 반복적으로 요구하지 마세요.
+                3. 사람이 많은 곳에서 처음 만나세요.
+                4. 금전 거래를 요구하는 경우 동행을 중단해주세요.
+                5. 불쾌한 언행이나 위험을 느낄 시 즉시 대화와 동행을 종료하고 신고 기능을 이용해주세요.
+                6. 가족이나 친구에게 일정을 미리 공유하세요.
+                """.withLineHeightMultiple(1.4, font: NearbyFont.b3M14.font, color: .grey40)
         }
         
         chatImageView.do {
@@ -165,13 +165,15 @@ final class CompanionRequestAcceptView: BaseView {
         }
         
         chatCardView.do {
+            $0.backgroundColor = .clear
+            $0.axis = .vertical
+            $0.spacing = 8
+            $0.alignment = .center
+        }
+        
+        chatTitleView.do {
             $0.backgroundColor = .bgSurfaceGrey0
             $0.layer.cornerRadius = 16
-            $0.axis = .vertical
-            $0.spacing = 28
-            $0.alignment = .center
-            $0.isLayoutMarginsRelativeArrangement = true
-            $0.layoutMargins = UIEdgeInsets(top: 32, left: 20, bottom: 32, right: 20)
         }
         
         chatDescriptionLabel.do {
@@ -191,7 +193,8 @@ final class CompanionRequestAcceptView: BaseView {
         chatHelpButton.do {
             $0.setTitle("오픈채팅이 열리지 않는다면?", for: .normal)
             $0.titleLabel?.font = NearbyFont.b3M14.font
-            $0.setTitleColor(.grey50, for: .normal)
+            $0.setTitleColor(.grey40, for: .normal)
+            $0.setUnderline(gap: 1)
         }
     }
     
@@ -210,10 +213,10 @@ final class CompanionRequestAcceptView: BaseView {
         peopleStackView.setCustomSpacing(6, after: avatarStackView)
         checkListView.addArrangedSubviews(checkListTitleLabel, checkListDescriptionLabel)
         
-        chatContainer.addSubviews(chatProfileView, chatCardView)
+        chatContainer.addSubviews(chatProfileView, chatCardView, chatTitleView)
         chatProfileView.addSubviews(chatImageView, chatTitleLabel)
-        chatCardView.addArrangedSubviews(chatDescriptionLabel, enterChatButton, chatHelpButton)
-        chatCardView.setCustomSpacing(12, after: enterChatButton)
+        chatCardView.addArrangedSubviews(enterChatButton, chatHelpButton)
+        chatTitleView.addSubview(chatDescriptionLabel)
     }
     
     override func setLayout() {
@@ -297,6 +300,16 @@ final class CompanionRequestAcceptView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalTo(safeAreaLayoutGuide)
             $0.height.equalTo(56)
+        }
+        
+        chatTitleView.snp.makeConstraints {
+            $0.top.equalTo(chatCardView.snp.bottom).offset(16)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        chatDescriptionLabel.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.verticalEdges.equalToSuperview().inset(32)
         }
     }
     

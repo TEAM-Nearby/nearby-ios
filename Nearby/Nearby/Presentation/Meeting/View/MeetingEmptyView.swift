@@ -61,7 +61,7 @@ final class MeetingEmptyView: BaseView {
     
     override func setLayout() {
         stackView.snp.makeConstraints {
-            $0.top.equalTo(self.snp.centerY).offset(-129)
+            $0.bottom.equalTo(searchButton.snp.top).offset(-129)
             $0.horizontalEdges.equalToSuperview()
             $0.centerX.equalToSuperview()
         }

@@ -100,8 +100,9 @@ private extension SpecificCompanionSheetViewModel {
         tags: ["사전에 진심", "계획파", "맛집 탐방"]
     )
 
+    // TODO: - 서버 immediate now 질문 후 수정
     static let immediateDetailState = CompanionDetailState(
-        postType: .immediate(expirationTime: "16시 11분"),
+        postType: .immediate,
         isApplicationEnabled: true,
         tags: ["사전에 진심", "계획파", "맛집 탐방"]
     )

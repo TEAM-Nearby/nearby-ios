@@ -208,8 +208,9 @@ final class CompanionDetailBottomView: BaseView {
         case .scheduled:
             expirationBannerView.isHidden = true
             expirationLabel.text = nil
-        case .immediate(let expirationTime):
-            expirationLabel.setFont(.b3M14, text: "이 글은 \(expirationTime)에 사라져요!", textColor: .grey60)
+        case .immediate:
+            // TODO: - 서버 immediate 값 질문
+//            expirationLabel.setFont(.b3M14, text: "이 글은 \(expirationTime)에 사라져요!", textColor: .grey60)
             expirationBannerView.isHidden = false
         }
     }

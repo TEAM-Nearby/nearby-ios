@@ -17,7 +17,7 @@ final class PhoneVerificationView: BaseView {
     let navigationBar = NearbyNavigationBar()
 
     private let progressContainerView = UIView()
-    private let progressView = UIProgressView(progressViewStyle: .default)
+    private let progressImageView = UIImageView()
 
     private let titleLabel = UILabel()
 
@@ -43,16 +43,14 @@ final class PhoneVerificationView: BaseView {
         navigationBar.do {
             $0.configure(leftItem: .back)
         }
-        
+
         progressContainerView.do {
             $0.backgroundColor = .white
         }
 
-        progressView.do {
-            $0.progress = 0.5
-            $0.progressTintColor = .btnPrimaryBg
-            $0.trackTintColor = .chipBgPurple
-            $0.layer.cornerRadius = 5.5
+        progressImageView.do {
+            $0.image = .progressbarStep01
+            $0.contentMode = .scaleAspectFit
             $0.clipsToBounds = true
         }
 
@@ -78,10 +76,7 @@ final class PhoneVerificationView: BaseView {
             $0.borderStyle = .none
             $0.font = NearbyFont.b3M14.font
             $0.textColor = .grey80
-            $0.attributedPlaceholder = NSAttributedString(
-                string: "전화번호를 입력해주세요",
-                attributes: [.foregroundColor: UIColor.grey20]
-            )
+            $0.attributedPlaceholder = NSAttributedString(string: "전화번호를 입력해주세요", attributes: [.foregroundColor: UIColor.grey20])
         }
 
         phoneClearButton.do {
@@ -113,10 +108,7 @@ final class PhoneVerificationView: BaseView {
             $0.borderStyle = .none
             $0.font = NearbyFont.b3M14.font
             $0.textColor = .grey80
-            $0.attributedPlaceholder = NSAttributedString(
-                string: "인증번호를 입력해주세요",
-                attributes: [.foregroundColor: UIColor.grey20]
-            )
+            $0.attributedPlaceholder = NSAttributedString(string: "인증번호를 입력해주세요", attributes: [.foregroundColor: UIColor.grey20])
         }
 
         verificationClearButton.do {
@@ -131,113 +123,111 @@ final class PhoneVerificationView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(navigationBar, progressContainerView, titleLabel,
+        addSubviews(
+            navigationBar, progressContainerView, titleLabel,
             phoneTitleLabel, phoneTextFieldContainerView, phoneErrorLabel,
-            verificationTitleLabel, verificationTextFieldContainerView,
-            verificationErrorLabel, bottomButton
+            verificationTitleLabel, verificationTextFieldContainerView, verificationErrorLabel,
+            bottomButton
         )
 
-        progressContainerView.addSubview(progressView)
+        progressContainerView.addSubview(progressImageView)
 
-        phoneTextFieldContainerView.addSubviews(
-            phoneTextField,
-            phoneClearButton
-        )
+        phoneTextFieldContainerView.addSubviews(phoneTextField, phoneClearButton)
 
-        verificationTextFieldContainerView.addSubviews(
-            verificationTextField,
-            verificationClearButton
-        )
+        verificationTextFieldContainerView.addSubviews(verificationTextField, verificationClearButton)
     }
 
     override func setLayout() {
-        
         navigationBar.snp.makeConstraints {
-            $0.top.horizontalEdges.equalTo(safeAreaLayoutGuide)
+            $0.top.equalTo(safeAreaLayoutGuide.snp.top)
+            $0.horizontalEdges.equalToSuperview()
         }
-        
+
         progressContainerView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(11)
+            $0.height.equalTo(37)
         }
 
-        progressView.snp.makeConstraints {
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview()
-            $0.height.equalTo(4)
+        progressImageView.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().offset(20)
+            $0.size.equalTo(CGSize(width: 60, height: 37)
+            )
         }
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(progressContainerView.snp.bottom).offset(40)
-            $0.horizontalEdges.equalToSuperview().inset(28)
+            $0.top.equalTo(progressContainerView.snp.bottom).offset(26)
+            $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
         phoneTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(52)
-            $0.leading.equalToSuperview().offset(28)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(36)
+            $0.leading.equalToSuperview().offset(20)
         }
 
         phoneTextFieldContainerView.snp.makeConstraints {
             $0.top.equalTo(phoneTitleLabel.snp.bottom).offset(18)
-            $0.horizontalEdges.equalToSuperview().inset(28)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
         }
 
         phoneTextField.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(28)
+            $0.leading.equalToSuperview().offset(20)
             $0.centerY.equalToSuperview()
             $0.trailing.equalTo(phoneClearButton.snp.leading).offset(-12)
         }
 
         phoneClearButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(28)
+            $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(24)
         }
 
         phoneErrorLabel.snp.makeConstraints {
             $0.top.equalTo(phoneTextFieldContainerView.snp.bottom).offset(8)
-            $0.leading.equalToSuperview().offset(28)
+            $0.leading.equalToSuperview().offset(20)
         }
 
         verificationTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(phoneErrorLabel.snp.bottom).offset(52)
-            $0.leading.equalToSuperview().offset(28)
+            $0.top.equalTo(phoneTextField.snp.bottom).offset(61)
+            $0.leading.equalToSuperview().offset(20)
         }
 
         verificationTextFieldContainerView.snp.makeConstraints {
             $0.top.equalTo(verificationTitleLabel.snp.bottom).offset(18)
-            $0.horizontalEdges.equalToSuperview().inset(28)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
         }
 
         verificationTextField.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(28)
+            $0.leading.equalToSuperview().offset(20)
             $0.centerY.equalToSuperview()
             $0.trailing.equalTo(verificationClearButton.snp.leading).offset(-12)
         }
 
         verificationClearButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(28)
+            $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(24)
         }
 
         verificationErrorLabel.snp.makeConstraints {
             $0.top.equalTo(verificationTextFieldContainerView.snp.bottom).offset(8)
-            $0.leading.equalToSuperview().offset(28)
+            $0.leading.equalToSuperview().offset(20)
         }
 
         bottomButton.snp.makeConstraints {
-            $0.horizontalEdges.equalToSuperview().inset(28)
-            $0.bottom.equalTo(safeAreaLayoutGuide)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalTo(safeAreaLayoutGuide).inset(14)
             $0.height.equalTo(56)
         }
     }
 
+    // MARK: - Methods
+
     func updateVerificationMode(_ isVerificationMode: Bool) {
-        progressView.progress = isVerificationMode ? 1.0 : 0.5
+        progressImageView.image = isVerificationMode ? .progressbarStep02 : .progressbarStep01
 
         phoneClearButton.isHidden = !isVerificationMode
         phoneErrorLabel.isHidden = true
@@ -246,10 +236,7 @@ final class PhoneVerificationView: BaseView {
         verificationTextFieldContainerView.isHidden = !isVerificationMode
         verificationErrorLabel.isHidden = true
 
-        bottomButton.setTitle(
-            isVerificationMode ? "다음" : "인증문자 발송하기",
-            for: .normal
-        )
+        bottomButton.setTitle(isVerificationMode ? "다음" : "인증문자 발송하기", for: .normal)
     }
 
     func clearPhoneText() {
@@ -264,21 +251,16 @@ final class PhoneVerificationView: BaseView {
 // MARK: - UILabel Extensions
 
 private extension UILabel {
+
     func setLineSpacing(lineSpacing: CGFloat) {
-        guard let text = self.text else { return }
+        guard let text else { return }
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = lineSpacing
 
-        let attributedString = NSMutableAttributedString(
+        attributedText = NSMutableAttributedString(
             string: text,
-            attributes: [
-                .paragraphStyle: paragraphStyle,
-                .font: self.font as Any,
-                .foregroundColor: self.textColor as Any
-            ]
+            attributes: [.paragraphStyle: paragraphStyle, .font: font as Any, .foregroundColor: textColor as Any]
         )
-
-        self.attributedText = attributedString
     }
 }

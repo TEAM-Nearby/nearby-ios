@@ -79,15 +79,13 @@ private extension MyPageCoordinator {
 
             switch requestItem.displayType {
             case .sentAccepted:
-                showCompanionRequestAccept(
-                    hostName: requestItem.nickname
-                )
+                showCompanionRequestAccept(hostName: requestItem.nickname)
 
             case .sentRejected:
                 showCompanionRequestDecline()
 
             case .receivedPending:
-                break
+                showHostRequestRecieve(applicantName: requestItem.nickname)
             }
         }
 
@@ -147,5 +145,16 @@ private extension MyPageCoordinator {
         addChildCoordinator(notificationCoordinator)
 
         notificationCoordinator.showCompanionRequestDecline()
+    }
+    
+    func showHostRequestRecieve(applicantName: String) {
+        let notificationCoordinator =
+            appDIContainer.makeNotificationCoordinator(navigationController: navigationController)
+
+        notificationCoordinator.parentCoordinator = self
+
+        addChildCoordinator(notificationCoordinator)
+
+        notificationCoordinator.showHostRequestRecieve(applicantName: applicantName, locationName: "시우다드 콘달")
     }
 }

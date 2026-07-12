@@ -149,6 +149,10 @@ final class AppDIContainer {
         PhoneVerificationViewModel()
     }
     
+    func makeHostRequestRecieveViewModel(applicantName: String, locationName: String) -> HostRequestRecieveViewModel {
+        HostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName)
+    }
+    
     // MARK: - ViewControllers
     
     func makeHostProfileViewController() -> HostProfileViewController {

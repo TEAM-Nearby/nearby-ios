@@ -48,6 +48,7 @@ final class LoginView: BaseView {
 
             var configuration = UIButton.Configuration.plain()
             configuration.image = .iconKakao
+            configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 24)
             configuration.imagePlacement = .leading
             configuration.imagePadding = 16
             configuration.baseForegroundColor = .black
@@ -80,12 +81,6 @@ final class LoginView: BaseView {
         logoImageView.snp.makeConstraints {
             $0.width.equalTo(172)
             $0.height.equalTo(48)
-        }
-
-        kakaoLoginButton.snp.makeConstraints {
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.bottom.equalTo(safeAreaLayoutGuide)
-            $0.height.equalTo(56)
         }
 
         kakaoLoginButton.snp.makeConstraints {

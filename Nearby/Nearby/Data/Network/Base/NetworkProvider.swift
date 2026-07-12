@@ -9,6 +9,7 @@ import Alamofire
 import Foundation
 
 private enum AuthErrorCode {
+    static let unauthorized = "UNAUTHORIZED"
     static let tokenExpired = "TOKEN_EXPIRED"
     static let accessTokenExpired = "ACCESS_TOKEN_EXPIRED"
     static let invalidToken = "INVALID_TOKEN"
@@ -18,6 +19,7 @@ private enum AuthErrorCode {
     static let missingRefreshToken = "MISSING_REFRESH_TOKEN"
 
     static let refreshable: Set<String> = [
+        unauthorized,
         tokenExpired,
         accessTokenExpired
     ]

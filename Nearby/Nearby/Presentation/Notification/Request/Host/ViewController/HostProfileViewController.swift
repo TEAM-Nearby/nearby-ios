@@ -37,8 +37,7 @@ final class HostProfileViewController: BaseViewController<HostProfileViewModel> 
             self?.viewModel.action(.backButtonDidTap)
         }
 
-        hostProfileView.onReviewChipDidTap = {
-            [weak self] category, index in
+        hostProfileView.onReviewChipDidTap = { [weak self] category, index in
 
             switch category {
             case .communication:

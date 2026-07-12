@@ -274,13 +274,11 @@ final class HostProfileView: BaseView {
         selectedCommunicationIndexes: Set<Int>,
         selectedPunctualityIndexes: Set<Int>
     ) {
-        communicationChipButtons.enumerated().forEach {
-            index, chipButton in
+        communicationChipButtons.enumerated().forEach { index, chipButton in
             chipButton.updateSelected(selectedCommunicationIndexes.contains(index))
         }
 
-        punctualityChipButtons.enumerated().forEach {
-            index, chipButton in
+        punctualityChipButtons.enumerated().forEach { index, chipButton in
             chipButton.updateSelected(selectedPunctualityIndexes.contains(index))
         }
     }
@@ -480,8 +478,7 @@ private extension HostProfileView {
             from: personalitySecondLineStackView
         )
 
-        keywords.enumerated().forEach {
-            index, keyword in
+        keywords.enumerated().forEach { index, keyword in
             let chipButton = makePersonalityChip(title: keyword)
 
             if index < 3 {
@@ -498,8 +495,7 @@ private extension HostProfileView {
         removeAllArrangedSubviews(from: communicationFirstLineStackView)
         removeAllArrangedSubviews(from: communicationSecondLineStackView)
 
-        keywords.enumerated().forEach {
-            index, keyword in
+        keywords.enumerated().forEach { index, keyword in
             let chipButton = makeReviewChip(
                 title: keyword, category: .communication,
                 index: index
@@ -521,8 +517,7 @@ private extension HostProfileView {
         removeAllArrangedSubviews(from: punctualityFirstLineStackView)
         removeAllArrangedSubviews(from: punctualitySecondLineStackView)
 
-        keywords.enumerated().forEach {
-            index, keyword in
+        keywords.enumerated().forEach { index, keyword in
             let chipButton = makeReviewChip(
                 title: keyword, category: .punctuality,
                 index: index
@@ -561,7 +556,7 @@ private extension HostProfileView {
 
         switch category {
         case .communication:
-            chipButton.addTarget(self,action: #selector(communicationChipButtonDidTap(_:)),for: .touchUpInside)
+            chipButton.addTarget(self, action: #selector(communicationChipButtonDidTap(_:)), for: .touchUpInside)
 
         case .punctuality:
             chipButton.addTarget(self, action: #selector(punctualityChipButtonDidTap(_:)), for: .touchUpInside)
@@ -573,8 +568,7 @@ private extension HostProfileView {
     func removeAllArrangedSubviews(
         from stackView: UIStackView
     ) {
-        stackView.arrangedSubviews.forEach {
-            arrangedSubview in
+        stackView.arrangedSubviews.forEach { arrangedSubview in
 
             stackView.removeArrangedSubview(arrangedSubview)
 

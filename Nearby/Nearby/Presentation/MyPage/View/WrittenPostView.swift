@@ -107,8 +107,7 @@ final class WrittenPostView: BaseView {
 
     // MARK: - Method
 
-    func updateContent(items: [WrittenPostItem])
-    {
+    func updateContent(items: [WrittenPostItem]) {
         let isEmpty = items.isEmpty
 
         emptyView.isHidden = !isEmpty

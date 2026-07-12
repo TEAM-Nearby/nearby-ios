@@ -142,6 +142,10 @@ private extension MainTabCoordinator {
         myPageCoordinator.onLogoutDidFinish = { [weak self] in
             self?.onLogoutDidFinish?()
         }
+        
+        myPageCoordinator.onFindCompanionDidTap = { [weak self] in
+            self?.switchTab(to: .companion)
+        }
 
         addChildCoordinator(myPageCoordinator)
         myPageCoordinator.start()

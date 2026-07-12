@@ -47,10 +47,6 @@ extension MyPageCoordinator: Coordinator {
         myPageViewController.onWrittenPostRowDidTap = { [weak self] in
             self?.showWrittenPost()
         }
-        
-        myPageViewController.onWrittenPostRowDidTap = { [weak self] in
-            self?.showWrittenPost()
-        }
 
         myPageViewController.onSentRequestRowDidTap = { [weak self] in
             self?.showAlarm(initialTab: .sent)
@@ -109,7 +105,10 @@ private extension MyPageCoordinator {
         }
 
         writtenPostViewController.onFindCompanionButtonDidTap = { [weak self] in
-            self?.onFindCompanionDidTap?()
+            guard let self else { return }
+
+            navigationController.popToRootViewController(animated: false)
+            onFindCompanionDidTap?()
         }
 
         navigationController.pushViewController(writtenPostViewController, animated: true)

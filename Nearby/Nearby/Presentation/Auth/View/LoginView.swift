@@ -11,83 +11,87 @@ import SnapKit
 import Then
 
 final class LoginView: BaseView {
-    
+
     // MARK: - UI Components
-    
-    private let contentStackView = UIStackView()
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
-    private let logoContainerView = UIView()
-    private let logoLabel = UILabel()
-    
+
     let kakaoLoginButton = UIButton(type: .system)
     
+    private let logoStackView = UIStackView()
+    private let logoImageView = UIImageView()
+    private let subtitleLabel = UILabel()
+
     // MARK: - Custom Methods
-    
+
     override func setStyle() {
         backgroundColor = .white
-        
-        contentStackView.do {
+
+        logoStackView.do {
             $0.axis = .vertical
             $0.alignment = .center
-            $0.spacing = 8
+            $0.spacing = 7
         }
         
-        titleLabel.do {
-            $0.textAlignment = .center
-            $0.setFont(.h1Sb24, text: "따로, 또 함께하는 여행", textColor: .grey80)
+        logoImageView.do {
+            $0.image = .nearbyLogo
+            $0.contentMode = .scaleAspectFit
         }
-        
+
         subtitleLabel.do {
             $0.textAlignment = .center
-            $0.setFont(.b3M14, text: "지금 로그인하고 Nearby를 시작해보세요!", textColor: .grey50)
+            $0.setFont(.b2Sb16, text: "따로, 또 함께하는 여행", textColor: .grey70)
         }
-        
-        logoContainerView.do {
-            $0.backgroundColor = .grey10
-        }
-        
-        logoLabel.do {
-            $0.textAlignment = .center
-            $0.setFont(.b3R14, text: "로고", textColor: .black)
-        }
-        
+
         kakaoLoginButton.do {
-            $0.setImage(.iconKakao.withRenderingMode(.alwaysOriginal), for: .normal)
-            $0.imageView?.contentMode = .scaleAspectFit
+            $0.backgroundColor = UIColor(red: 254 / 255, green: 229 / 255, blue: 0 / 255, alpha: 1)
+            $0.layer.cornerRadius = 16
+            $0.clipsToBounds = true
+
+            var configuration = UIButton.Configuration.plain()
+            configuration.image = .iconKakao
+            configuration.imagePlacement = .leading
+            configuration.imagePadding = 16
+            configuration.baseForegroundColor = .black
+            configuration.title = "카카오 로그인"
+
+            configuration.titleTextAttributesTransformer =
+                UIConfigurationTextAttributesTransformer { attributes in
+                    var updatedAttributes = attributes
+                    updatedAttributes.font = NearbyFont.b2Sb16.font
+                    updatedAttributes.foregroundColor = UIColor.black
+                    return updatedAttributes
+                }
+
+            $0.configuration = configuration
         }
     }
-    
+
     override func setUI() {
-        addSubviews(contentStackView, kakaoLoginButton)
-        
-        contentStackView.addArrangedSubviews(titleLabel, subtitleLabel, logoContainerView
-        )
-        
-        contentStackView.setCustomSpacing(36, after: subtitleLabel)
-        
-        logoContainerView.addSubview(logoLabel)
+        addSubviews(logoStackView, kakaoLoginButton)
+
+        logoStackView.addArrangedSubviews(logoImageView, subtitleLabel)
     }
-    
+
     override func setLayout() {
-        contentStackView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(253)
-            $0.centerX.equalToSuperview()
-        }
-        
-        logoContainerView.snp.makeConstraints {
-            $0.width.equalTo(180)
-            $0.height.equalTo(64)
-        }
-        
-        logoLabel.snp.makeConstraints {
+        logoStackView.snp.makeConstraints {
             $0.center.equalToSuperview()
+            $0.centerY.equalToSuperview().offset(-70)
         }
-        
+
+        logoImageView.snp.makeConstraints {
+            $0.width.equalTo(172)
+            $0.height.equalTo(48)
+        }
+
         kakaoLoginButton.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(safeAreaLayoutGuide).inset(98)
-            $0.size.equalTo(68)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalTo(safeAreaLayoutGuide)
+            $0.height.equalTo(56)
+        }
+
+        kakaoLoginButton.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalTo(safeAreaLayoutGuide)
+            $0.height.equalTo(56)
         }
     }
 }

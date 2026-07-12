@@ -13,9 +13,11 @@ import KakaoSDKShare
 final class MatchingScheduleDetailViewController: BaseViewController<MatchingScheduleDetailViewModel> {
     
     // MARK: - Properties
-    
+
     weak var coordinator: MatchingCoordinator?
     private let rootView = MatchingScheduleDetailView()
+    private let kakaoShareTemplateId: Int64 = 135215
+    private var currentDisplayData: MatchingScheduleDetailDisplayData?
     
     // MARK: - Initializer
     
@@ -59,6 +61,7 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] displayData in
+                self?.currentDisplayData = displayData
                 self?.rootView.configure(displayData: displayData)
             }
             .store(in: &cancellables)
@@ -87,16 +90,24 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         viewModel.output.showShare
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.share()
+                guard let displayData = self?.currentDisplayData else { return }
+                self?.share(displayData: displayData)
             }
             .store(in: &cancellables)
         
         viewModel.action(.viewDidLoad)
     }
     
-    private func share() {
+    private func share(displayData: MatchingScheduleDetailDisplayData) {
+        let templateArgs: [String: String] = [
+            "time": displayData.scheduledAtText,
+            "placeName": displayData.placeName,
+            "name": displayData.cardItem.content.name
+        ]
+
+        // TODO: - 서버 응답 값으로 displayData 구성
         guard ShareApi.isKakaoTalkSharingAvailable() else {
-            if let url = ShareApi.shared.makeCustomUrl(templateId: 135202) {
+            if let url = ShareApi.shared.makeCustomUrl(templateId: kakaoShareTemplateId, templateArgs: templateArgs) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
                 AppLogger.error(
@@ -105,8 +116,8 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
             }
             return
         }
-        
-        ShareApi.shared.shareCustom(templateId: 135202) { sharingResult, error in
+
+        ShareApi.shared.shareCustom(templateId: kakaoShareTemplateId, templateArgs: templateArgs) { sharingResult, error in
             if let error {
                 AppLogger.error(error, message: "카카오톡 공유에 실패했습니다.")
                 return

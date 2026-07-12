@@ -1,5 +1,5 @@
 //
-//  KeychainTokenStorage.swift
+//  TokenStorage.swift
 //  Nearby
 //
 //  Created by soomin on 7/12/26.

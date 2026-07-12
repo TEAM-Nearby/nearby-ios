@@ -98,4 +98,17 @@ extension MeetingTabCoordinator: Coordinator {
     func showCompanionTab() {
         (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
     }
+    
+    func showNotification() {
+        // TODO: - 서연 님 작업 후 변경
+        let notificationCoordinator = makeChildNotificationCoordinator()
+            notificationCoordinator.start()
+    }
+    
+    private func makeChildNotificationCoordinator() -> NotificationCoordinator {
+        let notificationCoordinator = diContainer.makeNotificationCoordinator(navigationController: navigationController)
+        notificationCoordinator.parentCoordinator = self
+        addChildCoordinator(notificationCoordinator)
+        return notificationCoordinator
+    }
 }

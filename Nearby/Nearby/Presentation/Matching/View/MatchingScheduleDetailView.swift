@@ -54,7 +54,6 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setNextButtonHidden(true)
         }
         
-        
         bottomButtonStackView.do {
             $0.axis = .horizontal
             $0.spacing = 8
@@ -120,6 +119,7 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setImage(.copyIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey30
         }
+        
         bottomButtonStackView.do {
             $0.axis = .horizontal
             $0.spacing = 8
@@ -278,11 +278,11 @@ extension MatchingScheduleDetailView {
         dateAndTimeDetailLabel.setFont(.b2M16, text: displayData.scheduledAtText, textColor: .grey80)
         kakaoLinkDetailLabel.setFont(.b2M16, text: displayData.openChatUrl, textColor: .grey80)
         mapView.configure(latitude: displayData.latitude, longitude: displayData.longitude)
-        configure(isHost: displayData.isHost)
+        configure(type: displayData.type)
     }
     
-    private func configure(isHost: Bool) {
-        if isHost {
+    private func configure(type: NearbyUserType) {
+        if type == .host {
             guard manageButton.superview == nil else { return }
             bottomButtonStackView.insertArrangedSubview(manageButton, at: 0)
         } else {

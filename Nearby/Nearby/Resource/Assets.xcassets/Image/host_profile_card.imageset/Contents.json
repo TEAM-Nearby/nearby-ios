@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "host_profile_card.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

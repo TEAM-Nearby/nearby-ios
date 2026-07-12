@@ -28,10 +28,18 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
         super.viewDidLoad()
         setCollectionView()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
 
     // MARK: - Custom Methods
     
     override func setAddTarget() {
+        meetingTabView.onNotificationButtonDidTap = { [weak self] in
+            self?.coordinator?.showNotification()
+        }
         meetingTabView.onSearchButtonDidTap = { [weak self] in
             self?.coordinator?.showCompanionTab()
         }

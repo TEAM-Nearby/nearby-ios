@@ -65,6 +65,10 @@ final class AppDIContainer {
         SaveDiningSheetViewModel()
     }
 
+    func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
+        DiningInfoSheetViewModel()
+    }
+
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
         CompanionDetailViewModel(state: state)
     }
@@ -129,7 +133,31 @@ final class AppDIContainer {
         HostRequestDeclineViewModel(applicantName: applicantName)
     }
     
+    func makeCompanionRequestAcceptViewModel(hostName: String, locationName: String) -> CompanionRequestAcceptViewModel {
+        CompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
+    }
+
+    func makeHostRequestAllowViewModel(applicantName: String, locationName: String, postType: PostType) -> HostRequestAllowViewModel {
+        HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
+    }
+
+    func makeHostProfileViewModel() -> HostProfileViewModel {
+        HostProfileViewModel()
+    }
+    
+    func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
+        PhoneVerificationViewModel()
+    }
+    
     // MARK: - ViewControllers
+    
+    func makeHostProfileViewController() -> HostProfileViewController {
+        let viewModel = makeHostProfileViewModel()
+
+        return HostProfileViewController(
+            viewModel: viewModel
+        )
+    }
 
     func makeLoginViewController() -> LoginViewController {
         LoginViewController(viewModel: makeLoginViewModel())
@@ -163,7 +191,8 @@ final class AppDIContainer {
         DiningMapViewController(
             viewModel: makeDiningMapViewModel(),
             nearDiningSheetViewController: makeNearDiningSheetViewController(),
-            saveDiningSheetViewController: makeSaveDiningSheetViewController()
+            saveDiningSheetViewController: makeSaveDiningSheetViewController(),
+            diningInfoSheetViewController: makeDiningInfoSheetViewController()
         )
     }
 
@@ -173,6 +202,10 @@ final class AppDIContainer {
 
     func makeSaveDiningSheetViewController() -> SaveDiningSheetViewController {
         SaveDiningSheetViewController(viewModel: makeSaveDiningSheetViewModel())
+    }
+
+    func makeDiningInfoSheetViewController() -> DiningInfoSheetViewController {
+        DiningInfoSheetViewController(viewModel: makeDiningInfoSheetViewModel())
     }
     
     func makeMatchingViewController(coordinator: MatchingCoordinator) -> UIViewController {
@@ -203,12 +236,14 @@ final class AppDIContainer {
     
     func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = MeetingTabViewController(viewModel: makeMeetingViewModel())
+
         viewController.coordinator = coordinator
         return viewController
     }
 
     func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, item: MeetingItem) -> UIViewController {
         let viewController = MeetingProgressViewController(viewModel: makeMeetingProgressViewModel(item: item))
+
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController
@@ -319,6 +354,34 @@ final class AppDIContainer {
         )
         viewController.coordinator = coordinator
         return viewController
+    }
+    
+    func makePhoneVerificationViewController() -> PhoneVerificationViewController {
+        PhoneVerificationViewController(
+            viewModel: makePhoneVerificationViewModel()
+        )
+    func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
+        let viewController = CompanionRequestAcceptViewController(
+            viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+
+    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, locationName: String, postType: PostType) -> UIViewController {
+        let viewController = HostRequestAllowViewController(
+            viewModel: makeHostRequestAllowViewModel(
+                applicantName: applicantName,
+                locationName: locationName,
+                postType: postType
+            )
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeNotificationCoordinator(navigationController: UINavigationController) -> NotificationCoordinator {
+        NotificationCoordinator(navigationController: navigationController, diContainer: self)
     }
 }
 

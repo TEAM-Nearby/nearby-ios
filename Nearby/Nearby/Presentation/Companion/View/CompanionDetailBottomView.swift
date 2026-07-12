@@ -203,7 +203,7 @@ final class CompanionDetailBottomView: BaseView {
 
     // MARK: - Method
 
-    func configure(postType: CompanionDetailState.PostType) {
+    func configure(postType: PostType) {
         switch postType {
         case .scheduled:
             expirationBannerView.isHidden = true

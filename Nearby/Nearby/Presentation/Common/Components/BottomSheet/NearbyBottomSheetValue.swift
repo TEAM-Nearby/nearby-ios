@@ -12,6 +12,8 @@ enum NearbyBottomSheetValue {
     static let nearbyCompanionEmptyCompactHeight: CGFloat = 122
     static let nearbyCompanionEmptyStandardHeight: CGFloat = 297
     static let diningListStandardHeight: CGFloat = 403
+    static let diningInfoSummaryHeight: CGFloat = 158
+    static let diningInfoExpandedHeight: CGFloat = 520
 
     static let savedDiningListCompactHeight = contentTopOffset + savedDiningTitleTopOffset + savedDiningTitleHeight
                                               + diningCategoryTopOffset + diningCategoryHeight

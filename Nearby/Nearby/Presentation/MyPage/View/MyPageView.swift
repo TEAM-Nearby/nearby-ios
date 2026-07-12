@@ -407,8 +407,7 @@ private final class MyPageStatItemView: UIView {
 
     // MARK: - Initializer
 
-    init(icon: UIImage?, title: String, value: String)
-    {
+    init(icon: UIImage?, title: String, value: String) {
         super.init(frame: .zero)
 
         setStyle(icon: icon, title: title, value: value)
@@ -423,8 +422,7 @@ private final class MyPageStatItemView: UIView {
 // MARK: - Private Methods
 
 private extension MyPageStatItemView {
-    func setStyle(icon: UIImage?, title: String, value: String)
-    {
+    func setStyle(icon: UIImage?, title: String, value: String) {
         backgroundColor = .clear
 
         iconImageView.do {
@@ -555,5 +553,4 @@ private extension MyPageMenuRowView {
     @objc
     func rowDidTap() {
         onTap?()
-    }
-}
+    } }

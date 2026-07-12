@@ -19,17 +19,18 @@ struct MatchingScheduleDetailResponseModel: Decodable {
 extension MatchingScheduleDetailResponseModel {
     func toDisplayData(
         cardItem: MatchingMatchedCardItem,
-        isHost: Bool
+        type: NearbyUserType
     ) -> MatchingScheduleDetailDisplayData {
         return MatchingScheduleDetailDisplayData(
             cardItem: cardItem,
             placeName: schedule.place.name,
             placeAddress: schedule.place.address,
+            googlePlaceId: schedule.place.googlePlaceId,
             latitude: schedule.place.latitude,
             longitude: schedule.place.longitude,
             scheduledAtText: schedule.scheduledAt,
             openChatUrl: openChatUrl,
-            isHost: isHost
+            type: type
         )
     }
 }

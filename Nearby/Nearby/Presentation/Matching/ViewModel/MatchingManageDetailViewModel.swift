@@ -32,7 +32,9 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     struct DisplayData {
         let cardItem: MatchingMatchedCardItem
+        let placeName: String
         let placeAddress: String
+        let googlePlaceId: String?
         let latitude: Double
         let longitude: Double
         let selectedDate: Date
@@ -79,7 +81,9 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     private func makeDisplayData() -> DisplayData {
         return DisplayData(
             cardItem: item,
+            placeName: item.content.place,
             placeAddress: "Siutat condal, Rambla de Catalunya, 16",
+            googlePlaceId: "ChIJmSmV-_KipBIR1rXbKL9Yhp4",
             latitude: 37.566508,
             longitude: 126.977945,
             selectedDate: selectedDate,

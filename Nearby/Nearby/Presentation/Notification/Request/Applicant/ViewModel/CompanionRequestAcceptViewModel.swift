@@ -26,6 +26,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<URL, Never>()
         let showChatLinkPopup = PassthroughSubject<String, Never>()
+        let showScheduleDetail = PassthroughSubject<Void, Never>()
     }
 
     enum Step {
@@ -40,6 +41,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         let date: String
         let people: String
         let buttonTitle: String
+        let avatarImages: [UIImage?]
     }
 
     // MARK: - Properties
@@ -70,7 +72,8 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                 location: "\(locationName)",
                 date: "6월 18일 (목) 오후 4시 30분",
                 people: "3/4명",
-                buttonTitle: "확인했어요"
+                buttonTitle: "확인했어요",
+                avatarImages: [nil, nil, nil]
             )
             output.displayData.send(data)
 
@@ -79,8 +82,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
             case .matched:
                 output.step.send(.chat)
             case .chat:
-                // TODO: - 지인이 화면으로 교체
-                showOpenChat()
+                output.showScheduleDetail.send(())
             }
 
         case .enterChatButtonDidTap:
@@ -89,14 +91,6 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         case .chatHelpButtonDidTap:
             sendChatLinkPopup()
         }
-    }
-    
-    // MARK: - Method
-    
-    private func showOpenChat() {
-        guard let url = URL(string: openChatURLString), url.scheme == "https"
-                || url.scheme == "http" else { return }
-        output.showOpenChat.send(url)
     }
 }
 

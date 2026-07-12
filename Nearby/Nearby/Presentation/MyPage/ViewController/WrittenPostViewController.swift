@@ -30,8 +30,7 @@ final class WrittenPostViewController:
         viewModel.action(.viewDidLoad)
     }
 
-    override func viewWillAppear(_ animated: Bool)
-    {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
@@ -101,12 +100,7 @@ extension WrittenPostViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 
-extension WrittenPostViewController:
-    UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-    { tableView.deselectRow(at: indexPath, animated: false) }
-}
+extension WrittenPostViewController: UITableViewDelegate { func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { tableView.deselectRow(at: indexPath, animated: false) } }
 
 // MARK: - Action
 

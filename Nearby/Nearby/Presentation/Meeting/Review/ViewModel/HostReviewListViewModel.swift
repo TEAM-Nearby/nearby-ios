@@ -53,7 +53,7 @@ final class HostReviewListViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            // TODO: - 서버 연동 예정
+            // TODO: - 서버 연동 예정, 말줄임표 수정
             output.headerInfo.send(
                 HeaderInfo(
                     people: "정지영 외 3명과의 동행",

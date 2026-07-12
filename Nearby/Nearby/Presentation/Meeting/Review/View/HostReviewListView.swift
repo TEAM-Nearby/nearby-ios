@@ -12,8 +12,10 @@ import Then
 
 final class HostReviewListView: BaseView {
     
-    // MARK: - Property
+    // MARK: - Properties
     
+    var onBackButtonDidTap: (() -> Void)?
+    var onNotificationButtonDidTap: (() -> Void)?
     var onCompletionButtonDidTap: (() -> Void)?
     
     // MARK: - UI Components
@@ -23,9 +25,7 @@ final class HostReviewListView: BaseView {
     private let contentView = UIStackView()
     
     private let companionInformationView = UIStackView()
-    private let avatarStackView = UIView()
-    private let topAvatarStackView = AvatarStackView(avatarSize: 32, avatarOverlap: 9)
-    private let bottomAvatarStackView = AvatarStackView(avatarSize: 32, avatarOverlap: 9)
+    private let avatarClusterView = AvatarClusterView()
     private let labelStackView = UIStackView()
     private let peopleLabel = UILabel()
     private let informationLabel = UILabel()
@@ -96,8 +96,7 @@ final class HostReviewListView: BaseView {
     override func setUI() {
         addSubviews(navigationBar, contentView, completionButton)
         contentView.addArrangedSubviews(companionInformationView, dividerView, reviewListStackView)
-        companionInformationView.addArrangedSubviews(avatarStackView, labelStackView)
-        avatarStackView.addSubviews(topAvatarStackView, bottomAvatarStackView)
+        companionInformationView.addArrangedSubviews(avatarClusterView, labelStackView)
         labelStackView.addArrangedSubviews(peopleLabel, informationLabel, locationView)
         labelStackView.setCustomSpacing(8, after: informationLabel)
         locationView.addSubviews(locationImage, locationLabel)
@@ -112,19 +111,6 @@ final class HostReviewListView: BaseView {
         contentView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(28)
             $0.horizontalEdges.equalToSuperview().inset(20)
-        }
-        
-        avatarStackView.snp.makeConstraints {
-            $0.size.equalTo(55)
-        }
-        
-        topAvatarStackView.snp.makeConstraints {
-            $0.top.horizontalEdges.equalToSuperview()
-        }
-        
-        bottomAvatarStackView.snp.makeConstraints {
-            $0.top.equalTo(topAvatarStackView.snp.bottom).offset(-9)
-            $0.leading.bottom.equalToSuperview()
         }
         
         dividerView.snp.makeConstraints {
@@ -152,10 +138,26 @@ final class HostReviewListView: BaseView {
     }
     
     override func setAddTarget() {
+        navigationBar.leftButtonAction = { [weak self] in
+            self?.onBackButtonDidTap?()
+        }
+        navigationBar.rightFirstButtonAction = { [weak self] in
+            self?.onNotificationButtonDidTap?()
+        }
         completionButton.addTarget(self, action: #selector(completionButtonDidTap), for: .touchUpInside)
     }
     
     // MARK: - Action
+    
+    @objc
+    private func backButtonDidTap() {
+        onBackButtonDidTap?()
+    }
+    
+    @objc
+    private func notificationButtonDidTap() {
+        onNotificationButtonDidTap?()
+    }
     
     @objc
     private func completionButtonDidTap() {
@@ -166,11 +168,7 @@ final class HostReviewListView: BaseView {
     
     func configure(people: String, information: String, location: String, avatarImages: [UIImage?]) {
         // TODO: - 서버 연동 시 수정
-        let topImages = Array(avatarImages.prefix(2))
-        let bottomImages = Array(avatarImages.dropFirst(2).prefix(2))
-        topAvatarStackView.configure(with: topImages)
-        bottomAvatarStackView.configure(with: bottomImages)
-        bottomAvatarStackView.isHidden = bottomImages.isEmpty
+        avatarClusterView.configure(with: avatarImages)
         peopleLabel.text = people
         informationLabel.text = information
         locationLabel.text = location

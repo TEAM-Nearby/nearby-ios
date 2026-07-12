@@ -11,6 +11,7 @@ struct MatchingScheduleDetailDisplayData {
     let cardItem: MatchingMatchedCardItem
     let placeName: String
     let placeAddress: String
+    let googlePlaceId: String?
     let latitude: Double
     let longitude: Double
     let scheduledAtText: String

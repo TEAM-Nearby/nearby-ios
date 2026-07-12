@@ -54,7 +54,6 @@ final class MatchingScheduleDetailView: BaseView {
             $0.setNextButtonHidden(true)
         }
         
-        
         bottomButtonStackView.do {
             $0.axis = .horizontal
             $0.spacing = 8

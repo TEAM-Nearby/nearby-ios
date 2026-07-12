@@ -117,7 +117,6 @@ final class AppDIContainer {
         ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast)
     }
 
-    
     func makeCompanionRequestSentViewModel(hostName: String) -> CompanionRequestSentViewModel {
         CompanionRequestSentViewModel(hostName: hostName)
     }
@@ -139,9 +138,21 @@ final class AppDIContainer {
     }
 
     
+    func makeHostProfileViewModel() -> HostProfileViewModel {
+        HostProfileViewModel()
+    }
+    
     // MARK: - ViewControllers
+    
+    func makeHostProfileViewController() -> HostProfileViewController {
+        let viewModel = makeHostProfileViewModel()
 
-    func makeLoginViewController()-> LoginViewController {
+        return HostProfileViewController(
+            viewModel: viewModel
+        )
+    }
+
+    func makeLoginViewController() -> LoginViewController {
         LoginViewController(viewModel: makeLoginViewModel())
     }
 
@@ -212,7 +223,7 @@ final class AppDIContainer {
     }
     
     func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
-        let viewController = MeetingTabViewController(viewModel:makeMeetingViewModel())
+        let viewController = MeetingTabViewController(viewModel: makeMeetingViewModel())
 
         viewController.coordinator = coordinator
 
@@ -220,7 +231,7 @@ final class AppDIContainer {
     }
 
     func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, item: MeetingItem) -> UIViewController {
-        let viewController = MeetingProgressViewController(viewModel:makeMeetingProgressViewModel(item: item))
+        let viewController = MeetingProgressViewController(viewModel: makeMeetingProgressViewModel(item: item))
 
         viewController.coordinator = coordinator
 

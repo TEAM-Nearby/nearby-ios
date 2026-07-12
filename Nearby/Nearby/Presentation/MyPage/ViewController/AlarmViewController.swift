@@ -47,8 +47,7 @@ final class AlarmViewController:
     // MARK: - Custom Methods
 
     override func setAddTarget() {
-        alarmView.navigationBar.leftButtonAction = {
-            [weak self] in
+        alarmView.navigationBar.leftButtonAction = { [weak self] in
 
             self?.viewModel.action(
                 .backButtonDidTap
@@ -78,8 +77,7 @@ final class AlarmViewController:
     }
 
     override func bindState() {
-        viewModel.output.selectedTab = {
-            [weak self] tab in
+        viewModel.output.selectedTab = { [weak self] tab in
 
             guard let self else {
                 return
@@ -91,8 +89,7 @@ final class AlarmViewController:
             alarmView.scrollToTop()
         }
 
-        viewModel.output.requestItems = {
-            [weak self] items in
+        viewModel.output.requestItems = { [weak self] items in
 
             guard let self else {
                 return
@@ -108,14 +105,12 @@ final class AlarmViewController:
             )
         }
 
-        viewModel.output.backButtonDidTap = {
-            [weak self] in
+        viewModel.output.backButtonDidTap = { [weak self] in
 
             self?.onBackButtonDidTap?()
         }
 
-        viewModel.output.requestActionDidTap = {
-            [weak self] requestItem in
+        viewModel.output.requestActionDidTap = { [weak self] requestItem in
 
             self?.onRequestActionDidTap?(
                 requestItem
@@ -152,8 +147,7 @@ extension AlarmViewController:
 
         cell.configure(with: requestItem)
 
-        cell.onActionButtonDidTap = {
-            [weak self] in
+        cell.onActionButtonDidTap = { [weak self] in
 
             self?.viewModel.action(
                 .requestActionButtonDidTap(

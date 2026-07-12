@@ -6,12 +6,15 @@
 //
 
 import Combine
+import CoreLocation
 
 final class NearCompanionSheetViewModel: BaseViewModelType {
-    
+
     // MARK: - Input
 
     enum Input {
+        case locationDidUpdate(CLLocationCoordinate2D)
+        case placeCategoryDidSelect(String)
         case sortOptionDidTap(SortOption)
         case companionDidSelect(Int)
     }
@@ -21,90 +24,91 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
     struct Output {
         let sortOptions: [SortOption]
         let selectedSortOption = CurrentValueSubject<SortOption, Never>(.latest)
-        let companions: CurrentValueSubject<[NearCompanionCellItem], Never>
+        let companions = CurrentValueSubject<[NearCompanionCellItem], Never>([])
+        let mapMarkers = CurrentValueSubject<[CompanionMapMarkerData], Never>([])
+        let summaryText = PassthroughSubject<String, Never>()
         let selectedCompanion = PassthroughSubject<NearCompanionCellItem, Never>()
+        let error = PassthroughSubject<Error, Never>()
     }
 
     // MARK: - Properties
 
-    let output: Output
+    let output = Output(sortOptions: SortOption.allCases)
 
     var nearCompanionCount: Int {
         output.companions.value.count
     }
-    
+
+    private let repository: CompanionRepository
+    private var currentCoordinate: CLLocationCoordinate2D?
+    private var placeCategory = "RESTAURANT"
+    private var fetchTask: Task<Void, Never>?
+
     // MARK: - Initializer
-    
-    init(companions: [NearCompanionCellItem] = NearCompanionSheetViewModel.mockNearCompanions) {
-        self.output = Output(
-            sortOptions: SortOption.allCases,
-            companions: CurrentValueSubject(companions)
-        )
+
+    init(repository: CompanionRepository) {
+        self.repository = repository
+    }
+
+    deinit {
+        fetchTask?.cancel()
     }
 
     // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {
+        case .locationDidUpdate(let coordinate):
+            currentCoordinate = coordinate
+            fetchPosts()
+
+        case .placeCategoryDidSelect(let category):
+            placeCategory = category
+            fetchPosts()
+
         case .sortOptionDidTap(let option):
             output.selectedSortOption.send(option)
+            fetchPosts()
+
         case .companionDidSelect(let index):
+            guard output.companions.value.indices.contains(index) else { return }
             output.selectedCompanion.send(companion(at: index))
         }
     }
     
+    // MARK: - Method
+
     func companion(at index: Int) -> NearCompanionCellItem {
         output.companions.value[index]
     }
 }
 
 private extension NearCompanionSheetViewModel {
-    static let mockNearCompanions: [NearCompanionCellItem] = [
-        NearCompanionCellItem(
-            placeImage: .restaurantPlaceholder,
-            placeName: "손오공 마라탕",
-            writtenTime: "30분 전",
-            content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...",
-            schedule: "6월 29일 14:00",
-            participantImages: [nil, nil],
-            statusText: "2/4 모집 중",
-            detailState: scheduledDetailState
-        ),
-        NearCompanionCellItem(
-            placeImage: .restaurantPlaceholder,
-            placeName: "스시스시",
-            writtenTime: "1시간 전",
-            content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...",
-            schedule: "6월 29일 18:30",
-            participantImages: [nil, nil, nil],
-            statusText: "3/4 모집 중",
-            detailState: scheduledDetailState
-        ),
-        NearCompanionCellItem(
-            placeImage: .restaurantPlaceholder,
-            placeName: "손오공 마라탕",
-            writtenTime: "30분 전",
-            content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...",
-            schedule: "6월 29일 14:00",
-            participantImages: [nil, nil],
-            statusText: "2/4 모집 중",
-            detailState: scheduledDetailState
-        ),
-        NearCompanionCellItem(
-            placeImage: .restaurantPlaceholder,
-            placeName: "스시스시",
-            writtenTime: "1시간 전",
-            content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...",
-            schedule: "6월 29일 18:30",
-            participantImages: [nil, nil, nil],
-            statusText: "3/4 모집 중",
-            detailState: scheduledDetailState
-        )
-    ]
+    func fetchPosts() {
+        guard let currentCoordinate else { return }
 
-    static let scheduledDetailState = CompanionDetailState(
-        postType: .scheduled,
-        isApplicationEnabled: true,
-        tags: ["사전에 진심", "계획파", "맛집 탐방"]
-    )
+        fetchTask?.cancel()
+        let sort = output.selectedSortOption.value
+
+        fetchTask = Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let response = try await repository.fetchList(
+                    query: CompanionListQuery(latitude: currentCoordinate.latitude, longitude: currentCoordinate.longitude,
+                                              radiusMeters: 1_000, placeCategory: placeCategory, sort: sort.serverKey)
+                )
+                guard !Task.isCancelled else { return }
+
+                output.companions.send(response.posts.map(NearCompanionCellItem.init(dto:)))
+                output.mapMarkers.send(response.posts.map(CompanionMapMarkerData.init(dto:)))
+                output.summaryText.send(response.summaryText)
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+                output.error.send(error)
+            }
+        }
+    }
 }

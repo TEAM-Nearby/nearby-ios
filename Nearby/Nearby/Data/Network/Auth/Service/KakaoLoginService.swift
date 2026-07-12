@@ -122,10 +122,7 @@ private extension KakaoAuthService {
                 }
                 
                 do {
-                    let responseDTO = try JSONDecoder().decode(
-                        KakaoLoginResponseDTO.self,
-                        from: data
-                    )
+                    let responseDTO = try JSONDecoder().decode(KakaoLoginResponseDTO.self, from: data)
                     
                     DispatchQueue.main.async {
                         completion(.success(responseDTO.data))

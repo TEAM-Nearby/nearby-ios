@@ -219,19 +219,6 @@ final class NearDiningCell: UICollectionViewCell {
         resetImageCollectionViewOffset()
     }
     
-    private func makeLayout() -> UICollectionViewLayout {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 124, height: 124)
-        layout.minimumLineSpacing = 6
-        layout.minimumInteritemSpacing = 0
-        return layout
-    }
-
-    private func resetImageCollectionViewOffset() {
-        imageCollectionView.setContentOffset(CGPoint(x: -imageCollectionView.contentInset.left, y: 0), animated: false)
-    }
-    
     // MARK: - Action
 
     @objc

@@ -15,5 +15,5 @@ struct MatchingScheduleDetailDisplayData {
     let longitude: Double
     let scheduledAtText: String
     let openChatUrl: String
-    let isHost: Bool
+    let type: NearbyUserType
 }

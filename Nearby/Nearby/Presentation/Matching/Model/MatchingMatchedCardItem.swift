@@ -11,18 +11,18 @@ struct MatchingMatchedCardItem {
     let matchId: Int
     let content: MatchingMatchedCardContentModel
     let matchStatus: String
-    let isHost: Bool
+    let type: NearbyUserType
 
     init(
         matchId: Int = 0,
         content: MatchingMatchedCardContentModel,
         matchStatus: String = "",
-        isHost: Bool = false
+        type: NearbyUserType = .participant
     ) {
         self.matchId = matchId
         self.content = content
         self.matchStatus = matchStatus
-        self.isHost = isHost
+        self.type = type
     }
 }
 
@@ -38,6 +38,6 @@ extension MatchingMatchedCardItem {
             meetingTime: "오후 4:30",
             description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분 구해요!"
         ),
-        isHost: true
+        type: .host
     )
 }

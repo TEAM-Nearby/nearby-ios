@@ -130,6 +130,15 @@ final class AppDIContainer {
         HostRequestDeclineViewModel(applicantName: applicantName)
     }
     
+    func makeCompanionRequestAcceptViewModel(hostName: String, locationName: String) -> CompanionRequestAcceptViewModel {
+        CompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
+    }
+
+    func makeHostRequestAllowViewModel(applicantName: String, locationName: String, postType: PostType) -> HostRequestAllowViewModel {
+        HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
+    }
+
+    
     // MARK: - ViewControllers
 
     func makeLoginViewController()-> LoginViewController {
@@ -322,6 +331,35 @@ final class AppDIContainer {
     func makeHostRequestDeclineViewController(coordinator: NotificationCoordinator, applicantName: String) -> UIViewController {
         let viewController = HostRequestDeclineViewController(
             viewModel: makeHostRequestDeclineViewModel(applicantName: applicantName)
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+    
+    func makeCompanionRequestAcceptViewController(
+        coordinator: NotificationCoordinator,
+        hostName: String,
+        locationName: String
+    ) -> UIViewController {
+        let viewController = CompanionRequestAcceptViewController(
+            viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
+        )
+        viewController.coordinator = coordinator
+        return viewController
+    }
+
+    func makeHostRequestAllowViewController(
+        coordinator: NotificationCoordinator,
+        applicantName: String,
+        locationName: String,
+        postType: PostType
+    ) -> UIViewController {
+        let viewController = HostRequestAllowViewController(
+            viewModel: makeHostRequestAllowViewModel(
+                applicantName: applicantName,
+                locationName: locationName,
+                postType: postType
+            )
         )
         viewController.coordinator = coordinator
         return viewController

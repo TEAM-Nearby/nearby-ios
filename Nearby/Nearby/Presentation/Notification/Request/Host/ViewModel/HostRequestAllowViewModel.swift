@@ -26,6 +26,8 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<URL, Never>()
         let showChatLinkPopup = PassthroughSubject<String, Never>()
+        let showScheduleDetail = PassthroughSubject<Void, Never>()
+        let showScheduleConfirm = PassthroughSubject<Void, Never>()
     }
     
     enum Step {
@@ -47,15 +49,17 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     
     private let applicantName: String
     private let locationName: String
+    private let postType: PostType
     // TODO: - 서버 연동 시 응답값으로 교체
     let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
     
-    init(applicantName: String, locationName: String) {
+    init(applicantName: String, locationName: String, postType: PostType) {
         self.applicantName = applicantName
         self.locationName = locationName
+        self.postType = postType
     }
     
     // MARK: - Action
@@ -77,8 +81,18 @@ final class HostRequestAllowViewModel: BaseViewModelType {
             case .matched:
                 output.step.send(.chat)
             case .chat:
-                // TODO: - 지인이 화면으로 교체
-                sendOpenChatURL()
+                switch output.step.value {
+                case .matched:
+                    output.step.send(.chat)
+                case .chat:
+                    switch postType {
+                    case .immediate:
+                        output.showScheduleDetail.send(())
+                    case .scheduled:
+                        output.showScheduleConfirm.send(())
+                    }
+                }
+                
             }
             
         case .enterChatButtonDidTap:

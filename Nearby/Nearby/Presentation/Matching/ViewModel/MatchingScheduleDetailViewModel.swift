@@ -75,7 +75,7 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
             longitude: 126.977945,
             scheduledAtText: "6월 18일 (목) 오후 4시 30분",
             openChatUrl: "kakaotalk.hcmvietnam.tistory.com/36",
-            isHost: item.isHost
+            type: item.type
         )
     }
 }

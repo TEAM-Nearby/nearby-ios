@@ -14,6 +14,10 @@ final class HostRequestAllowViewController: BaseViewController<HostRequestAllowV
     
     private let hostRequestAllowView = HostRequestAllowView()
     
+    // MARK: - Property
+    
+    weak var coordinator: NotificationCoordinator?
+    
     // MARK: - Life Cycles
     
     override func loadView() {
@@ -53,6 +57,24 @@ final class HostRequestAllowViewController: BaseViewController<HostRequestAllowV
             .receive(on: DispatchQueue.main)
             .sink { [weak self] step in
                 self?.hostRequestAllowView.updateStep(step)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.showScheduleDetail
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                // TODO: - 서버 연동 시 데이터로 교체
+                let mockItem = MatchingMatchedCardItem.sample
+                self?.coordinator?.showMatchingScheduleDetail(item: mockItem)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.showScheduleConfirm
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                // TODO: - 서버 연동 시 데이터로 교체
+                let mockItem = MatchingMatchedCardItem.sample
+                self?.coordinator?.showMatchingManageDetail(item: mockItem)
             }
             .store(in: &cancellables)
         

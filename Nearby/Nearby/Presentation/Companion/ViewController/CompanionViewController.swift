@@ -107,7 +107,26 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             trailingView: companionView.currentLocationButton
         )
 
+        setRecruitCompanionButtonLayout()
+
         bottomSheetViewController.didMove(toParent: parentViewController)
+    }
+
+    private func setRecruitCompanionButtonLayout() {
+        let button = companionView.recruitCompanionButton
+        bottomSheetHostView.addSubview(button)
+
+        button.snp.remakeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.width.equalTo(142)
+            $0.height.equalTo(44)
+
+            if let tabBar = tabBarController?.tabBar {
+                $0.bottom.equalTo(tabBar.snp.top).offset(-11)
+            } else {
+                $0.bottom.equalTo(bottomSheetHostView.safeAreaLayoutGuide).inset(11)
+            }
+        }
     }
 
     private func bindBottomSheet() {
@@ -220,17 +239,14 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private func updateBottomSheetLayer(for state: BottomSheetState) {
         bottomSheetHostView.bringSubviewToFront(bottomSheetViewController.view)
 
+        if state.content == .nearbyCompanionList,
+           state.level == .standard || state.level == .expanded {
+            bottomSheetHostView.bringSubviewToFront(companionView.recruitCompanionButton)
+        }
+
         if state.content != .specificRestaurantCompanionList,
            let tabBar = tabBarController?.tabBar {
             bottomSheetHostView.bringSubviewToFront(tabBar)
-        }
-
-        if state.level == .expanded {
-            if state.content == .nearbyCompanionList {
-                view.bringSubviewToFront(companionView.recruitCompanionButton)
-            }
-
-            return
         }
     }
 

@@ -58,8 +58,11 @@ final class MeetingTabViewModel: BaseViewModelType {
             do {
                 let meetings = try await repository.fetchMeetingList()
                 let items = meetings
-                    .filter { $0.meetingStatus == "ONGOING" }
                     .map(makeMeetingItem)
+                // TODO: - 노쇼 건 클라에서 확인?
+                    .filter {
+                        !$0.isExpiredWithoutCheckIn
+                    }
                 output.items.send(items)
             } catch {
                 AppLogger.error(error)
@@ -70,7 +73,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     private func makeMeetingItem(from DTO: MeetingResponseDTO) -> MeetingItem {
         let meetingDate = DTO.meetingAt.toDate() ?? Date()
-        let timeText = meetingDate.timeDisplayText
+        let timeText = meetingDate.meetingDisplayText
         
         return MeetingItem(
             id: DTO.meetingId,

@@ -31,7 +31,7 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        viewModel.action(.viewDidLoad)
     }
 
     // MARK: - Custom Methods

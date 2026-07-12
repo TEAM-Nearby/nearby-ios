@@ -15,6 +15,7 @@ final class PhoneVerificationViewModel: BaseViewModelType {
         case phoneNumberDidChange(String)
         case verificationCodeDidChange(String)
         case bottomButtonDidTap
+        case backButtonDidTap
     }
 
     // MARK: - Output
@@ -22,6 +23,7 @@ final class PhoneVerificationViewModel: BaseViewModelType {
     struct Output {
         var isVerificationMode: ((Bool) -> Void)?
         var verificationDidComplete: (() -> Void)?
+        var shouldPopViewController: (() -> Void)?
     }
 
     // MARK: - Property
@@ -60,6 +62,15 @@ final class PhoneVerificationViewModel: BaseViewModelType {
                 // TODO: - 인증문자 발송 API 성공후에 실행
                 isVerificationMode = true
                 output.isVerificationMode?(true)
+            }
+            
+        case .backButtonDidTap:
+            if isVerificationMode {
+                isVerificationMode = false
+                verificationCode = ""
+                output.isVerificationMode?(false)
+            } else {
+                output.shouldPopViewController?()
             }
         }
     }

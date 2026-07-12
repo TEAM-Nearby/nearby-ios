@@ -217,12 +217,7 @@ final class MatchingManageScheduleDetailView: BaseView {
         matchedCardView.setNextButtonHidden(true)
         datePicker.date = output.selectedDate
         placeDetailLabel.setFont(.b3M14, text: output.placeAddress, textColor: .grey30)
-        mapView.configure(
-            latitude: output.latitude,
-            longitude: output.longitude,
-            placeName: output.placeName,
-            placeID: output.googlePlaceId
-        )
+        mapView.configure(latitude: output.latitude, longitude: output.longitude, placeName: output.placeName, placeID: output.googlePlaceId)
         updateDateAndTimeButtonTitle(output.dateButtonTitle)
     }
 

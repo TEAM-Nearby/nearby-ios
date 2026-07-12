@@ -83,7 +83,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
             cardItem: item,
             placeName: item.content.place,
             placeAddress: "Siutat condal, Rambla de Catalunya, 16",
-            googlePlaceId: nil,
+            googlePlaceId: "ChIJmSmV-_KipBIR1rXbKL9Yhp4",
             latitude: 37.566508,
             longitude: 126.977945,
             selectedDate: selectedDate,

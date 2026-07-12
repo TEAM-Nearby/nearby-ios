@@ -20,37 +20,68 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     struct Output {
         let items = CurrentValueSubject<[MeetingItem], Never>([])
+        let errorMessage = PassthroughSubject<String, Never>()
     }
     
     // MARK: - Properties
     
     let output = Output()
     
+    private let repository: MeetingRepository
     private var cancellables = Set<AnyCancellable>()
     
     var items: [MeetingItem] { output.items.value }
+    
+    // MARK: - Initializer
+    
+    init(repository: MeetingRepository) {
+        self.repository = repository
+    }
     
     // MARK: - Action
     
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            // TODO: - 서버 연동 예정
-            let mockItems: [MeetingItem] = [
-                MeetingItem(id: 1, name: "정지영", gender: "여성",
-                    information: "시우다드 콘달 · 오후 4:30", meetingDate: Date(), step: .verification
-                ),
-                MeetingItem(id: 2, name: "장현준", gender: "남성",
-                    information: "북극 · 오후 2:00", meetingDate: Date().addingTimeInterval(86400 * 3), step: .verification
-                )
-            ]
-            output.items.send(mockItems)
+            fetchMeetings()
         }
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     func item(at index: Int) -> MeetingItem {
         items[index]
+    }
+    
+    private func fetchMeetings() {
+        Task {
+            do {
+                let meetings = try await repository.fetchMeetingList()
+                let items = meetings
+                    .filter { $0.meetingStatus == "ONGOING" }
+                    .map(makeMeetingItem)
+                output.items.send(items)
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func makeMeetingItem(from DTO: MeetingResponseDTO) -> MeetingItem {
+        let meetingDate = DTO.meetingAt.toDate() ?? Date()
+        let timeText = meetingDate.timeDisplayText
+        
+        return MeetingItem(
+            id: DTO.meetingId,
+            matchId: DTO.matchId,
+            name: DTO.companion.nickname,
+            gender: DTO.companion.gender.genderDisplayText,
+            profileImageUrl: DTO.companion.profileImageUrl,
+            information: "\(DTO.placeName) · \(timeText)",
+            meetingDate: meetingDate,
+            postType: DTO.meetingTimeType,
+            isCheckedIn: DTO.isCheckedIn
+        )
     }
 }

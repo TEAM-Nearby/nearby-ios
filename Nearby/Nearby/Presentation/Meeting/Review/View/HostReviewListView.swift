@@ -150,16 +150,6 @@ final class HostReviewListView: BaseView {
     // MARK: - Action
     
     @objc
-    private func backButtonDidTap() {
-        onBackButtonDidTap?()
-    }
-    
-    @objc
-    private func notificationButtonDidTap() {
-        onNotificationButtonDidTap?()
-    }
-    
-    @objc
     private func completionButtonDidTap() {
         onCompletionButtonDidTap?()
     }

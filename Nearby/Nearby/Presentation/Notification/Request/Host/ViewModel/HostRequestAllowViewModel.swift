@@ -81,16 +81,11 @@ final class HostRequestAllowViewModel: BaseViewModelType {
             case .matched:
                 output.step.send(.chat)
             case .chat:
-                switch output.step.value {
-                case .matched:
-                    output.step.send(.chat)
-                case .chat:
-                    switch postType {
-                    case .immediate:
-                        output.showScheduleDetail.send(())
-                    case .scheduled:
-                        output.showScheduleConfirm.send(())
-                    }
+                switch postType {
+                case .immediate:
+                    output.showScheduleDetail.send(())
+                case .scheduled:
+                    output.showScheduleConfirm.send(())
                 }
                 
             }

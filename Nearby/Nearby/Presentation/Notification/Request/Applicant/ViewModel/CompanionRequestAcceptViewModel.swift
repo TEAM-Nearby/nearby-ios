@@ -41,6 +41,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         let date: String
         let people: String
         let buttonTitle: String
+        let avatarImages: [UIImage?]
     }
 
     // MARK: - Properties
@@ -71,7 +72,8 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                 location: "\(locationName)",
                 date: "6월 18일 (목) 오후 4시 30분",
                 people: "3/4명",
-                buttonTitle: "확인했어요"
+                buttonTitle: "확인했어요",
+                avatarImages: [nil, nil, nil]
             )
             output.displayData.send(data)
 

@@ -9,6 +9,7 @@ import Foundation
 
 struct MeetingItem {
     let id: Int
+    let matchId: Int
     let name: String
     let gender: String
     let profileImageUrl: String?
@@ -30,5 +31,9 @@ struct MeetingItem {
     
     var cellType: MeetingVerificationCellType {
         (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
+    }
+    
+    var isExpiredWithoutCheckIn: Bool {
+        !isCheckedIn && meetingDate.addingTimeInterval(Self.verifiableWindow) < Date()
     }
 }

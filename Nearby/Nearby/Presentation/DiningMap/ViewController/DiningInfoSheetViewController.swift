@@ -49,12 +49,7 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
             .store(in: &cancellables)
     }
     
-    // MARK: - Method
-
-    func configure(with item: NearDiningCellItem) {
-        loadViewIfNeeded()
-        viewModel.action(.updateRestaurant(item))
-    }
+    // MARK: - Methods
 
     private func configureView(with item: NearDiningCellItem) {
         diningInfoSheetView.configure(
@@ -64,5 +59,10 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
             phoneNumber: "+34 933 18 19 97",
             price: "$20~30"
         )
+    }
+
+    func configure(with item: NearDiningCellItem) {
+        loadViewIfNeeded()
+        viewModel.action(.updateRestaurant(item))
     }
 }

@@ -40,7 +40,7 @@ final class NearbyDropdownView: BaseView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
     
     override func layoutSubviews() {
         super.layoutSubviews()

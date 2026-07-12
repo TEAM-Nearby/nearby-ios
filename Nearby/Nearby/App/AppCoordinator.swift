@@ -5,6 +5,7 @@
 //  Created by soomin on 7/5/26.
 //
 
+import Combine
 import UIKit
 
 final class AppCoordinator {
@@ -12,10 +13,18 @@ final class AppCoordinator {
     var childCoordinators = [Coordinator]()
     private let window: UIWindow
     private let diContainer: AppDIContainer
+    private var cancellables = Set<AnyCancellable>()
     
     init(window: UIWindow, diContainer: AppDIContainer) {
         self.window = window
         self.diContainer = diContainer
+        NotificationCenter.default.publisher(for: .authenticationExpired)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.childCoordinators.removeAll()
+                self?.showLogin()
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -23,7 +32,11 @@ final class AppCoordinator {
 
 extension AppCoordinator: Coordinator {
      func start() {
-         showLogin()
+         if diContainer.hasStoredSession {
+             showMainTab()
+         } else {
+             showLogin()
+         }
      }
      
      func finish() {
@@ -36,8 +49,9 @@ extension AppCoordinator: Coordinator {
         let mainTabCoordinator = diContainer.makeMainTabCoordinator()
         mainTabCoordinator.parentCoordinator = self
         addChildCoordinator(mainTabCoordinator)
+
         mainTabCoordinator.start()
-        
+
         window.rootViewController = mainTabCoordinator.rootViewController
         window.makeKeyAndVisible()
     }
@@ -49,9 +63,9 @@ extension AppCoordinator: Coordinator {
             guard let self else { return }
 
             switch onboardingStatus {
-            case .started: self.showPhoneVerification()
-            case .phoneVerified: self.showPhoneVerification()
-            case .completed: self.showMainTab()
+            case .started: showPhoneVerification()
+            case .phoneVerified: showPhoneVerification()
+            case .completed: showMainTab()
             }
         }
         
@@ -61,6 +75,8 @@ extension AppCoordinator: Coordinator {
         window.makeKeyAndVisible()
     }
     
+    // TODO: - 지워주기 (서연)
+
     private func showHostProfileTest() {
         let hostProfileViewController =
         diContainer.makeHostProfileViewController()

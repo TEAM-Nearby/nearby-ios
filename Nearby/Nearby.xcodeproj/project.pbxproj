@@ -17,19 +17,19 @@
 		7712132D2FF43A5B00D688FD /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132C2FF43A5B00D688FD /* KakaoSDKUser */; };
 		771213302FF43B3700D688FD /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132F2FF43B3700D688FD /* GoogleMaps */; };
 		77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 77C74AF12FF6EEF200604CBC /* .swiftlint.yml */; };
+		D4CDA64F30036AE900FB3101 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D4CDA64E30036AE900FB3101 /* Config.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		771209D52FF423C700D688FD /* Nearby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nearby.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Cofig.xcconfig; sourceTree = "<group>"; };
 		77C74AF12FF6EEF200604CBC /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		D4CDA64E30036AE900FB3101 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		771209E72FF423C900D688FD /* Exceptions for "Nearby" folder in "Nearby" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Data/Network/Auth/DTO/.gitkeep,
 				Data/Network/Companion/DTO/.gitkeep,
 				Data/Network/DiningMap/DTO/.gitkeep,
 				Data/Network/Matching/DTO/.gitkeep,
@@ -38,13 +38,10 @@
 				Data/Network/Notification/DTO/.gitkeep,
 				Data/Network/RecruitCompanion/DTO/.gitkeep,
 				Data/Repository/Mock/.gitkeep,
-				Presentation/Matching/Coordinator/.gitkeep,
 				Presentation/Notification/View/.gitkeep,
 				Presentation/Notification/ViewController/.gitkeep,
 				Presentation/Notification/ViewModel/.gitkeep,
 				Presentation/RecruitCompanion/Coordinator/.gitkeep,
-				Presentation/RecruitCompanion/ViewController/.gitkeep,
-				Presentation/RecruitCompanion/ViewModel/.gitkeep,
 				Resource/Info.plist,
 			);
 			target = 771209D42FF423C700D688FD /* Nearby */;
@@ -85,10 +82,10 @@
 		771209CC2FF423C700D688FD = {
 			isa = PBXGroup;
 			children = (
-				772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */,
 				77C74AF12FF6EEF200604CBC /* .swiftlint.yml */,
 				771209D72FF423C700D688FD /* Nearby */,
 				771209D62FF423C700D688FD /* Products */,
+				D4CDA64E30036AE900FB3101 /* Config.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -183,6 +180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */,
+				D4CDA64F30036AE900FB3101 /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,7 +220,7 @@
 /* Begin XCBuildConfiguration section */
 		771209E92FF423C900D688FD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */;
+			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -301,7 +299,7 @@
 		};
 		771209EB2FF423C900D688FD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 772B1DEC2FFB952C0044A4F2 /* Cofig.xcconfig */;
+			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

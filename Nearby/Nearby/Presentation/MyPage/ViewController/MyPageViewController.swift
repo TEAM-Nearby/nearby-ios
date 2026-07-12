@@ -15,6 +15,8 @@ final class MyPageViewController:
     var onAlarmButtonDidTap: (() -> Void)?
     var onSettingButtonDidTap: (() -> Void)?
     var onWrittenPostRowDidTap: (() -> Void)?
+    var onSentRequestRowDidTap: (() -> Void)?
+    var onReceivedRequestRowDidTap: (() -> Void)?
 
     // MARK: - UI Component
 
@@ -45,6 +47,14 @@ final class MyPageViewController:
         myPageView.onWrittenPostRowDidTap = { [weak self] in
             self?.viewModel.action(.writtenPostRowDidTap)
         }
+
+        myPageView.onSentRequestRowDidTap = { [weak self] in
+            self?.viewModel.action(.sentRequestRowDidTap)
+        }
+
+        myPageView.onReceivedRequestRowDidTap = { [weak self] in
+            self?.viewModel.action(.receivedRequestRowDidTap)
+        }
     }
 
     override func bindState() {
@@ -58,6 +68,14 @@ final class MyPageViewController:
 
         viewModel.output.writtenPostRowDidTap = { [weak self] in
             self?.onWrittenPostRowDidTap?()
+        }
+
+        viewModel.output.sentRequestRowDidTap = { [weak self] in
+            self?.onSentRequestRowDidTap?()
+        }
+
+        viewModel.output.receivedRequestRowDidTap = { [weak self] in
+            self?.onReceivedRequestRowDidTap?()
         }
     }
 }

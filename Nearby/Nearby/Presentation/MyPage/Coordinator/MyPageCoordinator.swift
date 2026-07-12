@@ -47,6 +47,18 @@ extension MyPageCoordinator: Coordinator {
         myPageViewController.onWrittenPostRowDidTap = { [weak self] in
             self?.showWrittenPost()
         }
+        
+        myPageViewController.onWrittenPostRowDidTap = { [weak self] in
+            self?.showWrittenPost()
+        }
+
+        myPageViewController.onSentRequestRowDidTap = { [weak self] in
+            self?.showAlarm(initialTab: .sent)
+        }
+
+        myPageViewController.onReceivedRequestRowDidTap = { [weak self] in
+            self?.showAlarm(initialTab: .received)
+        }
 
         navigationController.setViewControllers([myPageViewController], animated: false)
     }
@@ -57,8 +69,10 @@ extension MyPageCoordinator: Coordinator {
 // MARK: - Coordinator
 
 private extension MyPageCoordinator {
-    func showAlarm() {
-        let alarmViewController = appDIContainer.makeAlarmViewController()
+    func showAlarm(
+        initialTab: AlarmTab = .sent
+    ) {
+        let alarmViewController = appDIContainer.makeAlarmViewController(initialTab: initialTab)
 
         alarmViewController.hidesBottomBarWhenPushed = true
 

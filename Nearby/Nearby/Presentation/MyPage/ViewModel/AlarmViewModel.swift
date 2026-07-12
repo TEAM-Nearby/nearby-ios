@@ -32,13 +32,19 @@ final class AlarmViewModel: BaseViewModelType {
 
     var output = Output()
 
-    private var selectedTab: AlarmTab = .sent
+    private var selectedTab: AlarmTab
 
     private var sentRequestItems:
         [AlarmRequestItem] = []
 
     private var receivedRequestItems:
         [AlarmRequestItem] = []
+    
+    // MARK: - Initializer
+
+    init(initialTab: AlarmTab = .sent) {
+        selectedTab = initialTab
+    }
 
     // MARK: - Action
 

@@ -97,8 +97,8 @@ final class AppDIContainer {
         MyPageViewModel()
     }
     
-    func makeAlarmViewModel() -> AlarmViewModel {
-        AlarmViewModel()
+    func makeAlarmViewModel(initialTab: AlarmTab = .sent) -> AlarmViewModel {
+        AlarmViewModel(initialTab: initialTab)
     }
     
     func makeSettingViewModel() -> SettingViewModel {
@@ -256,8 +256,8 @@ final class AppDIContainer {
         MyPageViewController(viewModel: makeMyPageViewModel())
     }
     
-    func makeAlarmViewController() -> AlarmViewController {
-        AlarmViewController(viewModel: makeAlarmViewModel())
+    func makeAlarmViewController(initialTab: AlarmTab = .sent) -> AlarmViewController {
+        AlarmViewController(viewModel: makeAlarmViewModel(initialTab: initialTab))
     }
     
     func makeSettingViewController() -> SettingViewController {

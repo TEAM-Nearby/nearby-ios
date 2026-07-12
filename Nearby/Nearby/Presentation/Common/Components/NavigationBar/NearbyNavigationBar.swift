@@ -93,7 +93,7 @@ final class NearbyNavigationBar: BaseView {
             $0.center.equalToSuperview()
         }
 
-        setLogoLayout(isCentered: false)
+        setLogoLayout()
 
         rightStackView.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(8)
@@ -127,7 +127,7 @@ final class NearbyNavigationBar: BaseView {
         leftButton.isHidden = item == .empty || item == .logo
         
         if item == .logo {
-            showLogo(isCentered: false)
+            showLogo(leadingInset: 20)
             return
         }
         
@@ -141,24 +141,24 @@ final class NearbyNavigationBar: BaseView {
             titleLabel.isHidden = false
 
         case .logo:
-            showLogo(isCentered: true)
+            showLogo()
 
         default:
             break
         }
     }
     
-    private func showLogo(isCentered: Bool) {
+    private func showLogo(leadingInset: CGFloat? = nil) {
         logoImageView.isHidden = false
-        setLogoLayout(isCentered: isCentered)
+        setLogoLayout(leadingInset: leadingInset)
     }
     
-    private func setLogoLayout(isCentered: Bool) {
+    private func setLogoLayout(leadingInset: CGFloat? = nil) {
         logoImageView.snp.remakeConstraints {
-            if isCentered {
-                $0.centerX.equalToSuperview()
+            if let leadingInset {
+                $0.leading.equalToSuperview().inset(leadingInset)
             } else {
-                $0.leading.equalToSuperview().inset(20)
+                $0.centerX.equalToSuperview()
             }
             
             $0.centerY.equalToSuperview()
@@ -200,13 +200,18 @@ final class NearbyNavigationBar: BaseView {
     func configure(
         leftItem: NearbyNavigationBarItem = .empty,
         centerItem: NearbyNavigationBarItem = .empty,
-        rightItems: [NearbyNavigationBarItem] = []
+        rightItems: [NearbyNavigationBarItem] = [],
+        logoLeadingInset: CGFloat? = nil
     ) {
         titleLabel.isHidden = true
         logoImageView.isHidden = true
         
         configureLeftItem(leftItem)
-        configureCenterItem(centerItem)
+        if centerItem == .logo {
+            showLogo(leadingInset: logoLeadingInset)
+        } else {
+            configureCenterItem(centerItem)
+        }
         configureRightItems(rightItems)
     }
 

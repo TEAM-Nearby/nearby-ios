@@ -8,8 +8,8 @@
 import UIKit
 
 struct MatchingMatchedCardContentModel {
-    // TODO: - 여러 참여자 프로필 이미지 리스트로 변경
     let profileImage: UIImage?
+    let profileImageUrl: String?
     let name: String
     let participantCount: Int
     let gender: String
@@ -17,4 +17,26 @@ struct MatchingMatchedCardContentModel {
     let place: String
     let meetingTime: String
     let description: String
+
+    init(
+        profileImage: UIImage? = nil,
+        profileImageUrl: String? = nil,
+        name: String,
+        participantCount: Int,
+        gender: String,
+        uploadedTime: String,
+        place: String,
+        meetingTime: String,
+        description: String
+    ) {
+        self.profileImage = profileImage
+        self.profileImageUrl = profileImageUrl
+        self.name = name
+        self.participantCount = participantCount
+        self.gender = gender
+        self.uploadedTime = uploadedTime
+        self.place = place
+        self.meetingTime = meetingTime
+        self.description = description
+    }
 }

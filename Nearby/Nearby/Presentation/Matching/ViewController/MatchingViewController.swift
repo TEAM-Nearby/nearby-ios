@@ -5,57 +5,20 @@
 //  Created by 장지인 on 7/9/26.
 //
 
+import Combine
 import UIKit
 
-final class MatchingViewController: UIViewController {
+final class MatchingViewController: BaseViewController<MatchingViewModel> {
 
     // MARK: - Properties
 
+    weak var coordinator: MatchingCoordinator?
     private let matchedCardView = MatchedCardCollectionView()
-    private var cardItems: [(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState)] = [
-        (
-            content: MatchingMatchedCardContentModel(
-                profileImage: .imgProfileDefault, name: "정지영", participantCount: 2, gender: "여성",
-                uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
-                description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
-            ),
-            state: .pending
-        ),
-        (
-            content: MatchingMatchedCardContentModel(
-                profileImage: .imgProfileDefault, name: "정지영", participantCount: 2, gender: "여성",
-                uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
-                description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
-            ),
-            state: .pending
-        ),
-        (
-            content: MatchingMatchedCardContentModel(
-                profileImage: .imgProfileDefault, name: "정지영", participantCount: 2, gender: "여성",
-                uploadedTime: "15분 전 올림", place: "시우다드 콘달", meetingTime: "오후 4:30",
-                description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
-            ),
-            state: .confirmed
-        )
-    ]
-    private var displayCardItems: [(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState)] {
-        return cardItems.sorted {
-            $0.state.displayPriority < $1.state.displayPriority
-        }
-    }
 
     // MARK: - Life Cycles
 
     override func loadView() {
         view = matchedCardView
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setDelegate()
-        setAddTarget()
-        updateViewState()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -66,36 +29,60 @@ final class MatchingViewController: UIViewController {
 
     // MARK: - Methods
 
-    private func setDelegate() {
+    override func setDelegate() {
         matchedCardView.matchedCardCollectionView.dataSource = self
         matchedCardView.matchedCardCollectionView.delegate = self
     }
 
-    private func setAddTarget() {
-        matchedCardView.findCompanionButton.addTarget(self, action: #selector(findCompanionButtonDidTap), for: .touchUpInside)
+    override func setAddTarget() {
+        matchedCardView.findCompanionButton.addTarget(
+            self,
+            action: #selector(findCompanionButtonDidTap),
+            for: .touchUpInside
+        )
+        matchedCardView.alarmButtonAction = { [weak self] in
+            self?.viewModel.action(.alarmButtonDidTap)
+        }
     }
 
-    private func updateViewState() {
-        matchedCardView.updateEmptyState(isEmpty: displayCardItems.isEmpty)
-    }
+    override func bindState() {
+        viewModel.output.items
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] items in
+                self?.matchedCardView.updateEmptyState(isEmpty: items.isEmpty)
+                self?.matchedCardView.matchedCardCollectionView.reloadData()
+            }
+            .store(in: &cancellables)
 
-    private func updateCardItems(_ items: [(content: MatchingMatchedCardContentModel, state: MatchingMatchedCardState)]) {
-        cardItems = items
-        matchedCardView.matchedCardCollectionView.reloadData()
-        updateViewState()
-    }
+        viewModel.output.showScheduleDetail
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] item in
+                self?.coordinator?.showScheduleDetail(item: item)
+            }
+            .store(in: &cancellables)
 
-    private func matchingCardDidTap() {
-        let viewController = MatchingHostScheduleDetailViewController()
+        viewModel.output.showAlarm
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.coordinator?.showAlarm()
+            }
+            .store(in: &cancellables)
 
-        navigationController?.pushViewController(viewController, animated: true)
+        viewModel.output.showCompanionTab
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.coordinator?.showCompanionTab()
+            }
+            .store(in: &cancellables)
+
+        viewModel.action(.viewDidLoad)
     }
 
     // MARK: - Action
 
     @objc
     private func findCompanionButtonDidTap() {
-        // TODO: - 동행 찾기 뷰 연결
+        viewModel.action(.findCompanionButtonDidTap)
     }
 }
 
@@ -103,7 +90,7 @@ final class MatchingViewController: UIViewController {
 
 extension MatchingViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return displayCardItems.count
+        return viewModel.items.count
     }
 
     func collectionView(
@@ -111,11 +98,11 @@ extension MatchingViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(MatchingMatchedCardCell.self, for: indexPath)
-        let item = displayCardItems[indexPath.item]
+        let item = viewModel.item(at: indexPath.item)
 
-        cell.configure(content: item.content, state: item.state)
+        cell.configure(content: item.content)
         cell.onNextButtonDidTap = { [weak self] in
-            self?.matchingCardDidTap()
+            self?.viewModel.action(.cardDidTap(indexPath.item))
         }
 
         return cell
@@ -125,14 +112,15 @@ extension MatchingViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension MatchingViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewModel.action(.cardDidTap(indexPath.item))
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let state = displayCardItems[indexPath.item].state
-        let height: CGFloat = state == .confirmed ? 148 : 110
-
-        return CGSize(width: collectionView.bounds.width, height: height)
+        return CGSize(width: collectionView.bounds.width, height: 110)
     }
 }

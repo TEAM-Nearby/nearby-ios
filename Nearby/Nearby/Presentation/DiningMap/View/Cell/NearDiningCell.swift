@@ -12,7 +12,7 @@ import Then
 
 final class NearDiningCell: UICollectionViewCell {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onBookmarkTap: (() -> Void)?
     var onImageTap: (() -> Void)?
@@ -138,7 +138,7 @@ final class NearDiningCell: UICollectionViewCell {
         
         bookmarkButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
-            $0.top.equalToSuperview().offset(29)
+            $0.top.equalToSuperview().inset(29)
             $0.size.equalTo(40)
         }
         
@@ -186,6 +186,21 @@ final class NearDiningCell: UICollectionViewCell {
             $0.horizontalEdges.bottom.equalToSuperview()
             $0.height.equalTo(0.5)
         }
+    }
+    
+    // MARK: - Methods
+
+    private func makeLayout() -> UICollectionViewLayout {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 124, height: 124)
+        layout.minimumLineSpacing = 6
+        layout.minimumInteritemSpacing = 0
+        return layout
+    }
+
+    private func resetImageCollectionViewOffset() {
+        imageCollectionView.setContentOffset(CGPoint(x: -imageCollectionView.contentInset.left, y: 0), animated: false)
     }
 
     func configure(with item: NearDiningCellItem, isLast: Bool) {

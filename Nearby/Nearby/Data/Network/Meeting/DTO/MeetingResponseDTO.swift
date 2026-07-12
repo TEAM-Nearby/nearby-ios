@@ -25,6 +25,6 @@ struct MeetingResponseDTO: Decodable {
         let userId: Int
         let profileImageUrl: String?
         let nickname: String
-        let gender: String
+        let gender: NearbyGender
     }
 }

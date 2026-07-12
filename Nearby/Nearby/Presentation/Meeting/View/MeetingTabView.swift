@@ -12,8 +12,9 @@ import Then
 
 final class MeetingTabView: BaseView {
     
-    // MARK: - Property
+    // MARK: - Properties
     
+    var onNotificationButtonDidTap: (() -> Void)?
     var onSearchButtonDidTap: (() -> Void)?
 
     // MARK: - UI Components
@@ -73,6 +74,9 @@ final class MeetingTabView: BaseView {
     }
     
     override func setAddTarget() {
+        navigationBar.rightFirstButtonAction = { [weak self] in
+            self?.onNotificationButtonDidTap?()
+        }
         emptyView.onSearchButtonDidTap = { [weak self] in
             self?.onSearchButtonDidTap?()
         }

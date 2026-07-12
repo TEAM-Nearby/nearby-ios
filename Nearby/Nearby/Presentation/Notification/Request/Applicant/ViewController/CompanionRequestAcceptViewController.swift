@@ -14,6 +14,10 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
     
     private let companionRequestAcceptView = CompanionRequestAcceptView()
     
+    // MARK: - Property
+    
+    weak var coordinator: NotificationCoordinator?
+    
     // MARK: - Life Cycles
     
     override func loadView() {
@@ -46,6 +50,15 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
             .receive(on: DispatchQueue.main)
             .sink { [weak self] data in
                 self?.companionRequestAcceptView.configure(with: data)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.showScheduleDetail
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                // TODO: - 서버 연동 시 데이터로 교체
+                let mockItem = MatchingMatchedCardItem.sample
+                self?.coordinator?.showMatchingScheduleDetail(item: mockItem)
             }
             .store(in: &cancellables)
         

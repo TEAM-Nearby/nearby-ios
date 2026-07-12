@@ -32,6 +32,9 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
     // MARK: - Custom Methods
     
     override func setAddTarget() {
+        meetingTabView.onNotificationButtonDidTap = { [weak self] in
+            self?.coordinator?.showNotification()
+        }
         meetingTabView.onSearchButtonDidTap = { [weak self] in
             self?.coordinator?.showCompanionTab()
         }

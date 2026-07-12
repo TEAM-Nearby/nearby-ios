@@ -6,11 +6,6 @@
 //
 
 struct CompanionDetailState {
-    enum PostType {
-        case scheduled
-        case immediate(expirationTime: String)
-    }
-
     let postType: PostType
     let isApplicationEnabled: Bool
     let tags: [String]

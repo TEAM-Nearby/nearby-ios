@@ -31,6 +31,7 @@ final class NotificationCoordinator {
 extension NotificationCoordinator: Coordinator {
     func start() {
         // TODO: - 서연 님 개발 후 구현
+        showHostRequestAllow(applicantName: "장현준", locationName: "시우다드 콘달", postType: .scheduled)
 //        let viewController = diContainer.makeAlarmViewController()(coordinator: self)
 //        navigationController.setViewControllers([viewController], animated: false)
     }
@@ -71,5 +72,49 @@ extension NotificationCoordinator: Coordinator {
     
     func showMeetingList() {
         (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .meeting)
+    }
+    
+    func showMatchingScheduleDetail(item: MatchingMatchedCardItem) {
+        let matchingCoordinator = makeChildMatchingCoordinator()
+        let viewController = diContainer.makeMatchingScheduleDetailViewController(
+            coordinator: matchingCoordinator,
+            item: item
+        )
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showMatchingManageDetail(item: MatchingMatchedCardItem) {
+        let matchingCoordinator = makeChildMatchingCoordinator()
+        let viewController = diContainer.makeMatchingManageScheduleDetailViewController(
+            coordinator: matchingCoordinator,
+            item: item
+        )
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    private func makeChildMatchingCoordinator() -> MatchingCoordinator {
+        let matchingCoordinator = diContainer.makeMatchingCoordinator(navigationController: navigationController)
+        matchingCoordinator.parentCoordinator = self
+        addChildCoordinator(matchingCoordinator)
+        return matchingCoordinator
+    }
+    
+    func showCompanionRequestAccept(hostName: String, locationName: String) {
+        let viewController = diContainer.makeCompanionRequestAcceptViewController(
+            coordinator: self,
+            hostName: hostName,
+            locationName: locationName
+        )
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showHostRequestAllow(applicantName: String, locationName: String, postType: PostType) {
+        let viewController = diContainer.makeHostRequestAllowViewController(
+            coordinator: self,
+            applicantName: applicantName,
+            locationName: locationName,
+            postType: postType
+        )
+        navigationController.pushViewController(viewController, animated: true)
     }
 }

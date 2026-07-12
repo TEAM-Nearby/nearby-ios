@@ -25,6 +25,7 @@ final class SaveDiningBottomSheetView: BaseView {
     private let numberLabel = UILabel()
     private let categoryScrollView = UIScrollView()
     private let categoryChipStackView = UIStackView()
+    private let sortDropdownView = NearbyDropdownView(items: ["최신순", "오래된 순"], selectedItem: "최신순")
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
 
     // MARK: - Initializer
@@ -78,7 +79,7 @@ final class SaveDiningBottomSheetView: BaseView {
     override func setUI() {
         configureCategoryChips()
         categoryScrollView.addSubview(categoryChipStackView)
-        addSubviews(titleLabel, markerImageView, numberLabel, categoryScrollView, collectionView)
+        addSubviews(titleLabel, markerImageView, numberLabel, collectionView, categoryScrollView, sortDropdownView)
     }
 
     override func setLayout() {
@@ -101,12 +102,18 @@ final class SaveDiningBottomSheetView: BaseView {
         categoryScrollView.snp.makeConstraints {
             $0.top.equalTo(numberLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(NearbyChipStyle.diningCategorySelected.height)
+            $0.height.equalTo(sortDropdownView)
+        }
+
+        sortDropdownView.snp.makeConstraints {
+            $0.top.equalTo(categoryScrollView)
+            $0.leading.equalTo(categoryScrollView).inset(20)
         }
 
         categoryChipStackView.snp.makeConstraints {
             $0.verticalEdges.equalTo(categoryScrollView.contentLayoutGuide)
-            $0.horizontalEdges.equalTo(categoryScrollView.contentLayoutGuide).inset(20)
+            $0.leading.equalTo(categoryScrollView.contentLayoutGuide).offset(113)
+            $0.trailing.equalTo(categoryScrollView.contentLayoutGuide).inset(20)
             $0.height.equalTo(categoryScrollView.frameLayoutGuide)
         }
 

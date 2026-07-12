@@ -21,7 +21,7 @@ struct MatchingMatchSummaryModel: Decodable {
 }
 
 extension MatchingMatchSummaryModel {
-    func toMatchedCardItem(isHost: Bool = false) -> MatchingMatchedCardItem {
+    func toMatchedCardItem(type: NearbyUserType = .participant) -> MatchingMatchedCardItem {
         return MatchingMatchedCardItem(
             matchId: matchId,
             content: MatchingMatchedCardContentModel(
@@ -35,7 +35,7 @@ extension MatchingMatchSummaryModel {
                 description: content
             ),
             matchStatus: matchStatus,
-            isHost: isHost
+            type: type
         )
     }
 }

@@ -93,7 +93,7 @@ final class ReviewProfileView: BaseView {
     
     func configure(image: UIImage, name: String, information: String, isReviewed: Bool) {
         imageView.image = image
-        nameLabel.text = name
+        nameLabel.text = name.truncated(limit: 7)
         informationLabel.text = information
         
         nextButton.isHidden = isReviewed

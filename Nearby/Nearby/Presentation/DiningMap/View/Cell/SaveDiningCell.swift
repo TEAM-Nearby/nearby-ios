@@ -15,6 +15,7 @@ final class SaveDiningCell: UICollectionViewCell {
     // MARK: - Properties
     
     var onBookmarkTap: (() -> Void)?
+    var onImageTap: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -41,12 +42,13 @@ final class SaveDiningCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
 
     override func prepareForReuse() {
         super.prepareForReuse()
         
         onBookmarkTap = nil
+        onImageTap = nil
         restaurantImages = []
         resetImageCollectionViewOffset()
         imageCollectionView.reloadData()
@@ -82,6 +84,7 @@ final class SaveDiningCell: UICollectionViewCell {
         
         imageCollectionView.do {
             $0.dataSource = self
+            $0.delegate = self
             $0.showsHorizontalScrollIndicator = false
             $0.alwaysBounceHorizontal = true
             $0.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
@@ -92,6 +95,8 @@ final class SaveDiningCell: UICollectionViewCell {
             $0.backgroundColor = .grey20
         }
     }
+    
+    // MARK: - Methods
     
     private func setUI() {
         contentView.addSubviews(nameLabel, categoryLabel, distanceLabel, addressLabel, bookmarkButton, imageCollectionView, dividerView)
@@ -138,6 +143,19 @@ final class SaveDiningCell: UICollectionViewCell {
         }
     }
     
+    private func makeLayout() -> UICollectionViewLayout {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 115, height: 115)
+        layout.minimumLineSpacing = 4
+        layout.minimumInteritemSpacing = 0
+        return layout
+    }
+    
+    private func resetImageCollectionViewOffset() {
+        imageCollectionView.setContentOffset(CGPoint(x: -imageCollectionView.contentInset.left, y: 0), animated: false)
+    }
+    
     func configure(with item: NearDiningCellItem, isLast: Bool) {
         nameLabel.text = item.name
         categoryLabel.text = item.category
@@ -150,22 +168,11 @@ final class SaveDiningCell: UICollectionViewCell {
         resetImageCollectionViewOffset()
     }
     
+    // MARK: - Action
+    
     @objc
     private func bookmarkButtonDidTap() {
         onBookmarkTap?()
-    }
-    
-    private func makeLayout() -> UICollectionViewLayout {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 115, height: 115)
-        layout.minimumLineSpacing = 4
-        layout.minimumInteritemSpacing = 0
-        return layout
-    }
-    
-    private func resetImageCollectionViewOffset() {
-        imageCollectionView.setContentOffset(CGPoint(x: -imageCollectionView.contentInset.left, y: 0), animated: false)
     }
 }
 
@@ -181,5 +188,13 @@ extension SaveDiningCell: UICollectionViewDataSource {
         cell.configure(image: restaurantImages[indexPath.item])
         
         return cell
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension SaveDiningCell: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        onImageTap?()
     }
 }

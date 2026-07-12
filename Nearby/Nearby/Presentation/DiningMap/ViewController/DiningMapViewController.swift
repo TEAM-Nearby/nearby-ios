@@ -18,6 +18,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     private let bottomSheetViewController = NearbyBottomSheetViewController()
     private let nearDiningSheetViewController: NearDiningSheetViewController
     private let saveDiningSheetViewController: SaveDiningSheetViewController
+    private let diningInfoSheetViewController: DiningInfoSheetViewController
     private var isSaveDiningSheetPresented = false
     private lazy var mapController = CompanionMapController(mapView: diningMapView.mapView, configuration: viewModel.output.mapConfiguration)
     private var bottomSheetHostView: UIView { tabBarController?.view ?? view }
@@ -25,9 +26,15 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
 
     // MARK: - Initializer
     
-    init(viewModel: DiningMapViewModel, nearDiningSheetViewController: NearDiningSheetViewController, saveDiningSheetViewController: SaveDiningSheetViewController) {
+    init(
+        viewModel: DiningMapViewModel,
+        nearDiningSheetViewController: NearDiningSheetViewController,
+        saveDiningSheetViewController: SaveDiningSheetViewController,
+        diningInfoSheetViewController: DiningInfoSheetViewController
+    ) {
         self.nearDiningSheetViewController = nearDiningSheetViewController
         self.saveDiningSheetViewController = saveDiningSheetViewController
+        self.diningInfoSheetViewController = diningInfoSheetViewController
         super.init(viewModel: viewModel)
     }
 
@@ -69,7 +76,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         bottomSheetViewController.didMove(toParent: parentViewController)
 
         bottomSheetViewController.onStateChange = { [weak self] _, state in
-            let shouldHideMapButtons = state.level == .expanded
+            let shouldHideMapButtons = state.level == .expanded && state.content != .diningInfo
             self?.diningMapView.currentLocationButton.isHidden = shouldHideMapButtons
             self?.diningMapView.bookmarkButton.isHidden = shouldHideMapButtons
             self?.updateBottomSheetLayer(for: state)
@@ -77,6 +84,21 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         bottomSheetViewController.setContentViewController(nearDiningSheetViewController)
         bottomSheetViewController.setState(content: .diningMapList, level: .standard, animated: false)
         bottomSheetViewController.setTrailingOverlayViews(lowerView: diningMapView.currentLocationButton, upperView: diningMapView.bookmarkButton)
+
+        nearDiningSheetViewController.onRestaurantSelected = { [weak self] item in
+            self?.showDiningInfoSheet(for: item)
+        }
+        saveDiningSheetViewController.onRestaurantSelected = { [weak self] item in
+            self?.showDiningInfoSheet(for: item)
+        }
+        diningInfoSheetViewController.onClose = { [weak self] in
+            guard let self else { return }
+            if isSaveDiningSheetPresented {
+                showSaveDiningSheet()
+            } else {
+                showNearDiningSheet()
+            }
+        }
     }
 
     override func setAddTarget() {
@@ -107,6 +129,13 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         setTabBarHidden(false, animated: animated)
         bottomSheetViewController.setContentViewController(nearDiningSheetViewController)
         bottomSheetViewController.setState(content: .diningMapList, animated: animated)
+    }
+
+    private func showDiningInfoSheet(for item: NearDiningCellItem, animated: Bool = true) {
+        setTabBarHidden(true, animated: animated)
+        diningInfoSheetViewController.configure(with: item)
+        bottomSheetViewController.setContentViewController(diningInfoSheetViewController)
+        bottomSheetViewController.setState(content: .diningInfo, animated: animated)
     }
 
     private func hideBottomSheetAfterTransition() {
@@ -149,7 +178,9 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     private func updateBottomSheetLayer(for state: BottomSheetState) {
         bottomSheetHostView.bringSubviewToFront(bottomSheetViewController.view)
 
-        if state.content != .savedRestaurantList, let tabBar = tabBarController?.tabBar {
+        if state.content != .savedRestaurantList,
+           state.content != .diningInfo,
+           let tabBar = tabBarController?.tabBar {
             bottomSheetHostView.bringSubviewToFront(tabBar)
         }
     }

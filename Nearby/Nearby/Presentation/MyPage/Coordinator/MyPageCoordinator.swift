@@ -81,7 +81,7 @@ private extension MyPageCoordinator {
 
             switch requestItem.displayType {
             case .sentAccepted:
-                showCompanionRequestAccept(hostName: requestItem.nickname)
+                showCompanionRequestAccept()
 
             case .sentRejected:
                 showCompanionRequestDecline()
@@ -129,10 +129,10 @@ private extension MyPageCoordinator {
         navigationController.pushViewController(writtenPostViewController, animated: true)
     }
 
-    func showCompanionRequestAccept(hostName: String) {
-        // TODO: - 서버 연동 시 알림 아이템의 locationName으로 교체
+    func showCompanionRequestAccept() {
+        // TODO: - 알림 서버 연동 시 알림 아이템의 applicationId로 교체
         makeChildNotificationCoordinator()
-            .showCompanionRequestAccept(hostName: hostName, locationName: "시우다드 콘달")
+            .showCompanionRequestAccept(applicationId: 3)
     }
 
     func showCompanionRequestDecline() {
@@ -141,7 +141,7 @@ private extension MyPageCoordinator {
     }
 
     func showHostRequestRecieve() {
-        // TODO: - 서버 연동 시 알림 아이템의 applicationId로 교체
+        // TODO: - 알림 서버 연동 시 알림 아이템의 applicationId로 교체
         makeChildNotificationCoordinator()
             .showHostRequestRecieve(applicationId: 3)
     }

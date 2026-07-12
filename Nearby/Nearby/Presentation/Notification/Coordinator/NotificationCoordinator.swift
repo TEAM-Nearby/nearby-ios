@@ -40,8 +40,8 @@ extension NotificationCoordinator: Coordinator {
             guard let self else { return }
             switch requestItem.displayType {
             case .sentAccepted:
-                // TODO: - 서버 연동 시 알림 아이템 값으로 교체
-                self.showCompanionRequestAccept(hostName: requestItem.nickname, locationName: "시우다드 콘달")
+                // TODO: - requestItem.applicationId로 교체
+                self.showCompanionRequestAccept(applicationId: 3)
             case .sentRejected:
                 self.showCompanionRequestDecline()
             case .receivedPending:
@@ -125,11 +125,10 @@ extension NotificationCoordinator: Coordinator {
         return matchingCoordinator
     }
     
-    func showCompanionRequestAccept(hostName: String, locationName: String) {
+    func showCompanionRequestAccept(applicationId: Int) {
         let viewController = diContainer.makeCompanionRequestAcceptViewController(
             coordinator: self,
-            hostName: hostName,
-            locationName: locationName
+            applicationId: applicationId
         )
         navigationController.pushViewController(viewController, animated: true)
     }

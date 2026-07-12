@@ -133,6 +133,10 @@ final class AppDIContainer {
         HostProfileViewModel()
     }
     
+    func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
+        PhoneVerificationViewModel()
+    }
+    
     // MARK: - ViewControllers
     
     func makeHostProfileViewController() -> HostProfileViewController {
@@ -336,6 +340,12 @@ final class AppDIContainer {
         )
         viewController.coordinator = coordinator
         return viewController
+    }
+    
+    func makePhoneVerificationViewController() -> PhoneVerificationViewController {
+        PhoneVerificationViewController(
+            viewModel: makePhoneVerificationViewModel()
+        )
     }
 }
 

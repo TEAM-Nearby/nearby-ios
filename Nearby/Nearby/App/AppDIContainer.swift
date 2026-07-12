@@ -336,11 +336,7 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeCompanionRequestAcceptViewController(
-        coordinator: NotificationCoordinator,
-        hostName: String,
-        locationName: String
-    ) -> UIViewController {
+    func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
         let viewController = CompanionRequestAcceptViewController(
             viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
         )
@@ -348,12 +344,7 @@ final class AppDIContainer {
         return viewController
     }
 
-    func makeHostRequestAllowViewController(
-        coordinator: NotificationCoordinator,
-        applicantName: String,
-        locationName: String,
-        postType: PostType
-    ) -> UIViewController {
+    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, locationName: String, postType: PostType) -> UIViewController {
         let viewController = HostRequestAllowViewController(
             viewModel: makeHostRequestAllowViewModel(
                 applicantName: applicantName,
@@ -363,6 +354,10 @@ final class AppDIContainer {
         )
         viewController.coordinator = coordinator
         return viewController
+    }
+    
+    func makeNotificationCoordinator(navigationController: UINavigationController) -> NotificationCoordinator {
+        NotificationCoordinator(navigationController: navigationController, diContainer: self)
     }
 }
 

@@ -38,11 +38,7 @@ final class HostProfileView: BaseView {
     private let nicknameLabel = UILabel()
     private let genderLabel = UILabel()
 
-    private let verificationChip = NearbyChipButton(
-        style: .badgeVerification,
-        title: "본인인증 완료",
-        horizontalInset: 22
-    )
+    private let verificationChip = NearbyChipButton(style: .badgeVerification, title: "본인인증 완료", horizontalInset: 22)
 
     private let personalityChipContainerView = UIView()
     private let personalityFirstLineStackView = UIStackView()

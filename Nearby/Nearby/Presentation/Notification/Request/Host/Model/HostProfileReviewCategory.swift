@@ -9,4 +9,5 @@ import Foundation
 
 enum HostProfileReviewCategory {
     case communication
-    case punctuality }
+    case punctuality
+}

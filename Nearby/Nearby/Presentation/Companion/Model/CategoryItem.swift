@@ -15,6 +15,17 @@ struct CategoryItem {
     var isRestaurant: Bool {
         title == "식당"
     }
+
+    var serverKey: String {
+        switch title {
+        case "식당": return "RESTAURANT"
+        case "카페": return "CAFE"
+        case "펍": return "PUB"
+        case "박물관": return "MUSEUM"
+        case "사진 명소": return "PHOTO_SPOT"
+        default: return "OTHER"
+        }
+    }
     
     static let categoryItems: [CategoryItem] = [
         CategoryItem(title: "식당", icon: .icRestaurant, iconColor: .chipIcOrange),

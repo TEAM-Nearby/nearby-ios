@@ -55,6 +55,10 @@ final class AppDIContainer {
     private func makeAuthService() -> AuthService {
         DefaultAuthService(networkProvider: networkProvider)
     }
+    
+    private func makeMeetingService() -> MeetingService {
+        DefaultMeetingService(networkProvider: networkProvider)
+    }
 
     // MARK: - Repositories
 
@@ -64,6 +68,10 @@ final class AppDIContainer {
             authService: makeAuthService(),
             tokenStorage: tokenStorage
         )
+    }
+    
+    private func makeMeetingRepository() -> MeetingRepository {
+        DefaultMeetingRepository(meetingService: makeMeetingService())
     }
 
     // MARK: - ViewModels
@@ -105,7 +113,7 @@ final class AppDIContainer {
     }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
-        MeetingTabViewModel()
+        MeetingTabViewModel(repository: makeMeetingRepository())
     }
     
     func makeMatchingViewModel() -> MatchingViewModel {

@@ -67,7 +67,6 @@ final class MeetingTabViewModel: BaseViewModelType {
         }
     }
     
-    // 인증 가능 시간(±1시간)은 클라이언트에서 판정하므로, 시간이 지나면 셀이 다시 그려지도록 주기적으로 갱신
     private func startTimer() {
         Timer.publish(every: 60, on: .main, in: .common)
             .autoconnect()

@@ -109,7 +109,7 @@ private extension CompanionDetailResponseDTO {
             googlePlaceId: googlePlaceId,
             placeLatitude: previousState.placeLatitude,
             placeLongitude: previousState.placeLongitude,
-            meetingTimeText: previousState.meetingTimeText,
+            meetingTimeText: detailMeetingTimeTitle ?? previousState.meetingTimeText,
             participantSummaryText: "\(participantCount)/\(maxParticipants)명",
             participantCount: participantCount,
             content: content
@@ -126,5 +126,50 @@ private extension CompanionDetailResponseDTO {
         let components = time.split(separator: ":")
         guard components.count == 2 else { return String(time) }
         return "\(components[0])시 \(components[1])분"
+    }
+
+    var detailMeetingTimeTitle: String? {
+        switch meetingTimeType {
+        case "NOW":
+            return "지금 바로"
+        case "UNDECIDED":
+            return "시간 미정"
+        default:
+            guard let meetingDate else { return nil }
+
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "ko_KR")
+            formatter.timeZone = .current
+            formatter.dateFormat = "M월 d일 (E) a h시 m분"
+            return formatter.string(from: meetingDate)
+        }
+    }
+
+    var meetingDate: Date? {
+        guard let meetingAt else { return nil }
+
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = isoFormatter.date(from: meetingAt) {
+            return date
+        }
+
+        isoFormatter.formatOptions = [.withInternetDateTime]
+        if let date = isoFormatter.date(from: meetingAt) {
+            return date
+        }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .current
+
+        for format in ["yyyy-MM-dd'T'HH:mm:ss.SSSSSS", "yyyy-MM-dd'T'HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm"] {
+            formatter.dateFormat = format
+            if let date = formatter.date(from: meetingAt) {
+                return date
+            }
+        }
+
+        return nil
     }
 }

@@ -28,8 +28,8 @@ extension SpecificCompanionCellItem {
             genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
             writtenTime: dto.createdAgoText,
             content: dto.contentPreview,
-            meetingTime: dto.meetingTimeTitle,
-            closedTime: "",
+            meetingTime: dto.specificMeetingTimeTitle,
+            closedTime: dto.closingTimeTitle,
             participantImages: Array(repeating: nil, count: max(dto.participantCount, 1)),
             statusText: dto.participantSummaryText,
             detailState: CompanionDetailState(
@@ -43,21 +43,11 @@ extension SpecificCompanionCellItem {
                 googlePlaceId: dto.place.googlePlaceId,
                 placeLatitude: dto.place.latitude,
                 placeLongitude: dto.place.longitude,
-                meetingTimeText: dto.meetingTimeTitle,
+                meetingTimeText: dto.specificMeetingTimeTitle,
                 participantSummaryText: dto.participantSummaryText,
                 participantCount: dto.participantCount,
                 content: dto.contentPreview
             )
         )
-    }
-}
-
-private extension CompanionDTO {
-    var meetingTimeTitle: String {
-        switch meetingTimeType {
-        case "NOW": return "지금 바로"
-        case "UNDECIDED": return "시간 미정"
-        default: return meetingAtText
-        }
     }
 }

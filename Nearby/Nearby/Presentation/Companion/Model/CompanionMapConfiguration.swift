@@ -51,7 +51,7 @@ extension CompanionMapMarkerData {
             nickname: dto.host.nickname,
             written: dto.createdAgoText,
             place: dto.place.name,
-            date: dto.meetingAtText
+            date: dto.nearMeetingTimeTitle
         )
     }
 }

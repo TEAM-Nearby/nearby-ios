@@ -29,7 +29,7 @@ extension NearCompanionCellItem {
             placeName: dto.place.name,
             writtenTime: dto.createdAgoText,
             content: dto.contentPreview,
-            schedule: dto.meetingAtText,
+            schedule: dto.nearMeetingTimeTitle,
             participantImages: Array(
                 repeating: nil,
                 count: max(dto.participantCount, 1)
@@ -46,7 +46,7 @@ extension NearCompanionCellItem {
                 googlePlaceId: dto.place.googlePlaceId,
                 placeLatitude: dto.place.latitude,
                 placeLongitude: dto.place.longitude,
-                meetingTimeText: dto.meetingAtText,
+                meetingTimeText: dto.nearMeetingTimeTitle,
                 participantSummaryText: dto.participantSummaryText,
                 participantCount: dto.participantCount,
                 content: dto.contentPreview

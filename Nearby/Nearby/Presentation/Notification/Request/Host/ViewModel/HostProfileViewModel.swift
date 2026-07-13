@@ -6,7 +6,7 @@
 //
 
 import Combine
-import UIKit
+import Foundation
 
 final class HostProfileViewModel: BaseViewModelType {
 
@@ -25,10 +25,11 @@ final class HostProfileViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<DisplayData, Never>()
         let selectedReviewState = PassthroughSubject<SelectedReviewState, Never>()
         let backButtonDidTap = PassthroughSubject<Void, Never>()
+        let error = PassthroughSubject<Error, Never>()
     }
 
     struct DisplayData {
-        let profileImage: UIImage?
+        let profileImageURL: URL?
         let nickname: String
         let gender: String
         let personalityKeywords: [String]
@@ -49,13 +50,25 @@ final class HostProfileViewModel: BaseViewModelType {
 
     private var selectedCommunicationIndexes = Set<Int>()
     private var selectedPunctualityIndexes = Set<Int>()
+    private let profileId: Int
+    private let repository: CompanionProfileRepository
+    private var fetchTask: Task<Void, Never>?
+
+    init(profileId: Int, repository: CompanionProfileRepository) {
+        self.profileId = profileId
+        self.repository = repository
+    }
+
+    deinit {
+        fetchTask?.cancel()
+    }
 
     // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            sendDisplayData()
+            fetchProfile()
             sendSelectedReviewState()
 
         case let .communicationChipDidTap(index):
@@ -74,40 +87,22 @@ final class HostProfileViewModel: BaseViewModelType {
 
 private extension HostProfileViewModel {
 
-    func sendDisplayData() {
-        let displayData = DisplayData(
-            profileImage: .imgProfileDefault,
-            nickname: "조예원",
-            gender: "여성",
-            personalityKeywords: [
-                "내향형",
-                "외향형",
-                "밝은",
-                "새벽형",
-                "대화 좋아",
-                "자연힐링"
-            ],
-            mannerScore: 4,
-            introduction:
-            """
-            본인 소개글
-            본인 소개글본인 소개글
-            본인 소개글
-            """,
-            communicationKeywords: [
-                "연락이 빨라요",
-                "매너가 좋아요",
-                "친절하고 다정해요",
-                "대화가 잘 통해요"
-            ],
-            punctualityKeywords: [
-                "시간 약속을 잘 지켜요",
-                "늦어도 미리 알려줘요",
-                "약속 시간보다 일찍 와요"
-            ]
-        )
+    func fetchProfile() {
+        fetchTask?.cancel()
+        fetchTask = Task { [weak self] in
+            guard let self else { return }
 
-        output.displayData.send(displayData)
+            do {
+                let response = try await repository.fetchDetail(profileId: profileId)
+                guard !Task.isCancelled else { return }
+                output.displayData.send(response.displayData)
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+                output.error.send(error)
+            }
+        }
     }
 
     func toggleCommunicationChip(at index: Int) {
@@ -137,5 +132,20 @@ private extension HostProfileViewModel {
         )
 
         output.selectedReviewState.send(state)
+    }
+}
+
+private extension CompanionProfileResponseDTO {
+    var displayData: HostProfileViewModel.DisplayData {
+        HostProfileViewModel.DisplayData(
+            profileImageURL: profileImageUrl.flatMap(URL.init(string:)),
+            nickname: nickname,
+            gender: gender == "FEMALE" ? "여성" : "남성",
+            personalityKeywords: TravelStyleKeyword.titles(for: keywords),
+            mannerScore: Int(mannerScore.rounded()),
+            introduction: intro ?? "",
+            communicationKeywords: [],
+            punctualityKeywords: []
+        )
     }
 }

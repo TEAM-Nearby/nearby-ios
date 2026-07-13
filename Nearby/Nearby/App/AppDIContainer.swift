@@ -72,6 +72,10 @@ final class AppDIContainer {
         DefaultCompanionDetailService(networkProvider: networkProvider)
     }
 
+    private func makeCompanionProfileService() -> CompanionProfileService {
+        DefaultCompanionProfileService(networkProvider: networkProvider)
+    }
+
     private func makeMatchedCompanionListService() -> MatchedCompanionListService {
         DefaultMatchedCompanionListService(networkProvider: networkProvider)
     }
@@ -95,6 +99,10 @@ final class AppDIContainer {
 
     private func makeCompanionDetailRepository() -> CompanionDetailRepository {
         DefaultCompanionDetailRepository(service: makeCompanionDetailService())
+    }
+
+    private func makeCompanionProfileRepository() -> CompanionProfileRepository {
+        DefaultCompanionProfileRepository(service: makeCompanionProfileService())
     }
 
     private func makeMatchedCompanionListRepository() -> MatchedCompanionListRepository {
@@ -132,7 +140,7 @@ final class AppDIContainer {
     }
     
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
-        CompanionDetailViewModel(state: state, repository: makeCompanionDetailRepository())
+        CompanionDetailViewModel(state: state, repository: makeCompanionDetailRepository(), currentUserId: tokenStorage.currentUserId)
     }
     
     func makeNearCompanionSheetViewModel() -> NearCompanionSheetViewModel {
@@ -210,14 +218,12 @@ final class AppDIContainer {
         HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
     }
     
-    func makeHostProfileViewModel() -> HostProfileViewModel {
-        HostProfileViewModel()
+    func makeHostProfileViewModel(profileId: Int) -> HostProfileViewModel {
+        HostProfileViewModel(profileId: profileId, repository: makeCompanionProfileRepository())
     }
   
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
-        let service = DefaultAuthService(networkProvider: networkProvider)
         let repository = makeAuthRepository()
-
         return PhoneVerificationViewModel(authRepository: repository)
     }
     func makeHostRequestRecieveViewModel(applicantName: String, locationName: String) -> HostRequestRecieveViewModel {
@@ -230,12 +236,9 @@ final class AppDIContainer {
         SplashViewController()
     }
     
-    func makeHostProfileViewController() -> HostProfileViewController {
-        let viewModel = makeHostProfileViewModel()
-        
-        return HostProfileViewController(
-            viewModel: viewModel
-        )
+    func makeHostProfileViewController(profileId: Int) -> HostProfileViewController {
+        let viewModel = makeHostProfileViewModel(profileId: profileId)
+        return HostProfileViewController(viewModel: viewModel)
     }
     
     func makeLoginViewController() -> LoginViewController {

@@ -32,56 +32,68 @@ final class AppCoordinator {
 
 extension AppCoordinator: Coordinator {
     func start() {
-        showMainTab()
+        if diContainer.hasStoredSession {
+            showMainTab()
+        } else {
+            showLogin()
+        }
     }
-     
-     func finish() {
-         childCoordinators.removeAll()
-     }
+    
+    func finish() {
+        childCoordinators.removeAll()
+    }
     
     // MARK: - Method
     
     func showMainTab() {
         let mainTabCoordinator = diContainer.makeMainTabCoordinator()
         mainTabCoordinator.parentCoordinator = self
-
+        
         mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in
             guard let self else { return }
-
+            
             if let mainTabCoordinator { removeChildCoordinator(mainTabCoordinator) }
-
+            
             showLogin()
         }
-
+        
         addChildCoordinator(mainTabCoordinator)
-
+        
         mainTabCoordinator.start()
-
+        
         window.rootViewController = mainTabCoordinator.rootViewController
         window.makeKeyAndVisible()
     }
     
     func showLogin() {
-        let loginViewController = diContainer.makeLoginViewController()
-        
+        let loginViewController =
+            diContainer.makeLoginViewController()
+
         loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in
             guard let self else { return }
 
             switch onboardingStatus {
-            case .started: showPhoneVerification()
-            case .phoneVerified: showPhoneVerification()
-            case .completed: showMainTab()
+            case .started:
+                showPhoneVerification()
+
+            case .phoneVerified:
+                showPhoneVerification()
+
+            case .completed:
+                showMainTab()
             }
         }
-        
+
         let navigationController = UINavigationController(rootViewController: loginViewController)
+
+        navigationController.setNavigationBarHidden(true, animated: false)
 
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
     }
     
     // TODO: - 지워주기 (서연)
-
+    
     private func showHostProfileTest() {
         let hostProfileViewController =
         diContainer.makeHostProfileViewController()

@@ -33,7 +33,7 @@ final class PhoneVerificationViewModel: BaseViewModelType {
 
     var output: Output
 
-    private let phoneVerificationRepository: PhoneVerificationRepository
+    private let authRepository: AuthRepository
 
     private var isVerificationMode = false
     private var phoneNumber = ""
@@ -43,8 +43,8 @@ final class PhoneVerificationViewModel: BaseViewModelType {
 
     // MARK: - Initializer
 
-    init(phoneVerificationRepository: PhoneVerificationRepository) {
-        self.phoneVerificationRepository = phoneVerificationRepository
+    init(authRepository: AuthRepository) {
+        self.authRepository = authRepository
         self.output = Output()
     }
 
@@ -90,7 +90,7 @@ private extension PhoneVerificationViewModel {
             }
 
             do {
-                let response = try await phoneVerificationRepository.sendVerificationCode(phoneNumber: phoneNumber)
+                let response = try await authRepository.sendVerificationCode(phoneNumber: phoneNumber)
 
                 phoneVerificationID = response.phoneVerificationId
                 expiresIn = response.expiresIn
@@ -174,7 +174,7 @@ private extension PhoneVerificationViewModel {
             }
 
             do {
-                let response = try await phoneVerificationRepository.confirmVerificationCode(
+                let response = try await authRepository.confirmVerificationCode(
                     phoneVerificationId: phoneVerificationID,
                     verificationCode: verificationCode
                 )

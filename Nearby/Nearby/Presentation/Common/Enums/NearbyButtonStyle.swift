@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum NearbyButtonStyle {
+enum NearbyButtonStyle: Equatable {
     case primary
     case disabled
     case allowed

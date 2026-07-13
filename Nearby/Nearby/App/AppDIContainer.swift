@@ -12,8 +12,11 @@ final class AppDIContainer {
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
     
     var hasStoredSession: Bool {
-        guard let accessToken = tokenStorage.accessToken else { return false }
-        return !accessToken.isEmpty
+        guard let accessToken = tokenStorage.accessToken, let refreshToken = tokenStorage.refreshToken else {
+            return false
+        }
+
+        return !accessToken.isEmpty && !refreshToken.isEmpty
     }
     
     // MARK: - Coordinators
@@ -106,7 +109,7 @@ final class AppDIContainer {
     }
     
     func makeCompanionProfileViewModel() -> CompanionProfileViewModel {
-        CompanionProfileViewModel()
+        CompanionProfileViewModel(authRepository: makeAuthRepository())
     }
 
     func makeDiningMapViewModel() -> DiningMapViewModel {

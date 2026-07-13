@@ -1,10 +1,10 @@
 //
-//  MetingRequestDTO.swift
+//  MeetingRequestDTO.swift
 //  Nearby
 //
 //  Created by h2e on 7/13/26.
 //
 
-struct MetingRequestDTO {
+struct MeetingRequestDTO {
     
 }

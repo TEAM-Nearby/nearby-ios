@@ -57,12 +57,7 @@ final class MeetingTabViewModel: BaseViewModelType {
         Task {
             do {
                 let meetings = try await repository.fetchMeetingList()
-                let items = meetings
-                    .map(makeMeetingItem)
-                // TODO: - 노쇼 건 클라에서 확인?
-                    .filter {
-                        !$0.isExpiredWithoutCheckIn
-                    }
+                let items = meetings.map(makeMeetingItem)
                 output.items.send(items)
             } catch {
                 AppLogger.error(error)

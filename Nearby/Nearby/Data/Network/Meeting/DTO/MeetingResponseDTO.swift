@@ -28,3 +28,18 @@ struct MeetingResponseDTO: Decodable {
         let gender: NearbyGender
     }
 }
+
+struct MeetingDetailResponseDTO: Decodable {
+    let meetingId: Int
+    let currentUserRole: NearbyUserType
+    let hostId: Int
+    let hostGender: NearbyGender
+    let hostProfileImageUrl: String?
+    let hostNickname: String
+    let placeName: String
+    let meetingAt: String
+    let meetingTimeType: PostType
+    let currentUserCheckedIn: Bool
+    let canCacelMeeting: Bool
+    let meetingStatus: String
+}

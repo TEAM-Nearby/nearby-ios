@@ -10,6 +10,7 @@ import Alamofire
 enum ReviewTarget {
     case create(meetingId: Int, request: CreateReviewRequestDTO)
     case fetchTargets(meetingId: Int)
+    case complete(meetingId: Int)
 }
 
 extension ReviewTarget: BaseTargetType {
@@ -19,6 +20,8 @@ extension ReviewTarget: BaseTargetType {
             return "/api/companion-meetings/\(meetingId)/reviews"
         case .fetchTargets(let meetingId):
             return "/api/companion-meetings/\(meetingId)/review-targets"
+        case .complete(let meetingId):
+            return "/api/companion-meetings/\(meetingId)/complete"
         }
     }
 
@@ -28,6 +31,8 @@ extension ReviewTarget: BaseTargetType {
             return .post
         case .fetchTargets:
             return .get
+        case .complete:
+            return .patch
         }
     }
 
@@ -39,7 +44,7 @@ extension ReviewTarget: BaseTargetType {
                 "rating": request.rating,
                 "keywords": request.keywords
             ]
-        case .fetchTargets:
+        case .fetchTargets, .complete:
             return nil
         }
     }

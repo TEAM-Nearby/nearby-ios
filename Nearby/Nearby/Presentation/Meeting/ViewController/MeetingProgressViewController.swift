@@ -79,6 +79,8 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
                 let mockType: NearbyUserType = .host
                 let mockItem = ReviewItem(
                     id: 1,
+                    meetingId: 3,
+                    revieweeUserId: 2,
                     image: .imgProfileDefault,
                     name: "정지영",
                     information: "바르셀로나 · 2026년 6월 18일"

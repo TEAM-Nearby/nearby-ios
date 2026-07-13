@@ -63,8 +63,8 @@ final class HostReviewListViewModel: BaseViewModelType {
                 )
             )
             output.items.send([
-                ReviewItem(id: 1, image: .imgProfileDefault, name: "정지영", information: "바르셀로나 · 2026년 6월 18일"),
-                ReviewItem(id: 2, image: .imgProfileDefault, name: "장현준", information: "바르셀로나 · 2026년 6월 18일")
+                ReviewItem(id: 1, meetingId: 3, revieweeUserId: 2, image: .imgProfileDefault, name: "정지영", information: "바르셀로나 · 2026년 6월 18일"),
+                ReviewItem(id: 2, meetingId: 3, revieweeUserId: 3, image: .imgProfileDefault, name: "장현준", information: "바르셀로나 · 2026년 6월 18일")
             ])
             
         case .profileDidTap(let item):

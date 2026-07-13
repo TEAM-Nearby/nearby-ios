@@ -72,12 +72,10 @@ final class AppDIContainer {
     private func makeRecruitCompanionService() -> RecruitCompanionService {
         DefaultRecruitCompanionService(networkProvider: networkProvider)
     }
-
     
     private func makeCompanionDetailService() -> CompanionDetailService {
         DefaultCompanionDetailService(networkProvider: networkProvider)
     }
-    
     
     private func makeMeetingService() -> MeetingService {
         DefaultMeetingService(networkProvider: networkProvider)
@@ -119,8 +117,6 @@ final class AppDIContainer {
     func makeApplicantCompanionRepository() -> ApplicantCompanionRepository {
         DefaultApplicantCompanionRepository(applicantCompanionService: makeApplicantCompanionService())
     }
-    
-
     
     private func makeCompanionDetailRepository() -> CompanionDetailRepository {
         DefaultCompanionDetailRepository(service: makeCompanionDetailService())
@@ -505,5 +501,4 @@ final class AppDIContainer {
 
         return PhoneVerificationViewController(viewModel: viewModel)
     }
-    
 }

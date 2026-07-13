@@ -91,10 +91,6 @@ private extension MainTabCoordinator {
             configureMyPageCoordinator(
                 navigationController: navigationController
             )
-            
-        default:
-            let viewController = makeRootViewController(for: item)
-            navigationController.setViewControllers([viewController], animated: false)
         }
     }
 

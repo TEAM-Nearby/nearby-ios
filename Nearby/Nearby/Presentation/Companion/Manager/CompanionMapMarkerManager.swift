@@ -139,6 +139,18 @@ final class CompanionMapMarkerManager {
         entries.append(Entry(marker: marker, content: content))
         return marker
     }
+
+    func replaceCompanionMarkers(with items: [CompanionMapMarkerData]) {
+        entries
+            .filter { $0.content.style == .companion }
+            .forEach { $0.marker.map = nil }
+        entries.removeAll { $0.content.style == .companion }
+
+        items.forEach { item in
+            addCompanionMarker(at: item.coordinate, nickname: item.nickname, written: item.written,
+                               place: item.place, date: item.date)
+        }
+    }
     
     func updateLevel(for zoom: Float) {
         let newLevel = CompanionMarkerLevel(zoom: zoom, configuration: configuration)

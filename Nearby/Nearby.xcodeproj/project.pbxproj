@@ -18,6 +18,8 @@
 		771213302FF43B3700D688FD /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132F2FF43B3700D688FD /* GoogleMaps */; };
 		77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 77C74AF12FF6EEF200604CBC /* .swiftlint.yml */; };
 		D4CDA64F30036AE900FB3101 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D4CDA64E30036AE900FB3101 /* Config.xcconfig */; };
+		D4CDCD253003E21700FB3101 /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = D4CDCD243003E21700FB3101 /* GooglePlaces */; };
+		D4CDCD273003E21700FB3101 /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D4CDCD263003E21700FB3101 /* GooglePlacesSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,10 +32,11 @@
 		771209E72FF423C900D688FD /* Exceptions for "Nearby" folder in "Nearby" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Data/Network/Companion/DTO/.gitkeep,
 				Data/Network/DiningMap/DTO/.gitkeep,
 				Data/Network/Matching/DTO/.gitkeep,
+				Data/Network/Metting/DTO/.gitkeep,
 				Data/Network/MyPage/DTO/.gitkeep,
+				Data/Network/Notification/DTO/.gitkeep,
 				Data/Network/RecruitCompanion/DTO/.gitkeep,
 				Data/Repository/Mock/.gitkeep,
 				Presentation/Notification/View/.gitkeep,
@@ -65,9 +68,11 @@
 				7712132B2FF43A5B00D688FD /* KakaoSDKShare in Frameworks */,
 				77120FD52FF434AE00D688FD /* Kingfisher in Frameworks */,
 				77120FD22FF4349F00D688FD /* SnapKit in Frameworks */,
+				D4CDCD253003E21700FB3101 /* GooglePlaces in Frameworks */,
 				77120FCC2FF4348500D688FD /* Alamofire in Frameworks */,
 				7712132D2FF43A5B00D688FD /* KakaoSDKUser in Frameworks */,
 				771213302FF43B3700D688FD /* GoogleMaps in Frameworks */,
+				D4CDCD273003E21700FB3101 /* GooglePlacesSwift in Frameworks */,
 				77120FCF2FF4348E00D688FD /* Then in Frameworks */,
 				771213292FF43A5B00D688FD /* KakaoSDKCommon in Frameworks */,
 				771213272FF43A5B00D688FD /* KakaoSDKAuth in Frameworks */,
@@ -125,6 +130,8 @@
 				7712132A2FF43A5B00D688FD /* KakaoSDKShare */,
 				7712132C2FF43A5B00D688FD /* KakaoSDKUser */,
 				7712132F2FF43B3700D688FD /* GoogleMaps */,
+				D4CDCD243003E21700FB3101 /* GooglePlaces */,
+				D4CDCD263003E21700FB3101 /* GooglePlacesSwift */,
 			);
 			productName = Nearby;
 			productReference = 771209D52FF423C700D688FD /* Nearby.app */;
@@ -161,6 +168,7 @@
 				77120FD32FF434AE00D688FD /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				771213252FF43A5B00D688FD /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 				7712132E2FF43B3700D688FD /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+				D4CDCD233003E21700FB3101 /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 771209D62FF423C700D688FD /* Products */;
@@ -487,6 +495,14 @@
 				minimumVersion = 10.15.0;
 			};
 		};
+		D4CDCD233003E21700FB3101 /* XCRemoteSwiftPackageReference "ios-places-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-places-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.15.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -534,6 +550,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7712132E2FF43B3700D688FD /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
 			productName = GoogleMaps;
+		};
+		D4CDCD243003E21700FB3101 /* GooglePlaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4CDCD233003E21700FB3101 /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlaces;
+		};
+		D4CDCD263003E21700FB3101 /* GooglePlacesSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4CDCD233003E21700FB3101 /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlacesSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

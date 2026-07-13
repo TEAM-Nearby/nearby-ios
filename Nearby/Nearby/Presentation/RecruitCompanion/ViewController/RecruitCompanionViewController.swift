@@ -13,6 +13,7 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
     // MARK: - Properties
 
     weak var coordinator: CompanionCoordinator?
+
     private let rootView = RecruitCompanionView()
 
     // MARK: - Life Cycles
@@ -23,8 +24,16 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         navigationController?.setNavigationBarHidden(true, animated: false)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        tabBarController?.tabBar.isHidden = false
+        tabBarController?.tabBar.alpha = 1
+        tabBarController?.tabBar.transform = .identity
     }
 
     // MARK: - Custom Methods
@@ -33,32 +42,45 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
         rootView.backButtonAction = { [weak self] in
             self?.viewModel.action(.backButtonDidTap)
         }
+
         rootView.timeTypeDidSelect = { [weak self] type in
             self?.viewModel.action(.timeTypeDidSelect(type))
         }
+
         rootView.meetingAtDidChange = { [weak self] date in
             self?.viewModel.action(.meetingAtDidChange(date))
         }
+
         rootView.participantCountDidChange = { [weak self] count in
             self?.viewModel.action(.participantCountDidChange(count))
         }
+
         rootView.styleKeywordDidTap = { [weak self] keyword in
             self?.viewModel.action(.styleKeywordDidTap(keyword))
         }
+
         rootView.placeSearchButtonAction = { [weak self] in
-            self?.viewModel.action(.placeSearchButtonDidTap)
+            self?.view.endEditing(true)
         }
+
         rootView.placeQueryDidChange = { [weak self] query in
             self?.viewModel.action(.placeQueryDidChange(query))
         }
+
         rootView.contentDidChange = { [weak self] content in
             self?.viewModel.action(.contentDidChange(content))
         }
+
         rootView.openChatURLDidChange = { [weak self] url in
             self?.viewModel.action(.openChatURLDidChange(url))
         }
+
         rootView.completeButtonAction = { [weak self] in
             self?.viewModel.action(.completeButtonDidTap)
+        }
+
+        rootView.placeDidSelect = { [weak self] place in
+            self?.viewModel.action(.placeDidSelect(place))
         }
     }
 
@@ -70,10 +92,10 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
             }
             .store(in: &cancellables)
 
-        viewModel.output.showPlaceSearch
+        viewModel.output.placeSuggestions
             .receive(on: DispatchQueue.main)
-            .sink {
-                // TODO: - 장소 검색 화면 연결
+            .sink { [weak self] suggestions in
+                self?.rootView.updatePlaceSuggestions(suggestions)
             }
             .store(in: &cancellables)
 

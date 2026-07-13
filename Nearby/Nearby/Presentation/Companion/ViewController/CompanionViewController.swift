@@ -14,6 +14,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     // MARK: - Properties
 
     private var isSpecificBottomSheetPresented = false
+    private var currentBottomSheetState = BottomSheetState(content: .nearbyCompanionList)
+    private var selectedCategoryIndex: Int? = 0
     private var categoryItems: [CategoryItem] { viewModel.output.categoryItems }
 
     // MARK: - UI Components
@@ -23,8 +25,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private let specificSheetViewController: UIViewController
     private let emptySheetViewController: UIViewController
     private lazy var mapController = CompanionMapController(mapView: companionView.mapView, configuration: viewModel.output.mapConfiguration)
-    private var bottomSheetHostView: UIView { tabBarController?.view ?? view }
-    private var bottomSheetParentViewController: UIViewController { tabBarController ?? self }
+    private var bottomSheetHostView: UIView { view }
+    private var bottomSheetParentViewController: UIViewController { self }
     private var companionView = CompanionView()
 
     // MARK: - Initializer
@@ -53,19 +55,33 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         mapController.onCompanionMarkerTap = { [weak self] in
             self?.showSpecificBottomSheet()
         }
+
+        mapController.onLocationUpdate = { [weak self] coordinate in
+            guard let nearbySheet = self?.nearbySheetViewController as? NearCompanionSheetViewController else { return }
+            nearbySheet.updateLocation(coordinate)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setRecruitCompanionButtonLayout()
+        setTabBarHidden(false)
         mapController.start()
         setBottomSheetHidden(false)
+        companionView.updateMapControls(for: currentBottomSheetState)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        hideBottomSheetAfterTransition()
         mapController.stop()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        companionView.updateMapControls(for: currentBottomSheetState)
+        updateBottomSheetLayer(for: currentBottomSheetState)
     }
 
     // MARK: - Custom Methods
@@ -115,17 +131,13 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private func setRecruitCompanionButtonLayout() {
         let button = companionView.recruitCompanionButton
         bottomSheetHostView.addSubview(button)
+        let bottomInset = (tabBarController?.tabBar.bounds.height ?? 0) + 11
 
         button.snp.remakeConstraints {
             $0.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalToSuperview().inset(bottomInset)
             $0.width.equalTo(142)
             $0.height.equalTo(44)
-
-            if let tabBar = tabBarController?.tabBar {
-                $0.bottom.equalTo(tabBar.snp.top).offset(-11)
-            } else {
-                $0.bottom.equalTo(bottomSheetHostView.safeAreaLayoutGuide).inset(11)
-            }
         }
     }
 
@@ -133,6 +145,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         bottomSheetViewController.onStateChange = { [weak self] _, state in
             guard let self else { return }
 
+            currentBottomSheetState = state
             updateBottomSheetLayer(for: state)
             companionView.updateMapControls(for: state)
         }
@@ -140,6 +153,12 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         if let nearbySheetViewController = nearbySheetViewController as? NearCompanionSheetViewController {
             nearbySheetViewController.onCompanionSelected = { [weak self] item in
                 self?.showCompanionDetail(for: item)
+            }
+            nearbySheetViewController.onSummaryTextChanged = { [weak self] summaryText in
+                self?.companionView.companionCountChip.updateTitle(summaryText)
+            }
+            nearbySheetViewController.onMapMarkersChanged = { [weak self] markers in
+                self?.mapController.updateCompanionMarkers(markers)
             }
         }
 
@@ -190,24 +209,6 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         viewModel.action(.companionDidSelect(item.detailState))
     }
 
-    private func hideBottomSheetAfterTransition() {
-        guard let transitionCoordinator else {
-            setBottomSheetHidden(true)
-            setTabBarHidden(false)
-            return
-        }
-
-        setBottomSheetHidden(true)
-        setTabBarHidden(false)
-
-        transitionCoordinator.animate(alongsideTransition: nil) { [weak self] context in
-            guard context.isCancelled else { return }
-
-            self?.setBottomSheetHidden(false)
-            self?.setTabBarHidden(self?.isSpecificBottomSheetPresented == true)
-        }
-    }
-
     private func setBottomSheetHidden(_ isHidden: Bool) { bottomSheetViewController.view.isHidden = isHidden }
 
     private func setTabBarHidden(_ isHidden: Bool, animated: Bool = false) {
@@ -217,7 +218,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         tabBar.isUserInteractionEnabled = !isHidden
 
         if !isHidden {
-            bottomSheetHostView.bringSubviewToFront(tabBar)
+            tabBar.superview?.bringSubviewToFront(tabBar)
         }
 
         let animations = {
@@ -246,7 +247,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
 
         if state.content != .specificRestaurantCompanionList,
            let tabBar = tabBarController?.tabBar {
-            bottomSheetHostView.bringSubviewToFront(tabBar)
+            tabBar.superview?.bringSubviewToFront(tabBar)
         }
     }
 
@@ -274,7 +275,9 @@ extension CompanionViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(NearbyChipCollectionViewCell.self, for: indexPath)
         let item = categoryItems[indexPath.item]
 
-        cell.configure(style: .category, title: item.title, icon: item.icon, iconColor: item.iconColor)
+        let isSelected = selectedCategoryIndex == indexPath.item
+        cell.configure(style: isSelected ? .companionCategorySelected : .companionCategoryUnselected,
+                       title: item.title, icon: item.icon, iconColor: item.iconColor)
 
         return cell
     }
@@ -285,8 +288,20 @@ extension CompanionViewController: UICollectionViewDataSource {
 extension CompanionViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = categoryItems[indexPath.item]
+        let previousSelectedIndex = selectedCategoryIndex
+        let isDeselecting = previousSelectedIndex == indexPath.item
 
-        if item.isRestaurant {
+        selectedCategoryIndex = isDeselecting ? nil : indexPath.item
+        let changedIndexPaths = Set([previousSelectedIndex, selectedCategoryIndex].compactMap {
+            $0.map { IndexPath(item: $0, section: 0) }
+        })
+        UIView.performWithoutAnimation {
+            collectionView.reloadItems(at: Array(changedIndexPaths))
+        }
+
+        let nearbySheet = nearbySheetViewController as? NearCompanionSheetViewController
+        if isDeselecting || item.isRestaurant {
+            nearbySheet?.updatePlaceCategory("RESTAURANT")
             showNearbyBottomSheet()
         } else {
             showEmptyBottomSheet()
@@ -299,9 +314,15 @@ extension CompanionViewController: UICollectionViewDelegateFlowLayout {
         let iconWidth: CGFloat = 24
         let horizontalInset: CGFloat = 24
 
-        return CGSize(
-            width: ceil(titleWidth + iconWidth + horizontalInset),
-            height: NearbyChipStyle.category.height
-        )
+        return CGSize(width: ceil(titleWidth + iconWidth + horizontalInset), height: NearbyChipStyle.category.height)
+    }
+}
+
+// MARK: - MainTabSwitchPreparing
+
+extension CompanionViewController: MainTabSwitchPreparing {
+    func prepareForTabSwitch() {
+        bottomSheetViewController.view.isHidden = true
+        companionView.recruitCompanionButton.isHidden = true
     }
 }

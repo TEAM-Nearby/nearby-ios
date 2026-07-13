@@ -13,6 +13,8 @@ struct RecruitCompanionDraft {
     var maxParticipants = 2
     var styleKeywords = Set<String>()
     var placeQuery = ""
+    var selectedPlaceID: String?
+    var selectedPlaceAddress = ""
     var content = ""
     var openChatURL = ""
 }

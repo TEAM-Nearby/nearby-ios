@@ -160,10 +160,7 @@ final class RecruitCompanionBottomView: BaseView {
         completeButton.addTarget(self, action: #selector(completeButtonDidTap), for: .touchUpInside)
         placeSearchResultTableView.dataSource = self
         placeSearchResultTableView.delegate = self
-        placeSearchResultTableView.register(
-            PlaceSearchResultCell.self,
-            forCellReuseIdentifier: PlaceSearchResultCell.identifier
-        )
+        placeSearchResultTableView.register(PlaceSearchResultCell.self)
     }
 
     // MARK: - Methods
@@ -255,12 +252,7 @@ extension RecruitCompanionBottomView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: PlaceSearchResultCell.identifier,
-            for: indexPath
-        ) as? PlaceSearchResultCell else {
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(PlaceSearchResultCell.self, for: indexPath)
         cell.configure(with: placeSuggestions[indexPath.row])
         return cell
     }

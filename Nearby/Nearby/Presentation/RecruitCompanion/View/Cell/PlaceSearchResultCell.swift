@@ -9,10 +9,6 @@ import UIKit
 
 final class PlaceSearchResultCell: UITableViewCell {
 
-    // MARK: - Properties
-
-    static let identifier = String(describing: PlaceSearchResultCell.self)
-
     // MARK: - Initializer
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -33,12 +29,8 @@ final class PlaceSearchResultCell: UITableViewCell {
         configuration.secondaryTextProperties.numberOfLines = 1
         contentConfiguration = configuration
     }
-}
 
-// MARK: - Custom Methods
-
-private extension PlaceSearchResultCell {
-    func setStyle() {
+    private func setStyle() {
         selectionStyle = .none
     }
 }

@@ -84,6 +84,10 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     private var placeSearchWorkItem: DispatchWorkItem?
     private var latestPlaceSearchQuery = ""
 
+    private var isFormValid: Bool {
+        return output.state.value.isFormValid
+    }
+
     // MARK: - Initializer
 
     init(
@@ -159,10 +163,6 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     }
 
     // MARK: - Methods
-
-    private var isFormValid: Bool {
-        return output.state.value.isFormValid
-    }
 
     private func publishState() {
         output.state.send(

@@ -9,6 +9,8 @@ import UIKit
 
 struct ReviewItem {
     let id: Int
+    let meetingId: Int
+    let revieweeUserId: Int
     let image: UIImage
     let name: String
     let information: String

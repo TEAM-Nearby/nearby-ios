@@ -66,16 +66,6 @@ private extension NetworkProvider {
     func requestBaseResponse<T: Decodable>(_ target: BaseTargetType, responseType: T.Type, canRefreshToken: Bool) async throws -> BaseResponseDTO<T> {
         let urlRequest = try makeURLRequest(target: target)
 
-        if let body = urlRequest.httpBody,
-           let bodyString = String(data: body, encoding: .utf8) {
-            print("최초 요청 Body:", bodyString)
-        }
-
-        if let httpBody = urlRequest.httpBody,
-           let bodyString = String(data: httpBody, encoding: .utf8) {
-            print("최초 요청 Body:", bodyString)
-        }
-
         let dataResponse = await session.request(urlRequest)
             .serializingData()
             .response
@@ -90,10 +80,6 @@ private extension NetworkProvider {
         
         guard let data = dataResponse.data else {
             throw NetworkError.decoding
-        }
-
-        if let responseString = String(data: data, encoding: .utf8) {
-            print(responseString)
         }
         
         if (200..<300).contains(statusCode) {

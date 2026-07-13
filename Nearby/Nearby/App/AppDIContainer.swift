@@ -123,7 +123,6 @@ final class AppDIContainer {
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
         let googlePlaceService = GooglePlaceService()
         let searchCoordinate = (latitude: 41.389458, longitude: 2.168289)
-
         return RecruitCompanionViewModel(googlePlaceService: googlePlaceService, searchCoordinate: searchCoordinate)
     }
   
@@ -184,14 +183,10 @@ final class AppDIContainer {
     }
   
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
-        let service = DefaultAuthService(
-            networkProvider: networkProvider
-        )
+        let service = DefaultAuthService(networkProvider: networkProvider)
         let repository = makeAuthRepository()
 
-        return PhoneVerificationViewModel(
-            authRepository: repository
-        )
+        return PhoneVerificationViewModel(authRepository: repository)
     }
     func makeHostRequestRecieveViewModel(applicantName: String, locationName: String) -> HostRequestRecieveViewModel {
         HostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName)

@@ -11,7 +11,7 @@ import Alamofire
 
 enum MatchedCompanionListTarget {
     case matches
-    case detail(matchId: Int)
+    case preview(matchId: Int)
 }
 
 extension MatchedCompanionListTarget: BaseTargetType {
@@ -19,8 +19,8 @@ extension MatchedCompanionListTarget: BaseTargetType {
         switch self {
         case .matches:
             return "/api/companion-matches"
-        case .detail(let matchId):
-            return "/api/companion-matches/\(matchId)"
+        case .preview(let matchId):
+            return "/api/companion-matches/\(matchId)/preview"
         }
     }
 

@@ -67,12 +67,13 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
         viewModel.output.showHostAllowView
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showHostRequestAllow(
-                    applicantName: self?.viewModel.applicantNickname ?? "",
+                guard let self else { return }
+                self.coordinator?.showHostRequestAllow(
+                    applicantName: self.viewModel.applicantNickname,
                     applicantProfileImageUrl: self.viewModel.applicantProfileImageUrl,
-                    locationName: self?.viewModel.placeName ?? "",
-                    meetingAt: self?.viewModel.meetingAt ?? "",
-                    matchId: self?.viewModel.matchId,
+                    locationName: self.viewModel.placeName,
+                    meetingAt: self.viewModel.meetingAt,
+                    matchId: self.viewModel.matchId,
                     postType: .scheduled   // TODO: 서버에서 postType 받으면 교체
                 )
             }

@@ -10,14 +10,15 @@ import Foundation
 extension DateFormatter {
     private static var cache: [String: DateFormatter] = [:]
     
-    static func cached(format: String) -> DateFormatter {
-        if let cachedFormatter = cache[format] { return cachedFormatter }
-        
+    static func cached(format: String, timeZone: TimeZone? = TimeZone(identifier: "Asia/Seoul")) -> DateFormatter {
+        let key = "\(format)|\(timeZone?.identifier ?? "current")"
+        if let cachedFormatter = cache[key] { return cachedFormatter }
+
         let formatter = DateFormatter()
         formatter.dateFormat = format
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
-        cache[format] = formatter
+        formatter.timeZone = timeZone
+        cache[key] = formatter
         return formatter
     }
 }

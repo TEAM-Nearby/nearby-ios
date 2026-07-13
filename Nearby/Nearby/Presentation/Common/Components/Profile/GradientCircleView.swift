@@ -109,4 +109,8 @@ final class GradientCircleView: BaseView {
             imageView.image = .imgProfileDefault
         }
     }
+
+    func configure(image: UIImage?) {
+        imageView.image = image ?? .imgProfileDefault
+    }
 }

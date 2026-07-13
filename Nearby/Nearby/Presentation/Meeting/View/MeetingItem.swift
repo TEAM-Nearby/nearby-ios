@@ -14,7 +14,7 @@ struct MeetingItem {
     let gender: String
     let profileImageUrl: String?
     let information: String
-    let meetingDate: Date
+    let meetingDate: Date?
     let postType: PostType
     let isCheckedIn: Bool
     

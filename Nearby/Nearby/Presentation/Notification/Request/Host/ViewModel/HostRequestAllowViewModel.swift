@@ -52,13 +52,14 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     private let meetingAt: String
     private let matchId: Int?
     private let postType: PostType
+    private let profileImageUrl: String?
     // TODO: - 서버 연동 시 응답값으로 교체
     let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
     private var cancellables = Set<AnyCancellable>()
-    
+
     // MARK: - Initializer
-    
-    init(applicantProfileImageUrl: String, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
+
+    init(applicantProfileImageUrl: String?, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
         self.profileImageUrl = applicantProfileImageUrl
         self.applicantName = applicantName
         self.locationName = locationName
@@ -73,7 +74,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         switch trigger {
         case .viewDidLoad:
             let data = DisplayData(
-                profileImageUrl: applicantProfileImageUrl,
+                profileImageUrl: profileImageUrl,
                 title: "\(applicantName) 님과 동행이 매칭됐어요!",
                 location: "\(locationName)",
                 date: meetingAt.toDate()?.meetingDisplayText ?? "",

@@ -16,12 +16,11 @@ enum PostType: String, Decodable {
 extension PostType {
     private static let verifiableWindow: TimeInterval = 3600
     
-    func isVerifiable(meetingAt: Date, now: Date = Date()) -> Bool {
+    func isVerifiable(meetingAt: Date?, now: Date = Date()) -> Bool {
         switch self {
-        case .scheduled:
+        case .scheduled, .immediate:
+            guard let meetingAt else { return false }
             return abs(meetingAt.timeIntervalSince(now)) <= Self.verifiableWindow
-        case .immediate:
-            return now < meetingAt
         case .undecided:
             return false
         }

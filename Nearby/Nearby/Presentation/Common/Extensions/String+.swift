@@ -41,6 +41,9 @@ extension String {
     func toDate() -> Date? {
         if let date = ISO8601DateFormatter.withFractionalSeconds.date(from: self) { return date }
         if let date = ISO8601DateFormatter.standard.date(from: self) { return date }
-        return DateFormatter.cached(format: "yyyy-MM-dd'T'HH:mm:ss").date(from: self)
+        // 서버가 타임존 표기 없이 UTC 기준으로 보냄 (예: 2026-07-13T13:17:14.508265)
+        let utc = TimeZone(secondsFromGMT: 0)
+        if let date = DateFormatter.cached(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS", timeZone: utc).date(from: self) { return date }
+        return DateFormatter.cached(format: "yyyy-MM-dd'T'HH:mm:ss", timeZone: utc).date(from: self)
     }
 }

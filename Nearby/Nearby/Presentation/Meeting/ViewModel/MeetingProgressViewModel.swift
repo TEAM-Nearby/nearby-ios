@@ -53,7 +53,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private(set) var userRole: NearbyUserType = .participant
     private(set) var canMoveToComplete: Bool = false
     private let repository: MeetingRepository
-    private var meetingDate: Date = .distantPast
+    private var meetingDate: Date?
     private var postType: PostType = .scheduled
     private var cancellables = Set<AnyCancellable>()
     
@@ -113,14 +113,17 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 let DTO = try await repository.fetchMeetingDetail(meetingId: meetingId)
                 
                 userRole = DTO.currentUserRole
-                meetingDate = DTO.meetingAt.toDate() ?? .distantPast
+                meetingDate = DTO.meetingAt?.toDate()
                 postType = DTO.meetingTimeType
-                
+
+                let information = [DTO.placeName, meetingDate?.timeDisplayText]
+                    .compactMap { $0 }
+                    .joined(separator: " · ")
                 let data = DisplayData(
                     profileImageUrl: DTO.hostProfileImageUrl,
                     name: DTO.hostNickname,
                     gender: DTO.hostGender.genderDisplayText,
-                    information: "\(DTO.placeName) · \(meetingDate.meetingDisplayText)"
+                    information: information
                 )
                 output.displayData.send(data)
                 
@@ -171,8 +174,9 @@ final class MeetingProgressViewModel: BaseViewModelType {
             .sink { [weak self] _ in
                 guard let self else { return }
                 
-                if currentStep == .match && isWithinVerifiableWindow {
-                    output.step.send(.verification)
+                let newStep: MeetingStep = isWithinVerifiableWindow ? .verification : .match
+                if currentStep != .completion && currentStep != newStep {
+                    output.step.send(newStep)
                 }
                 updateVerifyButtonState()
             }

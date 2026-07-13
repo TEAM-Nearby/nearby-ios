@@ -16,7 +16,7 @@ struct MeetingResponseDTO: Decodable {
     let matchId: Int
     let companion: Companion
     let placeName: String
-    let meetingAt: String
+    let meetingAt: String?
     let meetingTimeType: PostType
     let isCheckedIn: Bool
     let meetingStatus: MeetingStatus
@@ -38,7 +38,7 @@ struct MeetingDetailResponseDTO: Decodable {
     let hostProfileImageUrl: String?
     let hostNickname: String
     let placeName: String
-    let meetingAt: String
+    let meetingAt: String?
     let meetingTimeType: PostType
     let currentUserCheckedIn: Bool
     let canCancelMeeting: Bool

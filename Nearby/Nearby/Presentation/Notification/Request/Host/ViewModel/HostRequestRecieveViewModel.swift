@@ -92,7 +92,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
                     date: DTO.meetingAt.toDate()?.meetingDisplayText ?? ""
                 )
                 applicantNickname = DTO.applicantProfile.nickname
-                applicantProfileImageUrl =. DTO.applicantProfile.profileImageUrl
+                applicantProfileImageUrl = DTO.applicantProfile.profileImageUrl
                 placeName = DTO.placeName
                 meetingAt = DTO.meetingAt
                 output.displayData.send(data)

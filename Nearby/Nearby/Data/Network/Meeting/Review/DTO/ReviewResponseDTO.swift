@@ -27,3 +27,12 @@ struct ReviewTargetDTO: Decodable {
     let isCheckedIn: Bool
     let hasWrittenReview: Bool
 }
+
+struct ReviewCompleteDTO: Decodable {
+    let meetingId: Int
+    let matchId: Int
+    let currentUserCompleted: Bool
+    let currentUserCompletedAt: String
+    let meetingStatus: MeetingStatus
+    let meetingCompletedAt: String?
+}

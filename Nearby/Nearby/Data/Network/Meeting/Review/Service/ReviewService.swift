@@ -8,6 +8,7 @@
 protocol ReviewService {
     func createReview(meetingId: Int, request: CreateReviewRequestDTO) async throws -> CreateReviewResponseDTO
     func fetchReviewTargets(meetingId: Int) async throws -> ReviewTargetsResponseDTO
+    func completeMeeting(meetingId: Int) async throws -> ReviewCompleteDTO
 }
 
 final class DefaultReviewService: ReviewService {
@@ -28,6 +29,13 @@ final class DefaultReviewService: ReviewService {
         try await networkProvider.request(
             ReviewTarget.fetchTargets(meetingId: meetingId),
             responseType: ReviewTargetsResponseDTO.self
+        )
+    }
+    
+    func completeMeeting(meetingId: Int) async throws -> ReviewCompleteDTO {
+        try await networkProvider.request(
+            ReviewTarget.complete(meetingId: meetingId),
+            responseType: ReviewCompleteDTO.self
         )
     }
 }

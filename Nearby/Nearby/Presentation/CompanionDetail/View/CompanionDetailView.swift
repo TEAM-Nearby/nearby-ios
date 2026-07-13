@@ -119,6 +119,7 @@ final class CompanionDetailView: BaseView {
     
     func configure(state: CompanionDetailState) {
         applyCompanionButton.setEnabled(state.isApplicationEnabled)
-        bottomView.configure(postType: state.postType)
+        topView.configure(state: state)
+        bottomView.configure(state: state)
     }
 }

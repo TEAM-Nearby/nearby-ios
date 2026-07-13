@@ -12,8 +12,11 @@ final class AppDIContainer {
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
 
     var hasStoredSession: Bool {
-        guard let accessToken = tokenStorage.accessToken else { return false }
-        return !accessToken.isEmpty
+        guard let accessToken = tokenStorage.accessToken, let refreshToken = tokenStorage.refreshToken else {
+            return false
+        }
+
+        return !accessToken.isEmpty && !refreshToken.isEmpty
     }
     
     // MARK: - Coordinators
@@ -76,8 +79,8 @@ final class AppDIContainer {
         DefaultCompanionDetailService(networkProvider: networkProvider)
     }
 
-    private func makeCompanionProfileService() -> CompanionProfileService {
-        DefaultCompanionProfileService(networkProvider: networkProvider)
+    private func makeProfileService() -> ProfileService {
+        DefaultProfileService(networkProvider: networkProvider)
     }
 
     private func makeMatchedCompanionListService() -> MatchedCompanionListService {
@@ -129,8 +132,8 @@ final class AppDIContainer {
         DefaultCompanionDetailRepository(service: makeCompanionDetailService())
     }
 
-    private func makeCompanionProfileRepository() -> CompanionProfileRepository {
-        DefaultCompanionProfileRepository(service: makeCompanionProfileService())
+    private func makeProfileRepository() -> ProfileRepository {
+        DefaultProfileRepository(service: makeProfileService())
     }
 
     private func makeMatchedCompanionListRepository() -> MatchedCompanionListRepository {
@@ -148,7 +151,7 @@ final class AppDIContainer {
     }
     
     func makeCompanionProfileViewModel() -> CompanionProfileViewModel {
-        CompanionProfileViewModel()
+        CompanionProfileViewModel(authRepository: makeAuthRepository())
     }
 
     func makeDiningMapViewModel() -> DiningMapViewModel {
@@ -269,7 +272,7 @@ final class AppDIContainer {
     }
     
     func makeHostProfileViewModel(profileId: Int) -> HostProfileViewModel {
-        HostProfileViewModel(profileId: profileId, repository: makeCompanionProfileRepository())
+        HostProfileViewModel(profileId: profileId, repository: makeProfileRepository())
     }
   
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {

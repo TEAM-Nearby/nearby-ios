@@ -15,6 +15,9 @@ struct RecruitCompanionDraft {
     var placeQuery = ""
     var selectedPlaceID: String?
     var selectedPlaceAddress = ""
+    var selectedPlaceLatitude: Double?
+    var selectedPlaceLongitude: Double?
+    var selectedPlaceCategory = PlaceCategory.other.rawValue
     var content = ""
     var openChatURL = ""
 }

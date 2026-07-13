@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -14,7 +15,7 @@ final class NearCompanionCell: UICollectionViewCell {
     
     // MARK: - Property
     
-    private let profileAvatarCount: Int = 2
+    private let profileAvatarCount: Int = 0
     
     // MARK: - UI Components
     
@@ -61,18 +62,19 @@ final class NearCompanionCell: UICollectionViewCell {
         }
         
         placeNameLabel.do {
-            $0.setFont(.b2M16, text: "손오공 마라탕", textColor: .grey80)
+            $0.setFont(.b2M16, textColor: .grey80)
             $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
         
         timeLabel.do {
-            $0.setFont(.c1R12, text: "30분 전", textColor: .grey30)
+            $0.setFont(.c1R12, textColor: .grey30)
             $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
         
         contentLabel.do {
-            $0.setFont(.c1M12, text: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 가격은 조금 비싸지만...", textColor: .grey70)
+            $0.setFont(.c1M12, textColor: .grey70)
             $0.numberOfLines = 2
+            $0.lineBreakMode = .byTruncatingTail
         }
         
         timeStackView.do {
@@ -96,11 +98,11 @@ final class NearCompanionCell: UICollectionViewCell {
         }
         
         scheduleLabel.do {
-            $0.setFont(.c1R12, text: "6월 29일 14:00", textColor: .grey70)
+            $0.setFont(.c1R12, textColor: .grey70)
         }
         
         currentStatusLabel.do {
-            $0.setFont(.c1M12, text: "2/4 모집 중", textColor: .highlightTextPurple)
+            $0.setFont(.c1M12, textColor: .highlightTextPurple)
         }
         
         arrowIcon.do {
@@ -125,10 +127,12 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.top.equalTo(dividerView.snp.bottom).offset(16)
             $0.leading.equalToSuperview().inset(20)
             $0.width.equalTo(130)
+            $0.height.equalTo(140)
+            $0.bottom.lessThanOrEqualToSuperview().inset(16)
         }
         
         placeNameLabel.snp.makeConstraints {
-            $0.top.equalTo(placeImageView).offset(9)
+            $0.top.equalTo(placeImageView).offset(14)
             $0.leading.equalTo(placeImageView.snp.trailing).offset(12)
             $0.trailing.lessThanOrEqualTo(timeLabel.snp.leading).offset(-8)
         }
@@ -154,6 +158,7 @@ final class NearCompanionCell: UICollectionViewCell {
         }
         
         peopleStackView.snp.makeConstraints {
+            $0.top.equalTo(timeStackView.snp.bottom).offset(8)
             $0.bottom.equalToSuperview().inset(25)
             $0.leading.equalTo(contentLabel.snp.leading).offset(3)
         }
@@ -168,12 +173,16 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.centerY.equalTo(profileStackView)
         }
     }
-    
+
     func configure(with item: NearCompanionCellItem) {
-        placeImageView.image = item.placeImage ?? .restaurantPlaceholder
+        if let placeImageURL = item.placeImageURL {
+            placeImageView.kf.setImage(with: placeImageURL, placeholder: UIImage.restaurantPlaceholder)
+        } else {
+            placeImageView.image = item.placeImage ?? .restaurantPlaceholder
+        }
         placeNameLabel.text = item.placeName
         timeLabel.text = item.writtenTime
-        contentLabel.text = item.content
+        contentLabel.setFont(.c1M12, text: item.content, textColor: .grey70, lineSpacing: 3)
         scheduleLabel.text = item.schedule
         profileStackView.configure(with: item.participantImages)
         currentStatusLabel.text = item.statusText

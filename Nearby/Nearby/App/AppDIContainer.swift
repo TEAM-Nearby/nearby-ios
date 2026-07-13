@@ -68,9 +68,12 @@ final class AppDIContainer {
         DefaultRecruitCompanionService(networkProvider: networkProvider)
     }
 
-    
     private func makeCompanionDetailService() -> CompanionDetailService {
         DefaultCompanionDetailService(networkProvider: networkProvider)
+    }
+
+    private func makeCompanionProfileService() -> CompanionProfileService {
+        DefaultCompanionProfileService(networkProvider: networkProvider)
     }
     
     // MARK: - Repositories
@@ -90,9 +93,12 @@ final class AppDIContainer {
         )
     }
 
-    
     private func makeCompanionDetailRepository() -> CompanionDetailRepository {
         DefaultCompanionDetailRepository(service: makeCompanionDetailService())
+    }
+
+    private func makeCompanionProfileRepository() -> CompanionProfileRepository {
+        DefaultCompanionProfileRepository(service: makeCompanionProfileService())
     }
     
     // MARK: - ViewModels
@@ -122,7 +128,7 @@ final class AppDIContainer {
     }
     
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
-        CompanionDetailViewModel(state: state, repository: makeCompanionDetailRepository())
+        CompanionDetailViewModel(state: state, repository: makeCompanionDetailRepository(), currentUserId: tokenStorage.currentUserId)
     }
     
     func makeNearCompanionSheetViewModel() -> NearCompanionSheetViewModel {
@@ -200,8 +206,8 @@ final class AppDIContainer {
         HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
     }
     
-    func makeHostProfileViewModel() -> HostProfileViewModel {
-        HostProfileViewModel()
+    func makeHostProfileViewModel(profileId: Int) -> HostProfileViewModel {
+        HostProfileViewModel(profileId: profileId, repository: makeCompanionProfileRepository())
     }
     
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
@@ -214,12 +220,9 @@ final class AppDIContainer {
     
     // MARK: - ViewControllers
     
-    func makeHostProfileViewController() -> HostProfileViewController {
-        let viewModel = makeHostProfileViewModel()
-        
-        return HostProfileViewController(
-            viewModel: viewModel
-        )
+    func makeHostProfileViewController(profileId: Int) -> HostProfileViewController {
+        let viewModel = makeHostProfileViewModel(profileId: profileId)
+        return HostProfileViewController(viewModel: viewModel)
     }
     
     func makeLoginViewController() -> LoginViewController {

@@ -7,6 +7,7 @@
 
 protocol MeetingService {
     func fetchMeetingList() async throws -> MeetingListResponseDTO
+    func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetailResponseDTO
 }
 
 final class DefaultMeetingService {
@@ -27,5 +28,9 @@ final class DefaultMeetingService {
 extension DefaultMeetingService: MeetingService {
     func fetchMeetingList() async throws -> MeetingListResponseDTO {
         try await networkProvider.request(MeetingTarget.fetchMeetingList, responseType: MeetingListResponseDTO.self)
+    }
+    
+    func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetailResponseDTO {
+        try await networkProvider.request(MeetingTarget.fetchMeetingDetail(meetingId: meetingId), responseType: MeetingDetailResponseDTO.self)
     }
 }

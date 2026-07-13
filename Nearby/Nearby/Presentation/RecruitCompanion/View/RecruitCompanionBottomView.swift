@@ -11,13 +11,11 @@ import SnapKit
 import Then
 
 final class RecruitCompanionBottomView: BaseView {
-    
+
     // MARK: - UI Components
 
     private let meetingPlaceTitleLabel = UILabel()
-    private let meetingPlaceTextView = NearbyTextView(
-        placeholder: "입력창입력창입력창입력창입력창입력창입력창..."
-    )
+    private let meetingPlaceTextView = NearbyTextView(placeholder: "장소를 입력해주세요")
     private let descriptionTitleLabel = UILabel()
     private let descriptionTextView = NearbyTextView(
         placeholder: "ex) 20대 여자입니다. 맛집 탐방하는 걸 좋아해요 :)\n"
@@ -25,29 +23,33 @@ final class RecruitCompanionBottomView: BaseView {
             + "같이 재미있게 놀아요..."
     )
     private let kakaoLinkTitleLabel = UILabel()
-    private let kakaoLinkTextView = NearbyTextView(placeholder: "오픈채팅방 링크(URL)를 입력해 주세요")
+    private let kakaoLinkTextView = NearbyTextView(placeholder: "오픈채팅방 링크(URL)를 입력해주세요")
     private let completeButton = NearbyButton(style: .primary, title: "작성 완료하기")
-    
+    private let placeSearchResultTableView = UITableView()
+
     // MARK: - Properties
 
+    private var placeSearchResultTableViewHeightConstraint: Constraint?
     private var descriptionTextViewHeightConstraint: Constraint?
     private var descriptionTextViewMinimumHeight: CGFloat {
-        return ceil(NearbyFont.b3M14.font.lineHeight * 3) + 32
+        return ceil(NearbyFont.b3M14.property.lineHeight * 3) + 32
     }
+    private var placeSuggestions: [PlaceSearchResultItem] = []
 
+    var placeDidSelect: ((SelectedPlace) -> Void)?
     var placeSearchButtonAction: (() -> Void)?
     var placeQueryDidChange: ((String) -> Void)?
     var contentDidChange: ((String) -> Void)?
     var openChatURLDidChange: ((String) -> Void)?
     var completeButtonAction: (() -> Void)?
-    
+
     // MARK: - Custom Methods
-    
+
     override func setStyle() {
         meetingPlaceTitleLabel.do {
             $0.setFont(.b1Sb18, text: "어디서 만날까요?")
         }
-        
+
         meetingPlaceTextView.do {
             $0.updatePlaceholder(isHidden: false)
             $0.clearButton.setImage(.searchIcon, for: .normal)
@@ -56,26 +58,34 @@ final class RecruitCompanionBottomView: BaseView {
             $0.setPlaceholderTruncation(numberOfLines: 1)
             $0.textView.isScrollEnabled = false
         }
-        
+
         descriptionTitleLabel.do {
             $0.setFont(.b1Sb18, text: "나이와 간단한 소개를 적어볼까요?")
         }
-        
+
         descriptionTextView.do {
             $0.updatePlaceholder(isHidden: false)
             $0.isClearButtonHidden = true
             $0.setPlaceholderTruncation(numberOfLines: 3)
             $0.textView.isScrollEnabled = false
         }
-        
+
         kakaoLinkTitleLabel.do {
             $0.setFont(.b1Sb18, text: "카카오톡 오픈채팅 링크")
         }
-        
+
         kakaoLinkTextView.do {
             $0.updatePlaceholder(isHidden: false)
             $0.isClearButtonHidden = true
             $0.setPlaceholderTruncation(numberOfLines: 1)
+        }
+
+        placeSearchResultTableView.do {
+            $0.backgroundColor = .white
+            $0.separatorStyle = .singleLine
+            $0.layer.cornerRadius = 8
+            $0.isHidden = true
+            $0.rowHeight = 60
         }
 
         completeButton.setEnabled(false)
@@ -86,7 +96,7 @@ final class RecruitCompanionBottomView: BaseView {
             meetingPlaceTitleLabel, meetingPlaceTextView,
             descriptionTitleLabel, descriptionTextView,
             kakaoLinkTitleLabel, kakaoLinkTextView,
-            completeButton
+            completeButton, placeSearchResultTableView
         )
     }
 
@@ -95,37 +105,41 @@ final class RecruitCompanionBottomView: BaseView {
             $0.top.equalToSuperview().inset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
-        
+
         meetingPlaceTextView.snp.makeConstraints {
             $0.top.equalTo(meetingPlaceTitleLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
         }
-        
+
         descriptionTitleLabel.snp.makeConstraints {
             $0.top.equalTo(meetingPlaceTextView.snp.bottom).offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
-        
+
         descriptionTextView.snp.makeConstraints {
             $0.top.equalTo(descriptionTitleLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            descriptionTextViewHeightConstraint = $0.height
-                .equalTo(descriptionTextViewMinimumHeight)
-                .constraint
+            descriptionTextViewHeightConstraint = $0.height.equalTo(descriptionTextViewMinimumHeight).constraint
         }
-        
+
+        placeSearchResultTableView.snp.makeConstraints {
+            $0.top.equalTo(meetingPlaceTextView.snp.bottom).offset(4)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            placeSearchResultTableViewHeightConstraint = $0.height.equalTo(0).constraint
+        }
+
         kakaoLinkTitleLabel.snp.makeConstraints {
             $0.top.equalTo(descriptionTextView.snp.bottom).offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
-        
+
         kakaoLinkTextView.snp.makeConstraints {
             $0.top.equalTo(kakaoLinkTitleLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
         }
-        
+
         completeButton.snp.makeConstraints {
             $0.top.equalTo(kakaoLinkTextView.snp.bottom).offset(28)
             $0.bottom.equalToSuperview().inset(21)
@@ -140,8 +154,11 @@ final class RecruitCompanionBottomView: BaseView {
         kakaoLinkTextView.textView.delegate = self
         meetingPlaceTextView.clearButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
         completeButton.addTarget(self, action: #selector(completeButtonDidTap), for: .touchUpInside)
+        placeSearchResultTableView.dataSource = self
+        placeSearchResultTableView.delegate = self
+        placeSearchResultTableView.register(PlaceSearchResultCell.self)
     }
-    
+
     // MARK: - Methods
 
     private func updateDescriptionTextViewHeight() {
@@ -149,9 +166,7 @@ final class RecruitCompanionBottomView: BaseView {
         let fittingSize = CGSize(width: textView.bounds.width, height: .greatestFiniteMagnitude)
         let textHeight = textView.sizeThatFits(fittingSize).height
         let containerHeight = max(descriptionTextViewMinimumHeight, ceil(textHeight) + 32)
-
         descriptionTextViewHeightConstraint?.update(offset: containerHeight)
-
         UIView.performWithoutAnimation {
             layoutIfNeeded()
         }
@@ -164,9 +179,36 @@ final class RecruitCompanionBottomView: BaseView {
         meetingPlaceTextView.updatePlaceholder(isHidden: !state.placeQuery.isEmpty)
         completeButton.setEnabled(state.isCompleteButtonEnabled)
     }
-    
+
+    func updatePlaceSuggestions(_ suggestions: [PlaceSearchResultItem]) {
+        placeSuggestions = suggestions
+        let placeSuggestionCount = suggestions.count
+        let tableViewHeight = min(CGFloat(placeSuggestionCount) * 60, 300)
+        placeSearchResultTableView.isHidden = placeSuggestionCount == 0
+        placeSearchResultTableViewHeightConstraint?.update(
+            offset: tableViewHeight
+        )
+        placeSearchResultTableView.reloadData()
+        UIView.performWithoutAnimation {
+            layoutIfNeeded()
+        }
+    }
+
+    func updateSelectedPlace(_ placeName: String) {
+        meetingPlaceTextView.textView.text = placeName
+        meetingPlaceTextView.updatePlaceholder(isHidden: true)
+        placeSuggestions = []
+        placeSearchResultTableView.isHidden = true
+        placeSearchResultTableViewHeightConstraint?.update(offset: 0)
+        placeSearchResultTableView.reloadData()
+        UIView.performWithoutAnimation {
+            layoutIfNeeded()
+        }
+        meetingPlaceTextView.textView.resignFirstResponder()
+    }
+
     // MARK: - Actions
-    
+
     @objc
     private func searchButtonDidTap() {
         placeSearchButtonAction?()
@@ -195,5 +237,36 @@ extension RecruitCompanionBottomView: UITextViewDelegate {
             kakaoLinkTextView.updatePlaceholder(isHidden: shouldHidePlaceholder)
             openChatURLDidChange?(textView.text)
         }
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension RecruitCompanionBottomView: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return placeSuggestions.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(PlaceSearchResultCell.self, for: indexPath)
+        cell.configure(with: placeSuggestions[indexPath.row])
+        return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension RecruitCompanionBottomView: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedSuggestion = placeSuggestions[indexPath.row]
+
+        let selectedPlace = SelectedPlace(
+            placeID: selectedSuggestion.placeID,
+            name: selectedSuggestion.name,
+            address: selectedSuggestion.address
+        )
+
+        updateSelectedPlace(selectedPlace.name)
+        placeDidSelect?(selectedPlace)
     }
 }

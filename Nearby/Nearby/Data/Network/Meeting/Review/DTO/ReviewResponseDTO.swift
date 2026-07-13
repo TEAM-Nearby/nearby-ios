@@ -10,3 +10,20 @@ struct CreateReviewResponseDTO: Decodable {
     let reviewId: Int
     let meetingStatus: String
 }
+
+struct ReviewTargetsResponseDTO: Decodable {
+    let meetingStatus: String
+    let currentUserRole: NearbyUserType
+    let canCompleteMeeting: Bool
+    let reviewTargets: [ReviewTargetDTO]
+}
+
+struct ReviewTargetDTO: Decodable {
+    let revieweeUserId: Int
+    let profileImageUrl: String?
+    let nickname: String
+    let cityName: String
+    let meetingDate: String
+    let isCheckedIn: Bool
+    let hasWrittenReview: Bool
+}

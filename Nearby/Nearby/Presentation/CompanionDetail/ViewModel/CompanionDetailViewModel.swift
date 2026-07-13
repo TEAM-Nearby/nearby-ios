@@ -14,7 +14,8 @@ final class CompanionDetailViewModel: BaseViewModelType {
 
     enum Route {
         case close
-        case applyCompanion
+        case applyCompanion(hostName: String)
+        case hostProfile(profileId: Int)
     }
 
     // MARK: - Input
@@ -23,12 +24,14 @@ final class CompanionDetailViewModel: BaseViewModelType {
         case viewDidLoad
         case backButtonDidTap
         case applyButtonDidTap
+        case hostProfileDidTap
     }
 
     // MARK: - Output
 
     struct Output {
         let displayState = PassthroughSubject<CompanionDetailState, Never>()
+        let isApplying = CurrentValueSubject<Bool, Never>(false)
         let error = PassthroughSubject<Error, Never>()
     }
 
@@ -38,17 +41,25 @@ final class CompanionDetailViewModel: BaseViewModelType {
     let output = Output()
     private var state: CompanionDetailState
     private let repository: CompanionDetailRepository
+    private let currentUserId: Int?
     private var fetchTask: Task<Void, Never>?
+    private var applyTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
-    init(state: CompanionDetailState, repository: CompanionDetailRepository) {
+    init(
+        state: CompanionDetailState,
+        repository: CompanionDetailRepository,
+        currentUserId: Int?
+    ) {
         self.state = state
         self.repository = repository
+        self.currentUserId = currentUserId
     }
 
     deinit {
         fetchTask?.cancel()
+        applyTask?.cancel()
     }
 
     // MARK: - Action
@@ -61,8 +72,10 @@ final class CompanionDetailViewModel: BaseViewModelType {
         case .backButtonDidTap:
             route?(.close)
         case .applyButtonDidTap:
-            guard state.isApplicationEnabled else { return }
-            route?(.applyCompanion)
+            applyCompanion()
+        case .hostProfileDidTap:
+            guard let hostProfileId = state.hostProfileId else { return }
+            route?(.hostProfile(profileId: hostProfileId))
         }
     }
 }
@@ -79,8 +92,35 @@ private extension CompanionDetailViewModel {
                 let response = try await repository.fetchDetail(postId: postId)
                 guard !Task.isCancelled else { return }
 
-                state = response.detailState(preserving: state)
+                state = response.detailState(
+                    preserving: state,
+                    currentUserId: currentUserId
+                )
                 output.displayState.send(state)
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+                output.error.send(error)
+            }
+        }
+    }
+
+    func applyCompanion() {
+        guard state.isApplicationEnabled, let postId = state.postId, applyTask == nil else { return }
+
+        output.isApplying.send(true)
+        applyTask = Task { [weak self] in
+            guard let self else { return }
+            defer {
+                applyTask = nil
+                output.isApplying.send(false)
+            }
+
+            do {
+                _ = try await repository.apply(postId: postId)
+                guard !Task.isCancelled else { return }
+                route?(.applyCompanion(hostName: state.hostName))
             } catch is CancellationError {
                 return
             } catch {
@@ -92,14 +132,15 @@ private extension CompanionDetailViewModel {
 }
 
 private extension CompanionDetailResponseDTO {
-    func detailState(preserving previousState: CompanionDetailState) -> CompanionDetailState {
+    func detailState(preserving previousState: CompanionDetailState, currentUserId: Int?) -> CompanionDetailState {
         CompanionDetailState(
             postId: postId,
+            hostProfileId: hostProfileId,
             postType: postType,
-            isApplicationEnabled: status == "RECRUITING" && applyStatus == "NOT_APPLIED",
-            tags: hostProfileSummary.keywords.map {
-                TravelStyleKeyword(rawValue: $0)?.title ?? $0
-            },
+            isApplicationEnabled: status == "RECRUITING"
+                && applyStatus == "NOT_APPLIED"
+                && hostUserId != currentUserId,
+            tags: TravelStyleKeyword.titles(for: hostProfileSummary.keywords),
             hostName: hostProfileSummary.nickname,
             genderTitle: hostProfileSummary.gender == "FEMALE" ? "여성" : "남성",
             profileImageURL: hostProfileSummary.profileImageUrl.flatMap(URL.init(string:)),

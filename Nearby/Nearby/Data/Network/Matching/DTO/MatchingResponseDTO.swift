@@ -24,12 +24,21 @@ struct MatchedCompanionListResponseDTO: Decodable {
     }
 }
 
-enum HostGender: String, Decodable {
-    case male = "MALE"
-    case female = "FEMALE"
-}
+struct MatchedCompanionPreviewResponseDTO: Decodable {
+    let matchId: Int
+    let members: [Member]
+    let companionPost: CompanionPost
 
-enum MatchStatus: String, Decodable {
-    case matched = "MATCHED"
-    case scheduleConfirmed = "SCHEDULE_CONFIRMED"
+    struct Member: Decodable {
+        let memberId: Int
+        let profileImageUrl: String?
+        let nickname: String
+    }
+
+    struct CompanionPost: Decodable {
+        let postId: Int
+        let content: String
+        let meetingTimeType: MeetingTimeType
+        let meetingAt: String
+    }
 }

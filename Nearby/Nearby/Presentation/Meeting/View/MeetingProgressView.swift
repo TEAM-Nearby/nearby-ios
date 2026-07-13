@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -229,9 +230,13 @@ final class MeetingProgressView: BaseView {
     }
     
     // MARK: - Methods
-    
+
     func configure(with data: MeetingProgressViewModel.DisplayData) {
-        imageView.image = data.image
+        if let urlString = data.profileImageUrl, let url = URL(string: urlString) {
+            imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+        } else {
+            imageView.image = .imgProfileDefault
+        }
         nameLabel.text = data.name
         genderLabel.text = data.gender
         informationLabel.text = data.information

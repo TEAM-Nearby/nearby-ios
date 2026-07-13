@@ -212,6 +212,8 @@ final class CompanionDetailBottomView: BaseView {
             // TODO: - 서버 immediate 값 질문
 //            expirationLabel.setFont(.b3M14, text: "이 글은 \(expirationTime)에 사라져요!", textColor: .grey60)
             expirationBannerView.isHidden = false
+        case .undecided:
+            break
         }
     }
 }

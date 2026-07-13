@@ -21,14 +21,7 @@ struct MeetingItem {
     private static let verifiableWindow: TimeInterval = 3600
     
     var isWithinVerifiableWindow: Bool {
-        switch postType {
-        case .scheduled:
-            return abs(meetingDate.timeIntervalSinceNow) <= Self.verifiableWindow
-        case .immediate:
-            return Date() < meetingDate
-        case .undecided:
-            return false
-        }
+        postType.isVerifiable(meetingAt: meetingDate)
     }
     
     var step: MeetingStep {

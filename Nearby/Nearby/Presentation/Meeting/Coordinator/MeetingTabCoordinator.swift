@@ -41,7 +41,7 @@ extension MeetingTabCoordinator: Coordinator {
     func showMeetingProgress(for item: MeetingItem) {
         let viewController = diContainer.makeMeetingProgressViewController(
             coordinator: self,
-            item: item
+            meetingId: item.id
         )
         navigationController.pushViewController(viewController, animated: true)
     }

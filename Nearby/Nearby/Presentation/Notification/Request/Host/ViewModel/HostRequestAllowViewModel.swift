@@ -90,6 +90,8 @@ final class HostRequestAllowViewModel: BaseViewModelType {
                     output.showScheduleDetail.send(())
                 case .scheduled:
                     output.showScheduleConfirm.send(())
+                case .undecided:
+                    break
                 }
                 
             }

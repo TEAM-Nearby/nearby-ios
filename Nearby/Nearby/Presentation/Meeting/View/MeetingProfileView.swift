@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -112,12 +113,21 @@ final class MeetingProfileView: BaseView {
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
     }
     
-    // MARK: - Method
-    
-    func configure(name: String, gender: String, information: String) {
+    // MARK: - Methods
+
+    func configure(imageUrl: String?, name: String, gender: String, information: String) {
+        if let imageUrl, let url = URL(string: imageUrl) {
+            imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+        } else {
+            imageView.image = .imgProfileDefault
+        }
         nameLabel.text = name
         genderLabel.text = gender
         informationLabel.text = information
+    }
+    
+    func cancelImageLoad() {
+        imageView.kf.cancelDownloadTask()
     }
     
     // MARK: - Action

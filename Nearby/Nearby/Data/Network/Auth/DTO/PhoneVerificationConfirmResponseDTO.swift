@@ -9,5 +9,5 @@ import Foundation
 
 struct PhoneVerificationConfirmResponseDTO: Decodable {
     let phoneVerified: Bool
-    let onboardingStatus: String
+    let onboardingStatus: OnboardingStatus
 }

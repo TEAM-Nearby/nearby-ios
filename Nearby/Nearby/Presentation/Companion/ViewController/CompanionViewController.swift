@@ -52,8 +52,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        mapController.onCompanionMarkerTap = { [weak self] in
-            self?.showSpecificBottomSheet()
+        mapController.onCompanionMarkerTap = { [weak self] placeId in
+            self?.showSpecificBottomSheet(for: placeId)
         }
 
         mapController.onLocationUpdate = { [weak self] coordinate in
@@ -65,7 +65,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setRecruitCompanionButtonLayout()
-        setTabBarHidden(false)
+        setTabBarHidden(isSpecificBottomSheetPresented)
         mapController.start()
         setBottomSheetHidden(false)
         companionView.updateMapControls(for: currentBottomSheetState)
@@ -193,7 +193,15 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         bottomSheetViewController.setState(content: .nearbyCompanionEmpty, animated: animated)
     }
 
-    private func showSpecificBottomSheet(animated: Bool = true) {
+    private func showSpecificBottomSheet(for placeId: Int, animated: Bool = true) {
+        guard
+            let nearbySheetViewController = nearbySheetViewController as? NearCompanionSheetViewController,
+            let specificSheetViewController = specificSheetViewController as? SpecificCompanionSheetViewController
+        else { return }
+
+        specificSheetViewController.updateCompanions(
+            nearbySheetViewController.specificCompanions(for: placeId)
+        )
         isSpecificBottomSheetPresented = true
         companionView.setCategoryChipsHidden(true)
         setTabBarHidden(true, animated: animated)

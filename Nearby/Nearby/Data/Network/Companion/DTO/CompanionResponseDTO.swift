@@ -30,7 +30,8 @@ struct CompanionDTO: Decodable {
     let place: CompanionPlaceDTO
     let contentPreview: String
     let contentPreviewTruncated: Bool
-    let meetingAt: String
+    let meetingTimeType: String
+    let meetingAt: String?
     let meetingAtText: String
     let participantCount: Int
     let maxParticipants: Int

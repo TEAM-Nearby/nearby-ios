@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -163,5 +164,25 @@ final class CompanionDetailTopView: BaseView {
         layout.minimumLineSpacing = 8
         layout.minimumInteritemSpacing = 8
         return layout
+    }
+
+    func configure(state: CompanionDetailState) {
+        hostNameLabel.setFont(.h3Sb20, text: state.hostName)
+        genderLabel.setFont(.b2M16, text: state.genderTitle, textColor: .primary50)
+        hostSubInfoLabel.setFont(.b3M14, text: state.isPhoneVerified ? "본인 인증 완료 · 매너 지수" : "매너 지수", textColor: .grey60)
+        mannerScoreLabel.setFont(.b1Sb18, text: state.mannerScoreText, textColor: .primary50)
+        introduceLabel.text = nil
+
+        guard let profileImageURL = state.profileImageURL else {
+            hostProfileImageView.configure(image: nil)
+            return
+        }
+
+        KingfisherManager.shared.retrieveImage(with: profileImageURL) { [weak self] result in
+            guard case .success(let value) = result else { return }
+            Task { @MainActor [weak self] in
+                self?.hostProfileImageView.configure(image: value.image)
+            }
+        }
     }
 }

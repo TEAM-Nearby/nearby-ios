@@ -197,26 +197,20 @@ final class AppDIContainer {
     func makeMeetingProgressViewModel(meetingId: Int) -> MeetingProgressViewModel {
         MeetingProgressViewModel(
             meetingId: meetingId,
-            repository: makeMeetingRepository()
+            repository: makeMeetingRepository(),
+            reviewRepository: makeReviewRepository()
         )
     }
     
     func makeMatchingViewModel() -> MatchingViewModel {
         MatchingViewModel(repository: makeMatchedCompanionListRepository())
     }
-
-    func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
-        MeetingProgressViewModel(item: item)
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
         RecruitCompanionViewModel(
             repository: makeRecruitCompanionRepository(),
             searchCoordinate: (latitude: 41.389458, longitude: 2.168289)
         )
-    }
-
-    func makeMeetingProgressViewModel(meetingId: Int, repository: MeetingRepository) -> MeetingProgressViewModel {
-        MeetingProgressViewModel(meetingId: meetingId, repository: makeMeetingRepository())
     }
     
     func makeMyPageViewModel() -> MyPageViewModel {
@@ -235,8 +229,8 @@ final class AppDIContainer {
         WrittenPostViewModel()
     }
     
-    func makeHostReviewListViewModel() -> HostReviewListViewModel {
-        HostReviewListViewModel()
+    func makeHostReviewListViewModel(meetingId: Int) -> HostReviewListViewModel {
+        HostReviewListViewModel(meetingId: meetingId, repository: makeReviewRepository())
     }
     
     func makeReportPostViewModel() -> ReportPostViewModel {
@@ -337,16 +331,14 @@ final class AppDIContainer {
     func makeCompanionDetailViewController(viewModel: CompanionDetailViewModel) -> CompanionDetailViewController {
         CompanionDetailViewController(viewModel: viewModel)
     }
-
-    func makeRecruitCompanionViewController() -> RecruitCompanionViewController {
-        RecruitCompanionViewController(
-            viewModel: RecruitCompanionViewModel(
-                googlePlaceService: GooglePlaceService(),
-                searchCoordinate: (latitude: 41.389458, longitude: 2.168289)
-            )
-        )
+    
+    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator? = nil) -> UIViewController {
+        let viewController = RecruitCompanionViewController(viewModel: makeRecruitCompanionViewModel())
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
     }
-
+    
     func makeDiningMapViewController() -> DiningMapViewController {
         DiningMapViewController(
             viewModel: makeDiningMapViewModel(),
@@ -450,9 +442,9 @@ final class AppDIContainer {
             )
         }
     }
-    
-    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
-        let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel())
+
+    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator, meetingId: Int) -> UIViewController {
+        let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel(meetingId: meetingId))
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController

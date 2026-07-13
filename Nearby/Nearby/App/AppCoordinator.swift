@@ -72,9 +72,7 @@ private extension AppCoordinator {
         
         let loginViewController = diContainer.makeLoginViewController()
         
-        loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in
-            
-            guard let self else { return }
+        loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in guard let self else { return }
             
             switch onboardingStatus {
             case .started,
@@ -130,9 +128,7 @@ private extension AppCoordinator {
         
         mainTabCoordinator.parentCoordinator = self
         
-        mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in
-            
-            guard let self else { return }
+        mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in guard let self else { return }
             
             if let mainTabCoordinator {
                 removeChildCoordinator(mainTabCoordinator)

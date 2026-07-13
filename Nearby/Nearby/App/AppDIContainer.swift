@@ -60,6 +60,10 @@ final class AppDIContainer {
         DefaultCompanionService(networkProvider: networkProvider)
     }
 
+    private func makeReviewService() -> ReviewService {
+        DefaultReviewService(networkProvider: networkProvider)
+    }
+
     // MARK: - Repositories
 
     private func makeAuthRepository() -> AuthRepository {
@@ -68,6 +72,10 @@ final class AppDIContainer {
 
     private func makeCompanionRepository() -> CompanionRepository {
         DefaultCompanionRepository(service: makeCompanionService())
+    }
+
+    private func makeReviewRepository() -> ReviewRepository {
+        DefaultReviewRepository(service: makeReviewService())
     }
 
     // MARK: - ViewModels
@@ -116,10 +124,6 @@ final class AppDIContainer {
         MatchingViewModel()
     }
 
-    func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
-        RecruitCompanionViewModel()
-    }
-  
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
     }
@@ -149,7 +153,12 @@ final class AppDIContainer {
     }
 
     func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool) -> ReviewPostViewModel {
-        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast)
+        ReviewPostViewModel(
+            reviewItem: reviewItem,
+            type: type,
+            isLastReview: isLast,
+            repository: makeReviewRepository()
+        )
     }
 
     func makeCompanionRequestSentViewModel(hostName: String) -> CompanionRequestSentViewModel {
@@ -222,7 +231,12 @@ final class AppDIContainer {
     }
 
     func makeRecruitCompanionViewController() -> RecruitCompanionViewController {
-        RecruitCompanionViewController(viewModel: makeRecruitCompanionViewModel())
+        RecruitCompanionViewController(
+            viewModel: RecruitCompanionViewModel(
+                googlePlaceService: GooglePlaceService(),
+                searchCoordinate: (latitude: 41.389458, longitude: 2.168289)
+            )
+        )
     }
 
     func makeDiningMapViewController() -> DiningMapViewController {

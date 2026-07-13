@@ -83,6 +83,7 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
         output.companions.value[index]
     }
 
+    @MainActor
     func specificCompanions(for placeId: Int) -> [SpecificCompanionCellItem] {
         (postsByPlaceId[placeId] ?? []).map(SpecificCompanionCellItem.init(dto:))
     }

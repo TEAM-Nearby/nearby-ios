@@ -180,7 +180,9 @@ final class CompanionDetailTopView: BaseView {
 
         KingfisherManager.shared.retrieveImage(with: profileImageURL) { [weak self] result in
             guard case .success(let value) = result else { return }
-            self?.hostProfileImageView.configure(image: value.image)
+            Task { @MainActor [weak self] in
+                self?.hostProfileImageView.configure(image: value.image)
+            }
         }
     }
 }

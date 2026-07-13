@@ -24,7 +24,7 @@ final class DefaultCompanionDetailService {
 
 // MARK: - CompanionDetailService
 
-final class DefaultCompanionDetailService: CompanionDetailService {
+extension DefaultCompanionDetailService: CompanionDetailService {
     func fetchDetail(postId: Int) async throws -> CompanionDetailResponseDTO {
         try await networkProvider.request(
             CompanionDetailTarget.detail(postId: postId),

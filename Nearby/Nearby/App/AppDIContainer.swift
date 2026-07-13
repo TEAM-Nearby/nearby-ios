@@ -125,7 +125,10 @@ final class AppDIContainer {
     }
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
-        RecruitCompanionViewModel()
+        RecruitCompanionViewModel(
+            googlePlaceService: GooglePlaceService(),
+            searchCoordinate: (latitude: 41.389458, longitude: 2.168289)
+        )
     }
   
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
@@ -301,20 +304,6 @@ final class AppDIContainer {
     
     func makeWrittenPostViewController() -> WrittenPostViewController {
         WrittenPostViewController(viewModel: makeWrittenPostViewModel())
-    }
-    
-    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator? = nil) -> UIViewController {
-        let googlePlaceService = GooglePlaceService()
-        let searchCoordinate = (latitude: 41.389458, longitude: 2.168289)
-        let viewController = RecruitCompanionViewController(
-            viewModel: RecruitCompanionViewModel(
-                googlePlaceService: googlePlaceService,
-                searchCoordinate: searchCoordinate
-            )
-        )
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-        return viewController
     }
     
     func makeReviewViewController(

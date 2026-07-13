@@ -32,7 +32,7 @@ final class RecruitCompanionView: BaseView {
     var contentDidChange: ((String) -> Void)?
     var openChatURLDidChange: ((String) -> Void)?
     var completeButtonAction: (() -> Void)?
-    var placeDidSelect: ((SelectedPlace) -> Void)?
+    var placeDidSelect: ((PlaceSearchResultItem) -> Void)?
 
     // MARK: - Custom Methods
 

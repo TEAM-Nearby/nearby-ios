@@ -20,7 +20,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         case participantCountDidChange(Int)
         case styleKeywordDidTap(String)
         case placeQueryDidChange(String)
-        case placeDidSelect(SelectedPlace)
+        case placeDidSelect(PlaceSearchResultItem)
         case contentDidChange(String)
         case openChatURLDidChange(String)
         case completeButtonDidTap
@@ -43,6 +43,8 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         let styleKeywords: Set<String>
         let placeQuery: String
         let selectedPlaceID: String?
+        let selectedPlaceLatitude: Double?
+        let selectedPlaceLongitude: Double?
         let content: String
         let openChatURL: String
 
@@ -54,6 +56,8 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             styleKeywords: [],
             placeQuery: "",
             selectedPlaceID: nil,
+            selectedPlaceLatitude: nil,
+            selectedPlaceLongitude: nil,
             content: "",
             openChatURL: ""
         )
@@ -65,10 +69,11 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         var isFormValid: Bool {
             let hasMeetingAt = meetingTimeType == .now || meetingAt != nil
             let hasPlace = selectedPlaceID != nil
+                && selectedPlaceLatitude != nil
+                && selectedPlaceLongitude != nil
 
             return hasMeetingAt
                 && hasPlace
-                && !styleKeywords.isEmpty
                 && !content.trimmed.isEmpty
                 && !openChatURL.trimmed.isEmpty
         }
@@ -78,7 +83,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     let output = Output()
 
-    private let googlePlaceService: GooglePlaceService
+    private let repository: RecruitCompanionRepository
     private let searchCoordinate: (latitude: Double, longitude: Double)
     private var draft = RecruitCompanionDraft()
     private var placeSearchWorkItem: DispatchWorkItem?
@@ -91,10 +96,10 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     // MARK: - Initializer
 
     init(
-        googlePlaceService: GooglePlaceService,
+        repository: RecruitCompanionRepository,
         searchCoordinate: (latitude: Double, longitude: Double)
     ) {
-        self.googlePlaceService = googlePlaceService
+        self.repository = repository
         self.searchCoordinate = searchCoordinate
     }
 
@@ -135,6 +140,9 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             draft.placeQuery = query
             draft.selectedPlaceID = nil
             draft.selectedPlaceAddress = ""
+            draft.selectedPlaceLatitude = nil
+            draft.selectedPlaceLongitude = nil
+            draft.selectedPlaceCategory = PlaceCategory.other.rawValue
             publishState()
             searchPlacesWithDebounce(query: query)
 
@@ -148,17 +156,12 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
         case .completeButtonDidTap:
             guard isFormValid else { return }
-            // TODO: - 동행글 작성 API POST 연결
-            output.completeButtonDidTap.send(())
+            postRecruitCompanion()
 
-        case .placeDidSelect(let place):
+        case .placeDidSelect(let item):
             placeSearchWorkItem?.cancel()
             latestPlaceSearchQuery = ""
-            draft.placeQuery = place.name
-            draft.selectedPlaceID = place.placeID
-            draft.selectedPlaceAddress = place.address
-            googlePlaceService.refreshSessionToken()
-            publishState()
+            fetchPlaceDetail(for: item)
         }
     }
 
@@ -174,6 +177,8 @@ final class RecruitCompanionViewModel: BaseViewModelType {
                 styleKeywords: draft.styleKeywords,
                 placeQuery: draft.placeQuery,
                 selectedPlaceID: draft.selectedPlaceID,
+                selectedPlaceLatitude: draft.selectedPlaceLatitude,
+                selectedPlaceLongitude: draft.selectedPlaceLongitude,
                 content: draft.content,
                 openChatURL: draft.openChatURL
             )
@@ -190,7 +195,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
         guard !trimmedQuery.isEmpty else {
             output.placeSuggestions.send([])
-            googlePlaceService.refreshSessionToken()
+            repository.resetPlaceSearchSession()
             return
         }
 
@@ -207,21 +212,89 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     }
 
     private func searchPlaces(query: String) {
-        googlePlaceService.searchPlaces(
-            query: query,
-            latitude: searchCoordinate.latitude,
-            longitude: searchCoordinate.longitude
-        ) { [weak self] result in
-            guard let self, latestPlaceSearchQuery == query else { return }
+        Task { @MainActor [weak self] in
+            guard let self else { return }
 
-            switch result {
-            case .success(let suggestions):
+            do {
+                let suggestions = try await repository.searchPlaces(
+                    query: query,
+                    latitude: searchCoordinate.latitude,
+                    longitude: searchCoordinate.longitude
+                )
+                guard latestPlaceSearchQuery == query else { return }
                 output.placeSuggestions.send(suggestions)
-
-            case .failure(let error):
+            } catch {
+                guard latestPlaceSearchQuery == query else { return }
                 AppLogger.error(error, message: "장소 검색에 실패했습니다.")
                 output.placeSuggestions.send([])
             }
         }
+    }
+
+    private func fetchPlaceDetail(for item: PlaceSearchResultItem) {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                let place = try await repository.fetchPlaceDetail(for: item)
+                draft.placeQuery = place.name
+                draft.selectedPlaceID = place.placeID
+                draft.selectedPlaceAddress = place.address
+                draft.selectedPlaceLatitude = place.latitude
+                draft.selectedPlaceLongitude = place.longitude
+                draft.selectedPlaceCategory = place.category
+                output.placeSuggestions.send([])
+                publishState()
+            } catch {
+                AppLogger.error(error, message: "장소 상세 조회에 실패했습니다.")
+            }
+        }
+    }
+
+    private func postRecruitCompanion() {
+        guard let request = makeRecruitCompanionRequest() else { return }
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                _ = try await repository.recruitCompanion(request: request)
+                output.completeButtonDidTap.send(())
+            } catch {
+                AppLogger.error(error, message: "동행 모집글 작성에 실패했습니다.")
+            }
+        }
+    }
+
+    private func makeRecruitCompanionRequest() -> RecruitCompanionRequestDTO? {
+        guard
+            let selectedPlaceID = draft.selectedPlaceID,
+            let selectedPlaceLatitude = draft.selectedPlaceLatitude,
+            let selectedPlaceLongitude = draft.selectedPlaceLongitude
+        else {
+            return nil
+        }
+
+        let meetingTimeType: MeetingTimeType = draft.meetingTimeType == .scheduled
+            ? .scheduled
+            : .now
+
+        return RecruitCompanionRequestDTO(
+            place: RecruitCompanionRequestDTO.Place(
+                googlePlaceId: selectedPlaceID,
+                name: draft.placeQuery,
+                address: draft.selectedPlaceAddress,
+                latitude: selectedPlaceLatitude,
+                longitude: selectedPlaceLongitude,
+                category: draft.selectedPlaceCategory
+            ),
+            meetingTimeType: meetingTimeType,
+            meetingAt: draft.meetingTimeType == .scheduled
+                ? draft.meetingAt?.toFormattedString("yyyy-MM-dd'T'HH:mm:ss")
+                : nil,
+            maxParticipants: draft.maxParticipants,
+            content: draft.content.trimmed,
+            openChatUrl: draft.openChatURL.trimmed
+        )
     }
 }

@@ -32,17 +32,4 @@ struct MeetingItem {
     var cellType: MeetingVerificationCellType {
         (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
     }
-    
-    
-    var isExpiredWithoutCheckIn: Bool {
-        guard !isCheckedIn else { return false }
-        switch postType {
-        case .scheduled:
-            return meetingDate.addingTimeInterval(Self.verifiableWindow) < Date()
-        case .immediate:
-            return meetingDate < Date()
-        case .undecided:
-            return false
-        }
-    }
 }

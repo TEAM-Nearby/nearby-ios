@@ -11,7 +11,7 @@ protocol MyPageService {
 
 final class DefaultMyPageService {
 
-    // MARK: - Properties
+    // MARK: - Property
 
     private let networkProvider: NetworkProvider
 

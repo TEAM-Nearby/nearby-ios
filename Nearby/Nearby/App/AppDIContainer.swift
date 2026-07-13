@@ -209,8 +209,9 @@ final class AppDIContainer {
         )
     }
     
-    func makeHostRequestAllowViewModel(applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) -> HostRequestAllowViewModel {
+    func makeHostRequestAllowViewModel(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) -> HostRequestAllowViewModel {
         HostRequestAllowViewModel(
+            applicantProfileImageUrl: applicantProfileImageUrl,
             applicantName: applicantName,
             locationName: locationName,
             meetingAt: meetingAt,
@@ -434,10 +435,11 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) -> UIViewController {
+    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) -> UIViewController {
         let viewController = HostRequestAllowViewController(
             viewModel: makeHostRequestAllowViewModel(
                 applicantName: applicantName,
+                applicantProfileImageUrl: applicantProfileImageUrl,
                 locationName: locationName,
                 meetingAt: meetingAt,
                 matchId: matchId,

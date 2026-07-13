@@ -25,7 +25,6 @@ final class MyPageViewModel: BaseViewModelType {
     struct Output {
         var myPageData: ((MyPageDisplayModel) -> Void)?
         var errorMessage: ((String) -> Void)?
-
         var alarmButtonDidTap: (() -> Void)?
         var settingButtonDidTap: (() -> Void)?
         var writtenPostRowDidTap: (() -> Void)?

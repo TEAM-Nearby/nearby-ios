@@ -41,10 +41,7 @@ extension DefaultPhoneVerificationService: PhoneVerificationService {
         )
     }
 
-    func confirmVerificationCode(
-        phoneVerificationId: Int,
-        request: PhoneVerificationConfirmRequestDTO
-    ) async throws -> PhoneVerificationConfirmResponseDTO {
+    func confirmVerificationCode(phoneVerificationId: Int, request: PhoneVerificationConfirmRequestDTO) async throws -> PhoneVerificationConfirmResponseDTO {
         try await networkProvider.request(
             PhoneVerificationTarget.confirmVerificationCode(phoneVerificationId: phoneVerificationId, request: request),
             responseType: PhoneVerificationConfirmResponseDTO.self

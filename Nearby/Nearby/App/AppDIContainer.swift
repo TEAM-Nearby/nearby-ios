@@ -117,7 +117,10 @@ final class AppDIContainer {
     }
 
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
-        RecruitCompanionViewModel()
+        let googlePlaceService = GooglePlaceService()
+        let searchCoordinate = (latitude: 41.389458, longitude: 2.168289)
+
+        return RecruitCompanionViewModel(googlePlaceService: googlePlaceService, searchCoordinate: searchCoordinate)
     }
   
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
@@ -177,9 +180,11 @@ final class AppDIContainer {
     }
   
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
-        PhoneVerificationViewModel()
-    }
+        let service = DefaultPhoneVerificationService(networkProvider: networkProvider)
+        let repository = DefaultPhoneVerificationRepository(phoneVerificationService: service)
 
+        return PhoneVerificationViewModel(phoneVerificationRepository: repository)
+    }
     func makeHostRequestRecieveViewModel(applicantName: String, locationName: String) -> HostRequestRecieveViewModel {
         HostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName)
     }
@@ -223,10 +228,6 @@ final class AppDIContainer {
 
     func makeCompanionDetailViewController(viewModel: CompanionDetailViewModel) -> CompanionDetailViewController {
         CompanionDetailViewController(viewModel: viewModel)
-    }
-
-    func makeRecruitCompanionViewController() -> RecruitCompanionViewController {
-        RecruitCompanionViewController(viewModel: makeRecruitCompanionViewModel())
     }
 
     func makeDiningMapViewController() -> DiningMapViewController {
@@ -313,16 +314,10 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeReviewViewController(
-        coordinator: MeetingTabCoordinator,
-        type: NearbyUserType,
-        reviewItem: ReviewItem
-    ) -> UIViewController {
+    func makeReviewViewController(coordinator: MeetingTabCoordinator, type: NearbyUserType, reviewItem: ReviewItem) -> UIViewController {
         switch type {
         case .host:
-            return makeHostReviewListViewController(
-                coordinator: coordinator
-            )
+            return makeHostReviewListViewController(coordinator: coordinator)
 
         case .participant:
             return makeReviewPostViewController(
@@ -385,7 +380,7 @@ final class AppDIContainer {
         let service = DefaultPhoneVerificationService(networkProvider: networkProvider)
         let repository = DefaultPhoneVerificationRepository(phoneVerificationService: service)
         let viewModel = PhoneVerificationViewModel(phoneVerificationRepository: repository)
-        
+
         return PhoneVerificationViewController(viewModel: viewModel)
     }
 

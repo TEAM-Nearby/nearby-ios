@@ -251,14 +251,10 @@ final class PhoneVerificationView: BaseView {
         verificationTextField.text = nil
     }
     
-    func updatePhoneError(
-        message: String?,
-        isHidden: Bool
-    ) {
+    func updatePhoneError(message: String?, isHidden: Bool) {
         if let message {
             phoneErrorLabel.text = message
         }
-
         phoneErrorLabel.isHidden = isHidden
     }
     

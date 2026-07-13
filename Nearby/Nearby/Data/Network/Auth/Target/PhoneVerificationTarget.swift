@@ -9,10 +9,7 @@ import Alamofire
 
 enum PhoneVerificationTarget {
     case sendVerificationCode(PhoneVerificationRequestDTO)
-    case confirmVerificationCode(
-        phoneVerificationId: Int,
-        request: PhoneVerificationConfirmRequestDTO
-    )
+    case confirmVerificationCode(phoneVerificationId: Int, request: PhoneVerificationConfirmRequestDTO)
 }
 
 // MARK: - BaseTargetType
@@ -42,14 +39,10 @@ extension PhoneVerificationTarget: BaseTargetType {
     var bodyParameters: Parameters? {
         switch self {
         case .sendVerificationCode(let request):
-            return [
-                "phoneNumber": request.phoneNumber
-            ]
+            return ["phoneNumber": request.phoneNumber]
 
         case .confirmVerificationCode(_, let request):
-            return [
-                "verificationCode": request.verificationCode
-            ]
+            return ["verificationCode": request.verificationCode]
         }
     }
 }

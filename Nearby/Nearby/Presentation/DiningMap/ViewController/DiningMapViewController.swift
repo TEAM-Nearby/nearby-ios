@@ -202,3 +202,11 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         }
     }
 }
+
+// MARK: - MainTabSwitchPreparing
+
+extension DiningMapViewController: MainTabSwitchPreparing {
+    func prepareForTabSwitch() {
+        bottomSheetViewController.view.isHidden = true
+    }
+}

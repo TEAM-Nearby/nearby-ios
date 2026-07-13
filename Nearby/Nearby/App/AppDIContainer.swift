@@ -60,6 +60,14 @@ final class AppDIContainer {
         DefaultCompanionService(networkProvider: networkProvider)
     }
 
+    private func makeGooglePlaceService() -> GooglePlaceService {
+        GooglePlaceService()
+    }
+
+    private func makeRecruitCompanionService() -> RecruitCompanionService {
+        DefaultRecruitCompanionService(networkProvider: networkProvider)
+    }
+
     // MARK: - Repositories
 
     private func makeAuthRepository() -> AuthRepository {
@@ -68,6 +76,13 @@ final class AppDIContainer {
 
     private func makeCompanionRepository() -> CompanionRepository {
         DefaultCompanionRepository(service: makeCompanionService())
+    }
+
+    private func makeRecruitCompanionRepository() -> RecruitCompanionRepository {
+        DefaultRecruitCompanionRepository(
+            googlePlaceService: makeGooglePlaceService(),
+            recruitCompanionService: makeRecruitCompanionService()
+        )
     }
 
     // MARK: - ViewModels
@@ -117,9 +132,12 @@ final class AppDIContainer {
     }
 
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
-        RecruitCompanionViewModel()
+        RecruitCompanionViewModel(
+            repository: makeRecruitCompanionRepository(),
+            searchCoordinate: (latitude: 41.389458, longitude: 2.168289)
+        )
     }
-  
+
     func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
         MeetingProgressViewModel(item: item)
     }
@@ -221,10 +239,6 @@ final class AppDIContainer {
         CompanionDetailViewController(viewModel: viewModel)
     }
 
-    func makeRecruitCompanionViewController() -> RecruitCompanionViewController {
-        RecruitCompanionViewController(viewModel: makeRecruitCompanionViewModel())
-    }
-
     func makeDiningMapViewController() -> DiningMapViewController {
         DiningMapViewController(
             viewModel: makeDiningMapViewModel(),
@@ -296,14 +310,7 @@ final class AppDIContainer {
     }
     
     func makeRecruitCompanionViewController(coordinator: CompanionCoordinator? = nil) -> UIViewController {
-        let googlePlaceService = GooglePlaceService()
-        let searchCoordinate = (latitude: 41.389458, longitude: 2.168289)
-        let viewController = RecruitCompanionViewController(
-            viewModel: RecruitCompanionViewModel(
-                googlePlaceService: googlePlaceService,
-                searchCoordinate: searchCoordinate
-            )
-        )
+        let viewController = RecruitCompanionViewController(viewModel: makeRecruitCompanionViewModel())
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController

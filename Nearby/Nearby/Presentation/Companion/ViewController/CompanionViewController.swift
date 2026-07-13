@@ -65,7 +65,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setRecruitCompanionButtonLayout()
-        setTabBarHidden(false)
+        setTabBarHidden(isSpecificBottomSheetPresented)
         mapController.start()
         setBottomSheetHidden(false)
         companionView.updateMapControls(for: currentBottomSheetState)

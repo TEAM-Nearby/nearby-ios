@@ -28,8 +28,9 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        tabBarController?.tabBar.isHidden = true
     }
-    
+
     // MARK: - Custom Methods
     
     override func setStyle() {
@@ -59,6 +60,12 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
                 self?.tags = state.tags
                 self?.companionDetailView.configure(state: state)
                 self?.companionDetailView.tagCollectionView.reloadData()
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.error
+            .sink { error in
+                AppLogger.error(error)
             }
             .store(in: &cancellables)
         

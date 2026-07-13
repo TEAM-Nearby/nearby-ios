@@ -11,7 +11,10 @@ import SnapKit
 import Then
 
 final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> {
-    
+    private enum Metric {
+        static let initialContainerHeight: CGFloat = 24
+    }
+
     // MARK: - UI Components
     
     private let containerView = UIView()
@@ -23,8 +26,9 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     
     private var currentContentViewController: UIViewController?
     private var currentState = BottomSheetState(content: .nearbyCompanionEmpty)
-    private var containerHeight: CGFloat = 0
+    private var containerHeight = Metric.initialContainerHeight
     private var panStartHeight: CGFloat = 0
+    private var initialContainerHeight: CGFloat = 24
     
     var onStateChange: ((CGFloat, BottomSheetState) -> Void)?
     

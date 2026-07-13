@@ -27,11 +27,7 @@ final class RecruitCompanionTopView: BaseView {
     private let peopleExplainLabel = UILabel()
     private let peopleBottomDivider = UIView()
     private let tagTitleLabel = UILabel()
-    private let tagTitles = [
-        "사진에 진심인", "리액션이 좋은", "차분한 성격",
-        "정보 공유 환영", "새로운 음식 도전", "음식 쉐어 가능",
-        "파워 J형", "파워 P형", "술 한잔 가능"
-    ]
+    private let styleKeywords = RecruitCompanionStyleKeyword.allCases
     private lazy var tagCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeTagLayout())
     private let tagBottomDivider = UIView()
     
@@ -46,7 +42,7 @@ final class RecruitCompanionTopView: BaseView {
     var timeTypeDidSelect: ((RecruitMeetingTimeType) -> Void)?
     var meetingAtDidChange: ((Date) -> Void)?
     var participantCountDidChange: ((Int) -> Void)?
-    var styleKeywordDidTap: ((String) -> Void)?
+    var styleKeywordDidTap: ((RecruitCompanionStyleKeyword) -> Void)?
     
     // MARK: - Custom Methods
     
@@ -242,7 +238,7 @@ final class RecruitCompanionTopView: BaseView {
         }
 
         selectedTagIndexes = Set(
-            tagTitles.indices.filter { state.styleKeywords.contains(tagTitles[$0]) }
+            styleKeywords.indices.filter { state.styleKeywords.contains(styleKeywords[$0]) }
         )
         tagCollectionView.reloadData()
     }
@@ -279,15 +275,12 @@ final class RecruitCompanionTopView: BaseView {
 
 extension RecruitCompanionTopView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tagTitles.count
+        return styleKeywords.count
     }
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(NearbyTextChipCollectionViewCell.self, for: indexPath)
-        let title = tagTitles[indexPath.item]
+        let title = styleKeywords[indexPath.item].title
         
         cell.configure(style: tagChipStyle(at: indexPath.item), title: title, horizontalInset: 12)
 
@@ -298,12 +291,8 @@ extension RecruitCompanionTopView: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension RecruitCompanionTopView: UICollectionViewDelegateFlowLayout {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        let title = tagTitles[indexPath.item]
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let title = styleKeywords[indexPath.item].title
         let font = NearbyChipStyle.tagStateUnselected.font
         let titleWidth = (title as NSString).size(withAttributes: [.font: font]).width
         let horizontalInset: CGFloat = 24
@@ -319,6 +308,6 @@ extension RecruitCompanionTopView: UICollectionViewDelegateFlowLayout {
 
 extension RecruitCompanionTopView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        styleKeywordDidTap?(tagTitles[indexPath.item])
+        styleKeywordDidTap?(styleKeywords[indexPath.item])
     }
 }

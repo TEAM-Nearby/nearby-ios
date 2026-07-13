@@ -27,6 +27,21 @@ extension UILabel {
         
         self.attributedText = NSAttributedString(string: text, attributes: attributes)
     }
+
+    func setFont(_ nearbyFont: NearbyFont, text: String, textColor: UIColor = .black, lineSpacing: CGFloat) {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = lineSpacing
+        paragraphStyle.lineBreakMode = lineBreakMode
+
+        attributedText = NSAttributedString(
+            string: text,
+            attributes: [
+                .font: nearbyFont.font,
+                .foregroundColor: textColor,
+                .paragraphStyle: paragraphStyle
+            ]
+        )
+    }
     
     func setRequiredTitle(_ title: String) {
         let attributedString = NSMutableAttributedString(

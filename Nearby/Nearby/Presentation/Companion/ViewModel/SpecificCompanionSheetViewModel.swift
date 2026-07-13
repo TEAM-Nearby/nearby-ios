@@ -29,7 +29,7 @@ final class SpecificCompanionSheetViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(companions: [SpecificCompanionCellItem] = SpecificCompanionSheetViewModel.mockSpecificCompanions) {
+    init(companions: [SpecificCompanionCellItem] = []) {
         self.output = Output(companions: CurrentValueSubject(companions))
     }
     
@@ -40,70 +40,8 @@ final class SpecificCompanionSheetViewModel: BaseViewModelType {
     func companion(at index: Int) -> SpecificCompanionCellItem {
         output.companions.value[index]
     }
-}
 
-private extension SpecificCompanionSheetViewModel {
-    static let mockSpecificCompanions: [SpecificCompanionCellItem] = [
-        SpecificCompanionCellItem(
-            profileImage: nil,
-            hostName: "조예원",
-            genderTitle: "여성",
-            writtenTime: "30분 전",
-            content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 혼자 먹기는 양이 너무 많아서 동행 구해봐요",
-            meetingTime: "오후 4시 30분",
-            closedTime: " | 마감 2시간 전",
-            participantImages: [nil, nil],
-            statusText: "2/4 모집 중",
-            detailState: scheduledDetailState
-        ),
-        SpecificCompanionCellItem(
-            profileImage: nil,
-            hostName: "정지영",
-            genderTitle: "여성",
-            writtenTime: "1시간 전",
-            content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 혼자 먹기는 양이 너무 많아서 동행 구해봐요",
-            meetingTime: "오후 4시 30분",
-            closedTime: " | 마감 20분 전",
-            participantImages: [nil, nil],
-            statusText: "2/4 모집 중",
-            detailState: scheduledDetailState
-        ),
-        SpecificCompanionCellItem(
-            profileImage: nil,
-            hostName: "조예원",
-            genderTitle: "여성",
-            writtenTime: "30분 전",
-            content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 혼자 먹기는 양이 너무 많아서 동행 구해봐요",
-            meetingTime: "지금 바로",
-            closedTime: "",
-            participantImages: [nil, nil, nil],
-            statusText: "3/4 모집 중",
-            detailState: immediateDetailState
-        ),
-        SpecificCompanionCellItem(
-            profileImage: nil,
-            hostName: "정지영",
-            genderTitle: "여성",
-            writtenTime: "1시간 전",
-            content: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 혼자 먹기는 양이 너무 많아서 동행 구해봐요",
-            meetingTime: "오후 4시 30분",
-            closedTime: " | 마감 20분 전",
-            participantImages: [nil, nil],
-            statusText: "2/4 모집 중",
-            detailState: scheduledDetailState
-        )
-    ]
-
-    static let scheduledDetailState = CompanionDetailState(
-        postType: .scheduled,
-        isApplicationEnabled: true,
-        tags: ["사전에 진심", "계획파", "맛집 탐방"]
-    )
-
-    // TODO: - 서버 immediate now 질문 후 수정
-    static let immediateDetailState = CompanionDetailState(
-        postType: .immediate,
-        isApplicationEnabled: true,
-        tags: ["사전에 진심", "계획파", "맛집 탐방"]
-    )
+    func updateCompanions(_ companions: [SpecificCompanionCellItem]) {
+        output.companions.send(companions)
+    }
 }

@@ -105,7 +105,7 @@ final class WrittenPostTableViewCell: UITableViewCell {
             longitude: item.longitude,
             placeName: item.placeName,
             placeID: item.placeID,
-            zoom: 16,
+            zoomLevel: 16,
             showsInfoWindow: false
         )
 

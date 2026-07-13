@@ -15,3 +15,12 @@ struct KakaoLoginRequestDTO: Encodable {
 struct TokenRefreshRequestDTO: Encodable {
     let refreshToken: String
 }
+
+struct PhoneVerificationConfirmRequestDTO: Encodable {
+    let verificationCode: String
+}
+
+struct PhoneVerificationRequestDTO: Encodable {
+    let phoneNumber: String
+}
+

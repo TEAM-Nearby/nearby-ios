@@ -7,10 +7,22 @@
 
 import Foundation
 
-enum PostType: String, Decodable {
-    case scheduled = "SCHEDULED"
-    case immediate = "NOW"
-    case undecided = "UNDECIDED"
+enum PostType: Decodable {
+    case scheduled
+    case immediate(expirationTime: String)
+    case undecided
+
+    init(from decoder: Decoder) throws {
+        let rawValue = try decoder.singleValueContainer().decode(String.self)
+        switch rawValue {
+        case "SCHEDULED":
+            self = .scheduled
+        case "NOW":
+            self = .immediate(expirationTime: "")
+        default:
+            self = .undecided
+        }
+    }
 }
 
 extension PostType {

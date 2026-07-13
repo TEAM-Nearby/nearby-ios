@@ -18,9 +18,9 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         case timeTypeDidSelect(RecruitMeetingTimeType)
         case meetingAtDidChange(Date)
         case participantCountDidChange(Int)
-        case styleKeywordDidTap(String)
+        case styleKeywordDidTap(RecruitCompanionStyleKeyword)
         case placeQueryDidChange(String)
-        case placeSearchButtonDidTap
+        case placeDidSelect(PlaceSearchResultItem)
         case contentDidChange(String)
         case openChatURLDidChange(String)
         case completeButtonDidTap
@@ -30,34 +30,98 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     struct Output {
         let state = CurrentValueSubject<State, Never>(.initial)
-        let showPlaceSearch = PassthroughSubject<Void, Never>()
+        let placeSuggestions = CurrentValueSubject<[PlaceSearchResultItem], Never>([])
         let completeButtonDidTap = PassthroughSubject<Void, Never>()
+        let showErrorMessage = PassthroughSubject<String, Never>()
         let showBack = PassthroughSubject<Void, Never>()
     }
 
     struct State {
         let meetingTimeType: RecruitMeetingTimeType
+        let meetingAt: Date?
         let isDatePickerVisible: Bool
         let maxParticipants: Int
-        let styleKeywords: Set<String>
+        let styleKeywords: Set<RecruitCompanionStyleKeyword>
         let placeQuery: String
-        let isCompleteButtonEnabled: Bool
+        let selectedPlaceID: String?
+        let selectedPlaceLatitude: Double?
+        let selectedPlaceLongitude: Double?
+        let content: String
+        let openChatURL: String
+        let isSubmitting: Bool
 
         static let initial = State(
             meetingTimeType: .now,
+            meetingAt: nil,
             isDatePickerVisible: false,
             maxParticipants: 2,
             styleKeywords: [],
             placeQuery: "",
-            isCompleteButtonEnabled: false
+            selectedPlaceID: nil,
+            selectedPlaceLatitude: nil,
+            selectedPlaceLongitude: nil,
+            content: "",
+            openChatURL: "",
+            isSubmitting: false
         )
+
+        var isCompleteButtonEnabled: Bool {
+            return isFormValid && !isSubmitting
+        }
+
+        var isFormValid: Bool {
+            let hasMeetingAt = meetingTimeType != .scheduled || meetingAt != nil
+            let hasPlace = selectedPlaceID != nil
+                && isValidLatitude(selectedPlaceLatitude)
+                && isValidLongitude(selectedPlaceLongitude)
+
+            return hasMeetingAt
+                && hasPlace
+                && !content.trimmed.isEmpty
+                && isValidOpenChatURL(openChatURL)
+        }
+
+        private func isValidLatitude(_ latitude: Double?) -> Bool {
+            guard let latitude else { return false }
+            return (-90...90).contains(latitude)
+        }
+
+        private func isValidLongitude(_ longitude: Double?) -> Bool {
+            guard let longitude else { return false }
+            return (-180...180).contains(longitude)
+        }
+
+        private func isValidOpenChatURL(_ url: String) -> Bool {
+            return url.trimmed.hasPrefix("https://open.kakao.com/")
+        }
     }
 
     // MARK: - Properties
 
     let output = Output()
 
+    private let repository: RecruitCompanionRepository
+    private let searchCoordinate: (latitude: Double, longitude: Double)
     private var draft = RecruitCompanionDraft()
+    private var placeSearchWorkItem: DispatchWorkItem?
+    private var placeDetailTask: Task<Void, Never>?
+    private var latestPlaceSearchQuery = ""
+    private var latestPlaceDetailID = ""
+    private var isSubmitting = false
+
+    private var isCompleteButtonEnabled: Bool {
+        return output.state.value.isCompleteButtonEnabled
+    }
+
+    // MARK: - Initializer
+
+    init(
+        repository: RecruitCompanionRepository,
+        searchCoordinate: (latitude: Double, longitude: Double)
+    ) {
+        self.repository = repository
+        self.searchCoordinate = searchCoordinate
+    }
 
     // MARK: - Action
 
@@ -93,11 +157,16 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             publishState()
 
         case .placeQueryDidChange(let query):
+            placeDetailTask?.cancel()
+            latestPlaceDetailID = ""
             draft.placeQuery = query
+            draft.selectedPlaceID = nil
+            draft.selectedPlaceAddress = ""
+            draft.selectedPlaceLatitude = nil
+            draft.selectedPlaceLongitude = nil
+            draft.selectedPlaceCategory = .other
             publishState()
-
-        case .placeSearchButtonDidTap:
-            output.showPlaceSearch.send(())
+            searchPlacesWithDebounce(query: query)
 
         case .contentDidChange(let content):
             draft.content = content
@@ -108,35 +177,161 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             publishState()
 
         case .completeButtonDidTap:
-            guard isFormValid else { return }
-            // TODO: - 동행글 작성 API POST 연결
-            output.completeButtonDidTap.send(())
+            guard isCompleteButtonEnabled else { return }
+            postRecruitCompanion()
+
+        case .placeDidSelect(let item):
+            placeSearchWorkItem?.cancel()
+            placeDetailTask?.cancel()
+            latestPlaceSearchQuery = ""
+            fetchPlaceDetail(for: item)
         }
     }
 
     // MARK: - Methods
 
-    private var isFormValid: Bool {
-        let hasMeetingAt = draft.meetingTimeType == .now || draft.meetingAt != nil
-        let hasPlace = !draft.placeQuery.trimmed.isEmpty
-
-        return hasMeetingAt
-            && hasPlace
-            && !draft.styleKeywords.isEmpty
-            && !draft.content.trimmed.isEmpty
-            && !draft.openChatURL.trimmed.isEmpty
-    }
-
     private func publishState() {
         output.state.send(
             State(
                 meetingTimeType: draft.meetingTimeType,
+                meetingAt: draft.meetingAt,
                 isDatePickerVisible: draft.meetingTimeType == .scheduled,
                 maxParticipants: draft.maxParticipants,
                 styleKeywords: draft.styleKeywords,
                 placeQuery: draft.placeQuery,
-                isCompleteButtonEnabled: isFormValid
+                selectedPlaceID: draft.selectedPlaceID,
+                selectedPlaceLatitude: draft.selectedPlaceLatitude,
+                selectedPlaceLongitude: draft.selectedPlaceLongitude,
+                content: draft.content,
+                openChatURL: draft.openChatURL,
+                isSubmitting: isSubmitting
             )
         )
     }
+
+    private func searchPlacesWithDebounce(query: String) {
+        placeSearchWorkItem?.cancel()
+
+        let trimmedQuery = query.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+        latestPlaceSearchQuery = trimmedQuery
+
+        guard !trimmedQuery.isEmpty else {
+            output.placeSuggestions.send([])
+            repository.resetPlaceSearchSession()
+            return
+        }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.searchPlaces(query: trimmedQuery)
+        }
+
+        placeSearchWorkItem = workItem
+
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + 0.4,
+            execute: workItem
+        )
+    }
+
+    private func searchPlaces(query: String) {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                let suggestions = try await repository.searchPlaces(
+                    query: query,
+                    latitude: searchCoordinate.latitude,
+                    longitude: searchCoordinate.longitude
+                )
+                guard latestPlaceSearchQuery == query else { return }
+                output.placeSuggestions.send(suggestions)
+            } catch {
+                guard latestPlaceSearchQuery == query else { return }
+                AppLogger.error(error, message: "장소 검색에 실패했습니다.")
+                output.placeSuggestions.send([])
+            }
+        }
+    }
+
+    private func fetchPlaceDetail(for item: PlaceSearchResultItem) {
+        latestPlaceDetailID = item.placeID
+
+        placeDetailTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                let place = try await repository.fetchPlaceDetail(for: item)
+                guard !Task.isCancelled, latestPlaceDetailID == item.placeID else { return }
+                draft.placeQuery = place.name
+                draft.selectedPlaceID = place.placeID
+                draft.selectedPlaceAddress = place.address
+                draft.selectedPlaceLatitude = place.latitude
+                draft.selectedPlaceLongitude = place.longitude
+                draft.selectedPlaceCategory = place.category
+                output.placeSuggestions.send([])
+                publishState()
+            } catch {
+                guard !Task.isCancelled, latestPlaceDetailID == item.placeID else { return }
+                AppLogger.error(error, message: "장소 상세 조회에 실패했습니다.")
+                output.showErrorMessage.send("장소 정보를 불러오지 못했습니다. 다시 선택해 주세요.")
+            }
+        }
+    }
+
+    private func postRecruitCompanion() {
+        guard !isSubmitting else { return }
+        guard let request = makeRecruitCompanionRequest() else { return }
+
+        isSubmitting = true
+        publishState()
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                _ = try await repository.recruitCompanion(request: request)
+                isSubmitting = false
+                publishState()
+                output.completeButtonDidTap.send(())
+            } catch {
+                isSubmitting = false
+                publishState()
+                AppLogger.error(error, message: "동행 모집글 작성에 실패했습니다.")
+            }
+        }
+    }
+
+    private func makeRecruitCompanionRequest() -> RecruitCompanionRequestDTO? {
+        guard
+            let selectedPlaceID = draft.selectedPlaceID,
+            let selectedPlaceLatitude = draft.selectedPlaceLatitude,
+            let selectedPlaceLongitude = draft.selectedPlaceLongitude
+        else {
+            return nil
+        }
+
+        return RecruitCompanionRequestDTO(
+            place: RecruitCompanionRequestDTO.Place(
+                googlePlaceId: selectedPlaceID,
+                name: draft.placeQuery,
+                address: draft.selectedPlaceAddress,
+                latitude: selectedPlaceLatitude,
+                longitude: selectedPlaceLongitude,
+                category: draft.selectedPlaceCategory
+            ),
+            meetingTimeType: draft.meetingTimeType == .scheduled ? .scheduled : .now,
+            meetingAt: draft.meetingTimeType == .scheduled
+                ? draft.meetingAt?.toFormattedString("yyyy-MM-dd'T'HH:mm:ss")
+                : nil,
+            maxParticipants: draft.maxParticipants,
+            styleKeywords: RecruitCompanionStyleKeyword.allCases.filter {
+                draft.styleKeywords.contains($0)
+            },
+            content: draft.content.trimmed,
+            openChatUrl: draft.openChatURL.trimmed
+        )
+    }
+
 }

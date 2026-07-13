@@ -5,23 +5,26 @@
 //  Created by soomin on 7/8/26.
 //
 
-import UIKit
 import Combine
+import CoreLocation
+import UIKit
 
 final class NearCompanionSheetViewController: BaseViewController<NearCompanionSheetViewModel> {
-    
+
     // MARK: - Properties
 
     var onCompanionSelected: ((NearCompanionCellItem) -> Void)?
-    
+    var onSummaryTextChanged: ((String) -> Void)?
+    var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
+
     private var nearCompanionSheetView = NearCompanionBottomView(sortOptions: SortOption.allCases)
-    
+
     // MARK: - Life Cycle
-    
+
     override func loadView() {
         view = nearCompanionSheetView
     }
-    
+
     // MARK: - Custom Methods
 
     override func setDelegate() {
@@ -34,7 +37,7 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
             self?.viewModel.action(.sortOptionDidTap(option))
         }
     }
-    
+
     override func bindState() {
         viewModel.output.selectedSortOption
             .receive(on: DispatchQueue.main)
@@ -49,13 +52,48 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
                 self?.nearCompanionSheetView.collectionView.reloadData()
             }
             .store(in: &cancellables)
-        
+
+        viewModel.output.summaryText
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] summaryText in
+                self?.onSummaryTextChanged?(summaryText)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.mapMarkers
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] markers in
+                self?.onMapMarkersChanged?(markers)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.error
+            .sink { error in
+                AppLogger.error(error)
+            }
+            .store(in: &cancellables)
+
         viewModel.output.selectedCompanion
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
                 self?.onCompanionSelected?(item)
             }
             .store(in: &cancellables)
+    }
+
+    // MARK: - Method
+
+    func updateLocation(_ coordinate: CLLocationCoordinate2D) {
+        viewModel.action(.locationDidUpdate(coordinate))
+    }
+
+    func specificCompanions(for placeId: Int) -> [SpecificCompanionCellItem] {
+        viewModel.specificCompanions(for: placeId)
+    }
+
+    func updatePlaceCategory(_ category: String) {
+        viewModel.action(.placeCategoryDidSelect(category))
     }
 }
 
@@ -66,10 +104,7 @@ extension NearCompanionSheetViewController: UICollectionViewDataSource {
         viewModel.nearCompanionCount
     }
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(NearCompanionCell.self, for: indexPath)
         cell.configure(with: viewModel.companion(at: indexPath.item))
         return cell

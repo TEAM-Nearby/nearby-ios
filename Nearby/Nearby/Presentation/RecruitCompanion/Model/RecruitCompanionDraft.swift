@@ -11,8 +11,13 @@ struct RecruitCompanionDraft {
     var meetingTimeType: RecruitMeetingTimeType = .now
     var meetingAt: Date?
     var maxParticipants = 2
-    var styleKeywords = Set<String>()
+    var styleKeywords = Set<RecruitCompanionStyleKeyword>()
     var placeQuery = ""
+    var selectedPlaceID: String?
+    var selectedPlaceAddress = ""
+    var selectedPlaceLatitude: Double?
+    var selectedPlaceLongitude: Double?
+    var selectedPlaceCategory = PlaceCategory.other
     var content = ""
     var openChatURL = ""
 }

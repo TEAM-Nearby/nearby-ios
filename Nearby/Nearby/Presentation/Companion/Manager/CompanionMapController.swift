@@ -12,13 +12,15 @@ final class CompanionMapController: NSObject {
     
     // MARK: - Properties
     
-    var onCompanionMarkerTap: (() -> Void)?
+    var onCompanionMarkerTap: ((Int) -> Void)?
+    var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
 
     private let locationManager = CLLocationManager()
     private let mapView: GMSMapView
     private let markerManager: CompanionMapMarkerManager
     private let configuration: CompanionMapConfiguration
     private var currentLocation: CLLocation?
+    private let cameraVerticalOffset: CGFloat = 38
     
     // MARK: - Initializer
 
@@ -30,17 +32,28 @@ final class CompanionMapController: NSObject {
         mapView.delegate = self
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
+
+        if let referenceCoordinate = configuration.referenceCoordinate {
+            moveCamera(to: CLLocation(latitude: referenceCoordinate.latitude, longitude: referenceCoordinate.longitude))
+        }
     }
     
     // MARK: - Methods
     
     private func moveCamera(to location: CLLocation) {
-        let camera = GMSCameraPosition.camera(
-            withLatitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude,
-            zoom: configuration.initialZoom
-        )
+        let target = cameraTarget(for: location.coordinate, zoom: configuration.initialZoom, verticalOffset: cameraVerticalOffset)
+        let camera = GMSCameraPosition.camera(withLatitude: target.latitude, longitude: target.longitude, zoom: configuration.initialZoom)
         mapView.animate(to: camera)
+    }
+
+    private func cameraTarget(for coordinate: CLLocationCoordinate2D, zoom: Float, verticalOffset: CGFloat) -> CLLocationCoordinate2D {
+        let worldSize = 256 * pow(2, Double(zoom))
+        let latitudeRadians = coordinate.latitude * .pi / 180
+        let mercatorY = (1 - log(tan(latitudeRadians) + 1 / cos(latitudeRadians)) / .pi) / 2
+        let offsetMercatorY = mercatorY + Double(verticalOffset) / worldSize
+        let latitude = atan(sinh(.pi * (1 - 2 * offsetMercatorY))) * 180 / .pi
+
+        return CLLocationCoordinate2D(latitude: latitude, longitude: coordinate.longitude)
     }
 
     private func startUpdatingHeadingIfNeeded() {
@@ -90,6 +103,10 @@ final class CompanionMapController: NSObject {
     func addCompanionMarker(at coordinate: CLLocationCoordinate2D, nickname: String, written: String, place: String, date: String, style: MapMarkerStyle = .companion) -> GMSMarker {
         markerManager.addCompanionMarker(at: coordinate, nickname: nickname, written: written, place: place, date: date, style: style)
     }
+
+    func updateCompanionMarkers(_ markers: [CompanionMapMarkerData]) {
+        markerManager.replaceCompanionMarkers(with: markers)
+    }
 }
 
 // MARK: - GMSMapViewDelegate
@@ -100,8 +117,8 @@ extension CompanionMapController: GMSMapViewDelegate {
     }
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-        guard markerManager.containsCompanionMarker(marker) else { return false }
-        onCompanionMarkerTap?()
+        guard let placeId = markerManager.placeId(for: marker) else { return false }
+        onCompanionMarkerTap?(placeId)
         return true
     }
 }
@@ -123,10 +140,15 @@ extension CompanionMapController: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        currentLocation = location
-        markerManager.updateCurrentLocation(to: location)
-        moveCamera(to: location)
-        addConfiguredMarkersIfNeeded(near: location)
+        let displayedLocation = configuration.referenceCoordinate.map {
+            CLLocation(latitude: $0.latitude, longitude: $0.longitude)
+        } ?? location
+
+        currentLocation = displayedLocation
+        onLocationUpdate?(displayedLocation.coordinate)
+        markerManager.updateCurrentLocation(to: displayedLocation)
+        moveCamera(to: displayedLocation)
+        addConfiguredMarkersIfNeeded(near: displayedLocation)
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

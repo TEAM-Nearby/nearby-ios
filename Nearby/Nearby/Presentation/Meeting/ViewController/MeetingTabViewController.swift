@@ -31,6 +31,7 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        viewModel.action(.viewDidLoad)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
@@ -57,8 +58,6 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
                 self?.meetingTabView.collectionView.reloadData()
             }
             .store(in: &cancellables)
-        
-        viewModel.action(.viewDidLoad)
     }
     
     // MARK: - Method

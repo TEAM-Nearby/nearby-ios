@@ -24,12 +24,13 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<DisplayData, Never>()
         let showHostRejectView = PassthroughSubject<Void, Never>()
         let showHostAllowView = PassthroughSubject<Void, Never>()
+        let errorMessage = PassthroughSubject<String, Never>()
     }
 
     struct DisplayData {
         let image: UIImage
         let name: String
-        let profile: UIImage
+        let profileImageUrl: String?
         let gender: String
         let level: String
         let title: String
@@ -42,15 +43,20 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
 
     let output = Output()
 
-    private let applicantName: String
-    private let locationName: String
+    let applicationId: Int
+    private(set) var applicantNickname: String = ""
+    private(set) var placeName: String = ""
+    private(set) var meetingAt: String = ""
+    private(set) var matchId: Int?
+    private(set) var applicantProfileImageUrl: String?
+    private let repository: HostCompanionRepository
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
 
-    init(applicantName: String, locationName: String) {
-        self.applicantName = applicantName
-        self.locationName = locationName
+    init(applicationId: Int, repository: HostCompanionRepository) {
+        self.applicationId = applicationId
+        self.repository = repository
     }
 
     // MARK: - Action
@@ -58,23 +64,55 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            let data = DisplayData(
-                image: .illustLetterProfile,
-                name: "\(applicantName)",
-                profile: .imgProfileDefault,
-                gender: "여성",
-                level: "4",
-                title: "함께 동행을 원하는 분이 있어요",
-                subtitle: "대화를 나눈 후 일정을 확정해보세요",
-                location: "\(locationName)",
-                date: "6월 18일 (목) 오후 4시 30분"
-            )
-            output.displayData.send(data)
+            fetchDetail()
 
         case .rejectButtonDidTap:
             output.showHostRejectView.send(())
+            
         case .allowButtonDidTap:
-            output.showHostAllowView.send(())
+            allowApplication()
+        }
+    }
+    
+    // MARK: - Methods
+
+    private func fetchDetail() {
+        Task {
+            do {
+                let DTO = try await repository.fetchHostCompanionDetail(applicationId: applicationId)
+                let data = DisplayData(
+                    image: .illustLetterProfile,
+                    name: DTO.applicantProfile.nickname,
+                    profileImageUrl: DTO.applicantProfile.profileImageUrl,
+                    gender: DTO.applicantProfile.gender.genderDisplayText,
+                    level: String(format: "%.1f", DTO.applicantProfile.mannerScore),
+                    title: "함께 동행을 원하는 분이 있어요",
+                    subtitle: "대화를 나눈 후 일정을 확정해보세요",
+                    location: DTO.placeName,
+                    date: DTO.meetingAt.toDate()?.meetingDisplayText ?? ""
+                )
+                applicantNickname = DTO.applicantProfile.nickname
+                applicantProfileImageUrl = DTO.applicantProfile.profileImageUrl
+                placeName = DTO.placeName
+                meetingAt = DTO.meetingAt
+                output.displayData.send(data)
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+
+    private func allowApplication() {
+        Task {
+            do {
+                let response = try await repository.allowApplication(applicationId: applicationId)
+                matchId = response.matchId
+                output.showHostAllowView.send(())
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
         }
     }
 }

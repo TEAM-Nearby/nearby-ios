@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -38,17 +39,17 @@ final class MeetingProfileView: BaseView {
         }
         
         nameLabel.do {
-            $0.setFont(.b2Sb16, text: "정지영", textColor: .grey80)
+            $0.setFont(.b2Sb16, textColor: .grey80)
             $0.textAlignment = .left
         }
         
         genderLabel.do {
-            $0.setFont(.b2M16, text: "20대 여성", textColor: .primary50)
+            $0.setFont(.b2M16, textColor: .primary50)
             $0.textAlignment = .left
         }
         
         informationLabel.do {
-            $0.setFont(.b3M14, text: "시우다드 콘달 · 오후 4:30", textColor: .grey80)
+            $0.setFont(.b3M14, textColor: .grey80)
             $0.textAlignment = .left
         }
         
@@ -112,12 +113,21 @@ final class MeetingProfileView: BaseView {
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
     }
     
-    // MARK: - Method
-    
-    func configure(name: String, gender: String, information: String) {
+    // MARK: - Methods
+
+    func configure(imageUrl: String?, name: String, gender: String, information: String) {
+        if let imageUrl, let url = URL(string: imageUrl) {
+            imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+        } else {
+            imageView.image = .imgProfileDefault
+        }
         nameLabel.text = name
         genderLabel.text = gender
         informationLabel.text = information
+    }
+    
+    func cancelImageLoad() {
+        imageView.kf.cancelDownloadTask()
     }
     
     // MARK: - Action

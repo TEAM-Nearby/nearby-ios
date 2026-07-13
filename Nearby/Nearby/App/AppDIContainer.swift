@@ -46,6 +46,10 @@ final class AppDIContainer {
         MyPageCoordinator(navigationController: navigationController, appDIContainer: self)
     }
     
+    func makeNotificationCoordinator(navigationController: UINavigationController) -> NotificationCoordinator {
+        NotificationCoordinator(navigationController: navigationController, diContainer: self)
+    }
+    
     // MARK: - Networks
     
     private func makeKakaoOAuthProvider() -> KakaoOAuthProvider {
@@ -80,6 +84,18 @@ final class AppDIContainer {
         DefaultMatchedCompanionListService(networkProvider: networkProvider)
     }
     
+    private func makeMeetingService() -> MeetingService {
+        DefaultMeetingService(networkProvider: networkProvider)
+    }
+    
+    private func makeHostCompanionService() -> HostCompanionService {
+        DefaultHostCompanionService(networkProvider: networkProvider)
+    }
+    
+    private func makeApplicantCompanionService() -> ApplicantCompanionService {
+        DefaultApplicantCompanionService(networkProvider: networkProvider)
+    }
+    
     // MARK: - Repositories
     
     private func makeAuthRepository() -> AuthRepository {
@@ -96,7 +112,19 @@ final class AppDIContainer {
             recruitCompanionService: makeRecruitCompanionService()
         )
     }
-
+    
+    private func makeMeetingRepository() -> MeetingRepository {
+        DefaultMeetingRepository(meetingService: makeMeetingService())
+    }
+    
+    func makeHostCompanionRepository() -> HostCompanionRepository {
+        DefaultHostCompanionRepository(hostCompanionService: makeHostCompanionService())
+    }
+    
+    func makeApplicantCompanionRepository() -> ApplicantCompanionRepository {
+        DefaultApplicantCompanionRepository(applicantCompanionService: makeApplicantCompanionService())
+    }
+    
     private func makeCompanionDetailRepository() -> CompanionDetailRepository {
         DefaultCompanionDetailRepository(service: makeCompanionDetailService())
     }
@@ -152,7 +180,14 @@ final class AppDIContainer {
     }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
-        MeetingTabViewModel()
+        MeetingTabViewModel(repository: makeMeetingRepository())
+    }
+    
+    func makeMeetingProgressViewModel(meetingId: Int) -> MeetingProgressViewModel {
+        MeetingProgressViewModel(
+            meetingId: meetingId,
+            repository: makeMeetingRepository()
+        )
     }
     
     func makeMatchingViewModel() -> MatchingViewModel {
@@ -166,8 +201,8 @@ final class AppDIContainer {
         )
     }
 
-    func makeMeetingProgressViewModel(item: MeetingItem) -> MeetingProgressViewModel {
-        MeetingProgressViewModel(item: item)
+    func makeMeetingProgressViewModel(meetingId: Int, repository: MeetingRepository) -> MeetingProgressViewModel {
+        MeetingProgressViewModel(meetingId: meetingId, repository: makeMeetingRepository())
     }
     
     func makeMyPageViewModel() -> MyPageViewModel {
@@ -206,16 +241,31 @@ final class AppDIContainer {
         CompanionRequestDeclineViewModel()
     }
     
-    func makeHostRequestDeclineViewModel(applicantName: String) -> HostRequestDeclineViewModel {
-        HostRequestDeclineViewModel(applicantName: applicantName)
+    func makeCompanionRequestAcceptViewModel(applicationId: Int) -> CompanionRequestAcceptViewModel {
+        CompanionRequestAcceptViewModel(
+            applicationId: applicationId,
+            repository: makeApplicantCompanionRepository()
+        )
     }
     
-    func makeCompanionRequestAcceptViewModel(hostName: String, locationName: String) -> CompanionRequestAcceptViewModel {
-        CompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName)
+    func makeHostRequestRecieveViewModel(applicationId: Int) -> HostRequestRecieveViewModel {
+        HostRequestRecieveViewModel(
+            applicationId: applicationId,
+            repository: makeHostCompanionRepository()
+        )
     }
     
-    func makeHostRequestAllowViewModel(applicantName: String, locationName: String, postType: PostType) -> HostRequestAllowViewModel {
-        HostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType)
+    func makeHostRequestDeclineViewModel(applicantName: String, applicationId: Int) -> HostRequestDeclineViewModel {
+        HostRequestDeclineViewModel(
+            applicantName: applicantName,
+            applicationId: applicationId,
+            repository: makeHostCompanionRepository()
+        )
+    }
+    
+    func makeHostRequestAllowViewModel(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) -> HostRequestAllowViewModel {
+        HostRequestAllowViewModel(applicantProfileImageUrl: applicantProfileImageUrl, applicantName: applicantName, locationName: locationName, meetingAt: meetingAt, matchId: matchId, postType: postType
+        )
     }
     
     func makeHostProfileViewModel(profileId: Int) -> HostProfileViewModel {
@@ -225,9 +275,6 @@ final class AppDIContainer {
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
         let repository = makeAuthRepository()
         return PhoneVerificationViewModel(authRepository: repository)
-    }
-    func makeHostRequestRecieveViewModel(applicantName: String, locationName: String) -> HostRequestRecieveViewModel {
-        HostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName)
     }
     
     // MARK: - ViewControllers
@@ -328,8 +375,10 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, item: MeetingItem) -> UIViewController {
-        let viewController = MeetingProgressViewController(viewModel: makeMeetingProgressViewModel(item: item))
+    func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, meetingId: Int) -> UIViewController {
+        let viewController = MeetingProgressViewController(
+            viewModel: makeMeetingProgressViewModel(meetingId: meetingId)
+        )
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController
@@ -377,25 +426,31 @@ final class AppDIContainer {
     func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel())
         viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
     
     func makeReviewPostViewController(coordinator: MeetingTabCoordinator, reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool, onSaved: (() -> Void)?) -> UIViewController {
-        let viewController = ReviewPostViewController( viewModel: makeReviewPostViewModel(reviewItem: reviewItem, type: type, isLast: isLast))
+        let viewController = ReviewPostViewController(
+            viewModel: makeReviewPostViewModel(reviewItem: reviewItem, type: type, isLast: isLast)
+        )
         viewController.coordinator = coordinator
         viewController.onReviewSaved = onSaved
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
     
     func makeReportPostViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = ReportPostViewController(viewModel: makeReportPostViewModel())
         viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
     
     func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = ReportCompletionViewController(viewModel: EmptyViewModel())
         viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
     
@@ -404,19 +459,57 @@ final class AppDIContainer {
             viewModel: makeCompanionRequestSentViewModel(hostName: hostName)
         )
         viewController.coordinator = coordinator
-        
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
     
     func makeCompanionRequestDeclineViewController(coordinator: NotificationCoordinator) -> UIViewController {
         let viewController = CompanionRequestDeclineViewController(viewModel: makeCompanionRequestDeclineViewModel())
         viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
     
-    func makeHostRequestDeclineViewController(coordinator: NotificationCoordinator, applicantName: String) -> UIViewController {
-        let viewController = HostRequestDeclineViewController(viewModel: makeHostRequestDeclineViewModel(applicantName: applicantName))
+    func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, applicationId: Int) -> UIViewController {
+        let viewController = CompanionRequestAcceptViewController(
+            viewModel: makeCompanionRequestAcceptViewModel(applicationId: applicationId)
+        )
         viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+    
+    func makeHostRequestRecieveViewController(coordinator: NotificationCoordinator, applicationId: Int) -> HostRequestRecieveViewController {
+        let viewController = HostRequestRecieveViewController(
+            viewModel: makeHostRequestRecieveViewModel(applicationId: applicationId)
+        )
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+    
+    func makeHostRequestDeclineViewController(coordinator: NotificationCoordinator, applicantName: String, applicationId: Int) -> UIViewController {
+        let viewController = HostRequestDeclineViewController(
+            viewModel: makeHostRequestDeclineViewModel(applicantName: applicantName, applicationId: applicationId)
+        )
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+    
+    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) -> UIViewController {
+        let viewController = HostRequestAllowViewController(
+            viewModel: makeHostRequestAllowViewModel(
+                applicantName: applicantName,
+                applicantProfileImageUrl: applicantProfileImageUrl,
+                locationName: locationName,
+                meetingAt: meetingAt,
+                matchId: matchId,
+                postType: postType
+            )
+        )
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
     
@@ -426,27 +519,5 @@ final class AppDIContainer {
         let viewModel = PhoneVerificationViewModel(authRepository: repository)
 
         return PhoneVerificationViewController(viewModel: viewModel)
-    }
-    
-    func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {
-        let viewController = CompanionRequestAcceptViewController(viewModel: makeCompanionRequestAcceptViewModel(hostName: hostName, locationName: locationName))
-        viewController.coordinator = coordinator
-        return viewController
-    }
-    
-    func makeHostRequestRecieveViewController(coordinator: NotificationCoordinator, applicantName: String, locationName: String) -> HostRequestRecieveViewController {
-        let viewController = HostRequestRecieveViewController(viewModel: makeHostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName))
-        viewController.coordinator = coordinator
-        return viewController
-    }
-    
-    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, locationName: String, postType: PostType) -> UIViewController {
-        let viewController = HostRequestAllowViewController(viewModel: makeHostRequestAllowViewModel(applicantName: applicantName, locationName: locationName, postType: postType))
-        viewController.coordinator = coordinator
-        return viewController
-    }
-    
-    func makeNotificationCoordinator(navigationController: UINavigationController) -> NotificationCoordinator {
-        NotificationCoordinator(navigationController: navigationController, diContainer: self)
     }
 }

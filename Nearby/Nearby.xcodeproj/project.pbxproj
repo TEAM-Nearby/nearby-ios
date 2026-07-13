@@ -33,7 +33,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Data/Network/DiningMap/DTO/.gitkeep,
-				Data/Network/Matching/DTO/.gitkeep,
 				Data/Network/Metting/DTO/.gitkeep,
 				Data/Network/MyPage/DTO/.gitkeep,
 				Data/Network/Notification/DTO/.gitkeep,

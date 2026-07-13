@@ -439,7 +439,6 @@ private extension MyPageView {
 
     func makeMannerChip(title: String) -> NearbyChipButton {
         let chip = NearbyChipButton(style: .tagStateSelected, title: title, horizontalInset: 16)
-
         chip.isUserInteractionEnabled = false
 
         chip.snp.makeConstraints {

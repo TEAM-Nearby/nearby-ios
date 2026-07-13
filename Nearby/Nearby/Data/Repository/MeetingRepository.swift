@@ -30,4 +30,8 @@ extension DefaultMeetingRepository: MeetingRepository {
     func fetchMeetingList() async throws -> [MeetingResponseDTO] {
         try await meetingService.fetchMeetingList().meetings
     }
+    
+    func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetailResponseDTO {
+        try await meetingService.fetchMeetingDetail(meetingId: meetingId)
+    }
 }

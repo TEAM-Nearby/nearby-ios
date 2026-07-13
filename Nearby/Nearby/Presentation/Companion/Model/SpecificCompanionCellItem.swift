@@ -8,6 +8,9 @@
 import UIKit
 
 struct SpecificCompanionCellItem {
+    let placeImageURL: URL?
+    let placeName: String
+    let placeInfo: String
     let profileImage: UIImage?
     let hostName: String
     let genderTitle: String
@@ -23,6 +26,9 @@ struct SpecificCompanionCellItem {
 extension SpecificCompanionCellItem {
     init(dto: CompanionDTO) {
         self.init(
+            placeImageURL: dto.place.imageSource == "DEFAULT" ? nil : URL(string: dto.place.imageUrl),
+            placeName: dto.place.name,
+            placeInfo: "\(dto.place.categoryTitle) · \(dto.place.distanceTitle)",
             profileImage: nil,
             hostName: dto.host.nickname,
             genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
@@ -35,7 +41,7 @@ extension SpecificCompanionCellItem {
             detailState: CompanionDetailState(
                 postId: dto.postId,
                 postType: dto.meetingTimeType == "NOW" ? .immediate(expirationTime: "곧") : .scheduled,
-                isApplicationEnabled: dto.status == "RECRUITING",
+                isApplicationEnabled: false,
                 tags: [],
                 hostName: dto.host.nickname,
                 genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
@@ -49,5 +55,24 @@ extension SpecificCompanionCellItem {
                 content: dto.contentPreview
             )
         )
+    }
+}
+
+private extension CompanionPlaceDTO {
+    var categoryTitle: String {
+        switch category {
+        case "RESTAURANT": return "식당"
+        case "CAFE": return "카페"
+        case "PUB": return "펍"
+        case "MUSEUM": return "박물관"
+        case "PHOTO_SPOT": return "사진 명소"
+        default: return "기타"
+        }
+    }
+
+    var distanceTitle: String {
+        distanceMeters < 1_000
+            ? "\(distanceMeters)m"
+            : String(format: "%.1fkm", Double(distanceMeters) / 1_000)
     }
 }

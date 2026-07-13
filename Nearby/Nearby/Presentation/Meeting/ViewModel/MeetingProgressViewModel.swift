@@ -16,6 +16,8 @@ final class MeetingProgressViewModel: BaseViewModelType {
         case viewDidLoad
         case verifyButtonDidTap
         case reportButtonDidTap
+        case locationDidUpdate(latitude: Double, longitude: Double)
+        case locationDidFail
     }
     
     // MARK: - Output
@@ -24,13 +26,14 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<DisplayData, Never>()
         let step = CurrentValueSubject<MeetingStep, Never>(.match)
         let verifyButtonState = PassthroughSubject<VerifyButtonState, Never>()
-        let showMeetingVerification = PassthroughSubject<Void, Never>()
         let showReport = PassthroughSubject<Void, Never>()
         let showReviewList = PassthroughSubject<Void, Never>()
+        let errorMessage = PassthroughSubject<String, Never>()
+        let requestLocation = PassthroughSubject<Void, Never>()
     }
     
     struct DisplayData {
-        let image: UIImage
+        let profileImageUrl: String?
         let name: String
         let gender: String
         let information: String
@@ -44,10 +47,14 @@ final class MeetingProgressViewModel: BaseViewModelType {
     
     // MARK: - Properties
     
-    private let item: MeetingItem
-    private let verifiableWindow: TimeInterval = 3600
     let output = Output()
     
+    let meetingId: Int
+    private(set) var userRole: NearbyUserType = .participant
+    private(set) var canMoveToComplete: Bool = false
+    private let repository: MeetingRepository
+    private var meetingDate: Date?
+    private var postType: PostType = .scheduled
     private var cancellables = Set<AnyCancellable>()
     
     private var currentStep: MeetingStep {
@@ -55,7 +62,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     }
     
     private var isWithinVerifiableWindow: Bool {
-        abs(item.meetingDate.timeIntervalSinceNow) <= verifiableWindow
+        postType.isVerifiable(meetingAt: meetingDate)
     }
     
     private var isVerifiable: Bool {
@@ -64,8 +71,9 @@ final class MeetingProgressViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(item: MeetingItem) {
-        self.item = item
+    init(meetingId: Int, repository: MeetingRepository) {
+        self.meetingId = meetingId
+        self.repository = repository
     }
     
     // MARK: - Action
@@ -73,27 +81,13 @@ final class MeetingProgressViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            let data = DisplayData(
-                image: .imgProfileDefault,
-                name: item.name,
-                gender: item.gender,
-                information: item.information
-            )
-            output.displayData.send(data)
+            fetchDetail()
             
-            let initialStep: MeetingStep = isWithinVerifiableWindow ? .verification : .match
-            output.step.send(initialStep)
-            
-            updateVerifyButtonState()
-            startTimer()
-        
         case .verifyButtonDidTap:
             switch currentStep {
             case .verification:
                 guard isVerifiable else { return }
-                // TODO: - 만남 인증 API 연동 후 성공 콜백에서 단계 갱신
-                output.step.send(.completion)
-                updateVerifyButtonState()
+                output.requestLocation.send(())
             case .completion:
                 output.showReviewList.send(())
             case .match:
@@ -102,10 +96,67 @@ final class MeetingProgressViewModel: BaseViewModelType {
             
         case .reportButtonDidTap:
             output.showReport.send(())
+        
+        case .locationDidUpdate(let latitude, let longitude):
+            checkIn(latitude: latitude, longitude: longitude)
+            
+        case .locationDidFail:
+            output.errorMessage.send("위치를 확인할 수 없어요. 위치 권한을 확인해 주세요.")
         }
     }
     
     // MARK: - Methods
+    
+    private func fetchDetail() {
+        Task {
+            do {
+                let DTO = try await repository.fetchMeetingDetail(meetingId: meetingId)
+                
+                userRole = DTO.currentUserRole
+                meetingDate = DTO.meetingAt?.toDate()
+                postType = DTO.meetingTimeType
+
+                let information = [DTO.placeName, meetingDate?.timeDisplayText]
+                    .compactMap { $0 }
+                    .joined(separator: " · ")
+                let data = DisplayData(
+                    profileImageUrl: DTO.hostProfileImageUrl,
+                    name: DTO.hostNickname,
+                    gender: DTO.hostGender.genderDisplayText,
+                    information: information
+                )
+                output.displayData.send(data)
+                
+                let initialStep: MeetingStep
+                if DTO.currentUserCheckedIn {
+                    initialStep = .completion
+                } else {
+                    initialStep = isWithinVerifiableWindow ? .verification : .match
+                }
+                output.step.send(initialStep)
+                
+                updateVerifyButtonState()
+                startTimer()
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func checkIn(latitude: Double, longitude: Double) {
+        Task {
+            do {
+                let DTO = try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
+                canMoveToComplete = DTO.canMoveToComplete
+                output.step.send(.completion)
+                updateVerifyButtonState()
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
     
     private func updateVerifyButtonState() {
         output.verifyButtonState.send(
@@ -123,8 +174,9 @@ final class MeetingProgressViewModel: BaseViewModelType {
             .sink { [weak self] _ in
                 guard let self else { return }
                 
-                if currentStep == .match && isWithinVerifiableWindow {
-                    output.step.send(.verification)
+                let newStep: MeetingStep = isWithinVerifiableWindow ? .verification : .match
+                if currentStep != .completion && currentStep != newStep {
+                    output.step.send(newStep)
                 }
                 updateVerifyButtonState()
             }

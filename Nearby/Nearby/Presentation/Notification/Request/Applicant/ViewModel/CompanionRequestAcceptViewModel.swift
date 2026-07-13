@@ -27,6 +27,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         let showOpenChat = PassthroughSubject<URL, Never>()
         let showChatLinkPopup = PassthroughSubject<String, Never>()
         let showScheduleDetail = PassthroughSubject<Void, Never>()
+        let errorMessage = PassthroughSubject<String, Never>()
     }
 
     enum Step {
@@ -35,7 +36,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
     }
 
     struct DisplayData {
-        let image: UIImage
+        let hostProfileImageUrl: String?
         let title: String
         let location: String
         let date: String
@@ -48,17 +49,16 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
 
     let output = Output()
 
-    private let hostName: String
-    private let locationName: String
-    // TODO: - 서버 연동 시 응답값으로 교체
-    let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
+    let applicationId: Int
+    private(set) var openChatURLString: String = ""
+    private let repository: ApplicantCompanionRepository
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
 
-    init(hostName: String, locationName: String) {
-        self.hostName = hostName
-        self.locationName = locationName
+    init(applicationId: Int, repository: ApplicantCompanionRepository) {
+        self.applicationId = applicationId
+        self.repository = repository
     }
 
     // MARK: - Action
@@ -66,16 +66,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            let data = DisplayData(
-                image: .imgProfileDefault,
-                title: "\(hostName) 님과 동행이 매칭됐어요!",
-                location: "\(locationName)",
-                date: "6월 18일 (목) 오후 4시 30분",
-                people: "3/4명",
-                buttonTitle: "확인했어요",
-                avatarImages: [nil, nil, nil]
-            )
-            output.displayData.send(data)
+            fetchRequestResult()
 
         case .confirmButtonDidTap:
             switch output.step.value {
@@ -92,9 +83,40 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
             sendChatLinkPopup()
         }
     }
+
+    // MARK: - Method
+
+    private func fetchRequestResult() {
+        Task {
+            do {
+                let DTO = try await repository.fetchRequestResult(applicationId: applicationId)
+
+                guard let result = DTO.acceptedResult else {
+                    output.errorMessage.send("신청 결과를 불러올 수 없어요")
+                    return
+                }
+
+                openChatURLString = result.openChatUrl ?? ""
+
+                let data = DisplayData(
+                    hostProfileImageUrl: result.host.profileImageUrl,
+                    title: "\(result.host.nickname) 님과 동행이 매칭됐어요!",
+                    location: result.place.name,
+                    date: result.meetingAt?.toDate()?.meetingDisplayText ?? "",
+                    people: "\(result.participantCount)/\(result.maxParticipants)명",
+                    buttonTitle: "확인했어요",
+                    avatarImages: [UIImage?](repeating: nil, count: result.participantCount)
+                )
+                output.displayData.send(data)
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
 }
 
-// MARK: - OpenChatDiplayable
+// MARK: - OpenChatSendable
 
 extension CompanionRequestAcceptViewModel: OpenChatSendable {
     var openChatOutput: OpenChatDisplayable {

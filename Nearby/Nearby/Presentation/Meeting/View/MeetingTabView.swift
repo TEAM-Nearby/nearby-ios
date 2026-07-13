@@ -106,5 +106,6 @@ final class MeetingTabView: BaseView {
         titleLabel.isHidden = isEmpty
         collectionView.isHidden = isEmpty
         emptyView.isHidden = !isEmpty
+        
     }
 }

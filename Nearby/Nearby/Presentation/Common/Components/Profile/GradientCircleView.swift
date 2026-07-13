@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -101,8 +102,15 @@ final class GradientCircleView: BaseView {
 
     // MARK: - Method
 
-    // TODO: - Kinfisher 사용
+    func configure(imageUrl: String?) {
+        if let imageUrl, let url = URL(string: imageUrl) {
+            imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+        } else {
+            imageView.image = .imgProfileDefault
+        }
+    }
+
     func configure(image: UIImage?) {
-        imageView.image = image
+        imageView.image = image ?? .imgProfileDefault
     }
 }

@@ -76,15 +76,11 @@ final class HostReviewListViewModel: BaseViewModelType {
             output.reviewedIDs.send(reviewed)
             
         case .completionButtonDidTap:
-            output.showCompletion.send(())
+            completeMeeting()
         }
     }
     
     // MARK: - Method
-
-    func item(at index: Int) -> ReviewItem {
-        items[index]
-    }
 
     private func fetchReviewTargets() {
         Task {
@@ -113,5 +109,21 @@ final class HostReviewListViewModel: BaseViewModelType {
                 output.errorMessage.send(error.localizedDescription)
             }
         }
+    }
+    
+    private func completeMeeting() {
+        Task {
+            do {
+                _ = try await repository.completeMeeting(meetingId: meetingId)
+                output.showCompletion.send(())
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+    
+    func item(at index: Int) -> ReviewItem {
+        items[index]
     }
 }

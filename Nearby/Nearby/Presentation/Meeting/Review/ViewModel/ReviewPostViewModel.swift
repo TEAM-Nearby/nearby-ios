@@ -108,8 +108,7 @@ final class ReviewPostViewModel: BaseViewModelType {
             if hasReviewContent {
                 submitReview()
             } else if isFinishButton {
-                // TODO: - 후기 없이 마치는 경우 동행 완료 API 연동
-                output.companionCompleted.send(())
+                completeMeeting()
             }
         }
     }
@@ -149,10 +148,23 @@ final class ReviewPostViewModel: BaseViewModelType {
                 _ = try await repository.createReview(meetingId: reviewItem.meetingId, request: request)
 
                 if isFinishButton {
+                    _ = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
                     output.companionCompleted.send(())
                 } else {
                     output.reviewSaved.send(())
                 }
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func completeMeeting() {
+        Task {
+            do {
+                _ = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                output.companionCompleted.send(())
             } catch {
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)

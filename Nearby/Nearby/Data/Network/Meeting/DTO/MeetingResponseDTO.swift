@@ -34,12 +34,13 @@ struct MeetingDetailResponseDTO: Decodable {
     let currentUserRole: NearbyUserType
     let hostId: Int
     let hostGender: NearbyGender
+    let hostCheckedIn: Bool
     let hostProfileImageUrl: String?
     let hostNickname: String
     let placeName: String
     let meetingAt: String
     let meetingTimeType: PostType
     let currentUserCheckedIn: Bool
-    let canCacelMeeting: Bool
+    let canCancelMeeting: Bool
     let meetingStatus: String
 }

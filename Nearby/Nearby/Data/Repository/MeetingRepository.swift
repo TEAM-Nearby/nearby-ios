@@ -9,6 +9,7 @@ import Foundation
 
 protocol MeetingRepository {
     func fetchMeetingList() async throws -> [MeetingResponseDTO]
+    func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetailResponseDTO
 }
 
 final class DefaultMeetingRepository {

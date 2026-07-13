@@ -45,4 +45,10 @@ enum TravelStyleKeyword: String {
         case .nonDrinker: return "음주 비선호"
         }
     }
+
+    static func titles(for serverKeys: [String]) -> [String] {
+        serverKeys.map { serverKey in
+            TravelStyleKeyword(rawValue: serverKey)?.title ?? serverKey
+        }
+    }
 }

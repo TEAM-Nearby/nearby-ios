@@ -18,7 +18,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         case timeTypeDidSelect(RecruitMeetingTimeType)
         case meetingAtDidChange(Date)
         case participantCountDidChange(Int)
-        case styleKeywordDidTap(String)
+        case styleKeywordDidTap(RecruitCompanionStyleKeyword)
         case placeQueryDidChange(String)
         case placeDidSelect(PlaceSearchResultItem)
         case contentDidChange(String)
@@ -32,6 +32,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         let state = CurrentValueSubject<State, Never>(.initial)
         let placeSuggestions = CurrentValueSubject<[PlaceSearchResultItem], Never>([])
         let completeButtonDidTap = PassthroughSubject<Void, Never>()
+        let showErrorMessage = PassthroughSubject<String, Never>()
         let showBack = PassthroughSubject<Void, Never>()
     }
 
@@ -40,13 +41,14 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         let meetingAt: Date?
         let isDatePickerVisible: Bool
         let maxParticipants: Int
-        let styleKeywords: Set<String>
+        let styleKeywords: Set<RecruitCompanionStyleKeyword>
         let placeQuery: String
         let selectedPlaceID: String?
         let selectedPlaceLatitude: Double?
         let selectedPlaceLongitude: Double?
         let content: String
         let openChatURL: String
+        let isSubmitting: Bool
 
         static let initial = State(
             meetingTimeType: .now,
@@ -59,23 +61,38 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             selectedPlaceLatitude: nil,
             selectedPlaceLongitude: nil,
             content: "",
-            openChatURL: ""
+            openChatURL: "",
+            isSubmitting: false
         )
 
         var isCompleteButtonEnabled: Bool {
-            return isFormValid
+            return isFormValid && !isSubmitting
         }
 
         var isFormValid: Bool {
-            let hasMeetingAt = meetingTimeType == .now || meetingAt != nil
+            let hasMeetingAt = meetingTimeType != .scheduled || meetingAt != nil
             let hasPlace = selectedPlaceID != nil
-                && selectedPlaceLatitude != nil
-                && selectedPlaceLongitude != nil
+                && isValidLatitude(selectedPlaceLatitude)
+                && isValidLongitude(selectedPlaceLongitude)
 
             return hasMeetingAt
                 && hasPlace
                 && !content.trimmed.isEmpty
-                && !openChatURL.trimmed.isEmpty
+                && isValidOpenChatURL(openChatURL)
+        }
+
+        private func isValidLatitude(_ latitude: Double?) -> Bool {
+            guard let latitude else { return false }
+            return (-90...90).contains(latitude)
+        }
+
+        private func isValidLongitude(_ longitude: Double?) -> Bool {
+            guard let longitude else { return false }
+            return (-180...180).contains(longitude)
+        }
+
+        private func isValidOpenChatURL(_ url: String) -> Bool {
+            return url.trimmed.hasPrefix("https://open.kakao.com/")
         }
     }
 
@@ -87,10 +104,13 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     private let searchCoordinate: (latitude: Double, longitude: Double)
     private var draft = RecruitCompanionDraft()
     private var placeSearchWorkItem: DispatchWorkItem?
+    private var placeDetailTask: Task<Void, Never>?
     private var latestPlaceSearchQuery = ""
+    private var latestPlaceDetailID = ""
+    private var isSubmitting = false
 
-    private var isFormValid: Bool {
-        return output.state.value.isFormValid
+    private var isCompleteButtonEnabled: Bool {
+        return output.state.value.isCompleteButtonEnabled
     }
 
     // MARK: - Initializer
@@ -137,12 +157,14 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             publishState()
 
         case .placeQueryDidChange(let query):
+            placeDetailTask?.cancel()
+            latestPlaceDetailID = ""
             draft.placeQuery = query
             draft.selectedPlaceID = nil
             draft.selectedPlaceAddress = ""
             draft.selectedPlaceLatitude = nil
             draft.selectedPlaceLongitude = nil
-            draft.selectedPlaceCategory = PlaceCategory.other.rawValue
+            draft.selectedPlaceCategory = .other
             publishState()
             searchPlacesWithDebounce(query: query)
 
@@ -155,11 +177,12 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             publishState()
 
         case .completeButtonDidTap:
-            guard isFormValid else { return }
+            guard isCompleteButtonEnabled else { return }
             postRecruitCompanion()
 
         case .placeDidSelect(let item):
             placeSearchWorkItem?.cancel()
+            placeDetailTask?.cancel()
             latestPlaceSearchQuery = ""
             fetchPlaceDetail(for: item)
         }
@@ -180,7 +203,8 @@ final class RecruitCompanionViewModel: BaseViewModelType {
                 selectedPlaceLatitude: draft.selectedPlaceLatitude,
                 selectedPlaceLongitude: draft.selectedPlaceLongitude,
                 content: draft.content,
-                openChatURL: draft.openChatURL
+                openChatURL: draft.openChatURL,
+                isSubmitting: isSubmitting
             )
         )
     }
@@ -232,11 +256,14 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     }
 
     private func fetchPlaceDetail(for item: PlaceSearchResultItem) {
-        Task { @MainActor [weak self] in
+        latestPlaceDetailID = item.placeID
+
+        placeDetailTask = Task { @MainActor [weak self] in
             guard let self else { return }
 
             do {
                 let place = try await repository.fetchPlaceDetail(for: item)
+                guard !Task.isCancelled, latestPlaceDetailID == item.placeID else { return }
                 draft.placeQuery = place.name
                 draft.selectedPlaceID = place.placeID
                 draft.selectedPlaceAddress = place.address
@@ -246,21 +273,31 @@ final class RecruitCompanionViewModel: BaseViewModelType {
                 output.placeSuggestions.send([])
                 publishState()
             } catch {
+                guard !Task.isCancelled, latestPlaceDetailID == item.placeID else { return }
                 AppLogger.error(error, message: "장소 상세 조회에 실패했습니다.")
+                output.showErrorMessage.send("장소 정보를 불러오지 못했습니다. 다시 선택해 주세요.")
             }
         }
     }
 
     private func postRecruitCompanion() {
+        guard !isSubmitting else { return }
         guard let request = makeRecruitCompanionRequest() else { return }
+
+        isSubmitting = true
+        publishState()
 
         Task { @MainActor [weak self] in
             guard let self else { return }
 
             do {
                 _ = try await repository.recruitCompanion(request: request)
+                isSubmitting = false
+                publishState()
                 output.completeButtonDidTap.send(())
             } catch {
+                isSubmitting = false
+                publishState()
                 AppLogger.error(error, message: "동행 모집글 작성에 실패했습니다.")
             }
         }
@@ -275,10 +312,6 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             return nil
         }
 
-        let meetingTimeType: MeetingTimeType = draft.meetingTimeType == .scheduled
-            ? .scheduled
-            : .now
-
         return RecruitCompanionRequestDTO(
             place: RecruitCompanionRequestDTO.Place(
                 googlePlaceId: selectedPlaceID,
@@ -288,13 +321,17 @@ final class RecruitCompanionViewModel: BaseViewModelType {
                 longitude: selectedPlaceLongitude,
                 category: draft.selectedPlaceCategory
             ),
-            meetingTimeType: meetingTimeType,
+            meetingTimeType: draft.meetingTimeType == .scheduled ? .scheduled : .now,
             meetingAt: draft.meetingTimeType == .scheduled
                 ? draft.meetingAt?.toFormattedString("yyyy-MM-dd'T'HH:mm:ss")
                 : nil,
             maxParticipants: draft.maxParticipants,
+            styleKeywords: RecruitCompanionStyleKeyword.allCases.filter {
+                draft.styleKeywords.contains($0)
+            },
             content: draft.content.trimmed,
             openChatUrl: draft.openChatURL.trimmed
         )
     }
+
 }

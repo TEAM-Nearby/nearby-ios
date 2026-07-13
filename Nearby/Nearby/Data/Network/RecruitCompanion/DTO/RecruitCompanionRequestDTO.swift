@@ -12,6 +12,7 @@ struct RecruitCompanionRequestDTO: Encodable {
     let meetingTimeType: MeetingTimeType
     let meetingAt: String?
     let maxParticipants: Int
+    let styleKeywords: [RecruitCompanionStyleKeyword]
     let content: String
     let openChatUrl: String
 
@@ -21,6 +22,6 @@ struct RecruitCompanionRequestDTO: Encodable {
         let address: String
         let latitude: Double
         let longitude: Double
-        let category: String
+        let category: PlaceCategory
     }
 }

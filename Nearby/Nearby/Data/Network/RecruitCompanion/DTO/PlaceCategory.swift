@@ -5,7 +5,7 @@
 //  Created by 장지인 on 7/13/26.
 //
 
-enum PlaceCategory: String, Decodable {
+enum PlaceCategory: String, Codable {
     case restaurant = "RESTAURANT"
     case cafe = "CAFE"
     case pub = "PUB"

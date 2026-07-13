@@ -26,7 +26,7 @@ final class RecruitCompanionView: BaseView {
     var timeTypeDidSelect: ((RecruitMeetingTimeType) -> Void)?
     var meetingAtDidChange: ((Date) -> Void)?
     var participantCountDidChange: ((Int) -> Void)?
-    var styleKeywordDidTap: ((String) -> Void)?
+    var styleKeywordDidTap: ((RecruitCompanionStyleKeyword) -> Void)?
     var placeSearchButtonAction: (() -> Void)?
     var placeQueryDidChange: ((String) -> Void)?
     var contentDidChange: ((String) -> Void)?

@@ -5,8 +5,9 @@
 //  Created by 장지인 on 7/13/26.
 //
 
-import Alamofire
 import Foundation
+
+import Alamofire
 
 enum RecruitCompanionTarget {
     case recruitCompanion(RecruitCompanionRequestDTO)
@@ -29,10 +30,11 @@ extension RecruitCompanionTarget: BaseTargetType {
                     "address": request.place.address,
                     "latitude": request.place.latitude,
                     "longitude": request.place.longitude,
-                    "category": request.place.category
+                    "category": request.place.category.rawValue
                 ],
                 "meetingTimeType": request.meetingTimeType.rawValue,
                 "maxParticipants": request.maxParticipants,
+                "styleKeywords": request.styleKeywords.map(\.rawValue),
                 "content": request.content,
                 "openChatUrl": request.openChatUrl
             ]

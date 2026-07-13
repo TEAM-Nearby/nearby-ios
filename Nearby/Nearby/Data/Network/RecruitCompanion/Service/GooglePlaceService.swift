@@ -91,7 +91,7 @@ final class GooglePlaceService {
                 address: place.formattedAddress ?? item.address,
                 latitude: place.coordinate.latitude,
                 longitude: place.coordinate.longitude,
-                category: self?.category(from: place.types) ?? PlaceCategory.other.rawValue
+                category: self?.category(from: place.types ?? []) ?? .other
             )
 
             completion(.success(selectedPlace))
@@ -102,25 +102,23 @@ final class GooglePlaceService {
         sessionToken = GMSAutocompleteSessionToken()
     }
 
-    private func category(from types: [String]?) -> String {
-        guard let types else { return PlaceCategory.other.rawValue }
-
+    private func category(from types: [String]) -> PlaceCategory {
         if types.contains(where: { $0 == "restaurant" || $0 == "food" || $0 == "meal_takeaway" }) {
-            return PlaceCategory.restaurant.rawValue
+            return .restaurant
         }
         if types.contains(where: { $0 == "cafe" || $0 == "coffee_shop" || $0 == "bakery" }) {
-            return PlaceCategory.cafe.rawValue
+            return .cafe
         }
         if types.contains(where: { $0 == "bar" || $0 == "night_club" }) {
-            return PlaceCategory.pub.rawValue
+            return .pub
         }
         if types.contains(where: { $0 == "museum" || $0 == "art_gallery" }) {
-            return PlaceCategory.museum.rawValue
+            return .museum
         }
         if types.contains(where: { $0 == "tourist_attraction" || $0 == "landmark" }) {
-            return PlaceCategory.photoSpot.rawValue
+            return .photoSpot
         }
-        return PlaceCategory.other.rawValue
+        return .other
     }
 }
 

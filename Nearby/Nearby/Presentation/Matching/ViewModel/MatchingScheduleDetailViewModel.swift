@@ -34,12 +34,15 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
 
     let output = Output()
 
-    private let item: MatchingMatchedCardItem
+    private let matchId: Int
+    private let repository: MatchedCompanionListRepository
+    private var currentDisplayData: MatchingScheduleDetailDisplayData?
 
     // MARK: - Initializer
 
-    init(item: MatchingMatchedCardItem) {
-        self.item = item
+    init(matchId: Int, repository: MatchedCompanionListRepository) {
+        self.matchId = matchId
+        self.repository = repository
     }
 
     // MARK: - Action
@@ -47,7 +50,7 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            output.displayData.send(makeDisplayData())
+            fetchMatchDetail()
 
         case .backButtonDidTap:
             output.showBack.send(())
@@ -56,6 +59,7 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
             output.showAlarm.send(())
 
         case .editButtonDidTap:
+            guard let item = currentDisplayData?.cardItem else { return }
             output.showEdit.send(item)
 
         case .shareButtonDidTap:
@@ -65,18 +69,18 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
 
     // MARK: - Method
 
-    private func makeDisplayData() -> MatchingScheduleDetailDisplayData {
-        // TODO: - 상세 일정 API
-        return MatchingScheduleDetailDisplayData(
-            cardItem: item,
-            placeName: item.content.place,
-            placeAddress: "Siutat condal, Rambla de Catalunya, 16",
-            googlePlaceId: "ChIJmSmV-_KipBIR1rXbKL9Yhp4",
-            latitude: 37.566508,
-            longitude: 126.977945,
-            scheduledAtText: "6월 18일 (목) 오후 4시 30분",
-            openChatUrl: "kakaotalk.hcmvietnam.tistory.com/36",
-            type: item.type
-        )
+    private func fetchMatchDetail() {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                let response = try await repository.fetchMatchDetail(matchId: matchId)
+                let displayData = response.toDisplayData(type: .participant)
+                currentDisplayData = displayData
+                output.displayData.send(displayData)
+            } catch {
+                AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
+            }
+        }
     }
 }

@@ -420,18 +420,10 @@ final class AppDIContainer {
         WrittenPostViewController(viewModel: makeWrittenPostViewModel())
     }
     
-    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator? = nil) -> UIViewController {
-        let viewController = RecruitCompanionViewController(viewModel: makeRecruitCompanionViewModel())
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-        return viewController
-    }
-    
     func makeReviewViewController(coordinator: MeetingTabCoordinator, type: NearbyUserType, reviewItem: ReviewItem) -> UIViewController {
         switch type {
         case .host:
-            return makeHostReviewListViewController(coordinator: coordinator)
-
+            return makeHostReviewListViewController(coordinator: coordinator, meetingId: reviewItem.meetingId)
         case .participant:
             return makeReviewPostViewController(
                 coordinator: coordinator,

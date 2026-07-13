@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -51,6 +52,14 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         super.layoutSubviews()
 
         profileImageView.layer.cornerRadius = profileImageView.bounds.width / 2
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        profileImageView.kf.cancelDownloadTask()
+        profileImageView.image = .imgProfileDefault
+        onNextButtonDidTap = nil
     }
 
     // MARK: - Methods
@@ -229,12 +238,25 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         case .list:
             profileImageView.isHidden = false
             profileStackView.isHidden = true
-            profileImageView.image = content.profileImage ?? .imgProfileDefault
+            updateProfileImage(content: content)
         case .scheduleDetail:
             profileImageView.isHidden = true
             profileStackView.isHidden = false
             profileStackView.configure(with: makeProfileImages(content: content))
         }
+    }
+
+    private func updateProfileImage(content: MatchingMatchedCardContentModel) {
+        if let profileImageUrl = content.profileImageUrl,
+           let url = URL(string: profileImageUrl) {
+            profileImageView.kf.setImage(
+                with: url,
+                placeholder: content.profileImage ?? .imgProfileDefault
+            )
+            return
+        }
+
+        profileImageView.image = content.profileImage ?? .imgProfileDefault
     }
 
     private func makeProfileImages(content: MatchingMatchedCardContentModel) -> [UIImage?] {

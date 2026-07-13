@@ -27,9 +27,6 @@ final class DefaultMyPageService {
 extension DefaultMyPageService: MyPageService {
 
     func fetchMyPage() async throws -> MyPageResponseDTO {
-        try await networkProvider.request(
-            MyPageTarget.fetchMyPage,
-            responseType: MyPageResponseDTO.self
-        )
+        try await networkProvider.request(MyPageTarget.fetchMyPage, responseType: MyPageResponseDTO.self)
     }
 }

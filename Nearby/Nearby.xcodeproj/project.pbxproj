@@ -35,7 +35,6 @@
 			membershipExceptions = (
 				Data/Network/DiningMap/DTO/.gitkeep,
 				Data/Network/Meeting/DTO/.gitkeep,
-				Data/Network/MyPage/DTO/.gitkeep,
 				Data/Network/Notification/DTO/.gitkeep,
 				Data/Network/RecruitCompanion/DTO/.gitkeep,
 				Presentation/Matching/Coordinator/.gitkeep,

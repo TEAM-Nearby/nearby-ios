@@ -37,4 +37,3 @@ struct CompanionProfileRequestDTO: Encodable {
     let profileImageUrl: String?
     let travelStyleKeywords: [String]
 }
-

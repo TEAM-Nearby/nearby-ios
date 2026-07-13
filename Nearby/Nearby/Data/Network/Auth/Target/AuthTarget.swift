@@ -29,7 +29,7 @@ extension AuthTarget: BaseTargetType {
         case .sendVerificationCode:
             return "/api/onboarding/phone-verifications"
 
-        case .confirmVerificationCode(let phoneVerificationId,_ ):
+        case .confirmVerificationCode(let phoneVerificationId, _): 
             return "/api/onboarding/phone-verifications/\(phoneVerificationId)"
 
         case .issueProfileImageUploadURL:

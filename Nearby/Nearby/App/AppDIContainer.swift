@@ -79,8 +79,8 @@ final class AppDIContainer {
         DefaultCompanionDetailService(networkProvider: networkProvider)
     }
 
-    private func makeCompanionProfileService() -> CompanionProfileService {
-        DefaultCompanionProfileService(networkProvider: networkProvider)
+    private func makeProfileService() -> ProfileService {
+        DefaultProfileService(networkProvider: networkProvider)
     }
 
     private func makeMatchedCompanionListService() -> MatchedCompanionListService {
@@ -132,8 +132,8 @@ final class AppDIContainer {
         DefaultCompanionDetailRepository(service: makeCompanionDetailService())
     }
 
-    private func makeCompanionProfileRepository() -> CompanionProfileRepository {
-        DefaultCompanionProfileRepository(service: makeCompanionProfileService())
+    private func makeProfileRepository() -> ProfileRepository {
+        DefaultProfileRepository(service: makeProfileService())
     }
 
     private func makeMatchedCompanionListRepository() -> MatchedCompanionListRepository {
@@ -272,7 +272,7 @@ final class AppDIContainer {
     }
     
     func makeHostProfileViewModel(profileId: Int) -> HostProfileViewModel {
-        HostProfileViewModel(profileId: profileId, repository: makeCompanionProfileRepository())
+        HostProfileViewModel(profileId: profileId, repository: makeProfileRepository())
     }
   
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {

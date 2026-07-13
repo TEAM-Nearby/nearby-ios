@@ -20,8 +20,7 @@ final class AppCoordinator {
     
     // MARK: - Initializer
     
-    init(window: UIWindow, diContainer: AppDIContainer)
-    {
+    init(window: UIWindow, diContainer: AppDIContainer) {
         self.window = window
         self.diContainer = diContainer
         NotificationCenter.default.publisher(for: .authenticationExpired)
@@ -73,8 +72,7 @@ private extension AppCoordinator {
         
         let loginViewController = diContainer.makeLoginViewController()
         
-        loginViewController.onLoginDidSucceed = {
-            [weak self] onboardingStatus in
+        loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in
             
             guard let self else { return }
             
@@ -105,13 +103,13 @@ private extension AppCoordinator {
         let viewController = diContainer.makePhoneVerificationViewController()
         
         viewController.onVerificationCompleted = { [weak self] in
-            self?.showCompanionProfile()
+            self?.showProfileSetting()
         }
         
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showCompanionProfile() {
+    func showProfileSetting() {
         guard let navigationController = window.rootViewController as? UINavigationController else {
             return
         }
@@ -132,8 +130,7 @@ private extension AppCoordinator {
         
         mainTabCoordinator.parentCoordinator = self
         
-        mainTabCoordinator.onLogoutDidFinish = {
-            [weak self, weak mainTabCoordinator] in
+        mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in
             
             guard let self else { return }
             

@@ -10,6 +10,7 @@ import Alamofire
 
 enum MeetingTarget {
     case fetchMeetingList
+    case fetchMeetingDetail(meetingId: Int)
 }
 
 extension MeetingTarget: BaseTargetType {
@@ -17,12 +18,14 @@ extension MeetingTarget: BaseTargetType {
         switch self {
         case .fetchMeetingList:
             return "/api/companion-meetings"
+        case .fetchMeetingDetail(let meetingId):
+            return "/api/companion-meetings/\(meetingId)"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .fetchMeetingList:
+        case .fetchMeetingList, .fetchMeetingDetail:
             return .get
         }
     }

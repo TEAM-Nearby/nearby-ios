@@ -24,3 +24,13 @@ struct TokenRefreshResponseDTO: Decodable {
     let accessTokenExpiresIn: Int
     let refreshTokenExpiresIn: Int
 }
+
+struct PhoneVerificationConfirmResponseDTO: Decodable {
+    let phoneVerified: Bool
+    let onboardingStatus: OnboardingStatus
+}
+
+struct PhoneVerificationResponseDTO: Decodable {
+    let phoneVerificationId: Int
+    let expiresIn: Int
+}

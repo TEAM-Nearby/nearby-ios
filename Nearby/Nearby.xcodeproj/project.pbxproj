@@ -32,10 +32,11 @@
 		771209E72FF423C900D688FD /* Exceptions for "Nearby" folder in "Nearby" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Data/Network/Companion/DTO/.gitkeep,
 				Data/Network/DiningMap/DTO/.gitkeep,
 				Data/Network/Matching/DTO/.gitkeep,
+				Data/Network/Metting/DTO/.gitkeep,
 				Data/Network/MyPage/DTO/.gitkeep,
+				Data/Network/Notification/DTO/.gitkeep,
 				Data/Network/RecruitCompanion/DTO/.gitkeep,
 				Data/Repository/Mock/.gitkeep,
 				Presentation/Notification/View/.gitkeep,

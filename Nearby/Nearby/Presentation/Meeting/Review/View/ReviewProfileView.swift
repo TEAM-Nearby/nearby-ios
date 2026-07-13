@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -91,8 +92,12 @@ final class ReviewProfileView: BaseView {
     
     // MARK: - Method
     
-    func configure(image: UIImage, name: String, information: String, isReviewed: Bool) {
-        imageView.image = image
+    func configure(imageUrl: String?, name: String, information: String, isReviewed: Bool) {
+        if let imageUrl, let url = URL(string: imageUrl) {
+            imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+        } else {
+            imageView.image = .imgProfileDefault
+        }
         nameLabel.text = name.truncated(limit: 7)
         informationLabel.text = information
         

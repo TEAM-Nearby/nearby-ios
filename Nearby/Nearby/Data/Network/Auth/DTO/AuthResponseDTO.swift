@@ -34,3 +34,21 @@ struct PhoneVerificationResponseDTO: Decodable {
     let phoneVerificationId: Int
     let expiresIn: Int
 }
+
+struct ProfileImageUploadURLResponseDTO: Decodable {
+    let uploadUrl: String
+    let imageUrl: String
+    let method: String
+    let expiresIn: Int
+    let headers: [String: String]
+}
+
+struct CompanionProfileResponseDTO: Decodable {
+    let profileId: Int
+    let nickname: String
+    let gender: String
+    let intro: String?
+    let profileImageUrl: String?
+    let travelStyleKeywords: [String]
+    let onboardingStatus: OnboardingStatus
+}

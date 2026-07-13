@@ -9,20 +9,28 @@ import Combine
 import UIKit
 
 final class AppCoordinator {
+    
+    // MARK: - Properties
+    
     weak var parentCoordinator: Coordinator?
     var childCoordinators = [Coordinator]()
     private let window: UIWindow
     private let diContainer: AppDIContainer
     private var cancellables = Set<AnyCancellable>()
     
-    init(window: UIWindow, diContainer: AppDIContainer) {
+    // MARK: - Initializer
+    
+    init(window: UIWindow, diContainer: AppDIContainer)
+    {
         self.window = window
         self.diContainer = diContainer
         NotificationCenter.default.publisher(for: .authenticationExpired)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.childCoordinators.removeAll()
-                self?.showLogin()
+                guard let self else { return }
+                
+                childCoordinators.removeAll()
+                showLogin()
             }
             .store(in: &cancellables)
     }
@@ -31,90 +39,70 @@ final class AppCoordinator {
 // MARK: - Coordinator
 
 extension AppCoordinator: Coordinator {
+    
     func start() {
-        if diContainer.hasStoredSession {
-            showMainTab()
-        } else {
-            showLogin()
-        }
+        showSplash()
     }
     
     func finish() {
         childCoordinators.removeAll()
     }
+}
+
+// MARK: - Methods
+
+private extension AppCoordinator {
     
-    // MARK: - Method
+    func handleLaunchFlow() {
+        showLogin()
+    }
     
-    func showMainTab() {
-        let mainTabCoordinator = diContainer.makeMainTabCoordinator()
-        mainTabCoordinator.parentCoordinator = self
+    func showSplash() {
+        let splashViewController = diContainer.makeSplashViewController()
         
-        mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in
-            guard let self else { return }
-            
-            if let mainTabCoordinator { removeChildCoordinator(mainTabCoordinator) }
-            
-            showLogin()
+        splashViewController.onSplashCompleted = { [weak self] in
+            self?.handleLaunchFlow()
         }
         
-        addChildCoordinator(mainTabCoordinator)
-        
-        mainTabCoordinator.start()
-        
-        window.rootViewController = mainTabCoordinator.rootViewController
+        window.rootViewController = splashViewController
         window.makeKeyAndVisible()
     }
     
     func showLogin() {
-        let loginViewController =
-            diContainer.makeLoginViewController()
-
-        loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in
+        childCoordinators.removeAll()
+        
+        let loginViewController = diContainer.makeLoginViewController()
+        
+        loginViewController.onLoginDidSucceed = {
+            [weak self] onboardingStatus in
+            
             guard let self else { return }
-
+            
             switch onboardingStatus {
-            case .started:
+            case .started,
+                 .phoneVerified:
                 showPhoneVerification()
-
-            case .phoneVerified:
-                showPhoneVerification()
-
+                
             case .completed:
                 showMainTab()
             }
         }
-
-        let navigationController = UINavigationController(rootViewController: loginViewController)
-
-        navigationController.setNavigationBarHidden(true, animated: false)
-
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
-    }
-    
-    // TODO: - 지워주기 (서연)
-    
-    private func showHostProfileTest() {
-        let hostProfileViewController =
-        diContainer.makeHostProfileViewController()
         
         let navigationController = UINavigationController(
-            rootViewController: hostProfileViewController
+            rootViewController: loginViewController
         )
         
         navigationController.setNavigationBarHidden(true, animated: false)
         
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        setRootViewController(navigationController, animated: true)
     }
     
-    private func showPhoneVerification() {
+    func showPhoneVerification() {
         guard let navigationController = window.rootViewController as? UINavigationController else {
             return
         }
         
-        let viewController =
-        diContainer.makePhoneVerificationViewController()
+        let viewController = diContainer.makePhoneVerificationViewController()
         
         viewController.onVerificationCompleted = { [weak self] in
             self?.showCompanionProfile()
@@ -123,20 +111,62 @@ extension AppCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    private func showSplash() {
-        let splashViewController =
-            diContainer.makeSplashViewController()
-
-        window.rootViewController = splashViewController
-        window.makeKeyAndVisible()
-    }
-    
-    private func showCompanionProfile() {
-        guard let navigationController = window.rootViewController as? UINavigationController else { return }
-
+    func showCompanionProfile() {
+        guard let navigationController = window.rootViewController as? UINavigationController else {
+            return
+        }
+        
         let viewController = diContainer.makeCompanionProfileViewController()
-
+        
+        viewController.onProfileCompleted = { [weak self] in
+            self?.showMainTab()
+        }
+        
         navigationController.pushViewController(viewController, animated: true)
     }
     
+    func showMainTab() {
+        childCoordinators.removeAll()
+        
+        let mainTabCoordinator = diContainer.makeMainTabCoordinator()
+        
+        mainTabCoordinator.parentCoordinator = self
+        
+        mainTabCoordinator.onLogoutDidFinish = {
+            [weak self, weak mainTabCoordinator] in
+            
+            guard let self else { return }
+            
+            if let mainTabCoordinator {
+                removeChildCoordinator(mainTabCoordinator)
+            }
+            
+            showLogin()
+        }
+        
+        addChildCoordinator(mainTabCoordinator)
+        
+        mainTabCoordinator.start()
+        
+        setRootViewController(mainTabCoordinator.rootViewController, animated: true)
+    }
+    
+    func setRootViewController(_ viewController: UIViewController, animated: Bool) {
+        guard animated else {
+            window.rootViewController = viewController
+            window.makeKeyAndVisible()
+            return
+        }
+        
+        UIView.transition(
+            with: window,
+            duration: 0.3,
+            options: [.transitionCrossDissolve, .allowAnimatedContent],
+            animations: {
+                self.window.rootViewController = viewController
+            }
+        )
+        
+        window.makeKeyAndVisible()
+    }
 }

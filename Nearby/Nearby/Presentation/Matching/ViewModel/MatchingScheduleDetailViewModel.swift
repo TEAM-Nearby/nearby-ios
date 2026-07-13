@@ -74,7 +74,7 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
             guard let self else { return }
 
             do {
-                let response = try await repository.fetchMatchDetail(matchId: matchId)
+                let response = try await repository.fetchMatchPreview(matchId: matchId)
                 let displayData = response.toDisplayData(type: .participant)
                 currentDisplayData = displayData
                 output.displayData.send(displayData)

@@ -47,6 +47,41 @@ extension MatchingScheduleDetailResponseModel {
     }
 }
 
+extension MatchedCompanionPreviewResponseDTO {
+    func toDisplayData(type: NearbyUserType) -> MatchingScheduleDetailDisplayData {
+        let representativeMember = members.first
+        let placeName = ""
+        let scheduledAtText = companionPost.meetingAt.matchingDetailDateTimeTitle
+
+        let cardItem = MatchingMatchedCardItem(
+            matchId: Int(matchId),
+            content: MatchingMatchedCardContentModel(
+                profileImageUrl: representativeMember?.profileImageUrl,
+                name: representativeMember?.nickname ?? "",
+                participantCount: members.count,
+                gender: "",
+                uploadedTime: "",
+                place: placeName,
+                meetingTime: companionPost.meetingAt.matchingDetailTimeTitle,
+                description: companionPost.content
+            ),
+            type: type
+        )
+
+        return MatchingScheduleDetailDisplayData(
+            cardItem: cardItem,
+            placeName: placeName,
+            placeAddress: "",
+            googlePlaceId: nil,
+            latitude: 0,
+            longitude: 0,
+            scheduledAtText: scheduledAtText,
+            openChatUrl: "",
+            type: type
+        )
+    }
+}
+
 private extension String {
     var matchingDetailTimeTitle: String {
         guard let date = isoDate else { return self }

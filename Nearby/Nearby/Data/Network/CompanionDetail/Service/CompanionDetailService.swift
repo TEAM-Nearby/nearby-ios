@@ -7,6 +7,7 @@
 
 protocol CompanionDetailService {
     func fetchDetail(postId: Int) async throws -> CompanionDetailResponseDTO
+    func apply(postId: Int) async throws -> CompanionApplyResponseDTO
 }
 
 final class DefaultCompanionDetailService {
@@ -29,6 +30,13 @@ extension DefaultCompanionDetailService: CompanionDetailService {
         try await networkProvider.request(
             CompanionDetailTarget.detail(postId: postId),
             responseType: CompanionDetailResponseDTO.self
+        )
+    }
+
+    func apply(postId: Int) async throws -> CompanionApplyResponseDTO {
+        try await networkProvider.request(
+            CompanionDetailTarget.apply(postId: postId),
+            responseType: CompanionApplyResponseDTO.self
         )
     }
 }

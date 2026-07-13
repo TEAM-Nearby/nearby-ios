@@ -11,7 +11,6 @@ final class AppDIContainer {
     private lazy var tokenStorage: TokenStorage = KeychainTokenStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
 
-
     var hasStoredSession: Bool {
         guard let accessToken = tokenStorage.accessToken else { return false }
         return !accessToken.isEmpty
@@ -72,9 +71,17 @@ final class AppDIContainer {
     private func makeRecruitCompanionService() -> RecruitCompanionService {
         DefaultRecruitCompanionService(networkProvider: networkProvider)
     }
-    
+
     private func makeCompanionDetailService() -> CompanionDetailService {
         DefaultCompanionDetailService(networkProvider: networkProvider)
+    }
+
+    private func makeCompanionProfileService() -> CompanionProfileService {
+        DefaultCompanionProfileService(networkProvider: networkProvider)
+    }
+
+    private func makeMatchedCompanionListService() -> MatchedCompanionListService {
+        DefaultMatchedCompanionListService(networkProvider: networkProvider)
     }
     
     private func makeMeetingService() -> MeetingService {
@@ -121,6 +128,14 @@ final class AppDIContainer {
     private func makeCompanionDetailRepository() -> CompanionDetailRepository {
         DefaultCompanionDetailRepository(service: makeCompanionDetailService())
     }
+
+    private func makeCompanionProfileRepository() -> CompanionProfileRepository {
+        DefaultCompanionProfileRepository(service: makeCompanionProfileService())
+    }
+
+    private func makeMatchedCompanionListRepository() -> MatchedCompanionListRepository {
+        DefaultMatchedCompanionListRepository(service: makeMatchedCompanionListService())
+    }
     
     // MARK: - ViewModels
     
@@ -153,7 +168,7 @@ final class AppDIContainer {
     }
     
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
-        CompanionDetailViewModel(state: state, repository: makeCompanionDetailRepository())
+        CompanionDetailViewModel(state: state, repository: makeCompanionDetailRepository(), currentUserId: tokenStorage.currentUserId)
     }
     
     func makeNearCompanionSheetViewModel() -> NearCompanionSheetViewModel {
@@ -176,7 +191,7 @@ final class AppDIContainer {
     }
     
     func makeMatchingViewModel() -> MatchingViewModel {
-        MatchingViewModel()
+        MatchingViewModel(repository: makeMatchedCompanionListRepository())
     }
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
@@ -253,14 +268,12 @@ final class AppDIContainer {
         )
     }
     
-    func makeHostProfileViewModel() -> HostProfileViewModel {
-        HostProfileViewModel()
+    func makeHostProfileViewModel(profileId: Int) -> HostProfileViewModel {
+        HostProfileViewModel(profileId: profileId, repository: makeCompanionProfileRepository())
     }
   
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
-        let service = DefaultAuthService(networkProvider: networkProvider)
         let repository = makeAuthRepository()
-
         return PhoneVerificationViewModel(authRepository: repository)
     }
     
@@ -270,12 +283,9 @@ final class AppDIContainer {
         SplashViewController()
     }
     
-    func makeHostProfileViewController() -> HostProfileViewController {
-        let viewModel = makeHostProfileViewModel()
-        
-        return HostProfileViewController(
-            viewModel: viewModel
-        )
+    func makeHostProfileViewController(profileId: Int) -> HostProfileViewController {
+        let viewModel = makeHostProfileViewModel(profileId: profileId)
+        return HostProfileViewController(viewModel: viewModel)
     }
     
     func makeLoginViewController() -> LoginViewController {
@@ -336,8 +346,17 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeMatchingScheduleDetailViewController(coordinator: MatchingCoordinator, item: MatchingMatchedCardItem) -> UIViewController {
-        let viewController = MatchingScheduleDetailViewController(item: item)
+    func makeMatchingScheduleDetailViewModel(matchId: Int) -> MatchingScheduleDetailViewModel {
+        MatchingScheduleDetailViewModel(
+            matchId: matchId,
+            repository: makeMatchedCompanionListRepository()
+        )
+    }
+
+    func makeMatchingScheduleDetailViewController(coordinator: MatchingCoordinator, matchId: Int) -> UIViewController {
+        let viewController = MatchingScheduleDetailViewController(
+            viewModel: makeMatchingScheduleDetailViewModel(matchId: matchId)
+        )
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController

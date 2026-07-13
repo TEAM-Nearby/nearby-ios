@@ -23,7 +23,7 @@ final class MatchingViewModel: BaseViewModelType {
 
     struct Output {
         let items = CurrentValueSubject<[MatchingMatchedCardItem], Never>([])
-        let showScheduleDetail = PassthroughSubject<MatchingMatchedCardItem, Never>()
+        let showScheduleDetail = PassthroughSubject<Int, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
         let showCompanionTab = PassthroughSubject<Void, Never>()
     }
@@ -32,8 +32,16 @@ final class MatchingViewModel: BaseViewModelType {
 
     let output = Output()
 
+    private let repository: MatchedCompanionListRepository
+
     var items: [MatchingMatchedCardItem] {
         return output.items.value
+    }
+
+    // MARK: - Initializer
+
+    init(repository: MatchedCompanionListRepository) {
+        self.repository = repository
     }
 
     // MARK: - Action
@@ -41,12 +49,11 @@ final class MatchingViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            // TODO: - 매칭 목록 조회 API 응답으로 교체
-            output.items.send(Self.mockItems)
+            fetchMatches()
 
         case .cardDidTap(let index):
             guard items.indices.contains(index) else { return }
-            output.showScheduleDetail.send(items[index])
+            output.showScheduleDetail.send(items[index].matchId)
 
         case .alarmButtonDidTap:
             output.showAlarm.send(())
@@ -56,29 +63,137 @@ final class MatchingViewModel: BaseViewModelType {
         }
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     func item(at index: Int) -> MatchingMatchedCardItem {
         return items[index]
     }
+
+    private func fetchMatches() {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                AppLogger.data("매칭된 동행 목록 조회를 시작합니다.")
+                let response = try await repository.fetchMatches()
+                let items = response.matches.map { $0.toMatchedCardItem() }
+                AppLogger.data("매칭된 동행 목록 \(items.count)개를 조회했습니다.")
+                output.items.send(items)
+            } catch {
+                AppLogger.error(error, message: "매칭된 동행 목록 조회에 실패했습니다.")
+                output.items.send([])
+            }
+        }
+    }
 }
 
-private extension MatchingViewModel {
-    static let mockItems: [MatchingMatchedCardItem] = [
-        MatchingMatchedCardItem.sample,
-        MatchingMatchedCardItem(
-            matchId: 1,
+private extension MatchedCompanionListResponseDTO.Match {
+    func toMatchedCardItem(type: NearbyUserType = .participant) -> MatchingMatchedCardItem {
+        return MatchingMatchedCardItem(
+            matchId: Int(matchId),
             content: MatchingMatchedCardContentModel(
-                name: "정지영",
-                participantCount: 2,
-                gender: "여성",
-                uploadedTime: "15분 전 올림",
-                place: "시우다드 콘달",
-                meetingTime: "오후 4:30",
-                description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분..."
+                profileImageUrl: hostProfileImageUrl,
+                name: hostNickname,
+                participantCount: 1,
+                gender: hostGender.displayTitle,
+                uploadedTime: createdAt.uploadedTimeTitle,
+                place: placeName ?? "",
+                meetingTime: meetingAt?.meetingTimeTitle ?? meetingTimeType.displayTitle,
+                description: content
             ),
-            matchStatus: "MATCHED",
-            type: .participant
+            matchStatus: matchStatus.rawValue,
+            type: type
         )
-    ]
+    }
+}
+
+private extension HostGender {
+    var displayTitle: String {
+        switch self {
+        case .male:
+            return "남성"
+        case .female:
+            return "여성"
+        }
+    }
+}
+
+private extension MeetingTimeType {
+    var displayTitle: String {
+        switch self {
+        case .now:
+            return "지금 바로"
+        case .scheduled:
+            return ""
+        case .undecided:
+            return "시간 미정"
+        }
+    }
+}
+
+private extension String {
+    var uploadedTimeTitle: String {
+        guard let date = isoDate else { return self }
+
+        let elapsedTime = abs(date.timeIntervalSinceNow)
+        let minute = Int(elapsedTime / 60)
+
+        if minute < 1 {
+            return "방금 전 올림"
+        }
+        if minute < 60 {
+            return "\(minute)분 전 올림"
+        }
+
+        let hour = minute / 60
+        if hour < 24 {
+            return "\(hour)시간 전 올림"
+        }
+
+        let day = hour / 24
+        return "\(day)일 전 올림"
+    }
+
+    var meetingTimeTitle: String {
+        guard let date = isoDate else { return self }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = .current
+        formatter.dateFormat = "a h시 m분"
+        return formatter.string(from: date)
+    }
+
+    var isoDate: Date? {
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = isoFormatter.date(from: self) {
+            return date
+        }
+
+        isoFormatter.formatOptions = [.withInternetDateTime]
+        if let date = isoFormatter.date(from: self) {
+            return date
+        }
+
+        let localFormatter = DateFormatter()
+        localFormatter.locale = Locale(identifier: "en_US_POSIX")
+        localFormatter.timeZone = .current
+
+        let dateFormats = [
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm"
+        ]
+
+        for dateFormat in dateFormats {
+            localFormatter.dateFormat = dateFormat
+            if let date = localFormatter.date(from: self) {
+                return date
+            }
+        }
+
+        return nil
+    }
 }

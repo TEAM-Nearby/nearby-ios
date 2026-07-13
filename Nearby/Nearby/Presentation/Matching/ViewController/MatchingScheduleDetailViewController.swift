@@ -21,8 +21,8 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
     
     // MARK: - Initializer
     
-    init(item: MatchingMatchedCardItem) {
-        super.init(viewModel: MatchingScheduleDetailViewModel(item: item))
+    override init(viewModel: MatchingScheduleDetailViewModel) {
+        super.init(viewModel: viewModel)
     }
     
     // MARK: - Life Cycles

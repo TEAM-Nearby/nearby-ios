@@ -38,7 +38,7 @@ extension NearCompanionCellItem {
             detailState: CompanionDetailState(
                 postId: dto.postId,
                 postType: .scheduled,
-                isApplicationEnabled: dto.status == "RECRUITING",
+                isApplicationEnabled: false,
                 tags: [],
                 hostName: dto.host.nickname,
                 genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",

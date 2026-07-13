@@ -50,6 +50,7 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
     }
 
     func updateCompanions(_ companions: [SpecificCompanionCellItem]) {
+        specificCompanionSheetView.configurePlace(with: companions.first)
         viewModel.updateCompanions(companions)
     }
 }

@@ -9,6 +9,7 @@ import Alamofire
 
 enum CompanionDetailTarget {
     case detail(postId: Int)
+    case apply(postId: Int)
 }
 
 extension CompanionDetailTarget: BaseTargetType {
@@ -16,10 +17,19 @@ extension CompanionDetailTarget: BaseTargetType {
         switch self {
         case .detail(let postId):
             return "/api/companion-posts/\(postId)"
+        case .apply(let postId):
+            return "/api/companion-posts/\(postId)/companion-requests"
         }
     }
 
-    var method: HTTPMethod { .get }
+    var method: HTTPMethod {
+        switch self {
+        case .detail:
+            return .get
+        case .apply:
+            return .post
+        }
+    }
 
     var queryParameters: Parameters? { nil }
 }

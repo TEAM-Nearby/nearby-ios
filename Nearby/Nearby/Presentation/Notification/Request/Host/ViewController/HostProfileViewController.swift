@@ -74,6 +74,12 @@ final class HostProfileViewController: BaseViewController<HostProfileViewModel> 
             }
             .store(in: &cancellables)
 
+        viewModel.output.error
+            .sink { error in
+                AppLogger.error(error)
+            }
+            .store(in: &cancellables)
+
         viewModel.action(.viewDidLoad)
     }
 }

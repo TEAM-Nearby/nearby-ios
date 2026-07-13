@@ -36,10 +36,10 @@ extension MatchingCoordinator: Coordinator {
         parentCoordinator?.removeChildCoordinator(self)
     }
 
-    func showScheduleDetail(item: MatchingMatchedCardItem) {
+    func showScheduleDetail(matchId: Int) {
         let viewController = diContainer.makeMatchingScheduleDetailViewController(
             coordinator: self,
-            item: item
+            matchId: matchId
         )
         navigationController.pushViewController(viewController, animated: true)
     }

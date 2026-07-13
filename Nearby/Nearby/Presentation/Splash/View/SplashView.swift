@@ -119,7 +119,7 @@ final class SplashView: BaseView {
         gradientLayer.frame = bounds
     }
 
-    // MARK: - Methods
+    // MARK: - Method
 
     func playAnimation(completion: @escaping () -> Void) {
         animationView.play { finished in

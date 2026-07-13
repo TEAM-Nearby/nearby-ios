@@ -267,10 +267,6 @@ final class PhoneVerificationView: BaseView {
         bottomButton.alpha = isLoading ? 0.6 : 1
     }
     
-    func hidePhoneError() {
-        phoneErrorLabel.isHidden = true
-    }
-    
     func updateVerificationError(message: String?, isHidden: Bool) {
         if let message {
             verificationErrorLabel.text = message

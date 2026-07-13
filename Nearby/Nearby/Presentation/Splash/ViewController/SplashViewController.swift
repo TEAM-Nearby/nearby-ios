@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class SplashViewController: UIViewController {
+final class SplashViewController: BaseViewController<EmptyViewModel> {
 
     // MARK: - Properties
 

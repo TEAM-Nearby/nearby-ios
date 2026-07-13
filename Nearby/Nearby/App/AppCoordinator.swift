@@ -31,54 +31,62 @@ final class AppCoordinator {
 // MARK: - Coordinator
 
 extension AppCoordinator: Coordinator {
-     func start() {
-         if diContainer.hasStoredSession {
-             showMainTab()
-         } else {
-             showLogin()
-         }
-     }
-     
-     func finish() {
-         childCoordinators.removeAll()
-     }
+    func start() {
+        if diContainer.hasStoredSession {
+            showMainTab()
+        } else {
+            showLogin()
+        }
+    }
+    
+    func finish() {
+        childCoordinators.removeAll()
+    }
     
     // MARK: - Method
     
     func showMainTab() {
         let mainTabCoordinator = diContainer.makeMainTabCoordinator()
         mainTabCoordinator.parentCoordinator = self
-
+        
         mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in
             guard let self else { return }
-
+            
             if let mainTabCoordinator { removeChildCoordinator(mainTabCoordinator) }
-
+            
             showLogin()
         }
-
+        
         addChildCoordinator(mainTabCoordinator)
-
+        
         mainTabCoordinator.start()
-
+        
         window.rootViewController = mainTabCoordinator.rootViewController
         window.makeKeyAndVisible()
     }
     
     func showLogin() {
-        let loginViewController = diContainer.makeLoginViewController()
-        
+        let loginViewController =
+            diContainer.makeLoginViewController()
+
         loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in
             guard let self else { return }
 
             switch onboardingStatus {
-            case .started: showPhoneVerification()
-            case .phoneVerified: showPhoneVerification()
-            case .completed: showMainTab()
+            case .started:
+                showPhoneVerification()
+
+            case .phoneVerified:
+                showPhoneVerification()
+
+            case .completed:
+                showMainTab()
             }
         }
-        
+
         let navigationController = UINavigationController(rootViewController: loginViewController)
+
+        navigationController.setNavigationBarHidden(true, animated: false)
 
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
@@ -88,14 +96,31 @@ extension AppCoordinator: Coordinator {
         guard let navigationController = window.rootViewController as? UINavigationController else {
             return
         }
-
+        
         let viewController =
-            diContainer.makePhoneVerificationViewController()
-
+        diContainer.makePhoneVerificationViewController()
+        
         viewController.onVerificationCompleted = { [weak self] in
-            self?.showMainTab()
+            self?.showCompanionProfile()
         }
+        
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    private func showSplash() {
+        let splashViewController =
+            diContainer.makeSplashViewController()
+
+        window.rootViewController = splashViewController
+        window.makeKeyAndVisible()
+    }
+    
+    private func showCompanionProfile() {
+        guard let navigationController = window.rootViewController as? UINavigationController else { return }
+
+        let viewController = diContainer.makeCompanionProfileViewController()
 
         navigationController.pushViewController(viewController, animated: true)
     }
- }
+    
+}

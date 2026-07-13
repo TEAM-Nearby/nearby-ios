@@ -111,6 +111,10 @@ final class AppDIContainer {
         CompanionViewModel()
     }
     
+    func makeCompanionProfileViewModel() -> CompanionProfileViewModel {
+        CompanionProfileViewModel()
+    }
+
     func makeDiningMapViewModel() -> DiningMapViewModel {
         DiningMapViewModel()
     }
@@ -209,16 +213,20 @@ final class AppDIContainer {
     func makeHostProfileViewModel(profileId: Int) -> HostProfileViewModel {
         HostProfileViewModel(profileId: profileId, repository: makeCompanionProfileRepository())
     }
-    
+  
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
-        PhoneVerificationViewModel()
+        let repository = makeAuthRepository()
+        return PhoneVerificationViewModel(authRepository: repository)
     }
-    
     func makeHostRequestRecieveViewModel(applicantName: String, locationName: String) -> HostRequestRecieveViewModel {
         HostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName)
     }
     
     // MARK: - ViewControllers
+    
+    func makeSplashViewController() -> SplashViewController {
+        SplashViewController()
+    }
     
     func makeHostProfileViewController(profileId: Int) -> HostProfileViewController {
         let viewModel = makeHostProfileViewModel(profileId: profileId)
@@ -229,6 +237,10 @@ final class AppDIContainer {
         LoginViewController(viewModel: makeLoginViewModel())
     }
     
+    func makeCompanionProfileViewController() -> CompanionProfileViewController {
+        CompanionProfileViewController(viewModel: makeCompanionProfileViewModel())
+    }
+
     func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
         CompanionViewController(viewModel: viewModel,
                                 nearbySheetViewController: makeNearCompanionSheetViewController(),
@@ -329,17 +341,11 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeReviewViewController(
-        coordinator: MeetingTabCoordinator,
-        type: NearbyUserType,
-        reviewItem: ReviewItem
-    ) -> UIViewController {
+    func makeReviewViewController(coordinator: MeetingTabCoordinator, type: NearbyUserType, reviewItem: ReviewItem) -> UIViewController {
         switch type {
         case .host:
-            return makeHostReviewListViewController(
-                coordinator: coordinator
-            )
-            
+            return makeHostReviewListViewController(coordinator: coordinator)
+
         case .participant:
             return makeReviewPostViewController(
                 coordinator: coordinator,
@@ -398,7 +404,11 @@ final class AppDIContainer {
     }
     
     func makePhoneVerificationViewController() -> PhoneVerificationViewController {
-        PhoneVerificationViewController(viewModel: makePhoneVerificationViewModel())
+
+        let repository = makeAuthRepository()
+        let viewModel = PhoneVerificationViewModel(authRepository: repository)
+
+        return PhoneVerificationViewController(viewModel: viewModel)
     }
     
     func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, hostName: String, locationName: String) -> UIViewController {

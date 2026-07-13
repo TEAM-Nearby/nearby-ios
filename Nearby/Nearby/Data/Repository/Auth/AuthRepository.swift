@@ -7,6 +7,8 @@
 
 protocol AuthRepository {
     func loginWithKakao() async throws -> OnboardingStatus
+    func sendVerificationCode(phoneNumber: String) async throws -> PhoneVerificationResponseDTO
+    func confirmVerificationCode(phoneVerificationId: Int, verificationCode: String) async throws -> PhoneVerificationConfirmResponseDTO
 }
 
 final class DefaultAuthRepository {
@@ -36,5 +38,17 @@ extension DefaultAuthRepository: AuthRepository {
         )
         try tokenStorage.save(accessToken: response.accessToken, refreshToken: response.refreshToken)
         return response.onboardingStatus
+    }
+    
+    func sendVerificationCode(phoneNumber: String) async throws -> PhoneVerificationResponseDTO {
+        let request = PhoneVerificationRequestDTO(phoneNumber: phoneNumber)
+
+        return try await authService.sendVerificationCode(request: request)
+    }
+
+    func confirmVerificationCode(phoneVerificationId: Int, verificationCode: String) async throws -> PhoneVerificationConfirmResponseDTO {
+        let request = PhoneVerificationConfirmRequestDTO(verificationCode: verificationCode)
+
+        return try await authService.confirmVerificationCode(phoneVerificationId: phoneVerificationId, request: request)
     }
 }

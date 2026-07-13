@@ -43,6 +43,7 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
     private var currentCoordinate: CLLocationCoordinate2D?
     private var placeCategory = "RESTAURANT"
     private var fetchTask: Task<Void, Never>?
+    private var postsByPlaceId: [Int: [CompanionDTO]] = [:]
 
     // MARK: - Initializer
 
@@ -81,6 +82,11 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
     func companion(at index: Int) -> NearCompanionCellItem {
         output.companions.value[index]
     }
+
+    @MainActor
+    func specificCompanions(for placeId: Int) -> [SpecificCompanionCellItem] {
+        (postsByPlaceId[placeId] ?? []).map(SpecificCompanionCellItem.init(dto:))
+    }
 }
 
 private extension NearCompanionSheetViewModel {
@@ -100,8 +106,13 @@ private extension NearCompanionSheetViewModel {
                 )
                 guard !Task.isCancelled else { return }
 
+                postsByPlaceId = Dictionary(grouping: response.posts, by: { $0.place.placeId })
+                let latestPostsByPlace = postsByPlaceId.values.compactMap { posts in
+                    posts.max { $0.createdAt < $1.createdAt }
+                }
+
                 output.companions.send(response.posts.map(NearCompanionCellItem.init(dto:)))
-                output.mapMarkers.send(response.posts.map(CompanionMapMarkerData.init(dto:)))
+                output.mapMarkers.send(latestPostsByPlace.map(CompanionMapMarkerData.init(dto:)))
                 output.summaryText.send(response.summaryText)
             } catch is CancellationError {
                 return

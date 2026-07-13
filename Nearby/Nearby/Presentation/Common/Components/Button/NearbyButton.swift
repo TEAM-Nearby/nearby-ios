@@ -11,7 +11,7 @@ final class NearbyButton: UIButton {
     
     // MARK: - Properties
     
-    private let style: NearbyButtonStyle
+    private var style: NearbyButtonStyle
     private var gradientLayer: CAGradientLayer?
     private var titleContentInsets: UIEdgeInsets = .zero
     
@@ -83,6 +83,11 @@ final class NearbyButton: UIButton {
     
     func setSelected(_ selected: Bool) {
         isSelected = selected
+
+        if style == .selected || style == .unselected {
+            style = selected ? .selected : .unselected
+        }
+
         refreshStyle()
     }
 

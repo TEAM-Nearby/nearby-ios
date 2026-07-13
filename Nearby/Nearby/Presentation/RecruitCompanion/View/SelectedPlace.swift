@@ -7,4 +7,7 @@ struct SelectedPlace {
     let placeID: String
     let name: String
     let address: String
+    let latitude: Double
+    let longitude: Double
+    let category: PlaceCategory
 }

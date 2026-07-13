@@ -7,6 +7,7 @@
 
 protocol ReviewService {
     func createReview(meetingId: Int, request: CreateReviewRequestDTO) async throws -> CreateReviewResponseDTO
+    func fetchReviewTargets(meetingId: Int) async throws -> ReviewTargetsResponseDTO
 }
 
 final class DefaultReviewService: ReviewService {
@@ -20,6 +21,13 @@ final class DefaultReviewService: ReviewService {
         try await networkProvider.request(
             ReviewTarget.create(meetingId: meetingId, request: request),
             responseType: CreateReviewResponseDTO.self
+        )
+    }
+
+    func fetchReviewTargets(meetingId: Int) async throws -> ReviewTargetsResponseDTO {
+        try await networkProvider.request(
+            ReviewTarget.fetchTargets(meetingId: meetingId),
+            responseType: ReviewTargetsResponseDTO.self
         )
     }
 }

@@ -16,8 +16,11 @@ extension Date {
     }
     
     var meetingDisplayText: String {
-        let formatter = DateFormatter.cached(format: "M월 d일 (E) a h시 m분")
-        formatter.locale = Locale(identifier: "ko_KR")
-        return formatter.string(from: self)
+        DateFormatter.meetingDisplay.string(from: self)
     }
+    
+    // TODO: - 다른 브랜치에서 마저 작업
+//    var timeDisplayText: String {
+//        DateFormatter.timeDisplay.string(from: self)
+//    }
 }

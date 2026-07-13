@@ -24,6 +24,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<DisplayData, Never>()
         let showHostRejectView = PassthroughSubject<Void, Never>()
         let showHostAllowView = PassthroughSubject<Void, Never>()
+        let errorMessage = PassthroughSubject<String, Never>()
     }
 
     struct DisplayData {
@@ -82,7 +83,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
                     image: .illustLetterProfile,
                     name: DTO.applicantProfile.nickname,
                     profile: .imgProfileDefault,   // TODO: kingfisher 적용 후 교체
-                    gender: DTO.applicantProfile.gender,
+                    gender: DTO.applicantProfile.gender.rawValue,
                     level: "\(DTO.applicantProfile.mannerScore)",
                     title: "함께 동행을 원하는 분이 있어요",
                     subtitle: "대화를 나눈 후 일정을 확정해보세요",
@@ -91,12 +92,11 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
                 )
                 applicantNickname = DTO.applicantProfile.nickname
                 placeName = DTO.placeName
-                applicantNickname = DTO.applicantProfile.nickname
-                placeName = DTO.placeName
                 meetingAt = DTO.meetingAt
                 output.displayData.send(data)
             } catch {
                 AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
             }
         }
     }

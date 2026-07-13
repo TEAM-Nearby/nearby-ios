@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NearbyGender {
-    case male
-    case female
+enum NearbyGender: String, Decodable {
+    case male = "MALE"
+    case female = "FEMALE"
 }

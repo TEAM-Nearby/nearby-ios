@@ -37,8 +37,9 @@ extension String {
             ]
         )
     }
-    
-    func toDate(format: String = "yyyy-MM-dd'T'HH:mm:ss") -> Date? {
-        DateFormatter.cached(format: format).date(from: self)
+
+    func toDate() -> Date? {
+        if let date = DateFormatter.serverDateTime.date(from: self) { return date }
+        return DateFormatter.serverDateTimeWithZone.date(from: self)
     }
 }

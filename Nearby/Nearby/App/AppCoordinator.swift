@@ -112,14 +112,14 @@ extension AppCoordinator: Coordinator {
         guard let navigationController = window.rootViewController as? UINavigationController else {
             return
         }
-
+        
         let viewController =
-            diContainer.makePhoneVerificationViewController()
-
+        diContainer.makePhoneVerificationViewController()
+        
         viewController.onVerificationCompleted = { [weak self] in
-            self?.showMainTab()
+            self?.showCompanionProfile()
         }
-
+        
         navigationController.pushViewController(viewController, animated: true)
     }
     
@@ -127,11 +127,16 @@ extension AppCoordinator: Coordinator {
         let splashViewController =
             diContainer.makeSplashViewController()
 
-        splashViewController.onAnimationCompleted = { [weak self] in
-            self?.showLogin()
-        }
-
         window.rootViewController = splashViewController
         window.makeKeyAndVisible()
     }
- }
+    
+    private func showCompanionProfile() {
+        guard let navigationController = window.rootViewController as? UINavigationController else { return }
+
+        let viewController = diContainer.makeCompanionProfileViewController()
+
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+}

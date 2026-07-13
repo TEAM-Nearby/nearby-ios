@@ -79,6 +79,10 @@ final class AppDIContainer {
     func makeCompanionViewModel() -> CompanionViewModel {
         CompanionViewModel()
     }
+    
+    func makeCompanionProfileViewModel() -> CompanionProfileViewModel {
+        CompanionProfileViewModel()
+    }
 
     func makeDiningMapViewModel() -> DiningMapViewModel {
         DiningMapViewModel()
@@ -180,10 +184,14 @@ final class AppDIContainer {
     }
   
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {
-        let service = DefaultPhoneVerificationService(networkProvider: networkProvider)
-        let repository = DefaultPhoneVerificationRepository(phoneVerificationService: service)
+        let service = DefaultAuthService(
+            networkProvider: networkProvider
+        )
+        let repository = makeAuthRepository()
 
-        return PhoneVerificationViewModel(phoneVerificationRepository: repository)
+        return PhoneVerificationViewModel(
+            authRepository: repository
+        )
     }
     func makeHostRequestRecieveViewModel(applicantName: String, locationName: String) -> HostRequestRecieveViewModel {
         HostRequestRecieveViewModel(applicantName: applicantName, locationName: locationName)
@@ -205,6 +213,10 @@ final class AppDIContainer {
 
     func makeLoginViewController() -> LoginViewController {
         LoginViewController(viewModel: makeLoginViewModel())
+    }
+    
+    func makeCompanionProfileViewController() -> CompanionProfileViewController {
+        CompanionProfileViewController(viewModel: makeCompanionProfileViewModel())
     }
 
     func makeCompanionViewController(viewModel: CompanionViewModel) -> CompanionViewController {
@@ -377,9 +389,9 @@ final class AppDIContainer {
     }
 
     func makePhoneVerificationViewController() -> PhoneVerificationViewController {
-        let service = DefaultPhoneVerificationService(networkProvider: networkProvider)
-        let repository = DefaultPhoneVerificationRepository(phoneVerificationService: service)
-        let viewModel = PhoneVerificationViewModel(phoneVerificationRepository: repository)
+
+        let repository = makeAuthRepository()
+        let viewModel = PhoneVerificationViewModel(authRepository: repository)
 
         return PhoneVerificationViewController(viewModel: viewModel)
     }

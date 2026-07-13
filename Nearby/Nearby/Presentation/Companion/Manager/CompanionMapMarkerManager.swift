@@ -24,6 +24,7 @@ final class CompanionMapMarkerManager {
     private struct Entry {
         let marker: GMSMarker
         let content: Content
+        let placeId: Int?
     }
     
     // MARK: - UI Components
@@ -131,12 +132,13 @@ final class CompanionMapMarkerManager {
     }
     
     @discardableResult
-    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, nickname: String, written: String, place: String, date: String, style: MapMarkerStyle = .companion) -> GMSMarker {
+    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, placeId: Int? = nil, nickname: String,
+                            written: String, place: String, date: String, style: MapMarkerStyle = .companion) -> GMSMarker {
         let content = Content(nickname: nickname, written: written, place: place, date: date, style: style)
         let marker = GMSMarker(position: coordinate)
         applyAppearance(to: marker, content: content, level: level)
         marker.map = mapView
-        entries.append(Entry(marker: marker, content: content))
+        entries.append(Entry(marker: marker, content: content, placeId: placeId))
         return marker
     }
 
@@ -147,7 +149,8 @@ final class CompanionMapMarkerManager {
         entries.removeAll { $0.content.style == .companion }
 
         items.forEach { item in
-            addCompanionMarker(at: item.coordinate, nickname: item.nickname, written: item.written,
+            addCompanionMarker(at: item.coordinate, placeId: item.placeId,
+                               nickname: item.nickname, written: item.written,
                                place: item.place, date: item.date)
         }
     }
@@ -162,6 +165,10 @@ final class CompanionMapMarkerManager {
     
     func containsCompanionMarker(_ marker: GMSMarker) -> Bool {
         entries.contains { $0.marker === marker }
+    }
+
+    func placeId(for marker: GMSMarker) -> Int? {
+        entries.first { $0.marker === marker }?.placeId
     }
     
     func updateHeading(_ heading: CLHeading) {

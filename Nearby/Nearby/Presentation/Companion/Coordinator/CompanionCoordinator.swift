@@ -36,7 +36,6 @@ final class CompanionCoordinator {
     
     private func showRecruitCompanion() {
         let viewController = diContainer.makeRecruitCompanionViewController(coordinator: self)
-
         navigationController.pushViewController(viewController, animated: true)
     }
 

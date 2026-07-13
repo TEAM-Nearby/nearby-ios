@@ -29,16 +29,27 @@ extension NearCompanionCellItem {
             placeName: dto.place.name,
             writtenTime: dto.createdAgoText,
             content: dto.contentPreview,
-            schedule: dto.meetingAtText,
+            schedule: dto.nearMeetingTimeTitle,
             participantImages: Array(
                 repeating: nil,
                 count: max(dto.participantCount, 1)
             ),
             statusText: dto.participantSummaryText,
             detailState: CompanionDetailState(
+                postId: dto.postId,
                 postType: .scheduled,
                 isApplicationEnabled: dto.status == "RECRUITING",
-                tags: []
+                tags: [],
+                hostName: dto.host.nickname,
+                genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
+                placeName: dto.place.name,
+                googlePlaceId: dto.place.googlePlaceId,
+                placeLatitude: dto.place.latitude,
+                placeLongitude: dto.place.longitude,
+                meetingTimeText: dto.nearMeetingTimeTitle,
+                participantSummaryText: dto.participantSummaryText,
+                participantCount: dto.participantCount,
+                content: dto.contentPreview
             )
         )
     }

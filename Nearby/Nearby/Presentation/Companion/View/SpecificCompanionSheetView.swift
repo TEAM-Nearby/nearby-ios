@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -26,8 +27,6 @@ final class SpecificCompanionSheetView: BaseView {
     override func setStyle() {
         backgroundColor = .white
         
-        // TODO: 서버 연동 후 placeholder 제거
-        
         placeImageView.do {
             $0.image = .restaurantPlaceholder
             $0.contentMode = .scaleAspectFill
@@ -42,14 +41,12 @@ final class SpecificCompanionSheetView: BaseView {
             $0.setImage(.cancelCircleIcon, for: .normal)
         }
         
-        // TODO: 서버 연동 후 mock 제거
-        
         placeNameLabel.do {
-            $0.setFont(.b2Sb16, text: "킷사덴 오노데라", textColor: .white)
+            $0.setFont(.b2Sb16, textColor: .white)
         }
         
         placeInfoLabel.do {
-            $0.setFont(.b3M14, text: "스시 · 1km", textColor: .white)
+            $0.setFont(.b3M14, textColor: .white)
         }
         
         collectionView.do {
@@ -102,6 +99,22 @@ final class SpecificCompanionSheetView: BaseView {
     
     override func registerCells() {
         collectionView.register(SpecificCompanionCell.self)
+    }
+
+    func configurePlace(with item: SpecificCompanionCellItem?) {
+        guard let item else {
+            placeImageView.image = .restaurantPlaceholder
+            placeNameLabel.text = nil
+            placeInfoLabel.text = nil
+            return
+        }
+
+        placeNameLabel.setFont(.b2Sb16, text: item.placeName, textColor: .white)
+        placeInfoLabel.setFont(.b3M14, text: item.placeInfo, textColor: .white)
+        placeImageView.kf.setImage(
+            with: item.placeImageURL,
+            placeholder: UIImage.restaurantPlaceholder
+        )
     }
     
     // MARK: - Method

@@ -12,7 +12,7 @@ final class CompanionMapController: NSObject {
     
     // MARK: - Properties
     
-    var onCompanionMarkerTap: (() -> Void)?
+    var onCompanionMarkerTap: ((Int) -> Void)?
     var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
 
     private let locationManager = CLLocationManager()
@@ -20,6 +20,7 @@ final class CompanionMapController: NSObject {
     private let markerManager: CompanionMapMarkerManager
     private let configuration: CompanionMapConfiguration
     private var currentLocation: CLLocation?
+    private let cameraVerticalOffset: CGFloat = 38
     
     // MARK: - Initializer
 
@@ -33,22 +34,26 @@ final class CompanionMapController: NSObject {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
 
         if let referenceCoordinate = configuration.referenceCoordinate {
-            moveCamera(to: CLLocation(
-                latitude: referenceCoordinate.latitude,
-                longitude: referenceCoordinate.longitude
-            ))
+            moveCamera(to: CLLocation(latitude: referenceCoordinate.latitude, longitude: referenceCoordinate.longitude))
         }
     }
     
     // MARK: - Methods
     
     private func moveCamera(to location: CLLocation) {
-        let camera = GMSCameraPosition.camera(
-            withLatitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude,
-            zoom: configuration.initialZoom
-        )
+        let target = cameraTarget(for: location.coordinate, zoom: configuration.initialZoom, verticalOffset: cameraVerticalOffset)
+        let camera = GMSCameraPosition.camera(withLatitude: target.latitude, longitude: target.longitude, zoom: configuration.initialZoom)
         mapView.animate(to: camera)
+    }
+
+    private func cameraTarget(for coordinate: CLLocationCoordinate2D, zoom: Float, verticalOffset: CGFloat) -> CLLocationCoordinate2D {
+        let worldSize = 256 * pow(2, Double(zoom))
+        let latitudeRadians = coordinate.latitude * .pi / 180
+        let mercatorY = (1 - log(tan(latitudeRadians) + 1 / cos(latitudeRadians)) / .pi) / 2
+        let offsetMercatorY = mercatorY + Double(verticalOffset) / worldSize
+        let latitude = atan(sinh(.pi * (1 - 2 * offsetMercatorY))) * 180 / .pi
+
+        return CLLocationCoordinate2D(latitude: latitude, longitude: coordinate.longitude)
     }
 
     private func startUpdatingHeadingIfNeeded() {
@@ -112,8 +117,8 @@ extension CompanionMapController: GMSMapViewDelegate {
     }
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-        guard markerManager.containsCompanionMarker(marker) else { return false }
-        onCompanionMarkerTap?()
+        guard let placeId = markerManager.placeId(for: marker) else { return false }
+        onCompanionMarkerTap?(placeId)
         return true
     }
 }

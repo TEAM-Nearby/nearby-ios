@@ -35,6 +35,7 @@ struct CompanionMapMarkerItem {
 }
 
 struct CompanionMapMarkerData {
+    let placeId: Int
     let coordinate: CLLocationCoordinate2D
     let nickname: String
     let written: String
@@ -44,10 +45,9 @@ struct CompanionMapMarkerData {
 
 extension CompanionMapMarkerData {
     init(dto: CompanionDTO) {
-        self.init(coordinate: CLLocationCoordinate2D(
-                latitude: dto.place.latitude,
-                longitude: dto.place.longitude
-            ),
+        self.init(
+            placeId: dto.place.placeId,
+            coordinate: CLLocationCoordinate2D(latitude: dto.place.latitude, longitude: dto.place.longitude),
             nickname: dto.host.nickname,
             written: dto.createdAgoText,
             place: dto.place.name,

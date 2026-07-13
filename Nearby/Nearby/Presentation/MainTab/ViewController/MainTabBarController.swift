@@ -14,6 +14,7 @@ final class MainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
+        delegate = self
         configureTabBarAppearance()
     }
     
@@ -58,5 +59,25 @@ final class MainTabBarController: UITabBarController {
         tabBar.layer.borderWidth = 0.5
         tabBar.layer.borderColor = UIColor.grey10.cgColor
         tabBar.layer.masksToBounds = true
+    }
+}
+
+// MARK: - UITabBarControllerDelegate
+
+extension MainTabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        guard selectedViewController !== viewController else { return true }
+
+        let currentViewController = (selectedViewController as? UINavigationController)?.visibleViewController
+            ?? selectedViewController
+        (currentViewController as? MainTabSwitchPreparing)?.prepareForTabSwitch()
+
+        viewController.loadViewIfNeeded()
+        let destinationViewController = (viewController as? UINavigationController)?.visibleViewController
+            ?? viewController
+        destinationViewController.loadViewIfNeeded()
+        destinationViewController.view.setNeedsLayout()
+        destinationViewController.view.layoutIfNeeded()
+        return true
     }
 }

@@ -18,7 +18,7 @@ final class CompanionView: BaseView {
     let mapView = NearbyMapViewFactory.makeMapView()
     private let topSectionView = CompanionTopSectionView()
     private let recruitCompanionButtonGradientLayer = CAGradientLayer()
-    let companionCountChip = NearbyChipButton(style: .mapInfo, title: "내 주변 12개의 동행이 있어요", horizontalInset: 12)
+    let companionCountChip = NearbyChipButton(style: .mapInfo, title: "", horizontalInset: 12)
     
     let recruitCompanionButton = UIButton()
     let mapContainerView = UIView()

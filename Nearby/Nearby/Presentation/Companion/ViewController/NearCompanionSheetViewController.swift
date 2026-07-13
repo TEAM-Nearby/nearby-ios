@@ -88,6 +88,10 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
         viewModel.action(.locationDidUpdate(coordinate))
     }
 
+    func specificCompanions(for placeId: Int) -> [SpecificCompanionCellItem] {
+        viewModel.specificCompanions(for: placeId)
+    }
+
     func updatePlaceCategory(_ category: String) {
         viewModel.action(.placeCategoryDidSelect(category))
     }

@@ -72,11 +72,19 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             }
             .store(in: &cancellables)
         
+        viewModel.output.requestLocation
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                // TODO: - MVP 테스트용 고정 좌표
+                self?.viewModel.action(.locationDidUpdate(latitude: 41.389458, longitude: 2.168289))
+            }
+            .store(in: &cancellables)
+        
         viewModel.output.showReviewList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                // TODO: - 서버 연동 후 post.hostID == myUserID 로 타입 판정
-                let mockType: NearbyUserType = .host
+                guard let self else { return }
+                // TODO: - ReviewItem은 후기 API 연동 시 교체
                 let mockItem = ReviewItem(
                     id: 1,
                     meetingId: 3,
@@ -85,7 +93,7 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
                     name: "정지영",
                     information: "바르셀로나 · 2026년 6월 18일"
                 )
-                self?.coordinator?.showReview(type: mockType, item: mockItem)
+                self.coordinator?.showReview(type: self.viewModel.userRole, item: mockItem)
             }
             .store(in: &cancellables)
         

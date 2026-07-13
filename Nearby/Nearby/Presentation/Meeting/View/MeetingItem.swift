@@ -9,22 +9,25 @@ import Foundation
 
 struct MeetingItem {
     let id: Int
+    let matchId: Int
     let name: String
     let gender: String
+    let profileImageUrl: String?
     let information: String
-    let meetingDate: Date
-    let step: MeetingStep
-}
-
-// MARK: - Cell Type
-
-extension MeetingItem {
+    let meetingDate: Date?
+    let postType: PostType
+    let isCheckedIn: Bool
+    
     var isWithinVerifiableWindow: Bool {
-        abs(meetingDate.timeIntervalSinceNow) <= 3600
+        postType.isVerifiable(meetingAt: meetingDate)
     }
+    
+    var step: MeetingStep {
+        if isCheckedIn { return .completion }
+        return isWithinVerifiableWindow ? .verification : .match
+    }
+    
     var cellType: MeetingVerificationCellType {
-        guard step == .verification else { return .notYet }
-        
-        return isWithinVerifiableWindow ? .verifiable : .notYet
+        (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
     }
 }

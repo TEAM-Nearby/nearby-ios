@@ -18,17 +18,9 @@ private enum AuthErrorCode {
     static let invalidTokenRefreshRequest = "INVALID_TOKEN_REFRESH_REQUEST"
     static let missingRefreshToken = "MISSING_REFRESH_TOKEN"
 
-    static let refreshable: Set<String> = [
-        unauthorized,
-        tokenExpired,
-        accessTokenExpired
-    ]
+    static let refreshable: Set<String> = [unauthorized, tokenExpired, accessTokenExpired]
 
-    static let invalidAuthorization: Set<String> = [
-        invalidToken,
-        invalidRefreshToken,
-        missingRefreshToken
-    ]
+    static let invalidAuthorization: Set<String> = [invalidToken, invalidRefreshToken, missingRefreshToken]
 }
 
 final class NetworkProvider {
@@ -73,9 +65,8 @@ final class NetworkProvider {
 private extension NetworkProvider {
     func requestBaseResponse<T: Decodable>(_ target: BaseTargetType, responseType: T.Type, canRefreshToken: Bool) async throws -> BaseResponseDTO<T> {
         let urlRequest = try makeURLRequest(target: target)
-        let dataResponse = await session.request(
-            urlRequest
-        )
+
+        let dataResponse = await session.request(urlRequest)
             .serializingData()
             .response
         

@@ -18,6 +18,7 @@ final class NearbyMapView: BaseView {
     private let cornerRadius: CGFloat
     private let markerSize: CGSize
     
+    private var zoomLevel: Float
     private var latitude: Double?
     private var longitude: Double?
     private var placeName: String?
@@ -35,10 +36,12 @@ final class NearbyMapView: BaseView {
 
     init(
         cornerRadius: CGFloat = 16,
-        markerSize: CGSize = CGSize(width: 30, height: 30)
+        markerSize: CGSize = CGSize(width: 30, height: 30),
+        zoomLevel: Float = 16.0
     ) {
         self.cornerRadius = cornerRadius
         self.markerSize = markerSize
+        self.zoomLevel = zoomLevel
         super.init(frame: .zero)
     }
 
@@ -94,14 +97,24 @@ final class NearbyMapView: BaseView {
         owningViewController?.presentSafariViewController(url: url, asBottomSheet: true)
     }
     
-    func configure(latitude: Double, longitude: Double, placeName: String? = nil, placeID: String? = nil, zoom: Float = 16.0, showsInfoWindow: Bool = false) {
+    func configure(
+        latitude: Double,
+        longitude: Double,
+        placeName: String? = nil,
+        placeID: String? = nil,
+        zoomLevel: Float? = nil,
+        showsInfoWindow: Bool = false
+    ) {
         self.latitude = latitude
         self.longitude = longitude
         self.placeName = placeName
         self.placeID = placeID
+        if let zoomLevel {
+            self.zoomLevel = zoomLevel
+        }
         
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: zoom)
+        let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: self.zoomLevel)
 
         mapView.camera = camera
 

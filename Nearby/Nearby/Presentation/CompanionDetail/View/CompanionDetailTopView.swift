@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -60,19 +61,19 @@ final class CompanionDetailTopView: BaseView {
         }
         
         hostNameLabel.do {
-            $0.setFont(.h3Sb20, text: "조예원")
+            $0.setFont(.h3Sb20)
         }
         
         genderLabel.do {
-            $0.setFont(.b2M16, text: "여성", textColor: .primary50)
+            $0.setFont(.b2M16, textColor: .primary50)
         }
         
         hostSubInfoLabel.do {
-            $0.setFont(.b3M14, text: "본인 인증 완료 · 매너 지수", textColor: .grey60)
+            $0.setFont(.b3M14, textColor: .grey60)
         }
         
         mannerScoreLabel.do {
-            $0.setFont(.b1Sb18, text: "4", textColor: .primary50)
+            $0.setFont(.b1Sb18, textColor: .primary50)
         }
         
         arrowImageView.do {
@@ -87,7 +88,7 @@ final class CompanionDetailTopView: BaseView {
         }
         
         introduceLabel.do {
-            $0.setFont(.b2M16, text: "안녕하세요~ 조예원이라고 합니다! 같이 맛있는 것도 먹고 구경도 해요~~언제든 환영입니다!", textColor: .grey70)
+            $0.setFont(.b2M16, textColor: .grey70)
             $0.numberOfLines = 0
         }
         
@@ -163,5 +164,25 @@ final class CompanionDetailTopView: BaseView {
         layout.minimumLineSpacing = 8
         layout.minimumInteritemSpacing = 8
         return layout
+    }
+
+    func configure(state: CompanionDetailState) {
+        hostNameLabel.setFont(.h3Sb20, text: state.hostName)
+        genderLabel.setFont(.b2M16, text: state.genderTitle, textColor: .primary50)
+        hostSubInfoLabel.setFont(.b3M14, text: state.isPhoneVerified ? "본인 인증 완료 · 매너 지수" : "매너 지수", textColor: .grey60)
+        mannerScoreLabel.setFont(.b1Sb18, text: state.mannerScoreText, textColor: .primary50)
+        introduceLabel.text = nil
+
+        guard let profileImageURL = state.profileImageURL else {
+            hostProfileImageView.configure(image: nil)
+            return
+        }
+
+        KingfisherManager.shared.retrieveImage(with: profileImageURL) { [weak self] result in
+            guard case .success(let value) = result else { return }
+            Task { @MainActor [weak self] in
+                self?.hostProfileImageView.configure(image: value.image)
+            }
+        }
     }
 }

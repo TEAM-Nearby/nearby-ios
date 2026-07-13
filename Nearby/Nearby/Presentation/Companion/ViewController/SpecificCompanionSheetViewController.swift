@@ -48,6 +48,11 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
     private func closeButtonDidTap() {
         onClose?()
     }
+
+    func updateCompanions(_ companions: [SpecificCompanionCellItem]) {
+        specificCompanionSheetView.configurePlace(with: companions.first)
+        viewModel.updateCompanions(companions)
+    }
 }
 
 // MARK: - UICollectionViewDelegate

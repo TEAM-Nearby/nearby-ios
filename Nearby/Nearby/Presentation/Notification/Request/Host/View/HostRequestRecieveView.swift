@@ -282,7 +282,7 @@ final class HostRequestRecieveView: BaseView {
     func configure(with output: HostRequestRecieveViewModel.DisplayData) {
         imageView.image = output.image
         nameLabel.text = output.name
-        profileImageView.configure(image: output.profile)
+        profileImageView.configure(imageUrl: output.profileImageUrl)
         genderLabel.text = output.gender
         levelLabel.text = output.level
         titleLabel.text = output.title

@@ -36,7 +36,7 @@ final class RecruitCompanionBottomView: BaseView {
     }
     private var placeSuggestions: [PlaceSearchResultItem] = []
 
-    var placeDidSelect: ((SelectedPlace) -> Void)?
+    var placeDidSelect: ((PlaceSearchResultItem) -> Void)?
     var placeSearchButtonAction: (() -> Void)?
     var placeQueryDidChange: ((String) -> Void)?
     var contentDidChange: ((String) -> Void)?
@@ -259,14 +259,7 @@ extension RecruitCompanionBottomView: UITableViewDataSource {
 extension RecruitCompanionBottomView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedSuggestion = placeSuggestions[indexPath.row]
-
-        let selectedPlace = SelectedPlace(
-            placeID: selectedSuggestion.placeID,
-            name: selectedSuggestion.name,
-            address: selectedSuggestion.address
-        )
-
-        updateSelectedPlace(selectedPlace.name)
-        placeDidSelect?(selectedPlace)
+        updateSelectedPlace(selectedSuggestion.name)
+        placeDidSelect?(selectedSuggestion)
     }
 }

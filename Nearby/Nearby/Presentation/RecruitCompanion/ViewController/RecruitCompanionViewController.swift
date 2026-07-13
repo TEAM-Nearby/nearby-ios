@@ -113,6 +113,19 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
             }
             .store(in: &cancellables)
 
+        viewModel.output.showErrorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.presentErrorAlert(message: message)
+            }
+            .store(in: &cancellables)
+
         viewModel.action(.viewDidLoad)
+    }
+
+    private func presentErrorAlert(message: String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
     }
 }

@@ -12,17 +12,13 @@ import Then
 
 final class CompanionDetailBottomView: BaseView {
     
-    // MARK: - Property
-    
-    private let profileAvatarCount: Int = 3
-    
     // MARK: - UI Components
 
     private let headerStackView = UIStackView()
     private let expirationBannerView = UIView()
     private let expirationLabel = UILabel()
     private let infoTitleLabel = UILabel()
-    private let mapView = UIView()
+    private let mapView = NearbyMapView(cornerRadius: 12, zoomLevel: 15.0)
     private let infoStackView = UIStackView()
     
     private let placeStackView = UIStackView()
@@ -67,11 +63,6 @@ final class CompanionDetailBottomView: BaseView {
             $0.setFont(.h3Sb20, text: "동행 정보", textColor: .grey80)
         }
         
-        mapView.do {
-            // TODO: - 지도 뷰 띄울 예정
-            $0.backgroundColor = .grey40
-        }
-        
         infoStackView.do {
             $0.axis = .vertical
             $0.spacing = 11
@@ -89,7 +80,7 @@ final class CompanionDetailBottomView: BaseView {
         }
         
         placeLabel.do {
-            $0.setFont(.b2M16, text: "장소명", textColor: .grey80)
+            $0.setFont(.b2M16, textColor: .grey80)
             $0.transform = CGAffineTransform(translationX: 0, y: -1)
         }
         
@@ -105,7 +96,7 @@ final class CompanionDetailBottomView: BaseView {
         }
         
         dateLabel.do {
-            $0.setFont(.b2M16, text: "6월 18일 (목) 오후 4시 30분", textColor: .grey80)
+            $0.setFont(.b2M16, textColor: .grey80)
             $0.transform = CGAffineTransform(translationX: 0, y: -1)
         }
         
@@ -120,12 +111,8 @@ final class CompanionDetailBottomView: BaseView {
             $0.tintColor = .grey80
         }
 
-        peopleImageStackView.do {
-            $0.configureWithDefaultAvatars(count: profileAvatarCount)
-        }
-        
         peopleStatusLabel.do {
-            $0.setFont(.b2M16, text: "3/4명", textColor: .grey80)
+            $0.setFont(.b2M16, textColor: .grey80)
             $0.transform = CGAffineTransform(translationX: 0, y: -1)
         }
         
@@ -136,7 +123,7 @@ final class CompanionDetailBottomView: BaseView {
         }
         
         contentLabel.do {
-            $0.setFont(.b3M14, text: "같이 스시 먹으러 갈 사람~~여기 제가 정말 좋아하는 스시집인데 혼자 먹기는 양이 너무 많아서 동행 구해봐요 같은 동성이면 더 좋을 것 같아요 밥 먹고 카페까지 같이 가면 좋을 것 같습니다 저는 친구 한 명과 같이 왔어요!", textColor: .grey60)
+            $0.setFont(.b3M14, textColor: .grey60)
             $0.numberOfLines = 0
         }
     }
@@ -203,14 +190,27 @@ final class CompanionDetailBottomView: BaseView {
 
     // MARK: - Method
 
-    func configure(postType: PostType) {
-        switch postType {
+    func configure(state: CompanionDetailState) {
+        if let latitude = state.placeLatitude, let longitude = state.placeLongitude {
+            mapView.configure(latitude: latitude, longitude: longitude, placeName: state.placeName, placeID: state.googlePlaceId)
+        }
+
+        placeLabel.setFont(.b2M16, text: state.placeName, textColor: .grey80)
+        dateLabel.setFont(.b2M16, text: state.meetingTimeText, textColor: .grey80)
+        peopleImageStackView.configureWithDefaultAvatars(count: state.participantCount)
+        peopleStatusLabel.setFont(.b2M16, text: state.participantSummaryText, textColor: .grey80)
+        contentLabel.setFont(.b3M14, text: state.content, textColor: .grey60)
+
+        switch state.postType {
         case .scheduled:
             expirationBannerView.isHidden = true
             expirationLabel.text = nil
-        case .immediate(let expirationTime):
-            expirationLabel.setFont(.b3M14, text: "이 글은 \(expirationTime)에 사라져요!", textColor: .grey60)
+        case .immediate:
+            // TODO: - 서버 immediate 값 질문
+//            expirationLabel.setFont(.b3M14, text: "이 글은 \(expirationTime)에 사라져요!", textColor: .grey60)
             expirationBannerView.isHidden = false
+        case .undecided:
+            break
         }
     }
 }

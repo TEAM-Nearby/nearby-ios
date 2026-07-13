@@ -17,7 +17,7 @@ final class CompanionProfileView: BaseView {
     let navigationBar = NearbyNavigationBar()
     
     private let progressContainerView = UIView()
-    private let progressView = UIProgressView(progressViewStyle: .default)
+    private let progressImageView = UIImageView()
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -63,12 +63,9 @@ final class CompanionProfileView: BaseView {
             $0.backgroundColor = .white
         }
         
-        progressView.do {
-            $0.progress = 0.5
-            $0.progressTintColor = .btnPrimaryBg
-            $0.trackTintColor = .chipBgPurple
-            $0.transform = CGAffineTransform(scaleX: -1, y: 1)
-            $0.layer.cornerRadius = 2
+        progressImageView.do {
+            $0.image = .progressbarStep02
+            $0.contentMode = .scaleAspectFit
             $0.clipsToBounds = true
         }
         
@@ -162,7 +159,7 @@ final class CompanionProfileView: BaseView {
     override func setUI() {
         addSubviews(navigationBar, progressContainerView, scrollView, bottomButton)
         
-        progressContainerView.addSubview(progressView)
+        progressContainerView.addSubview(progressImageView)
         scrollView.addSubview(contentView)
         
         contentView.addSubviews(titleLabel, descriptionLabel, profileImageButton,
@@ -185,13 +182,13 @@ final class CompanionProfileView: BaseView {
         progressContainerView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(28)
+            $0.height.equalTo(37)
         }
-        
-        progressView.snp.makeConstraints {
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview()
-            $0.height.equalTo(4)
+
+        progressImageView.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().offset(20)
+            $0.size.equalTo(CGSize(width: 60, height: 37))
         }
         
         bottomButton.snp.makeConstraints {

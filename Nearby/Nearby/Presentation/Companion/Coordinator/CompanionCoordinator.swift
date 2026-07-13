@@ -35,8 +35,7 @@ final class CompanionCoordinator {
     }
     
     private func showRecruitCompanion() {
-        let viewController = diContainer.makeRecruitCompanionViewController()
-        viewController.coordinator = self
+        let viewController = diContainer.makeRecruitCompanionViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
     }
 
@@ -48,10 +47,25 @@ final class CompanionCoordinator {
         switch route {
         case .close:
             navigationController.popViewController(animated: true)
-        case .applyCompanion:
-            // TODO: 동행 신청 API 성공 후 다음 화면 연결
-            break
+        case .applyCompanion(let hostName):
+            showCompanionRequestSent(hostName: hostName)
+        case .hostProfile(let profileId):
+            showHostProfile(profileId: profileId)
         }
+    }
+
+    private func showHostProfile(profileId: Int) {
+        let viewController = diContainer.makeHostProfileViewController(profileId: profileId)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    private func showCompanionRequestSent(hostName: String) {
+        let notificationCoordinator = diContainer.makeNotificationCoordinator(
+            navigationController: navigationController
+        )
+        notificationCoordinator.parentCoordinator = parentCoordinator
+        parentCoordinator?.addChildCoordinator(notificationCoordinator)
+        notificationCoordinator.showCompanionRequestSent(hostName: hostName)
     }
 
     func showCompanionDetail(state: CompanionDetailState) {

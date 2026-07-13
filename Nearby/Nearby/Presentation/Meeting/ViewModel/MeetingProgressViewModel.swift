@@ -16,6 +16,8 @@ final class MeetingProgressViewModel: BaseViewModelType {
         case viewDidLoad
         case verifyButtonDidTap
         case reportButtonDidTap
+        case locationDidUpdate(latitude: Double, longitude: Double)
+        case locationDidFail
     }
     
     // MARK: - Output
@@ -27,6 +29,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let showReport = PassthroughSubject<Void, Never>()
         let showReviewList = PassthroughSubject<Void, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
+        let requestLocation = PassthroughSubject<Void, Never>()
     }
     
     struct DisplayData {
@@ -49,6 +52,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     let meetingId: Int
     // TODO: - 서버 연동 후 상세 분기
     private(set) var userRole: NearbyUserType = .participant
+    private(set) var canMoveToComplete: Bool = false
     private let repository: MeetingRepository
     private var meetingDate: Date = .distantPast
     private var postType: PostType = .scheduled
@@ -84,8 +88,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
             switch currentStep {
             case .verification:
                 guard isVerifiable else { return }
-                // TODO: - 만남 인증(체크인) API 연동 후 성공 콜백에서 단계 갱신
-                output.step.send(.completion)
+                output.requestLocation.send(())
                 updateVerifyButtonState()
             case .completion:
                 output.showReviewList.send(())
@@ -95,6 +98,12 @@ final class MeetingProgressViewModel: BaseViewModelType {
             
         case .reportButtonDidTap:
             output.showReport.send(())
+        
+        case .locationDidUpdate(let latitude, let longitude):
+            checkIn(latitude: latitude, longitude: longitude)
+            
+        case .locationDidFail:
+            output.errorMessage.send("위치를 확인할 수 없어요. 위치 권한을 확인해 주세요.")
         }
     }
     
@@ -127,6 +136,20 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 
                 updateVerifyButtonState()
                 startTimer()
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func checkIn(latitude: Double, longitude: Double) {
+        Task {
+            do {
+                let DTO = try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
+                canMoveToComplete = DTO.canMoveToComplete
+                output.step.send(.completion)
+                updateVerifyButtonState()
             } catch {
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)

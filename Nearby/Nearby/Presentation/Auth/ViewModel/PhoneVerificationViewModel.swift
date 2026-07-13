@@ -159,12 +159,60 @@ private extension PhoneVerificationViewModel {
             return
         }
 
-        // TODO: - 인증번호 검증 API 연동 후 제거
-        guard verificationCode == "123456" else {
-            output.verificationCodeDidFail?("인증번호가 일치하지 않아요")
+        guard let phoneVerificationID else {
+            output.verificationCodeDidFail?("인증 요청 정보를 찾을 수 없어요. 인증문자를 다시 발송해주세요.")
             return
         }
 
-        output.verificationDidComplete?()
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            output.isLoading?(true)
+
+            defer {
+                output.isLoading?(false)
+            }
+
+            do {
+                let response = try await phoneVerificationRepository.confirmVerificationCode(
+                    phoneVerificationId: phoneVerificationID,
+                    verificationCode: verificationCode
+                )
+                guard response.phoneVerified else {
+                    output.verificationCodeDidFail?("휴대폰 인증에 실패했습니다.")
+                    return
+                }
+                output.verificationDidComplete?()
+
+            } catch {
+                handleConfirmVerificationError(error)
+            }
+        }
+    }
+    
+    func handleConfirmVerificationError(_ error: Error) {
+        AppLogger.error(error, message: "휴대폰 인증번호 확인 실패")
+
+        guard let networkError = error as? NetworkError else {
+            output.verificationCodeDidFail?("인증번호 확인에 실패했습니다.")
+            return
+        }
+
+        switch networkError {
+        case .badRequest(let code, let message):
+            switch code {
+            case "PHONE_VERIFICATION_CODE_MISMATCH":
+                output.verificationCodeDidFail?("인증번호가 일치하지 않아요")
+
+            default:
+                output.verificationCodeDidFail?(message)
+            }
+
+        case .unauthorized(_, let message):
+            output.verificationCodeDidFail?(message)
+
+        default:
+            output.verificationCodeDidFail?(networkError.localizedDescription)
+        }
     }
 }

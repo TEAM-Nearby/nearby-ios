@@ -7,14 +7,9 @@
 
 protocol PhoneVerificationService {
 
-    func sendVerificationCode(
-        request: PhoneVerificationRequestDTO
-    ) async throws -> PhoneVerificationResponseDTO
+    func sendVerificationCode(request: PhoneVerificationRequestDTO) async throws -> PhoneVerificationResponseDTO
 
-    func confirmVerificationCode(
-        phoneVerificationId: Int,
-        request: PhoneVerificationConfirmRequestDTO
-    ) async throws -> PhoneVerificationConfirmResponseDTO
+    func confirmVerificationCode(phoneVerificationId: Int, request: PhoneVerificationConfirmRequestDTO) async throws -> PhoneVerificationConfirmResponseDTO
 }
 
 final class DefaultPhoneVerificationService {

@@ -92,22 +92,6 @@ extension AppCoordinator: Coordinator {
         window.makeKeyAndVisible()
     }
     
-    // TODO: - 지워주기 (서연)
-    
-    private func showHostProfileTest() {
-        let hostProfileViewController =
-        diContainer.makeHostProfileViewController()
-        
-        let navigationController = UINavigationController(
-            rootViewController: hostProfileViewController
-        )
-        
-        navigationController.setNavigationBarHidden(true, animated: false)
-        
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
-    }
-    
     private func showPhoneVerification() {
         guard let navigationController = window.rootViewController as? UINavigationController else {
             return

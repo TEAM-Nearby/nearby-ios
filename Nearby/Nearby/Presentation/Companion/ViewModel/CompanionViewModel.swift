@@ -63,9 +63,6 @@ final class CompanionViewModel: BaseViewModelType {
 
 private extension CompanionMapConfiguration {
     static let mock = CompanionMapConfiguration(
-
-        // TODO: - 기획 요청 위도, 경도로 변경
-
         referenceCoordinate: CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.978),
         initialZoom: 16.2,
         smallMarkerMaximumZoom: 14.0,

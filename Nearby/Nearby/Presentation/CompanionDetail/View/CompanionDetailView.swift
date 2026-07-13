@@ -16,6 +16,9 @@ final class CompanionDetailView: BaseView {
     
     var onBackButtonDidTap: (() -> Void)?
     var onApplyButtonDidTap: (() -> Void)?
+    var onHostProfileDidTap: (() -> Void)?
+    private var isApplicationEnabled = false
+    private var isApplying = false
     
     var tagCollectionView: UICollectionView {
         topView.tagCollectionView
@@ -101,6 +104,8 @@ final class CompanionDetailView: BaseView {
     override func setAddTarget() {
         backButton.addTarget(self, action: #selector(backButtonDidTap), for: .touchUpInside)
         applyCompanionButton.addTarget(self, action: #selector(applyButtonDidTap), for: .touchUpInside)
+        topView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hostProfileDidTap)))
+        topView.isUserInteractionEnabled = true
     }
     
     // MARK: - Actions
@@ -114,12 +119,27 @@ final class CompanionDetailView: BaseView {
     private func applyButtonDidTap() {
         onApplyButtonDidTap?()
     }
+
+    @objc
+    private func hostProfileDidTap() {
+        onHostProfileDidTap?()
+    }
     
     // MARK: - Method
     
+    private func updateApplyButtonState() {
+        applyCompanionButton.setEnabled(isApplicationEnabled && !isApplying)
+    }
+    
     func configure(state: CompanionDetailState) {
-        applyCompanionButton.setEnabled(state.isApplicationEnabled)
+        isApplicationEnabled = state.isApplicationEnabled
+        updateApplyButtonState()
         topView.configure(state: state)
         bottomView.configure(state: state)
+    }
+
+    func setApplying(_ isApplying: Bool) {
+        self.isApplying = isApplying
+        updateApplyButtonState()
     }
 }

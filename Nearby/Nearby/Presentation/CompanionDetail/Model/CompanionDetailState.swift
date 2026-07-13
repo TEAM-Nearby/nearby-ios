@@ -9,6 +9,7 @@ import Foundation
 
 struct CompanionDetailState {
     let postId: Int?
+    let hostProfileId: Int?
     let postType: PostType
     let isApplicationEnabled: Bool
     let tags: [String]
@@ -28,6 +29,7 @@ struct CompanionDetailState {
 
     init(
         postId: Int? = nil,
+        hostProfileId: Int? = nil,
         postType: PostType,
         isApplicationEnabled: Bool,
         tags: [String],
@@ -46,6 +48,7 @@ struct CompanionDetailState {
         content: String = ""
     ) {
         self.postId = postId
+        self.hostProfileId = hostProfileId
         self.postType = postType
         self.isApplicationEnabled = isApplicationEnabled
         self.tags = tags

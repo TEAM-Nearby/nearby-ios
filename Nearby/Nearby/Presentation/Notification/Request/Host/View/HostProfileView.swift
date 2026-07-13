@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -250,7 +251,7 @@ final class HostProfileView: BaseView {
     func configure(
         with displayData: HostProfileViewModel.DisplayData
     ) {
-        profileImageView.configure(image: displayData.profileImage)
+        configureProfileImage(with: displayData.profileImageURL)
 
         nicknameLabel.text = displayData.nickname
         genderLabel.text = displayData.gender
@@ -264,6 +265,24 @@ final class HostProfileView: BaseView {
         configureCommunicationChips(displayData.communicationKeywords)
 
         configurePunctualityChips(displayData.punctualityKeywords)
+    }
+
+    func configureProfileImage(with url: URL?) {
+        guard let url else {
+            profileImageView.configure(image: .imgProfileDefault)
+            return
+        }
+
+        KingfisherManager.shared.retrieveImage(with: url) { [weak self] result in
+            Task { @MainActor [weak self] in
+                switch result {
+                case .success(let value):
+                    self?.profileImageView.configure(image: value.image)
+                case .failure:
+                    self?.profileImageView.configure(image: .imgProfileDefault)
+                }
+            }
+        }
     }
 
     func updateReviewChipSelection(
@@ -542,11 +561,7 @@ private extension HostProfileView {
     }
 
     func makeReviewChip(title: String, category: HostProfileReviewCategory, index: Int) -> NearbyChipButton {
-        let chipButton = NearbyChipButton(
-            style: .tagStateUnselected,
-            title: title,
-            horizontalInset: 16
-        )
+        let chipButton = NearbyChipButton(style: .tagStateUnselected, title: title, horizontalInset: 16)
 
         chipButton.tag = index
 
@@ -561,9 +576,7 @@ private extension HostProfileView {
         return chipButton
     }
 
-    func removeAllArrangedSubviews(
-        from stackView: UIStackView
-    ) {
+    func removeAllArrangedSubviews(from stackView: UIStackView) {
         stackView.arrangedSubviews.forEach { arrangedSubview in
 
             stackView.removeArrangedSubview(arrangedSubview)
@@ -572,9 +585,7 @@ private extension HostProfileView {
         }
     }
 
-    func configureIntroductionText(
-        _ text: String
-    ) {
+    func configureIntroductionText(_ text: String) {
         let font = NearbyFont.b2M16.font
         let lineHeight = font.pointSize * 1.3
 
@@ -594,12 +605,10 @@ private extension HostProfileView {
             ]
         )
     }
-}
-
-// MARK: - Actions
-
-private extension HostProfileView {
-
+    
+    // MARK: - Actions
+    
+    
     @objc
     func communicationChipButtonDidTap(_ sender: NearbyChipButton) {
         onReviewChipDidTap?(.communication, sender.tag)

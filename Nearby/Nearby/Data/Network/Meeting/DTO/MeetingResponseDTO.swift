@@ -19,7 +19,7 @@ struct MeetingResponseDTO: Decodable {
     let meetingAt: String
     let meetingTimeType: PostType
     let isCheckedIn: Bool
-    let meetingStatus: String
+    let meetingStatus: MeetingStatus
     
     struct Companion: Decodable {
         let userId: Int
@@ -42,12 +42,12 @@ struct MeetingDetailResponseDTO: Decodable {
     let meetingTimeType: PostType
     let currentUserCheckedIn: Bool
     let canCancelMeeting: Bool
-    let meetingStatus: String
+    let meetingStatus: MeetingStatus
 }
 
 struct MeetingCheckInResponseDTO: Decodable {
     let meetingId: Int
-    let meetingStatus: String
+    let meetingStatus: MeetingStatus
     let currentUserCheckedIn: Bool
     let checkedInCount: Int
     let totalParticipantCount: Int

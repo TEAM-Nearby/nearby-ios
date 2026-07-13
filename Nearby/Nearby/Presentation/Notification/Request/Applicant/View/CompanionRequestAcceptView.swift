@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -71,6 +72,8 @@ final class CompanionRequestAcceptView: BaseView {
     override func setStyle() {
         imageView.do {
             $0.contentMode = .scaleAspectFill
+            $0.layer.cornerRadius = 50
+            $0.clipsToBounds = true
         }
         
         titleLabel.do {
@@ -157,6 +160,8 @@ final class CompanionRequestAcceptView: BaseView {
         
         chatImageView.do {
             $0.contentMode = .scaleAspectFit
+            $0.layer.cornerRadius = 50
+            $0.clipsToBounds = true
         }
         
         chatTitleLabel.do {
@@ -319,12 +324,17 @@ final class CompanionRequestAcceptView: BaseView {
     // MARK: - Methods
     
     func configure(with output: CompanionRequestAcceptViewModel.DisplayData) {
-        imageView.image = output.image
+        if let urlString = output.hostProfileImageUrl, let url = URL(string: urlString) {
+            imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+            chatImageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+        } else {
+            imageView.image = .imgProfileDefault
+            chatImageView.image = .imgProfileDefault
+        }
         titleLabel.text = output.title
         locationLabel.text = output.location
         dateLabel.text = output.date
         peopleLabel.text = output.people
-        chatImageView.image = output.image
         chatTitleLabel.text = output.title
         confirmButton.setTitle(output.buttonTitle, for: .normal)
         avatarStackView.configure(with: output.avatarImages)

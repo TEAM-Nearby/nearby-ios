@@ -23,6 +23,11 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
     override func loadView() {
         view = companionRequestSentView
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
 
     // MARK: - Custom Methods
 

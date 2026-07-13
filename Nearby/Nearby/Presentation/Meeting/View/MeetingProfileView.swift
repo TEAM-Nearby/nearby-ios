@@ -39,17 +39,17 @@ final class MeetingProfileView: BaseView {
         }
         
         nameLabel.do {
-            $0.setFont(.b2Sb16, text: "정지영", textColor: .grey80)
+            $0.setFont(.b2Sb16, textColor: .grey80)
             $0.textAlignment = .left
         }
         
         genderLabel.do {
-            $0.setFont(.b2M16, text: "20대 여성", textColor: .primary50)
+            $0.setFont(.b2M16, textColor: .primary50)
             $0.textAlignment = .left
         }
         
         informationLabel.do {
-            $0.setFont(.b3M14, text: "시우다드 콘달 · 오후 4:30", textColor: .grey80)
+            $0.setFont(.b3M14, textColor: .grey80)
             $0.textAlignment = .left
         }
         

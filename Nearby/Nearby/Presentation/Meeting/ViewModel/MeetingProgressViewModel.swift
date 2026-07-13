@@ -50,7 +50,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
     let output = Output()
     
     let meetingId: Int
-    // TODO: - 서버 연동 후 상세 분기
     private(set) var userRole: NearbyUserType = .participant
     private(set) var canMoveToComplete: Bool = false
     private let repository: MeetingRepository
@@ -89,7 +88,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
             case .verification:
                 guard isVerifiable else { return }
                 output.requestLocation.send(())
-                updateVerifyButtonState()
             case .completion:
                 output.showReviewList.send(())
             case .match:

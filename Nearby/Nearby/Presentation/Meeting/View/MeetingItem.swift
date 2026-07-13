@@ -18,8 +18,6 @@ struct MeetingItem {
     let postType: PostType
     let isCheckedIn: Bool
     
-    private static let verifiableWindow: TimeInterval = 3600
-    
     var isWithinVerifiableWindow: Bool {
         postType.isVerifiable(meetingAt: meetingDate)
     }

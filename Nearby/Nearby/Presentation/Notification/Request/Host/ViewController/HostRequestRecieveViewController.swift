@@ -69,6 +69,7 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
             .sink { [weak self] in
                 self?.coordinator?.showHostRequestAllow(
                     applicantName: self?.viewModel.applicantNickname ?? "",
+                    applicantProfileImageUrl: self.viewModel.applicantProfileImageUrl,
                     locationName: self?.viewModel.placeName ?? "",
                     meetingAt: self?.viewModel.meetingAt ?? "",
                     matchId: self?.viewModel.matchId,

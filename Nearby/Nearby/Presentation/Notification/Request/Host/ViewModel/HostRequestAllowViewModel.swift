@@ -36,7 +36,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     }
     
     struct DisplayData {
-        let image: UIImage
+        let profileImageUrl: String?
         let title: String
         let location: String
         let date: String
@@ -58,7 +58,8 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
+    init(applicantProfileImageUrl: String, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
+        self.profileImageUrl = applicantProfileImageUrl
         self.applicantName = applicantName
         self.locationName = locationName
         self.meetingAt = meetingAt
@@ -72,7 +73,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         switch trigger {
         case .viewDidLoad:
             let data = DisplayData(
-                image: .imgProfileDefault,
+                profileImageUrl: applicantProfileImageUrl,
                 title: "\(applicantName) 님과 동행이 매칭됐어요!",
                 location: "\(locationName)",
                 date: meetingAt.toDate()?.meetingDisplayText ?? "",

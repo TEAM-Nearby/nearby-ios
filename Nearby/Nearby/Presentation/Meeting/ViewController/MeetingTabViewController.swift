@@ -58,8 +58,6 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
                 self?.meetingTabView.collectionView.reloadData()
             }
             .store(in: &cancellables)
-        
-        viewModel.action(.viewDidLoad)
     }
     
     // MARK: - Method

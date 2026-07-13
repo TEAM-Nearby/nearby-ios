@@ -77,7 +77,7 @@ extension MeetingTabCoordinator: Coordinator {
         viewController.navigationItem.hidesBackButton = true
         navigationController.pushViewController(viewController, animated: true)
     }
-
+    
     func dismissReportFlow() {
         if let target = reportReturnViewController {
             navigationController.popToViewController(target, animated: true)
@@ -100,9 +100,8 @@ extension MeetingTabCoordinator: Coordinator {
     }
     
     func showNotification() {
-        // TODO: - 서연 님 작업 후 변경
         let notificationCoordinator = makeChildNotificationCoordinator()
-            notificationCoordinator.start()
+        notificationCoordinator.start()
     }
     
     private func makeChildNotificationCoordinator() -> NotificationCoordinator {

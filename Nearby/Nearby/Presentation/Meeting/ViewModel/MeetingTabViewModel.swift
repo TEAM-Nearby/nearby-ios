@@ -68,7 +68,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     private func makeMeetingItem(from DTO: MeetingResponseDTO) -> MeetingItem {
         let meetingDate = DTO.meetingAt.toDate() ?? Date()
-        let timeText = meetingDate.meetingDisplayText
+        let timeText = meetingDate.timeDisplayText
         
         return MeetingItem(
             id: DTO.meetingId,

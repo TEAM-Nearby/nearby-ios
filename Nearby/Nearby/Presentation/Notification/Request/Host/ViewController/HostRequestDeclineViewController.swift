@@ -18,10 +18,15 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
     
     weak var coordinator: NotificationCoordinator?
 
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
 
     override func loadView() {
         view = hostRequestDeclineView
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     // MARK: - Custom Methods

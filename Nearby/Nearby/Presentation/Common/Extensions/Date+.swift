@@ -20,4 +20,10 @@ extension Date {
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.string(from: self)
     }
+    
+    var timeDisplayText: String {
+        let formatter = DateFormatter.cached(format: "a h시 m분")
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: self)
+    }
 }

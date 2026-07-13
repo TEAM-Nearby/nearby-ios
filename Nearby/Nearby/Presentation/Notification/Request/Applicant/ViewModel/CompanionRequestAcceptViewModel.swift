@@ -36,7 +36,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
     }
 
     struct DisplayData {
-        let image: UIImage
+        let hostProfileImageUrl: String?
         let title: String
         let location: String
         let date: String
@@ -99,7 +99,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                 openChatURLString = result.openChatUrl ?? ""
 
                 let data = DisplayData(
-                    image: .imgProfileDefault,   // TODO: - result.host.profileImageUrl Kingfisher 적용
+                    hostProfileImageUrl: result.host.profileImageUrl,
                     title: "\(result.host.nickname) 님과 동행이 매칭됐어요!",
                     location: result.place.name,
                     date: result.meetingAt?.toDate()?.meetingDisplayText ?? "",

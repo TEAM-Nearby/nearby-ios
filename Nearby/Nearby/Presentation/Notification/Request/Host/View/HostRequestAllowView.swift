@@ -65,6 +65,8 @@ final class HostRequestAllowView: BaseView {
     override func setStyle() {
         imageView.do {
             $0.contentMode = .scaleAspectFill
+            $0.layer.cornerRadius = 50
+            $0.clipsToBounds = true
         }
         
         titleLabel.do {
@@ -137,6 +139,8 @@ final class HostRequestAllowView: BaseView {
         
         chatImageView.do {
             $0.contentMode = .scaleAspectFit
+            $0.layer.cornerRadius = 50
+            $0.clipsToBounds = true
         }
         
         chatTitleLabel.do {
@@ -272,11 +276,16 @@ final class HostRequestAllowView: BaseView {
     // MARK: - Methods
     
     func configure(with output: HostRequestAllowViewModel.DisplayData) {
-        imageView.image = output.image
+        if let urlString = output.profileImageUrl, let url = URL(string: urlString) {
+            imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+            chatImageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+        } else {
+            imageView.image = .imgProfileDefault
+            chatImageView.image = .imgProfileDefault
+        }
         titleLabel.text = output.title
         locationLabel.text = output.location
         dateLabel.text = output.date
-        chatImageView.image = output.image
         chatTitleLabel.text = output.chatTitle
     }
     

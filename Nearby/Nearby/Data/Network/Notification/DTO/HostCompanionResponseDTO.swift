@@ -19,7 +19,7 @@ struct HostCompanionDetailResponseDTO: Decodable {
     struct ApplicantProfile: Decodable {
         let profileImageUrl: String?
         let nickname: String
-        let gender: String
+        let gender: NearbyGender
         let birthYear: Int
         let mannerScore: Int
     }

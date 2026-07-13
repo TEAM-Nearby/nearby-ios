@@ -38,9 +38,6 @@ extension DefaultMeetingRepository: MeetingRepository {
     }
     
     func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws -> MeetingCheckInResponseDTO {
-        try await networkProvider.request(
-            MeetingTarget.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude),
-            responseType: MeetingCheckInResponseDTO.self
-        )
+        try await meetingService.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
     }
 }

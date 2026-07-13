@@ -44,3 +44,18 @@ struct MeetingDetailResponseDTO: Decodable {
     let canCancelMeeting: Bool
     let meetingStatus: String
 }
+
+struct MeetingCheckInResponseDTO: Decodable {
+    let meetingId: Int
+    let meetingStatus: String
+    let currentUserCheckedIn: Bool
+    let checkedInCount: Int
+    let totalParticipantCount: Int
+    let allParticipantsCheckedIn: Bool
+    let canMoveToComplete: Bool
+    let checkedInAt: String
+    let distanceMeters: Double
+    let allowedRadiusMeters: Double
+    let checkInAvailableFrom: String
+    let checkInAvailableUntil: String
+}

@@ -18,17 +18,9 @@ private enum AuthErrorCode {
     static let invalidTokenRefreshRequest = "INVALID_TOKEN_REFRESH_REQUEST"
     static let missingRefreshToken = "MISSING_REFRESH_TOKEN"
 
-    static let refreshable: Set<String> = [
-        unauthorized,
-        tokenExpired,
-        accessTokenExpired
-    ]
+    static let refreshable: Set<String> = [unauthorized, tokenExpired, accessTokenExpired]
 
-    static let invalidAuthorization: Set<String> = [
-        invalidToken,
-        invalidRefreshToken,
-        missingRefreshToken
-    ]
+    static let invalidAuthorization: Set<String> = [invalidToken, invalidRefreshToken, missingRefreshToken]
 }
 
 final class NetworkProvider {
@@ -73,9 +65,18 @@ final class NetworkProvider {
 private extension NetworkProvider {
     func requestBaseResponse<T: Decodable>(_ target: BaseTargetType, responseType: T.Type, canRefreshToken: Bool) async throws -> BaseResponseDTO<T> {
         let urlRequest = try makeURLRequest(target: target)
-        let dataResponse = await session.request(
-            urlRequest
-        )
+
+        if let body = urlRequest.httpBody,
+           let bodyString = String(data: body, encoding: .utf8) {
+            print("최초 요청 Body:", bodyString)
+        }
+
+        if let httpBody = urlRequest.httpBody,
+           let bodyString = String(data: httpBody, encoding: .utf8) {
+            print("최초 요청 Body:", bodyString)
+        }
+
+        let dataResponse = await session.request(urlRequest)
             .serializingData()
             .response
         
@@ -89,6 +90,10 @@ private extension NetworkProvider {
         
         guard let data = dataResponse.data else {
             throw NetworkError.decoding
+        }
+
+        if let responseString = String(data: data, encoding: .utf8) {
+            print(responseString)
         }
         
         if (200..<300).contains(statusCode) {

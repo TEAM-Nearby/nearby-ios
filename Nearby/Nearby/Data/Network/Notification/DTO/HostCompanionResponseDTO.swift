@@ -20,8 +20,8 @@ struct HostCompanionDetailResponseDTO: Decodable {
         let profileImageUrl: String?
         let nickname: String
         let gender: NearbyGender
-        let birthYear: Int
-        let mannerScore: Int
+        let birthYear: Int?
+        let mannerScore: Double
     }
 
     struct ApplicantAccount: Decodable {

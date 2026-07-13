@@ -85,7 +85,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
                     name: DTO.applicantProfile.nickname,
                     profileImageUrl: DTO.applicantProfile.profileImageUrl,
                     gender: DTO.applicantProfile.gender.genderDisplayText,
-                    level: "\(DTO.applicantProfile.mannerScore)",
+                    level: String(format: "%.1f", DTO.applicantProfile.mannerScore),
                     title: "함께 동행을 원하는 분이 있어요",
                     subtitle: "대화를 나눈 후 일정을 확정해보세요",
                     location: DTO.placeName,

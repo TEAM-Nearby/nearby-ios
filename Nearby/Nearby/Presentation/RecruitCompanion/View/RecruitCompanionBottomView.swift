@@ -120,17 +120,13 @@ final class RecruitCompanionBottomView: BaseView {
         descriptionTextView.snp.makeConstraints {
             $0.top.equalTo(descriptionTitleLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            descriptionTextViewHeightConstraint = $0.height
-                .equalTo(descriptionTextViewMinimumHeight)
-                .constraint
+            descriptionTextViewHeightConstraint = $0.height.equalTo(descriptionTextViewMinimumHeight).constraint
         }
 
         placeSearchResultTableView.snp.makeConstraints {
             $0.top.equalTo(meetingPlaceTextView.snp.bottom).offset(4)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            placeSearchResultTableViewHeightConstraint = $0.height
-                .equalTo(0)
-                .constraint
+            placeSearchResultTableViewHeightConstraint = $0.height.equalTo(0).constraint
         }
 
         kakaoLinkTitleLabel.snp.makeConstraints {

@@ -19,10 +19,7 @@ final class GooglePlaceService {
 
     // MARK: - Methods
 
-    func searchPlaces(query: String, latitude: Double, longitude: Double, completion: @escaping (
-            Result<[PlaceSearchResultItem], Error>
-        ) -> Void
-    ) {
+    func searchPlaces(query: String, latitude: Double, longitude: Double, completion: @escaping (Result<[PlaceSearchResultItem], Error>) -> Void) {
         let trimmedQuery = query.trimmingCharacters(
             in: .whitespacesAndNewlines
         )

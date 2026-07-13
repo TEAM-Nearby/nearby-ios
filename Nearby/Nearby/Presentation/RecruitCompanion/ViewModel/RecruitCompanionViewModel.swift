@@ -20,7 +20,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         case participantCountDidChange(Int)
         case styleKeywordDidTap(String)
         case placeQueryDidChange(String)
-        case placeSearchButtonDidTap
+        case placeDidSelect(SelectedPlace)
         case contentDidChange(String)
         case openChatURLDidChange(String)
         case completeButtonDidTap
@@ -30,34 +30,73 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     struct Output {
         let state = CurrentValueSubject<State, Never>(.initial)
-        let showPlaceSearch = PassthroughSubject<Void, Never>()
+        let placeSuggestions = CurrentValueSubject<[PlaceSearchResultItem], Never>([])
         let completeButtonDidTap = PassthroughSubject<Void, Never>()
         let showBack = PassthroughSubject<Void, Never>()
     }
 
     struct State {
         let meetingTimeType: RecruitMeetingTimeType
+        let meetingAt: Date?
         let isDatePickerVisible: Bool
         let maxParticipants: Int
         let styleKeywords: Set<String>
         let placeQuery: String
-        let isCompleteButtonEnabled: Bool
+        let selectedPlaceID: String?
+        let content: String
+        let openChatURL: String
 
         static let initial = State(
             meetingTimeType: .now,
+            meetingAt: nil,
             isDatePickerVisible: false,
             maxParticipants: 2,
             styleKeywords: [],
             placeQuery: "",
-            isCompleteButtonEnabled: false
+            selectedPlaceID: nil,
+            content: "",
+            openChatURL: ""
         )
+
+        var isCompleteButtonEnabled: Bool {
+            return isFormValid
+        }
+
+        var isFormValid: Bool {
+            let hasMeetingAt = meetingTimeType == .now || meetingAt != nil
+            let hasPlace = selectedPlaceID != nil
+
+            return hasMeetingAt
+                && hasPlace
+                && !styleKeywords.isEmpty
+                && !content.trimmed.isEmpty
+                && !openChatURL.trimmed.isEmpty
+        }
     }
 
     // MARK: - Properties
 
     let output = Output()
 
+    private let googlePlaceService: GooglePlaceService
+    private let searchCoordinate: (latitude: Double, longitude: Double)
     private var draft = RecruitCompanionDraft()
+    private var placeSearchWorkItem: DispatchWorkItem?
+    private var latestPlaceSearchQuery = ""
+
+    private var isFormValid: Bool {
+        return output.state.value.isFormValid
+    }
+
+    // MARK: - Initializer
+
+    init(
+        googlePlaceService: GooglePlaceService,
+        searchCoordinate: (latitude: Double, longitude: Double)
+    ) {
+        self.googlePlaceService = googlePlaceService
+        self.searchCoordinate = searchCoordinate
+    }
 
     // MARK: - Action
 
@@ -94,10 +133,10 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
         case .placeQueryDidChange(let query):
             draft.placeQuery = query
+            draft.selectedPlaceID = nil
+            draft.selectedPlaceAddress = ""
             publishState()
-
-        case .placeSearchButtonDidTap:
-            output.showPlaceSearch.send(())
+            searchPlacesWithDebounce(query: query)
 
         case .contentDidChange(let content):
             draft.content = content
@@ -111,32 +150,78 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             guard isFormValid else { return }
             // TODO: - 동행글 작성 API POST 연결
             output.completeButtonDidTap.send(())
+
+        case .placeDidSelect(let place):
+            placeSearchWorkItem?.cancel()
+            latestPlaceSearchQuery = ""
+            draft.placeQuery = place.name
+            draft.selectedPlaceID = place.placeID
+            draft.selectedPlaceAddress = place.address
+            googlePlaceService.refreshSessionToken()
+            publishState()
         }
     }
 
     // MARK: - Methods
 
-    private var isFormValid: Bool {
-        let hasMeetingAt = draft.meetingTimeType == .now || draft.meetingAt != nil
-        let hasPlace = !draft.placeQuery.trimmed.isEmpty
-
-        return hasMeetingAt
-            && hasPlace
-            && !draft.styleKeywords.isEmpty
-            && !draft.content.trimmed.isEmpty
-            && !draft.openChatURL.trimmed.isEmpty
-    }
-
     private func publishState() {
         output.state.send(
             State(
                 meetingTimeType: draft.meetingTimeType,
+                meetingAt: draft.meetingAt,
                 isDatePickerVisible: draft.meetingTimeType == .scheduled,
                 maxParticipants: draft.maxParticipants,
                 styleKeywords: draft.styleKeywords,
                 placeQuery: draft.placeQuery,
-                isCompleteButtonEnabled: isFormValid
+                selectedPlaceID: draft.selectedPlaceID,
+                content: draft.content,
+                openChatURL: draft.openChatURL
             )
         )
+    }
+
+    private func searchPlacesWithDebounce(query: String) {
+        placeSearchWorkItem?.cancel()
+
+        let trimmedQuery = query.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+        latestPlaceSearchQuery = trimmedQuery
+
+        guard !trimmedQuery.isEmpty else {
+            output.placeSuggestions.send([])
+            googlePlaceService.refreshSessionToken()
+            return
+        }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.searchPlaces(query: trimmedQuery)
+        }
+
+        placeSearchWorkItem = workItem
+
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + 0.4,
+            execute: workItem
+        )
+    }
+
+    private func searchPlaces(query: String) {
+        googlePlaceService.searchPlaces(
+            query: query,
+            latitude: searchCoordinate.latitude,
+            longitude: searchCoordinate.longitude
+        ) { [weak self] result in
+            guard let self, latestPlaceSearchQuery == query else { return }
+
+            switch result {
+            case .success(let suggestions):
+                output.placeSuggestions.send(suggestions)
+
+            case .failure(let error):
+                AppLogger.error(error, message: "장소 검색에 실패했습니다.")
+                output.placeSuggestions.send([])
+            }
+        }
     }
 }

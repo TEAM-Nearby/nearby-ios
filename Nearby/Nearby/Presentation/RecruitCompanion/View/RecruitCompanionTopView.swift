@@ -282,10 +282,7 @@ extension RecruitCompanionTopView: UICollectionViewDataSource {
         return tagTitles.count
     }
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(NearbyTextChipCollectionViewCell.self, for: indexPath)
         let title = tagTitles[indexPath.item]
         
@@ -298,11 +295,7 @@ extension RecruitCompanionTopView: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension RecruitCompanionTopView: UICollectionViewDelegateFlowLayout {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let title = tagTitles[indexPath.item]
         let font = NearbyChipStyle.tagStateUnselected.font
         let titleWidth = (title as NSString).size(withAttributes: [.font: font]).width

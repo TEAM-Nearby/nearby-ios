@@ -32,7 +32,7 @@ final class AppCoordinator {
 
 extension AppCoordinator: Coordinator {
     func start() {
-        showSplash()
+        showMainTab()
     }
      
      func finish() {

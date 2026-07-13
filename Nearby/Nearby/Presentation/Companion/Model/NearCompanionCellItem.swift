@@ -36,9 +36,20 @@ extension NearCompanionCellItem {
             ),
             statusText: dto.participantSummaryText,
             detailState: CompanionDetailState(
+                postId: dto.postId,
                 postType: .scheduled,
                 isApplicationEnabled: dto.status == "RECRUITING",
-                tags: []
+                tags: [],
+                hostName: dto.host.nickname,
+                genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
+                placeName: dto.place.name,
+                googlePlaceId: dto.place.googlePlaceId,
+                placeLatitude: dto.place.latitude,
+                placeLongitude: dto.place.longitude,
+                meetingTimeText: dto.meetingAtText,
+                participantSummaryText: dto.participantSummaryText,
+                participantCount: dto.participantCount,
+                content: dto.contentPreview
             )
         )
     }

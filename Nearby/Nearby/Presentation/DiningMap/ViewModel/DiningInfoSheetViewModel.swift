@@ -29,13 +29,13 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
 
     let output = Output()
 
-    private let repository: DiningRepository
+    private let repository: DiningMapRepository
     private let coordinate: CLLocationCoordinate2D
     private var fetchTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
-    init(repository: DiningRepository, coordinate: CLLocationCoordinate2D) {
+    init(repository: DiningMapRepository, coordinate: CLLocationCoordinate2D) {
         self.repository = repository
         self.coordinate = coordinate
     }

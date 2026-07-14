@@ -33,7 +33,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
 
     let output: Output
 
-    private let repository: DiningRepository
+    private let repository: DiningMapRepository
     private var currentCoordinate: CLLocationCoordinate2D?
     private var fetchTask: Task<Void, Never>?
 
@@ -41,7 +41,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
 
     // MARK: - Initializer
     
-    init(repository: DiningRepository) {
+    init(repository: DiningMapRepository) {
         self.repository = repository
         output = Output(restaurants: CurrentValueSubject([]))
     }

@@ -68,8 +68,8 @@ final class AppDIContainer {
         DefaultCompanionService(networkProvider: networkProvider)
     }
 
-    private func makeDiningService() -> DiningService {
-        DefaultDiningService(networkProvider: networkProvider)
+    private func makeDiningMapService() -> DiningMapService {
+        DefaultDiningMapService(networkProvider: networkProvider)
     }
 
     private func makeGooglePlaceService() -> GooglePlaceService {
@@ -118,8 +118,8 @@ final class AppDIContainer {
         DefaultCompanionRepository(service: makeCompanionService())
     }
 
-    private func makeDiningRepository() -> DiningRepository {
-        DefaultDiningRepository(service: makeDiningService())
+    private func makeDiningMapRepository() -> DiningMapRepository {
+        DefaultDiningMapRepository(service: makeDiningMapService())
     }
 
     private func makeRecruitCompanionRepository() -> RecruitCompanionRepository {
@@ -176,7 +176,7 @@ final class AppDIContainer {
     }
     
     func makeNearDiningBottomSheetViewModel() -> NearDiningBottomSheetViewModel {
-        NearDiningBottomSheetViewModel(repository: makeDiningRepository())
+        NearDiningBottomSheetViewModel(repository: makeDiningMapRepository())
     }
     
     func makeSaveDiningSheetViewModel() -> SaveDiningSheetViewModel {
@@ -185,7 +185,7 @@ final class AppDIContainer {
     
     func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
         DiningInfoSheetViewModel(
-            repository: makeDiningRepository(),
+            repository: makeDiningMapRepository(),
             coordinate: CLLocationCoordinate2D(latitude: 41.389458, longitude: 2.168289)
         )
     }

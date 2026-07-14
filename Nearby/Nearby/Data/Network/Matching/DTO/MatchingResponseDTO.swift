@@ -24,14 +24,30 @@ struct MatchedCompanionListResponseDTO: Decodable {
     }
 }
 
-enum HostGender: String, Decodable {
-    case male = "MALE"
-    case female = "FEMALE"
-}
+struct MatchedCompanionPreviewResponseDTO: Decodable {
+    let matchId: Int
+    let host: Host
+    let members: [Member]
+    let companionPost: CompanionPost
 
-enum MatchStatus: String, Decodable {
-    case matched = "MATCHED"
-    case scheduleConfirmed = "SCHEDULE_CONFIRMED"
+    struct Host: Decodable {
+        let hostName: String
+        let hostProfileImageUrl: String?
+    }
+
+    struct Member: Decodable {
+        let memberId: Int
+        let profileImageUrl: String?
+        let nickname: String
+    }
+
+    struct CompanionPost: Decodable {
+        let postId: Int
+        let content: String
+        let placeName: String
+        let meetingTimeType: MeetingTimeType
+        let meetingAt: String?
+    }
 }
 
 struct MatchMyScheduleResponseDTO: Decodable {
@@ -54,4 +70,24 @@ struct MatchMyScheduleResponseDTO: Decodable {
         let latitude: Double
         let longitude: Double
     }
+}
+
+struct ConfirmCompanionScheduleRequestDTO {
+    let scheduledAt: String
+    let place: Place
+    let openChatUrl: String
+
+    struct Place {
+        let googlePlaceId: String
+        let name: String
+        let address: String
+        let latitude: Double
+        let longitude: Double
+    }
+}
+
+struct ConfirmCompanionScheduleResponseDTO: Decodable {
+    let matchId: Int
+    let scheduleId: Int
+    let matchStatus: MatchStatus
 }

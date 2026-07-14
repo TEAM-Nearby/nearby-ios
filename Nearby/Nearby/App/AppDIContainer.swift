@@ -103,6 +103,10 @@ final class AppDIContainer {
         DefaultMyPageService(networkProvider: networkProvider)
     }
     
+    private func makeCompanionRequestService() -> CompanionRequestService {
+        DefaultCompanionRequestService(networkProvider: networkProvider)
+    }
+    
     // MARK: - Repositories
     
     private func makeAuthRepository() -> AuthRepository {
@@ -146,6 +150,10 @@ final class AppDIContainer {
     
     private func makeMyPageRepository() -> MyPageRepository {
         DefaultMyPageRepository(service: makeMyPageService())
+    }
+    
+    private func makeCompanionRequestRepository() -> CompanionRequestRepository {
+        DefaultCompanionRequestRepository(service: makeCompanionRequestService())
     }
     
     // MARK: - ViewModels
@@ -221,7 +229,7 @@ final class AppDIContainer {
     }
     
     func makeAlarmViewModel(initialTab: AlarmTab = .sent) -> AlarmViewModel {
-        AlarmViewModel(initialTab: initialTab)
+        AlarmViewModel(initialTab: initialTab, repository: makeCompanionRequestRepository())
     }
     
     func makeSettingViewModel() -> SettingViewModel {

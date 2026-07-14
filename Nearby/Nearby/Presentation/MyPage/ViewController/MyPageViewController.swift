@@ -31,6 +31,7 @@ final class MyPageViewController:
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        viewModel.action(.viewWillAppear)
     }
 
     // MARK: - Custom Methods
@@ -58,6 +59,14 @@ final class MyPageViewController:
     }
 
     override func bindState() {
+        viewModel.output.myPageData = { [weak self] displayModel in
+            self?.myPageView.configure(with: displayModel)
+        }
+
+        viewModel.output.errorMessage = { [weak self] message in
+            self?.showErrorAlert(message: message)
+        }
+        
         viewModel.output.alarmButtonDidTap = { [weak self] in
             self?.onAlarmButtonDidTap?()
         }
@@ -77,5 +86,22 @@ final class MyPageViewController:
         viewModel.output.receivedRequestRowDidTap = { [weak self] in
             self?.onReceivedRequestRowDidTap?()
         }
+    }
+}
+
+// MARK: - Private Methods
+
+private extension MyPageViewController {
+
+    func showErrorAlert(message: String) {
+        guard presentedViewController == nil else {
+            return
+        }
+
+        let alertController = UIAlertController(title: "마이페이지 조회 실패", message: message, preferredStyle: .alert)
+
+        alertController.addAction(UIAlertAction(title: "확인", style: .default))
+
+        present(alertController, animated: true)
     }
 }

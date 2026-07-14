@@ -7,7 +7,7 @@
 
 protocol MatchedCompanionListService {
     func fetchMatches() async throws -> MatchedCompanionListResponseDTO
-    func fetchMatchDetail(matchId: Int) async throws -> MatchingScheduleDetailResponseModel
+    func fetchMatchMySchedule(matchId: Int) async throws -> MatchMyScheduleResponseDTO
 }
 
 final class DefaultMatchedCompanionListService {
@@ -33,10 +33,10 @@ extension DefaultMatchedCompanionListService: MatchedCompanionListService {
         )
     }
 
-    func fetchMatchDetail(matchId: Int) async throws -> MatchingScheduleDetailResponseModel {
+    func fetchMatchMySchedule(matchId: Int) async throws -> MatchMyScheduleResponseDTO {
         try await networkProvider.request(
             MatchedCompanionListTarget.detail(matchId: matchId),
-            responseType: MatchingScheduleDetailResponseModel.self
+            responseType: MatchMyScheduleResponseDTO.self
         )
     }
 }

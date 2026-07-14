@@ -88,9 +88,20 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         nearDiningSheetViewController.onRestaurantSelected = { [weak self] item in
             self?.showDiningInfoSheet(for: item)
         }
+        
+        nearDiningSheetViewController.onMapMarkersChanged = { [weak self] markers in
+            self?.mapController.updateDiningMarkers(markers)
+        }
+        
+        mapController.onCompanionMarkerTap = { [weak self] placeId in
+            guard let item = self?.nearDiningSheetViewController.restaurant(placeId: placeId) else { return }
+            self?.showDiningInfoSheet(for: item)
+        }
+        
         saveDiningSheetViewController.onRestaurantSelected = { [weak self] item in
             self?.showDiningInfoSheet(for: item)
         }
+        
         diningInfoSheetViewController.onClose = { [weak self] in
             guard let self else { return }
             if isSaveDiningSheetPresented {
@@ -98,6 +109,10 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
             } else {
                 showNearDiningSheet()
             }
+        }
+
+        mapController.onLocationUpdate = { [weak self] coordinate in
+            self?.nearDiningSheetViewController.updateLocation(coordinate)
         }
     }
 

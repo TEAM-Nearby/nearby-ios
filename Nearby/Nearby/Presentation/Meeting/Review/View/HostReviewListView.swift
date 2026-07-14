@@ -170,7 +170,7 @@ final class HostReviewListView: BaseView {
         items.forEach { item in
             let profileView = ReviewProfileView()
             profileView.configure(
-                image: item.image,
+                imageUrl: item.profileImageUrl,
                 name: item.name,
                 information: item.information,
                 isReviewed: reviewedIDs.contains(item.id)

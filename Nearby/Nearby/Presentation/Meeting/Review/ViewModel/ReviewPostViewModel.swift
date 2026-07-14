@@ -31,6 +31,7 @@ final class ReviewPostViewModel: BaseViewModelType {
         let showReport = PassthroughSubject<Void, Never>()
         let reviewSaved = PassthroughSubject<Void, Never>()
         let companionCompleted = PassthroughSubject<Void, Never>()
+        let errorMessage = PassthroughSubject<String, Never>()
     }
     
     struct DisplayData {
@@ -41,34 +42,36 @@ final class ReviewPostViewModel: BaseViewModelType {
     
     // MARK: - Properties
     
-    let firstTagTitles = [
-        "연락이 빨라요", "매너가 좋아요", "대화가 잘 통해요",
-        "입담이 좋아요", "유용한 정보를 많이 알아요"
-    ]
-    let secondTagTitles = [
-        "시간 약속을 잘 지켜요", "늦어도 미리 알려줘요",
-        "약속 시간보다 일찍 와요"
-    ]
-    
+    let firstTagTitles = ReviewKeyword.consideration.map(\.displayText)
+    let secondTagTitles = ReviewKeyword.timePromise.map(\.displayText)
+
     private(set) var firstSelectedTags = Set<Int>()
     private(set) var secondSelectedTags = Set<Int>()
-    
+
     let output = Output()
     private let reviewItem: ReviewItem
     private let type: NearbyUserType
     private let isLastReview: Bool
+    private let repository: ReviewRepository
     private var rating: Int = 0
+    private var isSubmitting = false
+    private var hasSubmittedReview = false
 
     private var isFinishButton: Bool {
         type == .participant || isLastReview
     }
-    
+
+    private var hasReviewContent: Bool {
+        rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
+    }
+
     // MARK: - Initializer
-    
-    init(reviewItem: ReviewItem, type: NearbyUserType, isLastReview: Bool) {
+
+    init(reviewItem: ReviewItem, type: NearbyUserType, isLastReview: Bool, repository: ReviewRepository) {
         self.reviewItem = reviewItem
         self.type = type
         self.isLastReview = isLastReview
+        self.repository = repository
     }
     
     // MARK: - Action
@@ -103,12 +106,11 @@ final class ReviewPostViewModel: BaseViewModelType {
             output.showReport.send(())
             
         case .completionButtonDidTap:
-            guard output.isCompletionEnabled.value else { return }
-            // TODO: - 내용이 있으면 후기 등록 API, isFinishButton이면 동행 완료 API 연동
-            if isFinishButton {
-                output.companionCompleted.send(())
-            } else {
-                output.reviewSaved.send(())
+            guard output.isCompletionEnabled.value, !isSubmitting else { return }
+            if hasReviewContent {
+                submitReview()
+            } else if isFinishButton {
+                completeMeeting()
             }
         }
     }
@@ -132,7 +134,50 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
     
     private func updateCompletionState() {
-        let hasContent = rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
-        output.isCompletionEnabled.send(isFinishButton ? true : hasContent)
+        output.isCompletionEnabled.send(isFinishButton ? true : hasReviewContent)
+    }
+
+    private func submitReview() {
+        isSubmitting = true
+        Task {
+            defer { isSubmitting = false }
+            do {
+                if !hasSubmittedReview {
+                    let keywords = firstSelectedTags.sorted().map { ReviewKeyword.consideration[$0].rawValue }
+                        + secondSelectedTags.sorted().map { ReviewKeyword.timePromise[$0].rawValue }
+                    let request = CreateReviewRequestDTO(
+                        revieweeUserId: reviewItem.revieweeUserId,
+                        rating: rating,
+                        keywords: keywords
+                    )
+                    _ = try await repository.createReview(meetingId: reviewItem.meetingId, request: request)
+                    hasSubmittedReview = true
+                }
+
+                if isFinishButton {
+                    _ = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                    output.companionCompleted.send(())
+                } else {
+                    output.reviewSaved.send(())
+                }
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func completeMeeting() {
+        isSubmitting = true
+        Task {
+            defer { isSubmitting = false }
+            do {
+                _ = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                output.companionCompleted.send(())
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
     }
 }

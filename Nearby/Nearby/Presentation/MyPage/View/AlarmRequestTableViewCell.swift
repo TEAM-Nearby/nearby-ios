@@ -21,6 +21,11 @@ final class AlarmRequestTableViewCell: UITableViewCell {
     private var statusIconWidthConstraint: Constraint?
     private var statusIconHeightConstraint: Constraint?
 
+    private var actionButtonHeightConstraint: Constraint?
+    private var actionButtonTopConstraint: Constraint?
+    private var actionButtonBottomConstraint: Constraint?
+    private var informationBottomConstraint: Constraint?
+
     // MARK: - UI Components
 
     private let cardView = UIView()
@@ -58,36 +63,40 @@ final class AlarmRequestTableViewCell: UITableViewCell {
 
         onActionButtonDidTap = nil
 
-        profileImageView.configure(image: nil)
+        profileImageView.configure(image: .imgProfileDefault)
 
         statusIconImageView.image = nil
         statusIconImageView.isHidden = false
         statusIconImageView.tintColor = nil
 
         statusIconWidthConstraint?.update(offset: 20)
+
         statusIconHeightConstraint?.update(offset: 20)
 
         titleLabel.text = nil
         informationLabel.text = nil
 
         actionButton.setTitle(nil, for: .normal)
+
+        actionButton.isHidden = false
+        actionButton.isUserInteractionEnabled = true
+
+        contentView.alpha = 1.0
     }
 
     // MARK: - Method
 
     func configure(with item: AlarmRequestItem) {
-        profileImageView.configure(image: item.profileImage)
+        configureProfileImage(with: item.profileImageURL)
 
         titleLabel.text = item.displayType.title
-
         informationLabel.text = [item.nickname, item.dateText].joined(separator: " · ")
 
-        actionButton.setTitle(item.displayType.buttonTitle, for: .normal)
-
+        configureActionButton(with: item.displayType)
         configureIcon(with: item.displayType)
-        configureAppearance(with: item.displayType)
+        configureAppearance(with: item.displayType, isRead: item.isRead)
     }
-    
+
     // MARK: - Action
 
     @objc
@@ -99,6 +108,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
 // MARK: - Custom Methods
 
 private extension AlarmRequestTableViewCell {
+
     func setStyle() {
         selectionStyle = .none
 
@@ -126,7 +136,6 @@ private extension AlarmRequestTableViewCell {
             $0.font = NearbyFont.b2M16.font
             $0.textColor = .grey80
             $0.numberOfLines = 1
-
             $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
 
@@ -146,6 +155,7 @@ private extension AlarmRequestTableViewCell {
 
     func setUI() {
         contentView.addSubview(cardView)
+
         cardView.addSubviews(profileImageView, titleStackView, informationLabel, actionButton)
         titleStackView.addArrangedSubviews(statusIconImageView, titleLabel)
     }
@@ -159,46 +169,72 @@ private extension AlarmRequestTableViewCell {
         profileImageView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
             $0.leading.equalToSuperview().offset(20)
+            $0.size.equalTo(50)
         }
 
         titleStackView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(21)
-
             $0.leading.equalTo(profileImageView.snp.trailing).offset(16)
-
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
             $0.height.greaterThanOrEqualTo(24)
         }
 
         statusIconImageView.snp.makeConstraints {
             statusIconWidthConstraint = $0.width.equalTo(20).constraint
-
             statusIconHeightConstraint = $0.height.equalTo(20).constraint
         }
 
         informationLabel.snp.makeConstraints {
             $0.top.equalTo(titleStackView.snp.bottom).offset(6)
-
             $0.leading.equalTo(titleStackView)
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
+
+            informationBottomConstraint = $0.bottom.equalToSuperview().inset(20).constraint
         }
 
         actionButton.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(12)
-
+            actionButtonTopConstraint = $0.top.equalTo(profileImageView.snp.bottom).offset(12).constraint
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(44)
-            $0.bottom.equalToSuperview().inset(20)
+            actionButtonHeightConstraint = $0.height.equalTo(44).constraint
+            actionButtonBottomConstraint = $0.bottom.equalToSuperview().inset(20).constraint
         }
+        
+        informationBottomConstraint?.deactivate()
     }
 
     func setAddTarget() {
         actionButton.addTarget(self, action: #selector(actionButtonDidTap), for: .touchUpInside)
     }
 
-    func configureIcon(
-        with displayType: AlarmRequestDisplayType
-    ) {
+    func configureProfileImage(with url: URL?) {
+        profileImageView.configure(imageUrl: url?.absoluteString)
+    }
+
+    func configureActionButton(with displayType: AlarmRequestDisplayType) {
+        guard let buttonTitle = displayType.buttonTitle else {
+            actionButton.setTitle(nil, for: .normal)
+            actionButton.isHidden = true
+            actionButton.isUserInteractionEnabled = false
+
+            actionButtonTopConstraint?.deactivate()
+            actionButtonHeightConstraint?.deactivate()
+            actionButtonBottomConstraint?.deactivate()
+            informationBottomConstraint?.activate()
+
+            return
+        }
+
+        actionButton.setTitle(buttonTitle, for: .normal)
+        actionButton.isHidden = false
+        actionButton.isUserInteractionEnabled = true
+
+        informationBottomConstraint?.deactivate()
+        actionButtonTopConstraint?.activate()
+        actionButtonHeightConstraint?.activate()
+        actionButtonBottomConstraint?.activate()
+    }
+
+    func configureIcon(with displayType: AlarmRequestDisplayType) {
         guard let icon = displayType.icon else {
             statusIconImageView.image = nil
             statusIconImageView.isHidden = true
@@ -210,17 +246,13 @@ private extension AlarmRequestTableViewCell {
         }
 
         statusIconImageView.isHidden = false
+        statusIconWidthConstraint?.update(offset: displayType.iconSize.width)
+        statusIconHeightConstraint?.update(offset: displayType.iconSize.height)
 
-        statusIconWidthConstraint?.update(
-            offset: displayType.iconSize.width
-        )
-
-        statusIconHeightConstraint?.update(
-            offset: displayType.iconSize.height
-        )
-
-        if let tintColor = displayType.iconTintColor {
+        if let tintColor =
+            displayType.iconTintColor {
             statusIconImageView.image = icon.withRenderingMode(.alwaysTemplate)
+
             statusIconImageView.tintColor = tintColor
         } else {
             statusIconImageView.image = icon.withRenderingMode(.alwaysOriginal)
@@ -229,29 +261,28 @@ private extension AlarmRequestTableViewCell {
     }
 
     func configureAppearance(
-        with displayType: AlarmRequestDisplayType
+        with displayType: AlarmRequestDisplayType,
+        isRead: Bool
     ) {
         if displayType.isHighlighted {
             configureHighlightedAppearance()
         } else {
-            configureRejectedAppearance()
+            configureDefaultAppearance()
         }
+
+        contentView.alpha = isRead ? 0.72 : 1.0
     }
 
     func configureHighlightedAppearance() {
         cardView.backgroundColor = UIColor.primary50.withAlphaComponent(0.05)
-
         cardView.layer.borderColor = UIColor.primary50.withAlphaComponent(0.25).cgColor
-
         actionButton.backgroundColor = UIColor.primary50.withAlphaComponent(0.18)
-
         actionButton.setTitleColor(.grey80, for: .normal)
     }
 
-    func configureRejectedAppearance() {
+    func configureDefaultAppearance() {
         cardView.backgroundColor = .grey5
         cardView.layer.borderColor = UIColor.clear.cgColor
-
         actionButton.backgroundColor = .grey10
         actionButton.setTitleColor(.grey80, for: .normal)
     }

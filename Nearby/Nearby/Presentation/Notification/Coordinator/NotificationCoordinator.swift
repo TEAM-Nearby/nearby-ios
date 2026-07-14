@@ -102,7 +102,7 @@ extension NotificationCoordinator {
     }
 }
 
-// MARK: - 탭 네비게이션
+// MARK: - Tab 네비게이션
 
 extension NotificationCoordinator {
 
@@ -131,7 +131,7 @@ extension NotificationCoordinator {
     }
 }
 
-// MARK: - Matching Navigation
+// MARK: - Matching 네비게이션
 
 extension NotificationCoordinator {
 

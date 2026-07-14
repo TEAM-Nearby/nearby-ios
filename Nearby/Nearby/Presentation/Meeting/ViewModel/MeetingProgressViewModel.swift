@@ -27,7 +27,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let step = CurrentValueSubject<MeetingStep, Never>(.match)
         let verifyButtonState = PassthroughSubject<VerifyButtonState, Never>()
         let showReport = PassthroughSubject<Void, Never>()
-        let showReviewList = PassthroughSubject<Void, Never>()
+        let showReviewList = PassthroughSubject<ReviewItem?, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
         let requestLocation = PassthroughSubject<Void, Never>()
     }
@@ -53,6 +53,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private(set) var userRole: NearbyUserType = .participant
     private(set) var canMoveToComplete: Bool = false
     private let repository: MeetingRepository
+    private let reviewRepository: ReviewRepository
     private var meetingDate: Date?
     private var postType: PostType = .scheduled
     private var cancellables = Set<AnyCancellable>()
@@ -71,9 +72,10 @@ final class MeetingProgressViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(meetingId: Int, repository: MeetingRepository) {
+    init(meetingId: Int, repository: MeetingRepository, reviewRepository: ReviewRepository) {
         self.meetingId = meetingId
         self.repository = repository
+        self.reviewRepository = reviewRepository
     }
     
     // MARK: - Action
@@ -89,7 +91,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 guard isVerifiable else { return }
                 output.requestLocation.send(())
             case .completion:
-                output.showReviewList.send(())
+                fetchReviewTargets()
             case .match:
                 return
             }
@@ -158,6 +160,29 @@ final class MeetingProgressViewModel: BaseViewModelType {
         }
     }
     
+    private func fetchReviewTargets() {
+        Task {
+            do {
+                let DTO = try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
+                userRole = DTO.currentUserRole
+
+                switch DTO.currentUserRole {
+                case .host:
+                    output.showReviewList.send(nil)
+                case .participant:
+                    guard let target = DTO.reviewTargets.first else {
+                        output.errorMessage.send("아직 후기를 남길 수 있는 동행자가 없어요")
+                        return
+                    }
+                    output.showReviewList.send(ReviewItem(target: target, meetingId: meetingId))
+                }
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+
     private func updateVerifyButtonState() {
         output.verifyButtonState.send(
             VerifyButtonState(

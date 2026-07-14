@@ -22,6 +22,7 @@ enum CompanionRequestStatus: String, Decodable {
 enum CompanionRequestActionType: String, Decodable {
     case confirmSchedule = "CONFIRM_SCHEDULE"
     case viewRejection = "VIEW_REJECTION"
+    case viewResult = "VIEW_RESULT"
     case acceptRequest = "ACCEPT_REQUEST"
     case none = "NONE"
 }
@@ -38,6 +39,7 @@ struct CompanionRequestDTO: Decodable {
 
     // MARK: - Properties
 
+    let notificationId: Int
     let applicationId: Int
     let applicationStatus: CompanionRequestStatus
     let host: CompanionRequestHostDTO

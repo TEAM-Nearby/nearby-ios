@@ -35,7 +35,7 @@ enum MatchStatus: String, Decodable {
 }
 
 struct MatchMyScheduleResponseDTO: Decodable {
-    let matchId: Int64
+    let matchId: Int
     let matchStatus: MatchStatus
     let schedule: Schedule?
     let openChatUrl: String?

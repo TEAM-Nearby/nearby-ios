@@ -8,6 +8,7 @@
 protocol MatchedCompanionListRepository {
     func fetchMatches() async throws -> MatchedCompanionListResponseDTO
     func fetchMatchPreview(matchId: Int) async throws -> MatchedCompanionPreviewResponseDTO
+    func fetchMatchMySchedule(matchId: Int) async throws -> MatchMyScheduleResponseDTO
 }
 
 final class DefaultMatchedCompanionListRepository {
@@ -30,7 +31,7 @@ extension DefaultMatchedCompanionListRepository: MatchedCompanionListRepository 
         try await service.fetchMatches()
     }
 
-    func fetchMatchPreview(matchId: Int) async throws -> MatchedCompanionPreviewResponseDTO {
-        try await service.fetchMatchPreview(matchId: matchId)
+    func fetchMatchDetail(matchId: Int) async throws -> MatchingScheduleDetailResponseModel {
+        try await service.fetchMatchDetail(matchId: matchId)
     }
 }

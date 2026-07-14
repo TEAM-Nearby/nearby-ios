@@ -21,6 +21,8 @@ extension MatchedCompanionListTarget: BaseTargetType {
             return "/api/companion-matches"
         case .preview(let matchId):
             return "/api/companion-matches/\(matchId)/preview"
+        case .detail(let matchId):
+            return "/api/companion-matches/\(matchId)/schedule"
         }
     }
 

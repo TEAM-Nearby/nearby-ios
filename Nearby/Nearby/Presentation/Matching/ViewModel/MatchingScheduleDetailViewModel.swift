@@ -50,7 +50,7 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            fetchMatchDetail()
+            fetchMatchMySchedule()
 
         case .backButtonDidTap:
             output.showBack.send(())
@@ -69,12 +69,13 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
 
     // MARK: - Method
 
-    private func fetchMatchDetail() {
+    private func fetchMatchMySchedule() {
         Task { @MainActor [weak self] in
             guard let self else { return }
 
             do {
                 let response = try await repository.fetchMatchPreview(matchId: matchId)
+                let response = try await repository.fetchMatchMySchedule(matchId: matchId)
                 let displayData = response.toDisplayData(type: .participant)
                 currentDisplayData = displayData
                 output.displayData.send(displayData)

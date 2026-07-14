@@ -8,9 +8,9 @@
 import Foundation
 
 struct RecruitCompanionResponseDTO: Decodable {
-    let postId: Int64
+    let postId: Int
     let status: RecruitCompanionStatus
-    let hostUserId: Int64
+    let hostUserId: Int
     let place: Place
     let meetingTimeType: MeetingTimeType
     let meetingAt: String?
@@ -24,7 +24,7 @@ struct RecruitCompanionResponseDTO: Decodable {
     let createdAt: String
 
     struct Place: Decodable {
-        let placeId: Int64
+        let placeId: Int
         let googlePlaceId: String
         let name: String
         let address: String

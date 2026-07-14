@@ -42,3 +42,25 @@ struct MatchedCompanionPreviewResponseDTO: Decodable {
         let meetingAt: String
     }
 }
+
+struct MatchMyScheduleResponseDTO: Decodable {
+    let matchId: Int
+    let matchStatus: MatchStatus
+    let schedule: Schedule?
+    let openChatUrl: String?
+    let userNickname: String?
+    let meetingTimeType: MeetingTimeType
+
+    struct Schedule: Decodable {
+        let place: Place
+        let scheduledAt: String
+    }
+
+    struct Place: Decodable {
+        let googlePlaceId: String
+        let name: String
+        let address: String
+        let latitude: Double
+        let longitude: Double
+    }
+}

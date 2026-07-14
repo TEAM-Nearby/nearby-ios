@@ -614,4 +614,5 @@ private extension MyPageMenuRowView {
     @objc
     func rowDidTap() {
         onTap?()
-    } }
+    }
+}

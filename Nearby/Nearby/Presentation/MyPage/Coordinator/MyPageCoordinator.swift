@@ -68,8 +68,7 @@ extension MyPageCoordinator: Coordinator {
 
 private extension MyPageCoordinator {
 
-    func showAlarm(initialTab: AlarmTab = .sent)
-    {
+    func showAlarm(initialTab: AlarmTab = .sent) {
         let notificationCoordinator = makeChildNotificationCoordinator()
         let alarmViewController = appDIContainer.makeAlarmViewController(initialTab: initialTab)
         

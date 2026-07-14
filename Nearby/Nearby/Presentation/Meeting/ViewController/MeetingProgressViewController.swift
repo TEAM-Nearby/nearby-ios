@@ -82,16 +82,22 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
         
         viewModel.output.showReviewList
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
+            .sink { [weak self] item in
                 guard let self else { return }
-                // TODO: - ReviewItem은 후기 API 연동 시 교체
-                let mockItem = ReviewItem(
-                    id: 1,
-                    image: .imgProfileDefault,
-                    name: "정지영",
-                    information: "바르셀로나 · 2026년 6월 18일"
-                )
-                self.coordinator?.showReview(type: self.viewModel.userRole, item: mockItem)
+                if let item {
+                    self.coordinator?.showReview(type: .participant, item: item)
+                } else {
+                    self.coordinator?.showHostReviewList(meetingId: self.viewModel.meetingId)
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "확인", style: .default))
+                self?.present(alert, animated: true)
             }
             .store(in: &cancellables)
         

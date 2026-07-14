@@ -105,7 +105,16 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
                 self?.coordinator?.finishCompanionReview()
             }
             .store(in: &cancellables)
-        
+
+        viewModel.output.errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                let alert = UIAlertController(title: "후기 등록에 실패했어요", message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "확인", style: .default))
+                self?.present(alert, animated: true)
+            }
+            .store(in: &cancellables)
+
         viewModel.action(.viewDidLoad)
     }
     

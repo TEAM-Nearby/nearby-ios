@@ -27,6 +27,7 @@ final class HostReviewListViewModel: BaseViewModelType {
         let showReviewWrite = PassthroughSubject<(item: ReviewItem, isLast: Bool), Never>()
         let showCompletion = PassthroughSubject<Void, Never>()
         let reviewedIDs = CurrentValueSubject<Set<Int>, Never>([])
+        let errorMessage = PassthroughSubject<String, Never>()
     }
     
     struct HeaderInfo {
@@ -37,36 +38,34 @@ final class HostReviewListViewModel: BaseViewModelType {
     }
     
     // MARK: - Properties
-    
+
     let output = Output()
-    
+
+    private let meetingId: Int
+    private let repository: ReviewRepository
     private var cancellables = Set<AnyCancellable>()
+    private var isCompleting = false
     
     var items: [ReviewItem] { output.items.value }
-    
+
     private var remainingItems: [ReviewItem] {
         items.filter { !output.reviewedIDs.value.contains($0.id) }
     }
-    
+
+    // MARK: - Initializer
+
+    init(meetingId: Int, repository: ReviewRepository) {
+        self.meetingId = meetingId
+        self.repository = repository
+    }
+
     // MARK: - Action
-    
+
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            // TODO: - 서버 연동 예정, 말줄임표 수정
-            output.headerInfo.send(
-                HeaderInfo(
-                    people: "정지영 외 3명과의 동행",
-                    information: "바르셀로나 · 2026년 6월 18일",
-                    location: "시우다드 콘달",
-                    avatarImages: [.imgProfileDefault, .imgProfileDefault, .imgProfileDefault, .imgProfileDefault]
-                )
-            )
-            output.items.send([
-                ReviewItem(id: 1, image: .imgProfileDefault, name: "정지영", information: "바르셀로나 · 2026년 6월 18일"),
-                ReviewItem(id: 2, image: .imgProfileDefault, name: "장현준", information: "바르셀로나 · 2026년 6월 18일")
-            ])
-            
+            fetchReviewTargets()
+
         case .profileDidTap(let item):
             guard !output.reviewedIDs.value.contains(item.id) else { return }
             let isLast = remainingItems.count == 1 && remainingItems.first?.id == item.id
@@ -78,11 +77,55 @@ final class HostReviewListViewModel: BaseViewModelType {
             output.reviewedIDs.send(reviewed)
             
         case .completionButtonDidTap:
-            output.showCompletion.send(())
+            completeMeeting()
         }
     }
     
-    // MARK: - Method
+    // MARK: - Methods
+
+    private func fetchReviewTargets() {
+        Task {
+            do {
+                let DTO = try await repository.fetchReviewTargets(meetingId: meetingId)
+                let targets = DTO.reviewTargets
+
+                if let first = targets.first {
+                    let people = targets.count == 1
+                        ? "\(first.nickname) 님과의 동행"
+                        : "\(first.nickname) 외 \(targets.count - 1)명과의 동행"
+                    output.headerInfo.send(
+                        HeaderInfo(
+                            people: people,
+                            information: first.meetingDisplayDate,
+                            location: first.cityName,
+                            avatarImages: [UIImage?](repeating: .imgProfileDefault, count: targets.count)
+                        )
+                    )
+                }
+
+                output.reviewedIDs.send(Set(targets.filter(\.hasWrittenReview).map(\.revieweeUserId)))
+                output.items.send(targets.map { ReviewItem(target: $0, meetingId: meetingId) })
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func completeMeeting() {
+        guard !isCompleting else { return }
+        isCompleting = true
+        Task {
+            defer { isCompleting = false }
+            do {
+                _ = try await repository.completeMeeting(meetingId: meetingId)
+                output.showCompletion.send(())
+            } catch {
+                AppLogger.error(error)
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
     
     func item(at index: Int) -> ReviewItem {
         items[index]

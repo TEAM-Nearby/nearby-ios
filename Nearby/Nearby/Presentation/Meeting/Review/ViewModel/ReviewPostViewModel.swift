@@ -54,6 +54,7 @@ final class ReviewPostViewModel: BaseViewModelType {
     private let isLastReview: Bool
     private let repository: ReviewRepository
     private var rating: Int = 0
+    private var isSubmitting = false
 
     private var isFinishButton: Bool {
         type == .participant || isLastReview
@@ -104,7 +105,7 @@ final class ReviewPostViewModel: BaseViewModelType {
             output.showReport.send(())
             
         case .completionButtonDidTap:
-            guard output.isCompletionEnabled.value else { return }
+            guard output.isCompletionEnabled.value, !isSubmitting else { return }
             if hasReviewContent {
                 submitReview()
             } else if isFinishButton {
@@ -136,7 +137,9 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
 
     private func submitReview() {
+        isSubmitting = true
         Task {
+            defer { isSubmitting = false }
             do {
                 let keywords = firstSelectedTags.sorted().map { ReviewKeyword.consideration[$0].rawValue }
                     + secondSelectedTags.sorted().map { ReviewKeyword.timePromise[$0].rawValue }
@@ -161,7 +164,9 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
     
     private func completeMeeting() {
+        isSubmitting = true
         Task {
+            defer { isSubmitting = false }
             do {
                 _ = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
                 output.companionCompleted.send(())

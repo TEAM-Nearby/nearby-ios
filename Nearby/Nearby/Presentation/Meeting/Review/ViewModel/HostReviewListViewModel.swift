@@ -44,7 +44,8 @@ final class HostReviewListViewModel: BaseViewModelType {
     private let meetingId: Int
     private let repository: ReviewRepository
     private var cancellables = Set<AnyCancellable>()
-
+    private var isCompleting = false
+    
     var items: [ReviewItem] { output.items.value }
 
     private var remainingItems: [ReviewItem] {
@@ -112,7 +113,10 @@ final class HostReviewListViewModel: BaseViewModelType {
     }
     
     private func completeMeeting() {
+        guard !isCompleting else { return }
+        isCompleting = true
         Task {
+            defer { isCompleting = false }
             do {
                 _ = try await repository.completeMeeting(meetingId: meetingId)
                 output.showCompletion.send(())

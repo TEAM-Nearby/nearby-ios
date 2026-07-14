@@ -10,6 +10,7 @@ import UIKit
 struct MatchingMatchedCardContentModel {
     let profileImage: UIImage?
     let profileImageUrl: String?
+    let profileImageUrls: [String?]
     let name: String
     let participantCount: Int
     let gender: String
@@ -21,6 +22,7 @@ struct MatchingMatchedCardContentModel {
     init(
         profileImage: UIImage? = nil,
         profileImageUrl: String? = nil,
+        profileImageUrls: [String?] = [],
         name: String,
         participantCount: Int,
         gender: String,
@@ -31,6 +33,7 @@ struct MatchingMatchedCardContentModel {
     ) {
         self.profileImage = profileImage
         self.profileImageUrl = profileImageUrl
+        self.profileImageUrls = profileImageUrls
         self.name = name
         self.participantCount = participantCount
         self.gender = gender

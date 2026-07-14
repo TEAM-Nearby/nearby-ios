@@ -46,8 +46,7 @@ extension CompanionRequestTarget: BaseTargetType {
 
     var bodyParameters: Parameters? {
         switch self {
-        case .list,
-             .markNotificationAsRead:
+        case .list, .markNotificationAsRead:
             return nil
         }
     }

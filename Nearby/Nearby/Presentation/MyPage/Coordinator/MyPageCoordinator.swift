@@ -67,27 +67,22 @@ extension MyPageCoordinator: Coordinator {
 // MARK: - Private Methods
 
 private extension MyPageCoordinator {
-    func showAlarm(initialTab: AlarmTab = .sent) {
+
+    func showAlarm(initialTab: AlarmTab = .sent)
+    {
+        let notificationCoordinator = makeChildNotificationCoordinator()
         let alarmViewController = appDIContainer.makeAlarmViewController(initialTab: initialTab)
+        
+        alarmViewController.coordinator = notificationCoordinator
 
         alarmViewController.hidesBottomBarWhenPushed = true
 
-        alarmViewController.onBackButtonDidTap = { [weak self] in
-            self?.navigationController.popViewController(animated: true)
-        }
-
-        alarmViewController.onRequestActionDidTap = { [weak self] requestItem in
+        alarmViewController.onBackButtonDidTap = { [weak self, weak notificationCoordinator] in
             guard let self else { return }
+            navigationController.popViewController(animated: true)
 
-            switch requestItem.displayType {
-            case .sentAccepted:
-                showCompanionRequestAccept()
-
-            case .sentRejected:
-                showCompanionRequestDecline()
-
-            case .receivedPending:
-                showHostRequestRecieve()
+            if let notificationCoordinator {
+                removeChildCoordinator(notificationCoordinator)
             }
         }
 
@@ -114,36 +109,17 @@ private extension MyPageCoordinator {
         let writtenPostViewController = appDIContainer.makeWrittenPostViewController()
 
         writtenPostViewController.hidesBottomBarWhenPushed = true
-
         writtenPostViewController.onBackButtonDidTap = { [weak self] in
-            self?.navigationController.popViewController(animated: true)
-        }
+                self?.navigationController.popViewController(animated: true)
+            }
 
         writtenPostViewController.onFindCompanionButtonDidTap = { [weak self] in
-            guard let self else { return }
-
-            navigationController.popToRootViewController(animated: false)
-            onFindCompanionDidTap?()
-        }
+                guard let self else { return }
+                navigationController.popToRootViewController(animated: false)
+                onFindCompanionDidTap?()
+            }
 
         navigationController.pushViewController(writtenPostViewController, animated: true)
-    }
-
-    func showCompanionRequestAccept() {
-        // TODO: - 알림 서버 연동 시 알림 아이템의 applicationId로 교체
-        makeChildNotificationCoordinator()
-            .showCompanionRequestAccept(applicationId: 3)
-    }
-
-    func showCompanionRequestDecline() {
-        makeChildNotificationCoordinator()
-            .showCompanionRequestDecline()
-    }
-
-    func showHostRequestRecieve() {
-        // TODO: - 알림 서버 연동 시 알림 아이템의 applicationId로 교체
-        makeChildNotificationCoordinator()
-            .showHostRequestRecieve(applicationId: 3)
     }
 
     func makeChildNotificationCoordinator() -> NotificationCoordinator {

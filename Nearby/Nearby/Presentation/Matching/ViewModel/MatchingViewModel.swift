@@ -92,17 +92,11 @@ private extension MatchedCompanionListResponseDTO.Match {
         return MatchingMatchedCardItem(
             matchId: Int(matchId),
             content: MatchingMatchedCardContentModel(
-                profileImageUrl: hostProfileImageUrl,
-                name: hostNickname,
-                participantCount: 1,
-                gender: hostGender.displayTitle,
-                uploadedTime: createdAt.uploadedTimeTitle,
-                place: placeName ?? "",
-                meetingTime: meetingAt?.meetingTimeTitle ?? meetingTimeType.displayTitle,
-                description: content
+                profileImageUrl: hostProfileImageUrl, name: hostNickname, participantCount: 1,
+                gender: hostGender.displayTitle, uploadedTime: createdAt.uploadedTimeTitle, place: placeName ?? "",
+                meetingTime: meetingAt?.meetingTimeTitle ?? meetingTimeType.displayTitle, description: content
             ),
-            matchStatus: matchStatus.rawValue,
-            type: type
+            matchStatus: matchStatus.rawValue, type: type
         )
     }
 }
@@ -134,13 +128,13 @@ private extension MeetingTimeType {
 private extension String {
     var uploadedTimeTitle: String {
         guard let date = isoDate else { return self }
-
         let elapsedTime = abs(date.timeIntervalSinceNow)
         let minute = Int(elapsedTime / 60)
 
         if minute < 1 {
             return "방금 전 올림"
         }
+        
         if minute < 60 {
             return "\(minute)분 전 올림"
         }
@@ -156,7 +150,6 @@ private extension String {
 
     var meetingTimeTitle: String {
         guard let date = isoDate else { return self }
-
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.timeZone = .current

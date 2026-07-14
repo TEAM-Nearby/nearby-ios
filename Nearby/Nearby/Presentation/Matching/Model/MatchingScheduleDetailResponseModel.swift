@@ -47,6 +47,43 @@ extension MatchingScheduleDetailResponseModel {
     }
 }
 
+extension MatchMyScheduleResponseDTO {
+    func toDisplayData(type: NearbyUserType) -> MatchingScheduleDetailDisplayData {
+        let cardItem = MatchingMatchedCardItem(
+            matchId: Int(matchId),
+            content: MatchingMatchedCardContentModel(
+                name: "",
+                participantCount: 1,
+                gender: "",
+                uploadedTime: "",
+                place: "",
+                meetingTime: "",
+                description: ""
+            ),
+            matchStatus: matchStatus.rawValue, type: type
+        )
+
+        return MatchingScheduleDetailDisplayData(
+            cardItem: cardItem, placeName: schedule?.place.name ?? "", placeAddress: schedule?.place.address ?? "",
+            googlePlaceId: schedule?.place.googlePlaceId, latitude: schedule?.place.latitude ?? 0, longitude: schedule?.place.longitude ?? 0,
+            scheduledAtText: schedule?.scheduledAt.matchingDetailDateTimeTitle ?? meetingTimeType.displayTitle, openChatUrl: openChatUrl ?? "", type: type
+        )
+    }
+}
+
+private extension MeetingTimeType {
+    var displayTitle: String {
+        switch self {
+        case .now:
+            return "지금 바로"
+        case .scheduled:
+            return ""
+        case .undecided:
+            return "시간 미정"
+        }
+    }
+}
+
 private extension String {
     var matchingDetailTimeTitle: String {
         guard let date = isoDate else { return self }

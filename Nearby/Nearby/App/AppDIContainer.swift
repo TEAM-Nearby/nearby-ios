@@ -238,11 +238,7 @@ final class AppDIContainer {
     }
     
     func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool) -> ReviewPostViewModel {
-        ReviewPostViewModel(
-            reviewItem: reviewItem,
-            type: type,
-            isLastReview: isLast,
-            repository: makeReviewRepository()
+        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast, repository: makeReviewRepository()
         )
     }
     

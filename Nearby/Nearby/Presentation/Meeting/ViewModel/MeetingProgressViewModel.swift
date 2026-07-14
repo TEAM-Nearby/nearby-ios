@@ -27,7 +27,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let step = CurrentValueSubject<MeetingStep, Never>(.match)
         let verifyButtonState = PassthroughSubject<VerifyButtonState, Never>()
         let showReport = PassthroughSubject<Void, Never>()
-        /// 후기 화면 이동 — 호스트는 nil(대상 리스트 화면), 게스트는 호스트 대상 아이템
         let showReviewList = PassthroughSubject<ReviewItem?, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
         let requestLocation = PassthroughSubject<Void, Never>()

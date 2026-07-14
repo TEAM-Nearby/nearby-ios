@@ -15,12 +15,10 @@ enum ReviewKeyword: String {
     case notifyDelayInAdvance = "NOTIFY_DELAY_IN_ADVANCE"
     case arrivesEarly = "ARRIVES_EARLY"
 
-    /// 배려 · 소통 (최소 1개, 최대 3개 선택)
     static let consideration: [ReviewKeyword] = [
         .fastResponse, .goodManners, .goodConversation, .goodTalker, .informative
     ]
 
-    /// 시간 약속 (정확히 1개 선택)
     static let timePromise: [ReviewKeyword] = [
         .punctual, .notifyDelayInAdvance, .arrivesEarly
     ]

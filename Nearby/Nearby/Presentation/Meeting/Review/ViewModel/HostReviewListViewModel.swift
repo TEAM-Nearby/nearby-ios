@@ -80,7 +80,7 @@ final class HostReviewListViewModel: BaseViewModelType {
         }
     }
     
-    // MARK: - Method
+    // MARK: - Methods
 
     private func fetchReviewTargets() {
         Task {

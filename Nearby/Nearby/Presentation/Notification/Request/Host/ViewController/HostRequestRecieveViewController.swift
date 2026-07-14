@@ -58,8 +58,8 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
             .sink { [weak self] in
                 guard let self else { return }
                 self.coordinator?.showHostRequestDecline(
-                    applicantName: self.viewModel.applicantNickname,
-                    applicationId: self.viewModel.applicationId
+                    applicantName: viewModel.applicantNickname,
+                    applicationId: viewModel.applicationId
                 )
             }
             .store(in: &cancellables)
@@ -69,12 +69,12 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
             .sink { [weak self] in
                 guard let self else { return }
                 self.coordinator?.showHostRequestAllow(
-                    applicantName: self.viewModel.applicantNickname,
-                    applicantProfileImageUrl: self.viewModel.applicantProfileImageUrl,
-                    locationName: self.viewModel.placeName,
-                    meetingAt: self.viewModel.meetingAt,
-                    matchId: self.viewModel.matchId,
-                    postType: .scheduled   // TODO: 서버에서 postType 받으면 교체
+                    applicantName: viewModel.applicantNickname,
+                    applicantProfileImageUrl: viewModel.applicantProfileImageUrl,
+                    locationName: viewModel.placeName,
+                    meetingAt: viewModel.meetingAt,
+                    matchId: viewModel.matchId,
+                    postType: viewModel.  // TODO: 서버에서 postType 받으면 교체
                 )
             }
             .store(in: &cancellables)

@@ -53,7 +53,11 @@ extension AppCoordinator: Coordinator {
 private extension AppCoordinator {
     
     func handleLaunchFlow() {
-        showLogin()
+        if diContainer.hasStoredSession {
+            showMainTab()
+        } else {
+            showLogin()
+        }
     }
     
     func showSplash() {

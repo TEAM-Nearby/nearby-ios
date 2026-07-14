@@ -123,12 +123,50 @@ extension NearDiningCellItem {
             description: dto.editorialSummary ?? "",
             closingTime: dto.regularOpeningHours?.first ?? "",
             phoneNumber: dto.phoneNumber ?? "",
-            price: dto.priceRange ?? ""
+            price: dto.priceRange?.diningPriceRangeText ?? ""
         )
     }
 }
 
 private extension String {
+    var diningPriceRangeText: String {
+        let currencySymbols = [
+            "EUR": "€",
+            "USD": "$",
+            "KRW": "₩",
+            "GBP": "£",
+            "JPY": "¥",
+            "CNY": "¥"
+        ]
+        var result = trimmingCharacters(in: .whitespacesAndNewlines)
+
+        currencySymbols.forEach { code, symbol in
+            result = result.replacingOccurrences(
+                of: code,
+                with: symbol,
+                options: .caseInsensitive
+            )
+
+            while result.contains("\(symbol) ") {
+                result = result.replacingOccurrences(of: "\(symbol) ", with: symbol)
+            }
+        }
+
+        result = result.replacingOccurrences(
+            of: #"\s*([~\-–—])\s*"#,
+            with: "$1",
+            options: .regularExpression
+        )
+
+        if let symbol = currencySymbols.values.first(where: { result.hasPrefix($0) }) {
+            let rangeWithoutLeadingSymbol = String(result.dropFirst(symbol.count))
+                .replacingOccurrences(of: symbol, with: "")
+            result = symbol + rangeWithoutLeadingSymbol
+        }
+
+        return result
+    }
+
     var diningCategoryTitle: String {
         switch self {
         case "RESTAURANT": "식당"

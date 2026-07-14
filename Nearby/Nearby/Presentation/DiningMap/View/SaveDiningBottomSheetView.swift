@@ -10,6 +10,24 @@ import UIKit
 import SnapKit
 import Then
 
+private final class DropdownOverflowScrollView: UIScrollView {
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        super.point(inside: point, with: event)
+            || subviews.contains { subview in
+                !subview.isHidden && subview.point(inside: convert(point, to: subview), with: event)
+            }
+    }
+}
+
+private final class DropdownOverflowStackView: UIStackView {
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        super.point(inside: point, with: event)
+            || arrangedSubviews.contains { subview in
+                !subview.isHidden && subview.point(inside: convert(point, to: subview), with: event)
+            }
+    }
+}
+
 final class SaveDiningBottomSheetView: BaseView {
 
     // MARK: - Properties
@@ -24,8 +42,8 @@ final class SaveDiningBottomSheetView: BaseView {
     private let titleLabel = UILabel()
     private let markerImageView = UIImageView()
     private let numberLabel = UILabel()
-    private let categoryScrollView = UIScrollView()
-    private let categoryChipStackView = UIStackView()
+    private let categoryScrollView = DropdownOverflowScrollView()
+    private let categoryChipStackView = DropdownOverflowStackView()
     private let sortDropdownView = NearbyDropdownView(
         items: DiningFavoriteSortOption.allCases.map(\.title),
         selectedItem: DiningFavoriteSortOption.latest.title
@@ -64,12 +82,14 @@ final class SaveDiningBottomSheetView: BaseView {
         categoryScrollView.do {
             $0.showsHorizontalScrollIndicator = false
             $0.alwaysBounceHorizontal = true
+            $0.clipsToBounds = false
         }
 
         categoryChipStackView.do {
             $0.axis = .horizontal
             $0.alignment = .center
             $0.spacing = 4
+            $0.clipsToBounds = false
         }
 
         collectionView.do {
@@ -86,9 +106,10 @@ final class SaveDiningBottomSheetView: BaseView {
     }
 
     override func setUI() {
-        configureCategoryChips()
         categoryScrollView.addSubview(categoryChipStackView)
-        addSubviews(titleLabel, markerImageView, numberLabel, collectionView, categoryScrollView, sortDropdownView)
+        categoryChipStackView.addArrangedSubview(sortDropdownView)
+        configureCategoryChips()
+        addSubviews(titleLabel, markerImageView, numberLabel, collectionView, categoryScrollView)
     }
 
     override func setLayout() {
@@ -114,14 +135,9 @@ final class SaveDiningBottomSheetView: BaseView {
             $0.height.equalTo(sortDropdownView)
         }
 
-        sortDropdownView.snp.makeConstraints {
-            $0.top.equalTo(categoryScrollView)
-            $0.leading.equalTo(categoryScrollView).inset(20)
-        }
-
         categoryChipStackView.snp.makeConstraints {
             $0.verticalEdges.equalTo(categoryScrollView.contentLayoutGuide)
-            $0.leading.equalTo(categoryScrollView.contentLayoutGuide).offset(113)
+            $0.leading.equalTo(categoryScrollView.contentLayoutGuide).offset(20)
             $0.trailing.equalTo(categoryScrollView.contentLayoutGuide).inset(20)
             $0.height.equalTo(categoryScrollView.frameLayoutGuide)
         }

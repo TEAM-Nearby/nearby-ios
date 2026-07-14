@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -58,17 +59,10 @@ final class AvatarStackView: UIStackView {
     }
 
     func configure(with images: [UIImage?]) {
-        arrangedSubviews.forEach {
-            removeArrangedSubview($0)
-            $0.removeFromSuperview()
-        }
+        removeAvatarViews()
 
         images.forEach { image in
-            let avatarImageView = UIImageView().then {
-                $0.contentMode = .scaleAspectFill
-                $0.layer.borderColor = UIColor.white.cgColor
-                $0.layer.borderWidth = 1
-
+            addAvatarImageView {
                 if let validImage = image {
                     $0.image = validImage
                     $0.backgroundColor = .clear
@@ -77,15 +71,21 @@ final class AvatarStackView: UIStackView {
                     $0.backgroundColor = .grey20
                 }
             }
+        }
 
-            addArrangedSubview(avatarImageView)
+        invalidateIntrinsicContentSize()
+    }
 
-            avatarImageView.snp.makeConstraints { make in
-                make.size.equalTo(avatarSize).priority(.high)
+    func configure(withImageURLs imageURLs: [String?]) {
+        removeAvatarViews()
+
+        imageURLs.forEach { imageURL in
+            addAvatarImageView { avatarImageView in
+                if let imageURL,
+                   let url = URL(string: imageURL) {
+                    avatarImageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+                }
             }
-
-            avatarImageView.layer.cornerRadius = avatarSize / 2
-            avatarImageView.clipsToBounds = true
         }
 
         invalidateIntrinsicContentSize()
@@ -94,5 +94,44 @@ final class AvatarStackView: UIStackView {
     func configureWithDefaultAvatars(count: Int) {
         let defaultImages = [UIImage?](repeating: nil, count: count)
         configure(with: defaultImages)
+    }
+
+    func reset() {
+        removeAvatarViews()
+        invalidateIntrinsicContentSize()
+    }
+
+    private func removeAvatarViews() {
+        arrangedSubviews.forEach {
+            ($0 as? UIImageView)?.reset()
+            removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+    }
+
+    private func addAvatarImageView(_ configure: (UIImageView) -> Void) {
+        let avatarImageView = UIImageView().then {
+            $0.reset()
+            $0.contentMode = .scaleAspectFill
+            $0.layer.borderColor = UIColor.white.cgColor
+            $0.layer.borderWidth = 1
+            $0.layer.cornerRadius = avatarSize / 2
+            $0.clipsToBounds = true
+        }
+
+        configure(avatarImageView)
+        addArrangedSubview(avatarImageView)
+
+        avatarImageView.snp.makeConstraints { make in
+            make.size.equalTo(avatarSize).priority(.high)
+        }
+    }
+}
+
+private extension UIImageView {
+    func reset() {
+        kf.cancelDownloadTask()
+        image = .imgProfileDefault
+        backgroundColor = .clear
     }
 }

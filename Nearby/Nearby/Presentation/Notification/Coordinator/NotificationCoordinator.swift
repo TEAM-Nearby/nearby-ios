@@ -41,12 +41,12 @@ extension NotificationCoordinator: Coordinator {
             switch requestItem.displayType {
             case .sentAccepted:
                 // TODO: - 알림 API 연동
-                self.showCompanionRequestAccept(applicationId: 6)
+                showCompanionRequestAccept(applicationId: 6)
             case .sentRejected:
-                self.showCompanionRequestDecline()
+                showCompanionRequestDecline()
             case .receivedPending:
                 // TODO: - 알림 API 연동
-                self.showHostRequestRecieve(applicationId: 7)
+                showHostRequestRecieve(applicationId: 7)
             }
         }
 

@@ -85,9 +85,9 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             .sink { [weak self] item in
                 guard let self else { return }
                 if let item {
-                    self.coordinator?.showReview(type: .participant, item: item)
+                    coordinator?.showReview(type: .participant, item: item)
                 } else {
-                    self.coordinator?.showHostReviewList(meetingId: self.viewModel.meetingId)
+                    coordinator?.showHostReviewList(meetingId: viewModel.meetingId)
                 }
             }
             .store(in: &cancellables)

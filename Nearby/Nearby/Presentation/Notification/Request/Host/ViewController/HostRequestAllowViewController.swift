@@ -78,7 +78,9 @@ final class HostRequestAllowViewController: BaseViewController<HostRequestAllowV
             }
             .store(in: &cancellables)
         
-        bindOpenChat(viewModel.output, cancellables: &cancellables)
+        bindOpenChat(viewModel.output, cancellables: &cancellables) { [weak self] in
+            self?.hostRequestAllowView.showLinkCopiedToast()
+        }
         
         viewModel.action(.viewDidLoad)
     }

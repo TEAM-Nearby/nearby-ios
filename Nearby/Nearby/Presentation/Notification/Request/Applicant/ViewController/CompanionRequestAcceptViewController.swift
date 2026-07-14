@@ -69,7 +69,9 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
             }
             .store(in: &cancellables)
         
-        bindOpenChat(viewModel.output, cancellables: &cancellables)
+        bindOpenChat(viewModel.output, cancellables: &cancellables) { [weak self] in
+            self?.companionRequestAcceptView.showLinkCopiedToast()
+        }
         
         viewModel.action(.viewDidLoad)
     }

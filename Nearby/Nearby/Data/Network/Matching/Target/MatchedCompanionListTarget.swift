@@ -20,7 +20,7 @@ extension MatchedCompanionListTarget: BaseTargetType {
         case .matches:
             return "/api/companion-matches"
         case .detail(let matchId):
-            return "/api/companion-matches/\(matchId)"
+            return "/api/companion-matches/\(matchId)/schedule"
         }
     }
 

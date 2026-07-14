@@ -74,7 +74,7 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
                     locationName: viewModel.placeName,
                     meetingAt: viewModel.meetingAt,
                     matchId: viewModel.matchId,
-                    postType: viewModel.  // TODO: 서버에서 postType 받으면 교체
+                    postType: .scheduled  // TODO: 서버에서 postType 받으면 교체
                 )
             }
             .store(in: &cancellables)

@@ -197,8 +197,23 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     private func makeScheduleDetailTitle(content: MatchingMatchedCardContentModel) -> String {
         let companionCount = max(content.participantCount - 1, 0)
+        guard companionCount > 0 else {
+            return "\(content.name)님과의 동행"
+        }
 
         return "\(content.name)님 외 \(companionCount)명과의 동행"
+    }
+
+    private func makeInformationText(content: MatchingMatchedCardContentModel) -> String {
+        if content.place.isEmpty {
+            return content.meetingTime
+        }
+
+        if content.meetingTime.isEmpty {
+            return content.place
+        }
+
+        return "\(content.place) · \(content.meetingTime)"
     }
 
     private func updateProfileTopConstraint() {
@@ -242,7 +257,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         case .scheduleDetail:
             profileImageView.isHidden = true
             profileStackView.isHidden = false
-            profileStackView.configure(with: makeProfileImages(content: content))
+            profileStackView.configure(withImageURLs: makeProfileImageUrls(content: content))
         }
     }
 
@@ -259,11 +274,12 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         profileImageView.image = content.profileImage ?? .imgProfileDefault
     }
 
-    private func makeProfileImages(content: MatchingMatchedCardContentModel) -> [UIImage?] {
+    private func makeProfileImageUrls(content: MatchingMatchedCardContentModel) -> [String?] {
         let avatarCount = min(max(content.participantCount, 1), 4)
-        let emptyAvatarCount = max(avatarCount - 1, 0)
+        let profileImageUrls = content.profileImageUrls.prefix(avatarCount)
+        let emptyAvatarCount = max(avatarCount - profileImageUrls.count, 0)
 
-        return [content.profileImage] + [UIImage?](repeating: nil, count: emptyAvatarCount)
+        return Array(profileImageUrls) + [String?](repeating: nil, count: emptyAvatarCount)
     }
 
     func configure(
@@ -275,7 +291,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         updateProfile(content: content, displayMode: displayMode)
 
         updateHeader(content: content, displayMode: displayMode)
-        informationLabel.setFont(.b3M14, text: "\(content.place) · \(content.meetingTime)", textColor: .grey80)
+        informationLabel.setFont(.b3M14, text: makeInformationText(content: content), textColor: .grey80)
         contentLabel.setFont(
             .b3M14,
             text: content.description.truncated(limit: descriptionLimit),

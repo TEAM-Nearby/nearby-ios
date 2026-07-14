@@ -8,4 +8,6 @@
 enum MatchStatus: String, Decodable {
     case matched = "MATCHED"
     case scheduleConfirmed = "SCHEDULE_CONFIRMED"
+    case canceled = "CANCELED"
+    case completed = "COMPLETED"
 }

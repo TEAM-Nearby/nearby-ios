@@ -9,6 +9,10 @@ protocol MatchedCompanionListService {
     func fetchMatches() async throws -> MatchedCompanionListResponseDTO
     func fetchMatchMySchedule(matchId: Int) async throws -> MatchMyScheduleResponseDTO
     func fetchMatchPreview(matchId: Int) async throws -> MatchedCompanionPreviewResponseDTO
+    func confirmSchedule(
+        matchId: Int,
+        request: ConfirmCompanionScheduleRequestDTO
+    ) async throws -> ConfirmCompanionScheduleResponseDTO
 }
 
 final class DefaultMatchedCompanionListService {
@@ -34,10 +38,27 @@ extension DefaultMatchedCompanionListService: MatchedCompanionListService {
         )
     }
 
-    func fetchMatchDetail(matchId: Int) async throws -> MatchingScheduleDetailResponseModel {
+    func fetchMatchMySchedule(matchId: Int) async throws -> MatchMyScheduleResponseDTO {
         try await networkProvider.request(
             MatchedCompanionListTarget.detail(matchId: matchId),
-            responseType: MatchingScheduleDetailResponseModel.self
+            responseType: MatchMyScheduleResponseDTO.self
+        )
+    }
+
+    func fetchMatchPreview(matchId: Int) async throws -> MatchedCompanionPreviewResponseDTO {
+        try await networkProvider.request(
+            MatchedCompanionListTarget.preview(matchId: matchId),
+            responseType: MatchedCompanionPreviewResponseDTO.self
+        )
+    }
+
+    func confirmSchedule(
+        matchId: Int,
+        request: ConfirmCompanionScheduleRequestDTO
+    ) async throws -> ConfirmCompanionScheduleResponseDTO {
+        try await networkProvider.request(
+            MatchedCompanionListTarget.confirmSchedule(matchId: matchId, request: request),
+            responseType: ConfirmCompanionScheduleResponseDTO.self
         )
     }
 }

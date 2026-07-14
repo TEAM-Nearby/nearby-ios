@@ -48,60 +48,62 @@ extension MatchingScheduleDetailResponseModel {
 }
 
 extension MatchedCompanionPreviewResponseDTO {
-    func toDisplayData(type: NearbyUserType) -> MatchingScheduleDetailDisplayData {
-        let representativeMember = members.first
-        let placeName = ""
-        let scheduledAtText = companionPost.meetingAt.matchingDetailDateTimeTitle
+    func toCardItem(
+        type: NearbyUserType,
+        matchStatus: String,
+        fallbackPlaceName: String
+    ) -> MatchingMatchedCardItem {
+        let placeName = companionPost.placeName.isEmpty ? fallbackPlaceName : companionPost.placeName
+        let meetingTime = companionPost.meetingAt?.matchingDetailTimeTitle ?? companionPost.meetingTimeType.displayTitle
 
-        let cardItem = MatchingMatchedCardItem(
+        return MatchingMatchedCardItem(
             matchId: Int(matchId),
             content: MatchingMatchedCardContentModel(
-                profileImageUrl: representativeMember?.profileImageUrl,
-                name: representativeMember?.nickname ?? "",
-                participantCount: members.count,
+                profileImageUrl: host.hostProfileImageUrl,
+                profileImageUrls: [host.hostProfileImageUrl] + members.map(\.profileImageUrl),
+                name: host.hostName,
+                participantCount: members.count + 1,
                 gender: "",
                 uploadedTime: "",
                 place: placeName,
-                meetingTime: companionPost.meetingAt.matchingDetailTimeTitle,
+                meetingTime: meetingTime,
                 description: companionPost.content
             ),
-            type: type
-        )
-
-        return MatchingScheduleDetailDisplayData(
-            cardItem: cardItem,
-            placeName: placeName,
-            placeAddress: "",
-            googlePlaceId: nil,
-            latitude: 0,
-            longitude: 0,
-            scheduledAtText: scheduledAtText,
-            openChatUrl: "",
+            matchStatus: matchStatus,
             type: type
         )
     }
 }
 
 extension MatchMyScheduleResponseDTO {
-    func toDisplayData(type: NearbyUserType) -> MatchingScheduleDetailDisplayData {
-        let cardItem = MatchingMatchedCardItem(
+    func toCardItem(type: NearbyUserType) -> MatchingMatchedCardItem {
+        MatchingMatchedCardItem(
             matchId: Int(matchId),
             content: MatchingMatchedCardContentModel(
-                name: "",
+                name: userNickname ?? "",
                 participantCount: 1,
                 gender: "",
                 uploadedTime: "",
-                place: "",
-                meetingTime: "",
+                place: schedule?.place.name ?? "",
+                meetingTime: schedule?.scheduledAt.matchingDetailTimeTitle ?? meetingTimeType.displayTitle,
                 description: ""
             ),
-            matchStatus: matchStatus.rawValue, type: type
+            matchStatus: matchStatus.rawValue,
+            type: type
         )
+    }
 
+    func toDisplayData(type: NearbyUserType, cardItem: MatchingMatchedCardItem) -> MatchingScheduleDetailDisplayData {
         return MatchingScheduleDetailDisplayData(
-            cardItem: cardItem, placeName: schedule?.place.name ?? "", placeAddress: schedule?.place.address ?? "",
-            googlePlaceId: schedule?.place.googlePlaceId, latitude: schedule?.place.latitude ?? 0, longitude: schedule?.place.longitude ?? 0,
-            scheduledAtText: schedule?.scheduledAt.matchingDetailDateTimeTitle ?? meetingTimeType.displayTitle, openChatUrl: openChatUrl ?? "", type: type
+            cardItem: cardItem,
+            placeName: schedule?.place.name ?? "",
+            placeAddress: schedule?.place.address ?? "",
+            googlePlaceId: schedule?.place.googlePlaceId,
+            latitude: schedule?.place.latitude ?? 0,
+            longitude: schedule?.place.longitude ?? 0,
+            scheduledAtText: schedule?.scheduledAt.matchingDetailDateTimeTitle ?? meetingTimeType.displayTitle,
+            openChatUrl: openChatUrl ?? "",
+            type: type
         )
     }
 }

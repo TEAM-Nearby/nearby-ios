@@ -69,6 +69,22 @@ struct NearDiningCellItem {
 }
 
 extension NearDiningCellItem {
+    init(dto: DiningFavoritePlaceDTO) {
+        self.init(
+            placeId: dto.placeId,
+            googlePlaceId: dto.googlePlaceId,
+            name: dto.name,
+            category: dto.category?.diningCategoryTitle ?? "식당",
+            businessStatus: dto.businessStatus.diningBusinessStatusTitle,
+            distance: dto.distanceMeters.diningDistanceText,
+            address: dto.address ?? "",
+            rating: dto.rating ?? 0,
+            reviewCount: dto.reviewCount ?? 0,
+            images: [.restaurantPlaceholder],
+            isBookmarked: dto.isFavorite
+        )
+    }
+
     init(dto: DiningPlaceDTO) {
         self.init(
             placeId: dto.placeId,

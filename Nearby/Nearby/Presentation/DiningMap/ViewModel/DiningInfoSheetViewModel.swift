@@ -21,7 +21,7 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
 
     struct Output {
         let restaurant = CurrentValueSubject<NearDiningCellItem?, Never>(nil)
-        let bookmarkDidTap = PassthroughSubject<Void, Never>()
+        let favoriteDidUpdate = PassthroughSubject<(placeId: Int, isFavorite: Bool), Never>()
         let error = PassthroughSubject<Error, Never>()
     }
     
@@ -32,6 +32,8 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     private let repository: DiningMapRepository
     private let coordinate: CLLocationCoordinate2D
     private var fetchTask: Task<Void, Never>?
+    private var favoriteTask: Task<Void, Never>?
+    private var favoriteOverride: Bool?
 
     // MARK: - Initializer
 
@@ -42,6 +44,7 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
 
     deinit {
         fetchTask?.cancel()
+        favoriteTask?.cancel()
     }
     
     // MARK: - Action
@@ -49,13 +52,13 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .updateRestaurant(let item):
+            favoriteTask?.cancel()
+            favoriteTask = nil
+            favoriteOverride = nil
             output.restaurant.send(item)
             fetchDetail(placeId: item.placeId)
         case .bookmarkDidTap:
-            guard var item = output.restaurant.value else { return }
-            item.isBookmarked.toggle()
-            output.restaurant.send(item)
-            output.bookmarkDidTap.send(())
+            updateFavorite()
         }
     }
 }
@@ -77,11 +80,61 @@ private extension DiningInfoSheetViewModel {
                     )
                 )
                 guard !Task.isCancelled else { return }
-                output.restaurant.send(NearDiningCellItem(dto: response))
+                var item = NearDiningCellItem(dto: response)
+                if let favoriteOverride {
+                    item.isBookmarked = favoriteOverride
+                }
+                output.restaurant.send(item)
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
+                output.error.send(error)
+            }
+        }
+    }
+
+    func updateFavorite() {
+        guard
+            favoriteTask == nil,
+            let item = output.restaurant.value,
+            let placeId = item.placeId
+        else { return }
+
+        let isFavorite = !item.isBookmarked
+        favoriteOverride = isFavorite
+        var updatedItem = item
+        updatedItem.isBookmarked = isFavorite
+        output.restaurant.send(updatedItem)
+
+        favoriteTask = Task { [weak self] in
+            guard let self else { return }
+            defer { favoriteTask = nil }
+
+            do {
+                let response = try await repository.updateFavorite(
+                    placeId: placeId,
+                    isFavorite: isFavorite
+                )
+                guard
+                    !Task.isCancelled,
+                    var updatedItem = output.restaurant.value,
+                    updatedItem.placeId == placeId
+                else { return }
+                favoriteOverride = response.isFavorite
+                updatedItem.isBookmarked = response.isFavorite
+                output.restaurant.send(updatedItem)
+                output.favoriteDidUpdate.send((placeId, response.isFavorite))
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+                if var revertedItem = output.restaurant.value,
+                   revertedItem.placeId == placeId {
+                    favoriteOverride = !isFavorite
+                    revertedItem.isBookmarked = !isFavorite
+                    output.restaurant.send(revertedItem)
+                }
                 output.error.send(error)
             }
         }

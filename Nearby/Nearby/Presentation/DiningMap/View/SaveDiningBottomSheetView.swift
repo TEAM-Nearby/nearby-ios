@@ -17,6 +17,7 @@ final class SaveDiningBottomSheetView: BaseView {
     private let diningCategories: [DiningCategory]
     private var categoryChips = [DiningCategory: NearbyIconChip]()
     var categoryDidTap: ((DiningCategory) -> Void)?
+    var sortDidSelect: ((DiningFavoriteSortOption) -> Void)?
 
     // MARK: - UI Components
 
@@ -25,7 +26,10 @@ final class SaveDiningBottomSheetView: BaseView {
     private let numberLabel = UILabel()
     private let categoryScrollView = UIScrollView()
     private let categoryChipStackView = UIStackView()
-    private let sortDropdownView = NearbyDropdownView(items: ["최신순", "오래된 순"], selectedItem: "최신순")
+    private let sortDropdownView = NearbyDropdownView(
+        items: DiningFavoriteSortOption.allCases.map(\.title),
+        selectedItem: DiningFavoriteSortOption.latest.title
+    )
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
 
     // MARK: - Initializer
@@ -73,6 +77,11 @@ final class SaveDiningBottomSheetView: BaseView {
             $0.backgroundColor = .white
             $0.showsVerticalScrollIndicator = false
             $0.alwaysBounceVertical = true
+        }
+
+        sortDropdownView.onItemSelected = { [weak self] title in
+            guard let sort = DiningFavoriteSortOption.allCases.first(where: { $0.title == title }) else { return }
+            self?.sortDidSelect?(sort)
         }
     }
 

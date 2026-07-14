@@ -1,19 +1,19 @@
 //
-//  DiningRepository.swift
+//  DiningMapRepository.swift
 //  Nearby
 //
 //  Created by soomin on 7/14/26.
 //
 
-protocol DiningRepository {
+protocol DiningMapRepository {
     func fetchPlaces(query: DiningListQuery) async throws -> DiningListResponseDTO
     func fetchPlaceDetail(query: DiningDetailQuery) async throws -> DiningDetailResponseDTO
 }
 
-final class DefaultDiningRepository: DiningRepository {
-    private let service: DiningService
+final class DefaultDiningMapRepository: DiningMapRepository {
+    private let service: DiningMapService
 
-    init(service: DiningService) {
+    init(service: DiningMapService) {
         self.service = service
     }
 

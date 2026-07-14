@@ -31,9 +31,9 @@ struct AlarmRequestItem: Identifiable {
 
     // MARK: - Initializer
 
-    init(dto: CompanionRequestDTO, tab: AlarmTab)
-    {
-        id = dto.applicationId
+    init(dto: CompanionRequestDTO, tab: AlarmTab) {
+        id = dto.notificationId
+        notificationId = dto.notificationId
         applicationId = dto.applicationId
         self.tab = tab
 
@@ -57,8 +57,7 @@ struct AlarmRequestItem: Identifiable {
 
 private extension AlarmRequestDisplayType {
 
-    init(tab: AlarmTab, status: CompanionRequestStatus)
-    {
+    init(tab: AlarmTab, status: CompanionRequestStatus) {
         switch (tab, status) {
         case (.sent, .pending):
             self = .sentPending

@@ -43,4 +43,3 @@ struct MyPageDisplayModel {
         receivedReviewCountText = "\(response.receivedReviewCount)개"
     }
 }
-

@@ -5,7 +5,6 @@
 //  Created by 신서연 on 7/14/26.
 //
 
-
 import Alamofire
 
 enum CompanionRequestTarget {

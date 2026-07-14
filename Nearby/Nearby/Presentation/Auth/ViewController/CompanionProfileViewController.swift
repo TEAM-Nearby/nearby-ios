@@ -172,8 +172,7 @@ extension CompanionProfileViewController: PHPickerViewControllerDelegate {
             return
         }
         
-        itemProvider.loadObject(ofClass: UIImage.self)
-        { [weak self] image, _ in
+        itemProvider.loadObject(ofClass: UIImage.self){ [weak self] image, _ in
             guard let self,
                   let image = image as? UIImage,
                   let imageData = image.jpegData(compressionQuality: 0.8) else {

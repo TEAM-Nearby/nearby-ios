@@ -46,8 +46,7 @@ final class AlarmViewModel: BaseViewModelType {
 
     // MARK: - Initializer
 
-    init(initialTab: AlarmTab = .sent, repository: CompanionRequestRepository)
-    {
+    init(initialTab: AlarmTab = .sent, repository: CompanionRequestRepository) {
         output = Output(selectedTab: CurrentValueSubject<AlarmTab, Never>(initialTab))
         self.repository = repository
     }

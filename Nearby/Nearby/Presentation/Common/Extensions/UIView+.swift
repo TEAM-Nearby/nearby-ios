@@ -20,7 +20,9 @@ extension UIView {
     }
 
     func showToast(title: String, above anchor: UIView, spacing: CGFloat = 16) {
-        subviews.compactMap { $0 as? ToastMessageView }.forEach { $0.removeFromSuperview() }
+        for case let toastView as ToastMessageView in subviews {
+            toastView.removeFromSuperview()
+        }
 
         let toastMessageView = ToastMessageView(title: title)
         addSubview(toastMessageView)

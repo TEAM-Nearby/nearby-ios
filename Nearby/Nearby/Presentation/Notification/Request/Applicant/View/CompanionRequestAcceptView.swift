@@ -237,7 +237,6 @@ final class CompanionRequestAcceptView: BaseView {
         }
         
         matchedProfileView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.top.equalToSuperview().inset(74)
         }
@@ -276,7 +275,6 @@ final class CompanionRequestAcceptView: BaseView {
         }
         
         chatProfileView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().inset(176)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }

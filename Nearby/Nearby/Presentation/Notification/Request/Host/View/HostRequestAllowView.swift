@@ -237,7 +237,6 @@ final class HostRequestAllowView: BaseView {
         }
         
         chatProfileView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.top.equalToSuperview()
             $0.horizontalEdges.equalToSuperview().inset(20)
         }

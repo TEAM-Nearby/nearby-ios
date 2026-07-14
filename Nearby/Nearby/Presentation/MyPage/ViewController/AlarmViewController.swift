@@ -139,7 +139,6 @@ private extension AlarmViewController {
         viewModel.output.errorMessage
             .receive(on: DispatchQueue.main)
             .sink { errorMessage in
-                AppLogger.error(AppError.apiError(message: errorMessage))
             }
             .store(in: &cancellables)
     }
@@ -180,11 +179,11 @@ extension AlarmViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
 
-        let item = items[indexPath.row]
-
-        guard item.actionType != .none else {
+        guard items.indices.contains(indexPath.row) else {
             return
         }
+
+        let item = items[indexPath.row]
 
         viewModel.action(.actionButtonDidTap(item))
     }

@@ -27,7 +27,7 @@ struct AlarmRequestItem: Identifiable {
 
     let matchId: Int?
     let actionType: CompanionRequestActionType
-    let isRead: Bool
+    var isRead: Bool
 
     // MARK: - Initializer
 

@@ -19,8 +19,6 @@ final class MyPageView: BaseView {
     var onReceivedRequestRowDidTap: (() -> Void)?
 
     private let gradientLayer = CAGradientLayer()
-    private let personalityKeywords = ["외향형", "내향형", "절약형", "새벽형", "대화좋아", "자연힐링"]
-    private let mannerKeywords = ["연락이 빨라요", "매너가 좋아요", "시간 약속을 잘 지켜요", "늦어도 미리 알려줘요"]
 
     // MARK: - UI Components
 
@@ -41,9 +39,9 @@ final class MyPageView: BaseView {
     private let personalitySecondLineStackView = UIStackView()
     private let statsStackView = UIStackView()
 
-    private let mealStatView = MyPageStatItemView(icon: .icRestaurant, title: "함께한 식사", value: "8회")
-    private let cityStatView = MyPageStatItemView(icon: .cityIcon, title: "방문한 도시", value: "4곳")
-    private let reviewStatView = MyPageStatItemView(icon: .starIcon, title: "받은 후기", value: "12개")
+    private let mealStatView = MyPageStatItemView(icon: .icRestaurant, title: "함께한 식사", value: "0회")
+    private let cityStatView = MyPageStatItemView(icon: .cityIcon, title: "방문한 도시", value: "0곳")
+    private let reviewStatView = MyPageStatItemView(icon: .starIcon, title: "받은 후기", value: "0개")
 
     private let firstDividerView = UIView()
     private let secondDividerView = UIView()
@@ -115,13 +113,13 @@ final class MyPageView: BaseView {
 
         nicknameLabel.do {
             $0.font = NearbyFont.h3Sb20.font
-            $0.text = "니어바이"
+            $0.text = ""
             $0.textColor = .grey80
         }
 
         genderLabel.do {
             $0.font = NearbyFont.b1M18.font
-            $0.text = "여성"
+            $0.text = ""
             $0.textColor = .primary50
         }
 
@@ -159,7 +157,7 @@ final class MyPageView: BaseView {
         }
 
         starRatingView.do {
-            $0.setRating(4)
+            $0.setRating(0)
         }
 
         [mannerFirstLineStackView, mannerSecondLineStackView].forEach {
@@ -197,16 +195,6 @@ final class MyPageView: BaseView {
             personalityFirstLineStackView, personalitySecondLineStackView
         )
 
-        personalityKeywords.enumerated().forEach {
-            let chip = makePersonalityChip(title: $0.element)
-
-            if $0.offset < 3 {
-                personalityFirstLineStackView.addArrangedSubview(chip)
-            } else {
-                personalitySecondLineStackView.addArrangedSubview(chip)
-            }
-        }
-
         statsStackView.addArrangedSubviews(mealStatView, cityStatView, reviewStatView)
 
         mannerScoreCardView.addSubviews(
@@ -214,16 +202,6 @@ final class MyPageView: BaseView {
         )
 
         mannerChipContainerView.addSubviews(mannerFirstLineStackView, mannerSecondLineStackView)
-
-        mannerKeywords.enumerated().forEach {
-            let chip = makeMannerChip(title: $0.element)
-
-            if $0.offset < 2 {
-                mannerFirstLineStackView.addArrangedSubview(chip)
-            } else {
-                mannerSecondLineStackView.addArrangedSubview(chip)
-            }
-        }
 
         menuCardView.addSubviews(writtenPostRowView, sentRequestRowView, receivedRequestRowView)
     }
@@ -376,11 +354,77 @@ final class MyPageView: BaseView {
             self?.onReceivedRequestRowDidTap?()
         }
     }
+    
+    func configure(with item: MyPageDisplayModel) {
+        profileImageView.configure(imageUrl: item.profileImageUrl)
+
+        nicknameLabel.text = item.nickname
+        genderLabel.text = item.genderText
+
+        verificationChip.isHidden = !item.isPhoneVerified
+
+        mealStatView.updateValue(item.mealTogetherCountText)
+
+        cityStatView.updateValue(item.visitedCityCountText)
+
+        reviewStatView.updateValue(item.receivedReviewCountText)
+
+        starRatingView.setRating(item.mannerRating)
+
+        configurePersonalityKeywords(item.travelStyleKeywords)
+
+        configureMannerKeywords(item.mannerKeywords)
+    }
 }
 
 // MARK: - Private Methods
 
 private extension MyPageView {
+
+    func configurePersonalityKeywords(_ keywords: [String]) {
+        removeAllArrangedSubviews(from: personalityFirstLineStackView)
+
+        removeAllArrangedSubviews(from: personalitySecondLineStackView)
+
+        keywords.enumerated().forEach { index, keyword in
+            let chip = makePersonalityChip(title: keyword)
+
+            if index < 3 {
+                personalityFirstLineStackView.addArrangedSubview(chip)
+            } else {
+                personalitySecondLineStackView.addArrangedSubview(chip)
+            }
+        }
+
+        personalitySecondLineStackView.isHidden = keywords.count <= 3
+    }
+
+    func configureMannerKeywords(_ keywords: [String]) {
+        removeAllArrangedSubviews(from: mannerFirstLineStackView)
+
+        removeAllArrangedSubviews(from: mannerSecondLineStackView)
+
+        keywords.enumerated().forEach { index, keyword in
+            let chip = makeMannerChip(title: keyword)
+
+            if index < 2 {
+                mannerFirstLineStackView.addArrangedSubview(chip)
+            } else {
+                mannerSecondLineStackView.addArrangedSubview(chip)
+            }
+        }
+
+        mannerChipContainerView.isHidden = keywords.isEmpty
+        mannerSecondLineStackView.isHidden = keywords.count <= 2
+    }
+
+    func removeAllArrangedSubviews(from stackView: UIStackView) {
+        stackView.arrangedSubviews.forEach { arrangedSubview in
+            stackView.removeArrangedSubview(arrangedSubview)
+            arrangedSubview.removeFromSuperview()
+        }
+    }
+
     func makePersonalityChip(title: String) -> NearbyChipButton {
         let chip = NearbyChipButton(style: .personalityOrange, title: title, horizontalInset: 16)
 
@@ -427,6 +471,12 @@ private final class MyPageStatItemView: UIView {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    // MARK: - Methods
+
+    func updateValue(_ value: String) {
+        valueLabel.text = value
+    }
 }
 
 // MARK: - Private Methods
@@ -555,6 +605,7 @@ private extension MyPageMenuRowView {
     func setAddTarget() {
         tapButton.addTarget(self, action: #selector(rowDidTap), for: .touchUpInside)
     }
+
 }
 
 // MARK: - Action
@@ -563,4 +614,5 @@ private extension MyPageMenuRowView {
     @objc
     func rowDidTap() {
         onTap?()
-    } }
+    }
+}

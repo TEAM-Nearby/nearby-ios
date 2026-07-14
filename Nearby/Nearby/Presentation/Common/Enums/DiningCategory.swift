@@ -34,7 +34,7 @@ enum DiningCategory: CaseIterable, Hashable {
     var icon: UIImage {
         switch self {
         case .restaurant:
-            return .icChinese
+            return .icRestaurant
         case .cafe:
             return .icCafe
         case .bar:
@@ -42,7 +42,17 @@ enum DiningCategory: CaseIterable, Hashable {
         case .dessert:
             return .icCake
         case .paella:
-            return .icRestaurant
+            return .icPpaeya
+        }
+    }
+
+    var serverKey: String {
+        switch self {
+        case .restaurant: "RESTAURANT"
+        case .cafe: "CAFE"
+        case .bar: "PUB"
+        case .dessert: "CAFE"
+        case .paella: "OTHER"
         }
     }
 }

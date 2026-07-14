@@ -5,6 +5,7 @@
 //  Created by soomin on 7/5/26.
 //
 
+import CoreLocation
 import UIKit
 
 final class AppDIContainer {
@@ -67,6 +68,10 @@ final class AppDIContainer {
         DefaultCompanionService(networkProvider: networkProvider)
     }
 
+    private func makeDiningMapService() -> DiningMapService {
+        DefaultDiningMapService(networkProvider: networkProvider)
+    }
+
     private func makeGooglePlaceService() -> GooglePlaceService {
         GooglePlaceService()
     }
@@ -111,6 +116,10 @@ final class AppDIContainer {
     
     private func makeCompanionRepository() -> CompanionRepository {
         DefaultCompanionRepository(service: makeCompanionService())
+    }
+
+    private func makeDiningMapRepository() -> DiningMapRepository {
+        DefaultDiningMapRepository(service: makeDiningMapService())
     }
 
     private func makeRecruitCompanionRepository() -> RecruitCompanionRepository {
@@ -167,7 +176,7 @@ final class AppDIContainer {
     }
     
     func makeNearDiningBottomSheetViewModel() -> NearDiningBottomSheetViewModel {
-        NearDiningBottomSheetViewModel()
+        NearDiningBottomSheetViewModel(repository: makeDiningMapRepository())
     }
     
     func makeSaveDiningSheetViewModel() -> SaveDiningSheetViewModel {
@@ -175,7 +184,10 @@ final class AppDIContainer {
     }
     
     func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
-        DiningInfoSheetViewModel()
+        DiningInfoSheetViewModel(
+            repository: makeDiningMapRepository(),
+            coordinate: CLLocationCoordinate2D(latitude: 41.389458, longitude: 2.168289)
+        )
     }
     
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
@@ -206,10 +218,7 @@ final class AppDIContainer {
     }
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
-        RecruitCompanionViewModel(
-            repository: makeRecruitCompanionRepository(),
-            searchCoordinate: (latitude: 41.389458, longitude: 2.168289)
-        )
+        RecruitCompanionViewModel(repository: makeRecruitCompanionRepository(), searchCoordinate: (latitude: 41.389458, longitude: 2.168289))
     }
 
     func makeMeetingProgressViewModel(meetingId: Int, repository: MeetingRepository) -> MeetingProgressViewModel {

@@ -47,18 +47,19 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
                 self?.onBookmarkTap?()
             }
             .store(in: &cancellables)
+
+        viewModel.output.error
+            .sink { error in
+                AppLogger.error(error)
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Methods
 
     private func configureView(with item: NearDiningCellItem) {
-        diningInfoSheetView.configure(
-            with: item,
-            description: "다양한 종류의 우아한 가구와 넓은 야외 좌석이 있는 넓고 유명한 타파스 바입니다.",
-            closingTime: "오전 1시에 영업 종료",
-            phoneNumber: "+34 933 18 19 97",
-            price: "$20~30"
-        )
+        diningInfoSheetView.configure(with: item, description: item.description,
+                                      closingTime: item.closingTime, phoneNumber: item.phoneNumber, price: item.price)
     }
 
     func configure(with item: NearDiningCellItem) {

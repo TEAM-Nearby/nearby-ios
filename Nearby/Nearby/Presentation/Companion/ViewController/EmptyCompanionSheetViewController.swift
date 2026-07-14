@@ -18,4 +18,11 @@ final class EmptyCompanionSheetViewController: BaseViewController<EmptyViewModel
     override func loadView() {
         view = emptyCompanionSheetView
     }
+
+    // MARK: - Method
+
+    func restartAnimation() {
+        loadViewIfNeeded()
+        emptyCompanionSheetView.restartAnimation()
+    }
 }

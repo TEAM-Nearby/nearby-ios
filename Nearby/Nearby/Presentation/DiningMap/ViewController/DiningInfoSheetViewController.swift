@@ -13,7 +13,7 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
     // MARK: - Properties
     
     var onClose: (() -> Void)?
-    var onBookmarkTap: (() -> Void)?
+    var onFavoriteUpdate: ((Int, Bool) -> Void)?
 
     private let diningInfoSheetView = DiningInfoSheetView()
     
@@ -41,10 +41,10 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
             }
             .store(in: &cancellables)
 
-        viewModel.output.bookmarkDidTap
+        viewModel.output.favoriteDidUpdate
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.onBookmarkTap?()
+            .sink { [weak self] favorite in
+                self?.onFavoriteUpdate?(favorite.placeId, favorite.isFavorite)
             }
             .store(in: &cancellables)
 

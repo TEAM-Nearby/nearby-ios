@@ -6,6 +6,7 @@
 //
 
 import Combine
+import CoreLocation
 import UIKit
 
 final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetViewModel> {
@@ -13,6 +14,7 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
     // MARK: - Properties
     
     var onRestaurantSelected: ((NearDiningCellItem) -> Void)?
+    var onFavoriteUpdate: ((Int, Bool) -> Void)?
 
     private let saveDiningBottomSheetView = SaveDiningBottomSheetView(diningCategories: DiningCategory.allCases)
 
@@ -31,6 +33,9 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
         saveDiningBottomSheetView.categoryDidTap = { [weak self] category in
             self?.viewModel.action(.categoryDidSelect(category))
         }
+        saveDiningBottomSheetView.sortDidSelect = { [weak self] sort in
+            self?.viewModel.action(.sortDidSelect(sort))
+        }
     }
 
     override func bindState() {
@@ -43,9 +48,15 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
 
         viewModel.output.restaurants
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] restaurants in
-                self?.saveDiningBottomSheetView.updateRestaurantCount(restaurants.count)
+            .sink { [weak self] _ in
                 self?.saveDiningBottomSheetView.collectionView.reloadData()
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.totalCount
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] count in
+                self?.saveDiningBottomSheetView.updateRestaurantCount(count)
             }
             .store(in: &cancellables)
 
@@ -55,6 +66,33 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
                 self?.onRestaurantSelected?(item)
             }
             .store(in: &cancellables)
+
+        viewModel.output.favoriteDidUpdate
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] favorite in
+                self?.onFavoriteUpdate?(favorite.placeId, favorite.isFavorite)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.error
+            .sink { error in
+                AppLogger.error(error)
+            }
+            .store(in: &cancellables)
+    }
+
+    // MARK: - Methods
+
+    func updateLocation(_ coordinate: CLLocationCoordinate2D) {
+        viewModel.action(.locationDidUpdate(coordinate))
+    }
+
+    func refresh() {
+        viewModel.action(.refresh)
+    }
+
+    func updateFavorite(placeId: Int, isFavorite: Bool) {
+        viewModel.updateFavorite(placeId: placeId, isFavorite: isFavorite)
     }
 }
 

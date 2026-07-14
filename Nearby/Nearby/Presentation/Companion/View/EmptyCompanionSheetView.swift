@@ -33,7 +33,6 @@ final class EmptyCompanionSheetView: BaseView {
             $0.contentMode = .scaleAspectFit
             $0.loopMode = .loop
             $0.backgroundBehavior = .pauseAndRestore
-            $0.play()
         }
     }
     
@@ -52,5 +51,11 @@ final class EmptyCompanionSheetView: BaseView {
             $0.centerX.equalToSuperview()
             $0.size.equalTo(300)
         }
+    }
+
+    func restartAnimation() {
+        animationView.stop()
+        animationView.currentProgress = 0
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
     }
 }

@@ -188,7 +188,7 @@ final class AppDIContainer {
     }
     
     func makeSaveDiningSheetViewModel() -> SaveDiningSheetViewModel {
-        SaveDiningSheetViewModel()
+        SaveDiningSheetViewModel(repository: makeDiningMapRepository())
     }
     
     func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {

@@ -6,13 +6,36 @@
 //
 
 import Combine
+import CoreLocation
+
+enum DiningFavoriteSortOption: CaseIterable {
+    case latest
+    case oldest
+
+    var title: String {
+        switch self {
+        case .latest: "최신순"
+        case .oldest: "오래된 순"
+        }
+    }
+
+    var serverKey: String {
+        switch self {
+        case .latest: "LATEST"
+        case .oldest: "OLDEST"
+        }
+    }
+}
 
 final class SaveDiningSheetViewModel: BaseViewModelType {
     
     // MARK: - Input
     
     enum Input {
+        case locationDidUpdate(CLLocationCoordinate2D)
+        case refresh
         case categoryDidSelect(DiningCategory)
+        case sortDidSelect(DiningFavoriteSortOption)
         case restaurantDidSelect(Int)
         case bookmarkDidTap(Int)
     }
@@ -21,20 +44,34 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     
     struct Output {
         let selectedCategory = CurrentValueSubject<DiningCategory, Never>(.restaurant)
-        let restaurants: CurrentValueSubject<[NearDiningCellItem], Never>
+        let selectedSort = CurrentValueSubject<DiningFavoriteSortOption, Never>(.latest)
+        let totalCount = CurrentValueSubject<Int, Never>(0)
+        let restaurants = CurrentValueSubject<[NearDiningCellItem], Never>([])
         let selectedRestaurant = PassthroughSubject<NearDiningCellItem, Never>()
+        let favoriteDidUpdate = PassthroughSubject<(placeId: Int, isFavorite: Bool), Never>()
+        let error = PassthroughSubject<Error, Never>()
     }
     
-    let output: Output
-    
     // MARK: - Properties
+
+    let output = Output()
+
+    private let repository: DiningMapRepository
+    private var currentCoordinate: CLLocationCoordinate2D?
+    private var fetchTask: Task<Void, Never>?
+    private var favoriteTasks: [Int: Task<Void, Never>] = [:]
     
     var restaurantCount: Int { output.restaurants.value.count }
     
     // MARK: - Initializer
     
-    init(restaurants: [NearDiningCellItem] = SaveDiningSheetViewModel.mockRestaurants) {
-        output = Output(restaurants: CurrentValueSubject(restaurants))
+    init(repository: DiningMapRepository) {
+        self.repository = repository
+    }
+
+    deinit {
+        fetchTask?.cancel()
+        favoriteTasks.values.forEach { $0.cancel() }
     }
     
     // MARK: - Methods
@@ -42,26 +79,97 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     func restaurant(at index: Int) -> NearDiningCellItem {
         output.restaurants.value[index]
     }
+
+    func updateFavorite(placeId: Int, isFavorite: Bool) {
+        guard !isFavorite else { return }
+        removeRestaurant(placeId: placeId)
+    }
     
     func action(_ trigger: Input) {
         switch trigger {
+        case .locationDidUpdate(let coordinate):
+            currentCoordinate = coordinate
+            fetchFavorites()
+        case .refresh:
+            fetchFavorites()
         case .categoryDidSelect(let category):
             output.selectedCategory.send(category)
+            fetchFavorites()
+        case .sortDidSelect(let sort):
+            output.selectedSort.send(sort)
+            fetchFavorites()
         case .restaurantDidSelect(let index):
+            guard output.restaurants.value.indices.contains(index) else { return }
             output.selectedRestaurant.send(restaurant(at: index))
         case .bookmarkDidTap(let index):
-            var restaurants = output.restaurants.value
-            guard restaurants.indices.contains(index) else { return }
-            restaurants.remove(at: index)
-            output.restaurants.send(restaurants)
+            removeFavorite(at: index)
         }
     }
 }
 
-// MARK: - Mock Data
-
 private extension SaveDiningSheetViewModel {
-    static let mockRestaurants = (0..<4).map { _ in
-        NearDiningCellItem(name: "시우다드 콘달", category: "마라탕", businessStatus: "영업중", distance: "0.8km", address: "Rambla de Catalunya, 18, Eixample, 08007 Barcelona", rating: 5, reviewCount: 22_870, images: [.restaurantPlaceholder, .restaurantPlaceholder, .restaurantPlaceholder], isBookmarked: true)
+    func fetchFavorites() {
+        guard let currentCoordinate else { return }
+
+        fetchTask?.cancel()
+        let category = output.selectedCategory.value
+        let sort = output.selectedSort.value
+
+        fetchTask = Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let response = try await repository.fetchFavorites(
+                    query: DiningFavoritesQuery(
+                        latitude: currentCoordinate.latitude,
+                        longitude: currentCoordinate.longitude,
+                        category: category.serverKey,
+                        sort: sort.serverKey
+                    )
+                )
+                guard !Task.isCancelled else { return }
+                output.totalCount.send(response.totalCount)
+                output.restaurants.send(response.favorites.map(NearDiningCellItem.init(dto:)))
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+                output.error.send(error)
+            }
+        }
+    }
+
+    func removeFavorite(at index: Int) {
+        let restaurants = output.restaurants.value
+        guard
+            restaurants.indices.contains(index),
+            let placeId = restaurants[index].placeId,
+            favoriteTasks[placeId] == nil
+        else { return }
+
+        favoriteTasks[placeId] = Task { [weak self] in
+            guard let self else { return }
+            defer { favoriteTasks[placeId] = nil }
+
+            do {
+                let response = try await repository.updateFavorite(placeId: placeId, isFavorite: false)
+                guard !Task.isCancelled else { return }
+                removeRestaurant(placeId: placeId)
+                output.favoriteDidUpdate.send((placeId, response.isFavorite))
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+                output.error.send(error)
+            }
+        }
+    }
+
+    func removeRestaurant(placeId: Int) {
+        var restaurants = output.restaurants.value
+        guard let index = restaurants.firstIndex(where: { $0.placeId == placeId }) else { return }
+        restaurants.remove(at: index)
+        output.restaurants.send(restaurants)
+        output.totalCount.send(max(0, output.totalCount.value - 1))
     }
 }

@@ -101,6 +101,13 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         saveDiningSheetViewController.onRestaurantSelected = { [weak self] item in
             self?.showDiningInfoSheet(for: item)
         }
+
+        saveDiningSheetViewController.onFavoriteUpdate = { [weak self] placeId, isFavorite in
+            self?.nearDiningSheetViewController.updateFavorite(
+                placeId: placeId,
+                isFavorite: isFavorite
+            )
+        }
         
         diningInfoSheetViewController.onClose = { [weak self] in
             guard let self else { return }
@@ -111,8 +118,20 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
             }
         }
 
+        diningInfoSheetViewController.onFavoriteUpdate = { [weak self] placeId, isFavorite in
+            self?.nearDiningSheetViewController.updateFavorite(
+                placeId: placeId,
+                isFavorite: isFavorite
+            )
+            self?.saveDiningSheetViewController.updateFavorite(
+                placeId: placeId,
+                isFavorite: isFavorite
+            )
+        }
+
         mapController.onLocationUpdate = { [weak self] coordinate in
             self?.nearDiningSheetViewController.updateLocation(coordinate)
+            self?.saveDiningSheetViewController.updateLocation(coordinate)
         }
     }
 
@@ -134,6 +153,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     
     private func showSaveDiningSheet(animated: Bool = true) {
         isSaveDiningSheetPresented = true
+        saveDiningSheetViewController.refresh()
         setTabBarHidden(true, animated: animated)
         bottomSheetViewController.setContentViewController(saveDiningSheetViewController)
         bottomSheetViewController.setState(content: .savedRestaurantList, animated: animated)

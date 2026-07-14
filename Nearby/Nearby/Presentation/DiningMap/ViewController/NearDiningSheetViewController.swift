@@ -82,6 +82,10 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     func restaurant(placeId: Int) -> NearDiningCellItem? {
         viewModel.restaurant(placeId: placeId)
     }
+
+    func updateFavorite(placeId: Int, isFavorite: Bool) {
+        viewModel.updateFavorite(placeId: placeId, isFavorite: isFavorite)
+    }
 }
 
 // MARK: - UICollectionViewDataSource

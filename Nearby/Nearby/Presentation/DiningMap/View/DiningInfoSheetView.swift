@@ -56,10 +56,16 @@ final class DiningInfoSheetView: BaseView {
         
         nameLabel.do {
             $0.setFont(.h3Sb20, textColor: .grey80)
+            $0.numberOfLines = 3
+            $0.lineBreakMode = .byCharWrapping
+            $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .vertical)
         }
         
         categoryLabel.do {
             $0.setFont(.b3M14, textColor: .grey30)
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
         
         bookmarkButton.do {
@@ -172,11 +178,13 @@ final class DiningInfoSheetView: BaseView {
         nameLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(14)
             $0.leading.equalToSuperview().inset(20)
+            $0.trailing.lessThanOrEqualTo(bookmarkButton.snp.leading).offset(-8)
         }
         
         categoryLabel.snp.makeConstraints {
             $0.leading.equalTo(nameLabel.snp.trailing).offset(8)
-            $0.centerY.equalTo(nameLabel)
+            $0.trailing.lessThanOrEqualTo(bookmarkButton.snp.leading).offset(-8)
+            $0.firstBaseline.equalTo(nameLabel.snp.firstBaseline)
         }
         
         closeButton.snp.makeConstraints {

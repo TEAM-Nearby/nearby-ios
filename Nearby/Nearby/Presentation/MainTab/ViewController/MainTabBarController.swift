@@ -41,15 +41,14 @@ final class MainTabBarController: UITabBarController {
         itemAppearance.normal.titlePositionAdjustment = offset
         itemAppearance.selected.titlePositionAdjustment = offset
         
-        barAppearance.stackedItemPositioning = .centered
-        barAppearance.stackedItemWidth = 52
-        barAppearance.stackedItemSpacing = 20
+        barAppearance.stackedItemPositioning = .fill
         barAppearance.stackedLayoutAppearance = itemAppearance
         barAppearance.inlineLayoutAppearance = itemAppearance
         barAppearance.compactInlineLayoutAppearance = itemAppearance
         
         tabBar.standardAppearance = barAppearance
         tabBar.scrollEdgeAppearance = barAppearance
+        tabBar.itemPositioning = .fill
         tabBar.backgroundColor = .clear
         tabBar.tintColor = .grey80
         tabBar.unselectedItemTintColor = .grey60

@@ -26,14 +26,8 @@ struct MatchedCompanionListResponseDTO: Decodable {
 
 struct MatchedCompanionPreviewResponseDTO: Decodable {
     let matchId: Int
-    let host: Host
     let members: [Member]
     let companionPost: CompanionPost
-
-    struct Host: Decodable {
-        let hostName: String
-        let hostProfileImageUrl: String?
-    }
 
     struct Member: Decodable {
         let memberId: Int
@@ -44,9 +38,8 @@ struct MatchedCompanionPreviewResponseDTO: Decodable {
     struct CompanionPost: Decodable {
         let postId: Int
         let content: String
-        let placeName: String
         let meetingTimeType: MeetingTimeType
-        let meetingAt: String?
+        let meetingAt: String
     }
 }
 
@@ -70,24 +63,4 @@ struct MatchMyScheduleResponseDTO: Decodable {
         let latitude: Double
         let longitude: Double
     }
-}
-
-struct ConfirmCompanionScheduleRequestDTO {
-    let scheduledAt: String
-    let place: Place
-    let openChatUrl: String
-
-    struct Place {
-        let googlePlaceId: String
-        let name: String
-        let address: String
-        let latitude: Double
-        let longitude: Double
-    }
-}
-
-struct ConfirmCompanionScheduleResponseDTO: Decodable {
-    let matchId: Int
-    let scheduleId: Int
-    let matchStatus: MatchStatus
 }

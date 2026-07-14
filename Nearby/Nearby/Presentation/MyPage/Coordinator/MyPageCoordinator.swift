@@ -109,8 +109,8 @@ private extension MyPageCoordinator {
 
         writtenPostViewController.hidesBottomBarWhenPushed = true
         writtenPostViewController.onBackButtonDidTap = { [weak self] in
-                self?.navigationController.popViewController(animated: true)
-            }
+            self?.navigationController.popViewController(animated: true)
+        }
 
         writtenPostViewController.onFindCompanionButtonDidTap = { [weak self] in
                 guard let self else { return }

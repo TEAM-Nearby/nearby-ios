@@ -28,17 +28,11 @@ enum CompanionRequestActionType: String, Decodable {
 }
 
 struct CompanionRequestListResponseDTO: Decodable {
-
-    // MARK: - Properties
-
     let direction: CompanionRequestDirection
     let requests: [CompanionRequestDTO]
 }
 
 struct CompanionRequestDTO: Decodable {
-
-    // MARK: - Properties
-
     let notificationId: Int
     let applicationId: Int
     let applicationStatus: CompanionRequestStatus
@@ -51,18 +45,12 @@ struct CompanionRequestDTO: Decodable {
 }
 
 struct CompanionRequestHostDTO: Decodable {
-
-    // MARK: - Properties
-
     let userId: Int
     let profileImageUrl: String?
     let nickname: String
 }
 
 struct CompanionNotificationReadResponseDTO: Decodable {
-
-    // MARK: - Properties
-
     let notificationId: Int
     let isRead: Bool
     let readAt: String

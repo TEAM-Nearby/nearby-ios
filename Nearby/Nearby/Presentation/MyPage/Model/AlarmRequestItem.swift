@@ -12,6 +12,7 @@ struct AlarmRequestItem: Identifiable {
     // MARK: - Properties
 
     let id: Int
+    let notificationId: Int
     let applicationId: Int
     let tab: AlarmTab
     let displayType: AlarmRequestDisplayType

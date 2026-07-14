@@ -355,6 +355,10 @@ final class CompanionRequestAcceptView: BaseView {
         }
     }
     
+    func showLinkCopiedToast() {
+        showToast(title: "링크가 복사되었어요", above: confirmButton)
+    }
+    
     // MARK: - Actions
     
     @objc

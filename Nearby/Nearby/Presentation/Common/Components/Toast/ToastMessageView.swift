@@ -32,7 +32,7 @@ final class ToastMessageView: BaseView {
     // MARK: - Custom Methods
 
     override func setStyle() {
-        backgroundColor = .grey80.withAlphaComponent(0.9)
+        backgroundColor = .grey30
 
         contentStackView.do {
             $0.axis = .horizontal
@@ -46,7 +46,7 @@ final class ToastMessageView: BaseView {
         }
 
         titleLabel.do {
-            $0.setFont(.b3M14, textColor: .white)
+            $0.setFont(.b2Sb16, textColor: .white)
         }
     }
 

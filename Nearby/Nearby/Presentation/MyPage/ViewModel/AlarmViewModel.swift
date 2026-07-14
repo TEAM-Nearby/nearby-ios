@@ -42,7 +42,9 @@ final class AlarmViewModel: BaseViewModelType {
     private let repository: CompanionRequestRepository
 
     private var fetchTask: Task<Void, Never>?
+    private var notificationReadTask: Task<Void, Never>?
     private var hasLoadedOnce = false
+    private var readingNotificationIDs = Set<Int>()
 
     // MARK: - Initializer
 
@@ -53,6 +55,7 @@ final class AlarmViewModel: BaseViewModelType {
 
     deinit {
         fetchTask?.cancel()
+        notificationReadTask?.cancel()
     }
 
     // MARK: - Action
@@ -80,7 +83,7 @@ final class AlarmViewModel: BaseViewModelType {
             updateSelectedTab(.received)
 
         case .actionButtonDidTap(let item):
-            handleAction(for: item)
+            markNotificationAsReadAndHandleAction(item)
         }
     }
 }
@@ -132,11 +135,63 @@ private extension AlarmViewModel {
             } catch {
                 guard !Task.isCancelled else { return }
 
-                AppLogger.error(error)
                 output.items.send([])
                 output.errorMessage.send(error.localizedDescription)
             }
         }
+    }
+
+    func markNotificationAsReadAndHandleAction(_ item: AlarmRequestItem) {
+        if item.isRead {
+            handleAction(for: item)
+            return
+        }
+
+        guard !readingNotificationIDs.contains(item.notificationId) else { return }
+
+        readingNotificationIDs.insert(item.notificationId)
+
+        notificationReadTask = Task { [weak self] in
+            guard let self else { return }
+
+            defer {
+                readingNotificationIDs.remove(item.notificationId)
+            }
+
+            do {
+                let response = try await repository.markNotificationAsRead(
+                    notificationId: item.notificationId
+                )
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                updateNotificationReadState(notificationId: response.notificationId, isRead: response.isRead)
+                handleAction(for: item)
+                
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                output.errorMessage.send(error.localizedDescription)
+            }
+        }
+    }
+
+    func updateNotificationReadState(notificationId: Int, isRead: Bool) {
+        var updatedItems = output.items.value
+
+        guard let index = updatedItems.firstIndex(where: { $0.notificationId == notificationId })
+        else {
+            return
+        }
+
+        updatedItems[index].isRead = isRead
+        output.items.send(updatedItems)
     }
 
     func handleAction(for item: AlarmRequestItem) {

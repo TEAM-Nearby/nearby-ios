@@ -58,3 +58,12 @@ struct CompanionRequestHostDTO: Decodable {
     let profileImageUrl: String?
     let nickname: String
 }
+
+struct CompanionNotificationReadResponseDTO: Decodable {
+
+    // MARK: - Properties
+
+    let notificationId: Int
+    let isRead: Bool
+    let readAt: String
+}

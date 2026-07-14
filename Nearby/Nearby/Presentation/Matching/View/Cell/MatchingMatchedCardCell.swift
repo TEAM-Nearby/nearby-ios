@@ -59,6 +59,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
         profileImageView.kf.cancelDownloadTask()
         profileImageView.image = .imgProfileDefault
+        profileStackView.reset()
         onNextButtonDidTap = nil
     }
 

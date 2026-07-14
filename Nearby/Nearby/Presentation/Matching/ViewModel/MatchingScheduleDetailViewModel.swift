@@ -74,8 +74,11 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
             guard let self else { return }
 
             do {
-                let scheduleResponse = try await repository.fetchMatchMySchedule(matchId: matchId)
-                let previewResponse = try? await repository.fetchMatchPreview(matchId: matchId)
+                async let scheduleResponseTask = repository.fetchMatchMySchedule(matchId: matchId)
+                async let previewResponseTask = repository.fetchMatchPreview(matchId: matchId)
+
+                let scheduleResponse = try await scheduleResponseTask
+                let previewResponse = try? await previewResponseTask
                 let cardItem = previewResponse?.toCardItem(
                     type: .participant,
                     matchStatus: scheduleResponse.matchStatus.rawValue,

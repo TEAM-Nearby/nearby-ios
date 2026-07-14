@@ -7,6 +7,7 @@
 
 protocol CompanionRequestRepository {
     func fetchRequests(direction: CompanionRequestDirection) async throws -> CompanionRequestListResponseDTO
+    func markNotificationAsRead(notificationId: Int) async throws -> CompanionNotificationReadResponseDTO
 }
 
 final class DefaultCompanionRequestRepository {
@@ -28,5 +29,9 @@ extension DefaultCompanionRequestRepository: CompanionRequestRepository {
 
     func fetchRequests(direction: CompanionRequestDirection) async throws -> CompanionRequestListResponseDTO {
         try await service.fetchRequests(direction: direction)
+    }
+
+    func markNotificationAsRead(notificationId: Int) async throws -> CompanionNotificationReadResponseDTO {
+        try await service.markNotificationAsRead(notificationId: notificationId)
     }
 }

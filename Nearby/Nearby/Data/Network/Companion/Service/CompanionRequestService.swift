@@ -7,6 +7,7 @@
 
 protocol CompanionRequestService {
     func fetchRequests(direction: CompanionRequestDirection) async throws -> CompanionRequestListResponseDTO
+    func markNotificationAsRead(notificationId: Int) async throws -> CompanionNotificationReadResponseDTO
 }
 
 final class DefaultCompanionRequestService {
@@ -30,6 +31,13 @@ extension DefaultCompanionRequestService: CompanionRequestService {
         try await networkProvider.request(
             CompanionRequestTarget.list(direction: direction),
             responseType: CompanionRequestListResponseDTO.self
+        )
+    }
+
+    func markNotificationAsRead(notificationId: Int) async throws -> CompanionNotificationReadResponseDTO {
+        try await networkProvider.request(
+            CompanionRequestTarget.markNotificationAsRead(notificationId: notificationId),
+            responseType: CompanionNotificationReadResponseDTO.self
         )
     }
 }

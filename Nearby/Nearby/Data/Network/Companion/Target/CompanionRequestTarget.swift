@@ -9,6 +9,7 @@ import Alamofire
 
 enum CompanionRequestTarget {
     case list(direction: CompanionRequestDirection)
+    case markNotificationAsRead(notificationId: Int)
 }
 
 extension CompanionRequestTarget: BaseTargetType {
@@ -17,6 +18,9 @@ extension CompanionRequestTarget: BaseTargetType {
         switch self {
         case .list:
             return "/api/users/me/companion-requests"
+
+        case .markNotificationAsRead(let notificationId):
+            return "/api/users/me/companion-requests/\(notificationId)/read"
         }
     }
 
@@ -24,6 +28,9 @@ extension CompanionRequestTarget: BaseTargetType {
         switch self {
         case .list:
             return .get
+
+        case .markNotificationAsRead:
+            return .patch
         }
     }
 
@@ -31,6 +38,17 @@ extension CompanionRequestTarget: BaseTargetType {
         switch self {
         case .list(let direction):
             return ["direction": direction.rawValue]
+
+        case .markNotificationAsRead:
+            return nil
+        }
+    }
+
+    var bodyParameters: Parameters? {
+        switch self {
+        case .list,
+             .markNotificationAsRead:
+            return nil
         }
     }
 

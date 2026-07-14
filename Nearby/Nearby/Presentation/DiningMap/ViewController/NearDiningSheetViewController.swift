@@ -6,6 +6,7 @@
 //
 
 import Combine
+import CoreLocation
 import UIKit
 
 final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSheetViewModel> {
@@ -13,14 +14,17 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     // MARK: - Properties
     
     var onRestaurantSelected: ((NearDiningCellItem) -> Void)?
+    var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
 
     private let nearDiningBottomSheetView = NearDiningBottomSheetView(diningCategories: DiningCategory.allCases)
 
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
 
     override func loadView() {
         view = nearDiningBottomSheetView
     }
+    
+    // MARK: - Custom Methods
 
     override func setDelegate() {
         nearDiningBottomSheetView.collectionView.dataSource = self
@@ -54,6 +58,29 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
                 self?.onRestaurantSelected?(item)
             }
             .store(in: &cancellables)
+
+        viewModel.output.mapMarkers
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] markers in
+                self?.onMapMarkersChanged?(markers)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.error
+            .sink { error in
+                AppLogger.error(error)
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Methods
+
+    func updateLocation(_ coordinate: CLLocationCoordinate2D) {
+        viewModel.action(.locationDidUpdate(coordinate))
+    }
+
+    func restaurant(placeId: Int) -> NearDiningCellItem? {
+        viewModel.restaurant(placeId: placeId)
     }
 }
 

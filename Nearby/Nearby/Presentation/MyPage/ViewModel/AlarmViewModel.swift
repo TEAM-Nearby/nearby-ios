@@ -145,7 +145,7 @@ private extension AlarmViewModel {
         case .confirmSchedule:
             handleConfirmSchedule(item)
 
-        case .viewRejection:
+        case .viewRejection, .viewResult:
             output.showCompanionRequestDecline.send(())
 
         case .acceptRequest:

@@ -73,6 +73,7 @@ final class HostRequestAllowView: BaseView {
         titleLabel.do {
             $0.setFont(.h2M22, text: "", textColor: .black)
             $0.textAlignment = .center
+            $0.numberOfLines = 0
         }
         
         informationView.do {
@@ -147,6 +148,7 @@ final class HostRequestAllowView: BaseView {
         chatTitleLabel.do {
             $0.setFont(.h2M22, text: "", textColor: .black)
             $0.textAlignment = .center
+            $0.numberOfLines = 0
         }
         
         chatCardView.do {
@@ -200,7 +202,7 @@ final class HostRequestAllowView: BaseView {
         }
         
         matchedProfileView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.top.equalToSuperview()
         }
         
@@ -212,7 +214,7 @@ final class HostRequestAllowView: BaseView {
         
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(imageView.snp.bottom).offset(14)
-            $0.centerX.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
         informationView.snp.makeConstraints {
@@ -237,6 +239,7 @@ final class HostRequestAllowView: BaseView {
         chatProfileView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
         chatImageView.snp.makeConstraints {
@@ -247,7 +250,7 @@ final class HostRequestAllowView: BaseView {
         
         chatTitleLabel.snp.makeConstraints {
             $0.top.equalTo(chatImageView.snp.bottom).offset(16)
-            $0.centerX.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
         chatCardView.snp.makeConstraints {

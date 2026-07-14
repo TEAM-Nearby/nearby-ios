@@ -37,7 +37,7 @@ extension UIView {
         UIView.animate(withDuration: 0.2) {
             toastMessageView.alpha = 1
         }
-        UIView.animate(withDuration: 0.1, delay: 1.5, options: []) {
+        UIView.animate(withDuration: 0.1, delay: 1.0, options: []) {
             toastMessageView.alpha = 0
         } completion: { _ in
             toastMessageView.removeFromSuperview()

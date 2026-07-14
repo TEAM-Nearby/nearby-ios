@@ -11,13 +11,17 @@ protocol ReviewService {
     func completeMeeting(meetingId: Int) async throws -> ReviewCompleteDTO
 }
 
-final class DefaultReviewService: ReviewService {
+final class DefaultReviewService {
     private let networkProvider: NetworkProvider
 
     init(networkProvider: NetworkProvider) {
         self.networkProvider = networkProvider
     }
+}
 
+// MARK: - ReviewService
+
+extension DefaultReviewService: ReviewService {
     func createReview(meetingId: Int, request: CreateReviewRequestDTO) async throws -> CreateReviewResponseDTO {
         try await networkProvider.request(
             ReviewTarget.create(meetingId: meetingId, request: request),

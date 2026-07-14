@@ -11,13 +11,17 @@ protocol ReviewRepository {
     func completeMeeting(meetingId: Int) async throws -> ReviewCompleteDTO
 }
 
-final class DefaultReviewRepository: ReviewRepository {
+final class DefaultReviewRepository {
     private let service: ReviewService
 
     init(service: ReviewService) {
         self.service = service
     }
+}
 
+// MARK: - ReviewRepository
+
+extension DefaultReviewRepository: ReviewRepository {
     func createReview(meetingId: Int, request: CreateReviewRequestDTO) async throws -> CreateReviewResponseDTO {
         try await service.createReview(meetingId: meetingId, request: request)
     }

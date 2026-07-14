@@ -290,6 +290,10 @@ final class HostRequestAllowView: BaseView {
         chatTitleLabel.text = output.chatTitle
     }
     
+    func showLinkCopiedToast() {
+        showToast(title: "링크가 복사되었어요", above: confirmButton)
+    }
+
     func updateStep(_ step: HostRequestAllowViewModel.Step) {
         let width = bounds.width
         let isChat = step == .chat
@@ -308,7 +312,7 @@ final class HostRequestAllowView: BaseView {
             }
         }
     }
-    
+
     // MARK: - Actions
     
     @objc

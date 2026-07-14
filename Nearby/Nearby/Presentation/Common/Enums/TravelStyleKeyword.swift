@@ -5,7 +5,7 @@
 //  Created by soomin on 7/13/26.
 //
 
-enum TravelStyleKeyword: String {
+enum TravelStyleKeyword: String, CaseIterable {
     case extroverted = "EXTROVERTED"
     case introverted = "INTROVERTED"
     case planned = "PLANNED"

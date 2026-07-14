@@ -107,6 +107,10 @@ final class CompanionMapController: NSObject {
     func updateCompanionMarkers(_ markers: [CompanionMapMarkerData]) {
         markerManager.replaceCompanionMarkers(with: markers)
     }
+
+    func updateDiningMarkers(_ markers: [CompanionMapMarkerData]) {
+        markerManager.replaceDiningMarkers(with: markers)
+    }
 }
 
 // MARK: - GMSMapViewDelegate

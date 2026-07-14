@@ -51,10 +51,10 @@ final class HostProfileViewModel: BaseViewModelType {
     private var selectedCommunicationIndexes = Set<Int>()
     private var selectedPunctualityIndexes = Set<Int>()
     private let profileId: Int
-    private let repository: CompanionProfileRepository
+    private let repository: ProfileRepository
     private var fetchTask: Task<Void, Never>?
 
-    init(profileId: Int, repository: CompanionProfileRepository) {
+    init(profileId: Int, repository: ProfileRepository) {
         self.profileId = profileId
         self.repository = repository
     }
@@ -135,7 +135,7 @@ private extension HostProfileViewModel {
     }
 }
 
-private extension CompanionProfileResponseDTO {
+private extension ProfileResponseDTO {
     var displayData: HostProfileViewModel.DisplayData {
         HostProfileViewModel.DisplayData(
             profileImageURL: profileImageUrl.flatMap(URL.init(string:)),

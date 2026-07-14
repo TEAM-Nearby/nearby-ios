@@ -608,7 +608,6 @@ private extension HostProfileView {
     
     // MARK: - Actions
     
-    
     @objc
     func communicationChipButtonDidTap(_ sender: NearbyChipButton) {
         onReviewChipDidTap?(.communication, sender.tag)

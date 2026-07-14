@@ -5,6 +5,7 @@
 //  Created by soomin on 7/5/26.
 //
 
+import CoreLocation
 import UIKit
 
 final class AppDIContainer {
@@ -12,8 +13,11 @@ final class AppDIContainer {
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
 
     var hasStoredSession: Bool {
-        guard let accessToken = tokenStorage.accessToken else { return false }
-        return !accessToken.isEmpty
+        guard let accessToken = tokenStorage.accessToken, let refreshToken = tokenStorage.refreshToken else {
+            return false
+        }
+
+        return !accessToken.isEmpty && !refreshToken.isEmpty
     }
     
     // MARK: - Coordinators
@@ -64,6 +68,10 @@ final class AppDIContainer {
         DefaultCompanionService(networkProvider: networkProvider)
     }
 
+    private func makeDiningMapService() -> DiningMapService {
+        DefaultDiningMapService(networkProvider: networkProvider)
+    }
+
     private func makeGooglePlaceService() -> GooglePlaceService {
         GooglePlaceService()
     }
@@ -76,8 +84,8 @@ final class AppDIContainer {
         DefaultCompanionDetailService(networkProvider: networkProvider)
     }
 
-    private func makeCompanionProfileService() -> CompanionProfileService {
-        DefaultCompanionProfileService(networkProvider: networkProvider)
+    private func makeProfileService() -> ProfileService {
+        DefaultProfileService(networkProvider: networkProvider)
     }
 
     private func makeMatchedCompanionListService() -> MatchedCompanionListService {
@@ -96,6 +104,10 @@ final class AppDIContainer {
         DefaultApplicantCompanionService(networkProvider: networkProvider)
     }
     
+    private func makeMyPageService() -> MyPageService {
+        DefaultMyPageService(networkProvider: networkProvider)
+    }
+    
     // MARK: - Repositories
     
     private func makeAuthRepository() -> AuthRepository {
@@ -104,6 +116,10 @@ final class AppDIContainer {
     
     private func makeCompanionRepository() -> CompanionRepository {
         DefaultCompanionRepository(service: makeCompanionService())
+    }
+
+    private func makeDiningMapRepository() -> DiningMapRepository {
+        DefaultDiningMapRepository(service: makeDiningMapService())
     }
 
     private func makeRecruitCompanionRepository() -> RecruitCompanionRepository {
@@ -129,12 +145,16 @@ final class AppDIContainer {
         DefaultCompanionDetailRepository(service: makeCompanionDetailService())
     }
 
-    private func makeCompanionProfileRepository() -> CompanionProfileRepository {
-        DefaultCompanionProfileRepository(service: makeCompanionProfileService())
+    private func makeProfileRepository() -> ProfileRepository {
+        DefaultProfileRepository(service: makeProfileService())
     }
 
     private func makeMatchedCompanionListRepository() -> MatchedCompanionListRepository {
         DefaultMatchedCompanionListRepository(service: makeMatchedCompanionListService())
+    }
+    
+    private func makeMyPageRepository() -> MyPageRepository {
+        DefaultMyPageRepository(service: makeMyPageService())
     }
     
     // MARK: - ViewModels
@@ -148,7 +168,7 @@ final class AppDIContainer {
     }
     
     func makeCompanionProfileViewModel() -> CompanionProfileViewModel {
-        CompanionProfileViewModel()
+        CompanionProfileViewModel(authRepository: makeAuthRepository())
     }
 
     func makeDiningMapViewModel() -> DiningMapViewModel {
@@ -156,7 +176,7 @@ final class AppDIContainer {
     }
     
     func makeNearDiningBottomSheetViewModel() -> NearDiningBottomSheetViewModel {
-        NearDiningBottomSheetViewModel()
+        NearDiningBottomSheetViewModel(repository: makeDiningMapRepository())
     }
     
     func makeSaveDiningSheetViewModel() -> SaveDiningSheetViewModel {
@@ -164,7 +184,10 @@ final class AppDIContainer {
     }
     
     func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
-        DiningInfoSheetViewModel()
+        DiningInfoSheetViewModel(
+            repository: makeDiningMapRepository(),
+            coordinate: CLLocationCoordinate2D(latitude: 41.389458, longitude: 2.168289)
+        )
     }
     
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
@@ -195,10 +218,7 @@ final class AppDIContainer {
     }
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
-        RecruitCompanionViewModel(
-            repository: makeRecruitCompanionRepository(),
-            searchCoordinate: (latitude: 41.389458, longitude: 2.168289)
-        )
+        RecruitCompanionViewModel(repository: makeRecruitCompanionRepository(), searchCoordinate: (latitude: 41.389458, longitude: 2.168289))
     }
 
     func makeMeetingProgressViewModel(meetingId: Int, repository: MeetingRepository) -> MeetingProgressViewModel {
@@ -206,7 +226,7 @@ final class AppDIContainer {
     }
     
     func makeMyPageViewModel() -> MyPageViewModel {
-        MyPageViewModel()
+        MyPageViewModel(repository: makeMyPageRepository())
     }
     
     func makeAlarmViewModel(initialTab: AlarmTab = .sent) -> AlarmViewModel {
@@ -269,7 +289,7 @@ final class AppDIContainer {
     }
     
     func makeHostProfileViewModel(profileId: Int) -> HostProfileViewModel {
-        HostProfileViewModel(profileId: profileId, repository: makeCompanionProfileRepository())
+        HostProfileViewModel(profileId: profileId, repository: makeProfileRepository())
     }
   
     func makePhoneVerificationViewModel() -> PhoneVerificationViewModel {

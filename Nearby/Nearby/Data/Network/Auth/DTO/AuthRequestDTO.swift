@@ -24,3 +24,16 @@ struct PhoneVerificationRequestDTO: Encodable {
     let phoneNumber: String
 }
 
+struct ProfileImageUploadURLRequestDTO: Encodable {
+    let fileName: String
+    let contentType: String
+    let fileSize: Int
+}
+
+struct CompanionProfileRequestDTO: Encodable {
+    let nickname: String
+    let gender: String
+    let intro: String?
+    let profileImageUrl: String?
+    let travelStyleKeywords: [String]
+}

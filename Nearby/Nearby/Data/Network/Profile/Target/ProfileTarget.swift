@@ -1,15 +1,15 @@
 //
-//  CompanionProfileTarget.swift
+//  ProfileTarget.swift
 //  Nearby
 //
 
 import Alamofire
 
-enum CompanionProfileTarget {
+enum ProfileTarget {
     case detail(profileId: Int)
 }
 
-extension CompanionProfileTarget: BaseTargetType {
+extension ProfileTarget: BaseTargetType {
     var path: String {
         switch self {
         case .detail(let profileId):

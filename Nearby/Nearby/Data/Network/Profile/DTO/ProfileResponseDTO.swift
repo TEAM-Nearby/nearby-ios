@@ -1,9 +1,9 @@
 //
-//  CompanionProfileResponseDTO.swift
+//  ProfileResponseDTO.swift
 //  Nearby
 //
 
-struct CompanionProfileResponseDTO: Decodable {
+struct ProfileResponseDTO: Decodable {
     let profileId: Int
     let userId: Int
     let nickname: String

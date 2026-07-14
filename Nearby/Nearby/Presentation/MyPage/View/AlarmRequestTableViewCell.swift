@@ -264,13 +264,16 @@ private extension AlarmRequestTableViewCell {
         with displayType: AlarmRequestDisplayType,
         isRead: Bool
     ) {
+        if isRead {
+            configureReadAppearance()
+            return
+        }
+
         if displayType.isHighlighted {
             configureHighlightedAppearance()
         } else {
             configureDefaultAppearance()
         }
-
-        contentView.alpha = isRead ? 0.72 : 1.0
     }
 
     func configureHighlightedAppearance() {
@@ -278,6 +281,8 @@ private extension AlarmRequestTableViewCell {
         cardView.layer.borderColor = UIColor.primary50.withAlphaComponent(0.25).cgColor
         actionButton.backgroundColor = UIColor.primary50.withAlphaComponent(0.18)
         actionButton.setTitleColor(.grey80, for: .normal)
+
+        contentView.alpha = 1.0
     }
 
     func configureDefaultAppearance() {
@@ -285,5 +290,21 @@ private extension AlarmRequestTableViewCell {
         cardView.layer.borderColor = UIColor.clear.cgColor
         actionButton.backgroundColor = .grey10
         actionButton.setTitleColor(.grey80, for: .normal)
+
+        contentView.alpha = 1.0
+    }
+    
+    func configureReadAppearance() {
+        cardView.backgroundColor = .grey5
+        cardView.layer.borderColor = UIColor.clear.cgColor
+
+        actionButton.backgroundColor = .grey10
+        actionButton.setTitleColor(.grey80, for: .normal)
+
+        if statusIconImageView.image?.renderingMode == .alwaysTemplate {
+            statusIconImageView.tintColor = .grey40
+        }
+
+        contentView.alpha = 1.0
     }
 }

@@ -36,7 +36,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     }
     
     struct DisplayData {
-        let image: UIImage
+        let profileImageUrl: String?
         let title: String
         let location: String
         let date: String
@@ -49,16 +49,22 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     
     private let applicantName: String
     private let locationName: String
+    private let meetingAt: String
+    private let matchId: Int?
     private let postType: PostType
+    private let profileImageUrl: String?
     // TODO: - 서버 연동 시 응답값으로 교체
     let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
     private var cancellables = Set<AnyCancellable>()
-    
+
     // MARK: - Initializer
-    
-    init(applicantName: String, locationName: String, postType: PostType) {
+
+    init(applicantProfileImageUrl: String?, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
+        self.profileImageUrl = applicantProfileImageUrl
         self.applicantName = applicantName
         self.locationName = locationName
+        self.meetingAt = meetingAt
+        self.matchId = matchId
         self.postType = postType
     }
     
@@ -68,10 +74,10 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         switch trigger {
         case .viewDidLoad:
             let data = DisplayData(
-                image: .imgProfileDefault,
+                profileImageUrl: profileImageUrl,
                 title: "\(applicantName) 님과 동행이 매칭됐어요!",
                 location: "\(locationName)",
-                date: "6월 18일 (목) 오후 4시 30분",
+                date: meetingAt.toDate()?.meetingDisplayText ?? "",
                 chatTitle: "\(applicantName) 님과 대화를 나눠보세요"
             )
             output.displayData.send(data)
@@ -86,6 +92,8 @@ final class HostRequestAllowViewModel: BaseViewModelType {
                     output.showScheduleDetail.send(())
                 case .scheduled:
                     output.showScheduleConfirm.send(())
+                case .undecided:
+                    break
                 }
                 
             }

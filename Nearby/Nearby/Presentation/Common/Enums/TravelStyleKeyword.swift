@@ -5,7 +5,7 @@
 //  Created by soomin on 7/13/26.
 //
 
-enum TravelStyleKeyword: String {
+enum TravelStyleKeyword: String, CaseIterable {
     case extroverted = "EXTROVERTED"
     case introverted = "INTROVERTED"
     case planned = "PLANNED"
@@ -43,6 +43,12 @@ enum TravelStyleKeyword: String {
         case .activeTravel: return "많이 돌아다니는"
         case .drinkingLover: return "음주 애호가"
         case .nonDrinker: return "음주 비선호"
+        }
+    }
+
+    static func titles(for serverKeys: [String]) -> [String] {
+        serverKeys.map { serverKey in
+            TravelStyleKeyword(rawValue: serverKey)?.title ?? serverKey
         }
     }
 }

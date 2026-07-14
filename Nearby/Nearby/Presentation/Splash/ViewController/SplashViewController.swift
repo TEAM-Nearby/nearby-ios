@@ -8,31 +8,38 @@
 import UIKit
 
 final class SplashViewController: BaseViewController<EmptyViewModel> {
-
+    
     // MARK: - Properties
+    
+    var onSplashCompleted: (() -> Void)?
 
-    var onAnimationCompleted: (() -> Void)?
-
-    private var didPlayAnimation = false
-
+    private var hasStartedAnimation = false
+    
     // MARK: - UI Component
-
+    
     private let splashView = SplashView()
-
+    
     // MARK: - Life Cycles
-
+    
     override func loadView() {
         view = splashView
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        guard !didPlayAnimation else { return }
-        didPlayAnimation = true
-
+        
+        playSplashAnimation()
+    }
+    
+    // MARK: - Methods
+    
+    private func playSplashAnimation() {
+        guard !hasStartedAnimation else { return }
+        
+        hasStartedAnimation = true
+        
         splashView.playAnimation { [weak self] in
-            self?.onAnimationCompleted?()
+            self?.onSplashCompleted?()
         }
     }
 }

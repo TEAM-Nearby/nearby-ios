@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -121,7 +122,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
     }
 
     func configure(with item: MeetingItem) {
-        profileView.configure(name: item.name, gender: item.gender, information: item.information)
+        profileView.configure(imageUrl: item.profileImageUrl, name: item.name, gender: item.gender, information: item.information)
         
         let type = item.cellType
         dividerView.isHidden = !type.showsVerifyView

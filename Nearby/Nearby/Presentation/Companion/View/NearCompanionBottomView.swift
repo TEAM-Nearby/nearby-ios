@@ -42,7 +42,7 @@ final class NearCompanionBottomView: BaseView {
         backgroundColor = .white
         
         titleLabel.do {
-            $0.setFont(.h3Sb20, text: "지영님 주변에서 동행을 구하고 있어요", textColor: .grey80)
+            $0.setFont(.h3Sb20, text: "내 주변에서 동행을 구하고 있어요", textColor: .grey80)
         }
         
         sortButtonStackView.do {

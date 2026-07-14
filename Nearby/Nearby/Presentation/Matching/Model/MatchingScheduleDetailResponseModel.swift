@@ -17,10 +17,22 @@ struct MatchingScheduleDetailResponseModel: Decodable {
 }
 
 extension MatchingScheduleDetailResponseModel {
-    func toDisplayData(
-        cardItem: MatchingMatchedCardItem,
-        type: NearbyUserType
-    ) -> MatchingScheduleDetailDisplayData {
+    func toDisplayData(type: NearbyUserType) -> MatchingScheduleDetailDisplayData {
+        let cardItem = MatchingMatchedCardItem(
+            matchId: matchId,
+            content: MatchingMatchedCardContentModel(
+                name: userNickname,
+                participantCount: 1,
+                gender: "",
+                uploadedTime: "",
+                place: schedule.place.name,
+                meetingTime: schedule.scheduledAt.matchingDetailTimeTitle,
+                description: ""
+            ),
+            matchStatus: matchStatus,
+            type: type
+        )
+
         return MatchingScheduleDetailDisplayData(
             cardItem: cardItem,
             placeName: schedule.place.name,
@@ -28,9 +40,64 @@ extension MatchingScheduleDetailResponseModel {
             googlePlaceId: schedule.place.googlePlaceId,
             latitude: schedule.place.latitude,
             longitude: schedule.place.longitude,
-            scheduledAtText: schedule.scheduledAt,
+            scheduledAtText: schedule.scheduledAt.matchingDetailDateTimeTitle,
             openChatUrl: openChatUrl,
             type: type
         )
+    }
+}
+
+private extension String {
+    var matchingDetailTimeTitle: String {
+        guard let date = isoDate else { return self }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = .current
+        formatter.dateFormat = "a h시 m분"
+        return formatter.string(from: date)
+    }
+
+    var matchingDetailDateTimeTitle: String {
+        guard let date = isoDate else { return self }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = .current
+        formatter.dateFormat = "M월 d일 (E) a h시 m분"
+        return formatter.string(from: date)
+    }
+
+    var isoDate: Date? {
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = isoFormatter.date(from: self) {
+            return date
+        }
+
+        isoFormatter.formatOptions = [.withInternetDateTime]
+        if let date = isoFormatter.date(from: self) {
+            return date
+        }
+
+        let localFormatter = DateFormatter()
+        localFormatter.locale = Locale(identifier: "en_US_POSIX")
+        localFormatter.timeZone = .current
+
+        let dateFormats = [
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm"
+        ]
+
+        for dateFormat in dateFormats {
+            localFormatter.dateFormat = dateFormat
+            if let date = localFormatter.date(from: self) {
+                return date
+            }
+        }
+
+        return nil
     }
 }

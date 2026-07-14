@@ -45,6 +45,10 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
         companionDetailView.onApplyButtonDidTap = { [weak self] in
             self?.viewModel.action(.applyButtonDidTap)
         }
+
+        companionDetailView.onHostProfileDidTap = { [weak self] in
+            self?.viewModel.action(.hostProfileDidTap)
+        }
     }
     
     override func setDelegate() {
@@ -66,6 +70,14 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
         viewModel.output.error
             .sink { error in
                 AppLogger.error(error)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.isApplying
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isApplying in
+                self?.companionDetailView.setApplying(isApplying)
             }
             .store(in: &cancellables)
         

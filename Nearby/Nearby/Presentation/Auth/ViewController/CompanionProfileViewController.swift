@@ -14,6 +14,10 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     
     private let companionProfileView = CompanionProfileView()
     
+    // MARK: - Property
+
+    var onProfileCompleted: (() -> Void)?
+    
     // MARK: - Life Cycle
     
     override func loadView() {
@@ -62,6 +66,36 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
         viewModel.output.selectedKeywords = { [weak self] selectedKeywords in
             self?.companionProfileView.updateSelectedKeywords(selectedKeywords)
         }
+        
+        viewModel.output.nicknameDidFail = { [weak self] message in
+            guard let self else { return }
+            
+            self.showAlert(title: "닉네임을 확인해주세요", message: message)
+        }
+        
+        viewModel.output.keywordSelectionDidFail = { [weak self] message in
+            guard let self else { return }
+            
+            self.showAlert(title: "여행 스타일을 확인해주세요", message: message)
+        }
+        
+        viewModel.output.onboardingDidFail = { [weak self] message in
+            guard let self else { return }
+            
+            self.showAlert(title: "프로필 등록 실패", message: message)
+        }
+        
+        viewModel.output.onboardingDidComplete = { [weak self] in
+            guard let self else { return }
+            
+            self.onProfileCompleted?()
+        }
+        
+        viewModel.output.isLoading = { [weak self] isLoading in
+            guard let self else { return }
+            
+            self.companionProfileView.bottomButton.isEnabled = !isLoading
+        }
     }
     
     // MARK: - Method
@@ -75,6 +109,16 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
         picker.delegate = self
         
         present(picker, animated: true)
+    }
+    
+    private func showAlert(title: String, message: String)
+    {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "확인", style: .default)
+        
+        alertController.addAction(confirmAction)
+        
+        present(alertController, animated: true)
     }
     
     // MARK: - Actions
@@ -120,22 +164,27 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
 // MARK: - PHPickerViewControllerDelegate
 
 extension CompanionProfileViewController: PHPickerViewControllerDelegate {
-    func picker(
-        _ picker: PHPickerViewController,
-        didFinishPicking results: [PHPickerResult]
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]
     ) {
         picker.dismiss(animated: true)
         
-        guard let itemProvider = results.first?.itemProvider,
-              itemProvider.canLoadObject(ofClass: UIImage.self) else {
+        guard let itemProvider = results.first?.itemProvider, itemProvider.canLoadObject(ofClass: UIImage.self) else {
             return
         }
         
-        itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, _ in
-            guard let image = image as? UIImage else { return }
-            
+        itemProvider.loadObject(ofClass: UIImage.self)
+        { [weak self] image, _ in
+            guard let self,
+                  let image = image as? UIImage,
+                  let imageData = image.jpegData(compressionQuality: 0.8) else {
+                return
+            }
+
+            let fileName = "\(UUID().uuidString).jpg"
+
             DispatchQueue.main.async {
-                self?.companionProfileView.updateProfileImage(image)
+                self.companionProfileView.updateProfileImage(image)
+                self.viewModel.action(.profileImageDidSelect(data: imageData, fileName: fileName, contentType: "image/jpeg"))
             }
         }
     }

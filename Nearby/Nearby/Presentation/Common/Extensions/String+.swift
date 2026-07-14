@@ -37,4 +37,12 @@ extension String {
             ]
         )
     }
+    
+    func toDate() -> Date? {
+        if let date = ISO8601DateFormatter.withFractionalSeconds.date(from: self) { return date }
+        if let date = ISO8601DateFormatter.standard.date(from: self) { return date }
+        let utc = TimeZone(secondsFromGMT: 0)
+        if let date = DateFormatter.cached(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS", timeZone: utc).date(from: self) { return date }
+        return DateFormatter.cached(format: "yyyy-MM-dd'T'HH:mm:ss", timeZone: utc).date(from: self)
+    }
 }

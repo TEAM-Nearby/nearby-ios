@@ -56,8 +56,8 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
 
         viewModel.output.showScheduleDetail
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
-                self?.coordinator?.showScheduleDetail(item: item)
+            .sink { [weak self] matchId in
+                self?.coordinator?.showScheduleDetail(matchId: matchId)
             }
             .store(in: &cancellables)
 

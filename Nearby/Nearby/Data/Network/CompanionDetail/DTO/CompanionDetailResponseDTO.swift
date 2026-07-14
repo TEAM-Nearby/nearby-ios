@@ -35,3 +35,10 @@ struct CompanionHostProfileSummaryDTO: Decodable {
     let phoneVerifiedAt: String?
     let keywords: [String]
 }
+
+struct CompanionApplyResponseDTO: Decodable {
+    let applicationId: Int
+    let postId: Int
+    let applicationStatus: String
+    let createdAt: String
+}

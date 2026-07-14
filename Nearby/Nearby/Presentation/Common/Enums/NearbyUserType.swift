@@ -5,9 +5,9 @@
 //  Created by h2e on 7/10/26.
 //
 
-enum NearbyUserType {
-    case host
-    case participant
+enum NearbyUserType: String, Decodable {
+    case host = "HOST"
+    case participant = "GUEST"
     
     var reviewPostCompletionTitle: String {
         switch self {

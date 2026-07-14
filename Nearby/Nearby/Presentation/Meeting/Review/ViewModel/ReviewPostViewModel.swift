@@ -55,6 +55,7 @@ final class ReviewPostViewModel: BaseViewModelType {
     private let repository: ReviewRepository
     private var rating: Int = 0
     private var isSubmitting = false
+    private var hasSubmittedReview = false
 
     private var isFinishButton: Bool {
         type == .participant || isLastReview
@@ -141,14 +142,17 @@ final class ReviewPostViewModel: BaseViewModelType {
         Task {
             defer { isSubmitting = false }
             do {
-                let keywords = firstSelectedTags.sorted().map { ReviewKeyword.consideration[$0].rawValue }
-                    + secondSelectedTags.sorted().map { ReviewKeyword.timePromise[$0].rawValue }
-                let request = CreateReviewRequestDTO(
-                    revieweeUserId: reviewItem.revieweeUserId,
-                    rating: rating,
-                    keywords: keywords
-                )
-                _ = try await repository.createReview(meetingId: reviewItem.meetingId, request: request)
+                if !hasSubmittedReview {
+                    let keywords = firstSelectedTags.sorted().map { ReviewKeyword.consideration[$0].rawValue }
+                        + secondSelectedTags.sorted().map { ReviewKeyword.timePromise[$0].rawValue }
+                    let request = CreateReviewRequestDTO(
+                        revieweeUserId: reviewItem.revieweeUserId,
+                        rating: rating,
+                        keywords: keywords
+                    )
+                    _ = try await repository.createReview(meetingId: reviewItem.meetingId, request: request)
+                    hasSubmittedReview = true
+                }
 
                 if isFinishButton {
                     _ = try await repository.completeMeeting(meetingId: reviewItem.meetingId)

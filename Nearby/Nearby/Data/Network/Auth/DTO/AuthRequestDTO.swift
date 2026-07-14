@@ -23,4 +23,3 @@ struct PhoneVerificationConfirmRequestDTO: Encodable {
 struct PhoneVerificationRequestDTO: Encodable {
     let phoneNumber: String
 }
-

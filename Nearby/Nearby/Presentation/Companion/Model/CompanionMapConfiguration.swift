@@ -41,6 +41,25 @@ struct CompanionMapMarkerData {
     let written: String
     let place: String
     let date: String
+    let style: MapMarkerStyle
+
+    init(
+        placeId: Int,
+        coordinate: CLLocationCoordinate2D,
+        nickname: String,
+        written: String,
+        place: String,
+        date: String,
+        style: MapMarkerStyle = .companion
+    ) {
+        self.placeId = placeId
+        self.coordinate = coordinate
+        self.nickname = nickname
+        self.written = written
+        self.place = place
+        self.date = date
+        self.style = style
+    }
 }
 
 extension CompanionMapMarkerData {
@@ -51,7 +70,26 @@ extension CompanionMapMarkerData {
             nickname: dto.host.nickname,
             written: dto.createdAgoText,
             place: dto.place.name,
-            date: dto.nearMeetingTimeTitle
+            date: dto.nearMeetingTimeTitle,
+            style: .companion
+        )
+    }
+
+    init?(diningItem: NearDiningCellItem) {
+        guard
+            let placeId = diningItem.placeId,
+            let latitude = diningItem.latitude,
+            let longitude = diningItem.longitude
+        else { return nil }
+
+        self.init(
+            placeId: placeId,
+            coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+            nickname: diningItem.name,
+            written: "",
+            place: diningItem.name,
+            date: "",
+            style: .restaurant
         )
     }
 }

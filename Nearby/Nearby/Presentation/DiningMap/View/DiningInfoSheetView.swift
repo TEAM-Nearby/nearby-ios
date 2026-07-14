@@ -283,7 +283,7 @@ final class DiningInfoSheetView: BaseView {
         ratingLabel.text = String(format: "%.1f", item.rating)
         reviewCountLabel.text = "(\(item.reviewCount.formatted())) ·"
         priceLabel.text = price
-        contentLabel.text = description
+        contentLabel.setFont(.b3M14, text: description, textColor: .grey80, lineSpacing: 3)
         timeTitleLabel.text = item.businessStatus
         timeSubTitleLabel.text = closingTime
         placeTitleLabel.text = "\(item.distance) · \(item.address)"
@@ -291,10 +291,7 @@ final class DiningInfoSheetView: BaseView {
         restaurantImages = item.images
         imageCollectionView.reloadData()
         imageCollectionView.layoutIfNeeded()
-        imageCollectionView.setContentOffset(
-            CGPoint(x: -imageCollectionView.contentInset.left, y: 0),
-            animated: false
-        )
+        imageCollectionView.setContentOffset(CGPoint(x: -imageCollectionView.contentInset.left, y: 0), animated: false)
     }
 }
 

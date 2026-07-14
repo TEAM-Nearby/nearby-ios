@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -76,6 +77,39 @@ final class AvatarStackView: UIStackView {
                     $0.image = nil
                     $0.backgroundColor = .grey20
                 }
+            }
+
+            addArrangedSubview(avatarImageView)
+
+            avatarImageView.snp.makeConstraints { make in
+                make.size.equalTo(avatarSize).priority(.high)
+            }
+
+            avatarImageView.layer.cornerRadius = avatarSize / 2
+            avatarImageView.clipsToBounds = true
+        }
+
+        invalidateIntrinsicContentSize()
+    }
+
+    func configure(withImageURLs imageURLs: [String?]) {
+        arrangedSubviews.forEach {
+            removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+
+        imageURLs.forEach { imageURL in
+            let avatarImageView = UIImageView().then {
+                $0.contentMode = .scaleAspectFill
+                $0.layer.borderColor = UIColor.white.cgColor
+                $0.layer.borderWidth = 1
+                $0.image = .imgProfileDefault
+                $0.backgroundColor = .clear
+            }
+
+            if let imageURL,
+               let url = URL(string: imageURL) {
+                avatarImageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
             }
 
             addArrangedSubview(avatarImageView)

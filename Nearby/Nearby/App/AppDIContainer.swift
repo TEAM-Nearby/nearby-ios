@@ -75,6 +75,10 @@ final class AppDIContainer {
     private func makeReviewService() -> ReviewService {
         DefaultReviewService(networkProvider: networkProvider)
     }
+  
+    private func makeDiningMapService() -> DiningMapService {
+        DefaultDiningMapService(networkProvider: networkProvider)
+    }
 
     private func makeGooglePlaceService() -> GooglePlaceService {
         GooglePlaceService()
@@ -128,6 +132,10 @@ final class AppDIContainer {
 
     private func makeReviewRepository() -> ReviewRepository {
         DefaultReviewRepository(service: makeReviewService())
+    }
+  
+    private func makeDiningMapRepository() -> DiningMapRepository {
+        DefaultDiningMapRepository(service: makeDiningMapService())
     }
 
     private func makeRecruitCompanionRepository() -> RecruitCompanionRepository {

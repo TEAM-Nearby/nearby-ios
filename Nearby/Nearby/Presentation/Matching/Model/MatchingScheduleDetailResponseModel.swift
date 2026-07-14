@@ -52,8 +52,12 @@ extension MatchMyScheduleResponseDTO {
         let cardItem = MatchingMatchedCardItem(
             matchId: Int(matchId),
             content: MatchingMatchedCardContentModel(
-                name: userNickname ?? "", participantCount: 1, gender: "",
-                uploadedTime: "", place: schedule?.place.name ?? "", meetingTime: schedule?.scheduledAt.matchingDetailTimeTitle ?? meetingTimeType.displayTitle,
+                name: "",
+                participantCount: 1,
+                gender: "",
+                uploadedTime: "",
+                place: "",
+                meetingTime: "",
                 description: ""
             ),
             matchStatus: matchStatus.rawValue, type: type

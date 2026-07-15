@@ -7,6 +7,7 @@
 
 protocol MyPageService {
     func fetchMyPage() async throws -> MyPageResponseDTO
+    func fetchMyCompanionPosts() async throws -> MyCompanionPostsResponseDTO
 }
 
 final class DefaultMyPageService {
@@ -25,8 +26,14 @@ final class DefaultMyPageService {
 // MARK: - MyPageService
 
 extension DefaultMyPageService: MyPageService {
-
     func fetchMyPage() async throws -> MyPageResponseDTO {
         try await networkProvider.request(MyPageTarget.fetchMyPage, responseType: MyPageResponseDTO.self)
+    }
+
+    func fetchMyCompanionPosts() async throws -> MyCompanionPostsResponseDTO {
+        try await networkProvider.request(
+            MyPageTarget.fetchMyCompanionPosts,
+            responseType: MyCompanionPostsResponseDTO.self
+        )
     }
 }

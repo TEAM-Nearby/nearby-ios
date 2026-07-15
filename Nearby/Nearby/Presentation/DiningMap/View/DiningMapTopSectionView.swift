@@ -11,6 +11,10 @@ import SnapKit
 import Then
 
 final class DiningMapTopSectionView: BaseView {
+
+    // MARK: - Properties
+
+    var onAlarmButtonDidTap: (() -> Void)?
     
     // MARK: - UI Components
     
@@ -73,6 +77,12 @@ final class DiningMapTopSectionView: BaseView {
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.bottom.equalToSuperview()
+        }
+    }
+
+    override func setAddTarget() {
+        navigationBar.rightFirstButtonAction = { [weak self] in
+            self?.onAlarmButtonDidTap?()
         }
     }
 }

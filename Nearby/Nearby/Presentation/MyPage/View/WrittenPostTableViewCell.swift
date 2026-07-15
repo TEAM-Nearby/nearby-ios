@@ -14,15 +14,13 @@ final class WrittenPostTableViewCell: UITableViewCell {
 
     // MARK: - Properties
 
-    static let identifier = String(describing: WrittenPostTableViewCell.self)
-
-    private let profileAvatarCount = 3
+    private let profileAvatarCount = 4
+    private var keywords: [String] = []
+    private var keywordCollectionHeightConstraint: Constraint?
 
     // MARK: - UI Components
 
-    private let cityInformationStackView = UIStackView()
     private let cityNameLabel = UILabel()
-    private let createdDateLabel = UILabel()
 
     private let mapCardView = NearbyMapView(cornerRadius: 12)
 
@@ -39,12 +37,17 @@ final class WrittenPostTableViewCell: UITableViewCell {
     private let peopleStackView = UIStackView()
     private let peopleIconImageView = UIImageView()
     private let peopleImageStackView = AvatarStackView()
+    private let overflowCountLabel = UILabel()
     private let peopleStatusLabel = UILabel()
+    private let peopleSpacerView = UIView()
 
     private let contentContainerView = UIView()
     private let contentLabel = UILabel()
 
-    private let keywordStackView = UIStackView()
+    private lazy var keywordCollectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: makeKeywordLayout()
+    )
 
     private let dividerView = UIView()
 
@@ -56,6 +59,7 @@ final class WrittenPostTableViewCell: UITableViewCell {
         setStyle()
         setUI()
         setLayout()
+        setCollectionView()
     }
 
     @available(*, unavailable)
@@ -67,23 +71,22 @@ final class WrittenPostTableViewCell: UITableViewCell {
         super.prepareForReuse()
 
         cityNameLabel.text = nil
-        createdDateLabel.text = nil
         placeLabel.text = nil
         dateLabel.text = nil
         peopleStatusLabel.text = nil
+        overflowCountLabel.text = nil
+        overflowCountLabel.isHidden = true
         contentLabel.text = nil
 
-        keywordStackView.arrangedSubviews.forEach {
-            keywordStackView.removeArrangedSubview($0)
-            $0.removeFromSuperview()
-        }
+        keywords = []
+        keywordCollectionView.reloadData()
+        keywordCollectionHeightConstraint?.update(offset: 0)
     }
 
     // MARK: - Methods
 
     func configure(with item: WrittenPostItem) {
         cityNameLabel.text = item.cityName
-        createdDateLabel.text = item.createdDateText
 
         placeLabel.text = item.placeName
         dateLabel.text = item.meetingDateText
@@ -93,21 +96,28 @@ final class WrittenPostTableViewCell: UITableViewCell {
 
         contentLabel.text = item.content
 
-        peopleImageStackView.configureWithDefaultAvatars(
-            count: min(
-                item.currentPeopleCount,
-                profileAvatarCount
+        peopleImageStackView.configure(
+            withImageURLs: Array(
+                item.participantImageURLs.prefix(profileAvatarCount)
             )
         )
+        configureOverflowCount(item.currentPeopleCount)
 
-        mapCardView.configure(
-            latitude: item.latitude,
-            longitude: item.longitude,
-            placeName: item.placeName,
-            placeID: item.placeID,
-            zoomLevel: 16,
-            showsInfoWindow: false
-        )
+        if let latitude = item.latitude, let longitude = item.longitude {
+            mapCardView.isHidden = false
+            mapCardView.snp.updateConstraints { $0.height.equalTo(211) }
+            mapCardView.configure(
+                latitude: latitude,
+                longitude: longitude,
+                placeName: item.placeName,
+                placeID: item.placeID,
+                zoomLevel: 16,
+                showsInfoWindow: false
+            )
+        } else {
+            mapCardView.isHidden = true
+            mapCardView.snp.updateConstraints { $0.height.equalTo(0) }
+        }
 
         configureKeywords(item.keywords)
     }
@@ -123,13 +133,6 @@ private extension WrittenPostTableViewCell {
         backgroundColor = .white
         contentView.backgroundColor = .white
 
-        cityInformationStackView.do {
-            $0.axis = .horizontal
-            $0.alignment = .center
-            $0.distribution = .fill
-            $0.spacing = 12
-        }
-
         cityNameLabel.do {
             $0.font = NearbyFont.h3M20.font
             $0.textColor = .grey80
@@ -137,12 +140,6 @@ private extension WrittenPostTableViewCell {
 
             $0.setContentHuggingPriority(.required, for: .horizontal)
             $0.setContentCompressionResistancePriority(.required, for: .horizontal)
-        }
-
-        createdDateLabel.do {
-            $0.font = NearbyFont.b1M18.font
-            $0.textColor = .grey30
-            $0.numberOfLines = 1
         }
 
         informationStackView.do {
@@ -191,11 +188,20 @@ private extension WrittenPostTableViewCell {
             $0.contentMode = .scaleAspectFit
         }
 
+        overflowCountLabel.do {
+            $0.setFont(.b2M16, textColor: .grey40)
+            $0.isHidden = true
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+        }
+
         peopleStatusLabel.do {
             $0.font = NearbyFont.b2M16.font
             $0.textColor = .grey80
             $0.numberOfLines = 1
             $0.transform = CGAffineTransform(translationX: 0, y: -1)
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
 
         contentContainerView.do {
@@ -211,11 +217,11 @@ private extension WrittenPostTableViewCell {
             $0.setContentCompressionResistancePriority(.required, for: .vertical)
         }
 
-        keywordStackView.do {
-            $0.axis = .horizontal
-            $0.alignment = .center
-            $0.distribution = .fill
-            $0.spacing = 8
+        keywordCollectionView.do {
+            $0.backgroundColor = .clear
+            $0.isScrollEnabled = false
+            $0.showsHorizontalScrollIndicator = false
+            $0.showsVerticalScrollIndicator = false
         }
 
         dividerView.do {
@@ -225,18 +231,20 @@ private extension WrittenPostTableViewCell {
 
     func setUI() {
         contentView.addSubviews(
-            cityInformationStackView, mapCardView, informationStackView,
-            contentContainerView, keywordStackView, dividerView
+            cityNameLabel, mapCardView, informationStackView,
+            contentContainerView, keywordCollectionView, dividerView
         )
-
-        cityInformationStackView.addArrangedSubviews(cityNameLabel, createdDateLabel)
 
         placeStackView.addArrangedSubviews(placeIconImageView, placeLabel)
 
         dateStackView.addArrangedSubviews(dateIconImageView, dateLabel)
 
         peopleStackView.addArrangedSubviews(
-            peopleIconImageView, peopleImageStackView, peopleStatusLabel
+            peopleIconImageView,
+            peopleImageStackView,
+            overflowCountLabel,
+            peopleStatusLabel,
+            peopleSpacerView
         )
 
         informationStackView.addArrangedSubviews(
@@ -247,13 +255,13 @@ private extension WrittenPostTableViewCell {
     }
 
     func setLayout() {
-        cityInformationStackView.snp.makeConstraints {
+        cityNameLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
         mapCardView.snp.makeConstraints {
-            $0.top.equalTo(cityInformationStackView.snp.bottom).offset(24)
+            $0.top.equalTo(cityNameLabel.snp.bottom).offset(24)
 
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(211)
@@ -286,15 +294,14 @@ private extension WrittenPostTableViewCell {
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
-        keywordStackView.snp.makeConstraints {
+        keywordCollectionView.snp.makeConstraints {
             $0.top.equalTo(contentContainerView.snp.bottom).offset(18)
-            $0.leading.equalToSuperview().offset(20)
-            $0.trailing.lessThanOrEqualToSuperview().inset(20)
-            $0.height.equalTo(36)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            keywordCollectionHeightConstraint = $0.height.equalTo(0).constraint
         }
 
         dividerView.snp.makeConstraints {
-            $0.top.equalTo(keywordStackView.snp.bottom).offset(24)
+            $0.top.equalTo(keywordCollectionView.snp.bottom).offset(24)
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(1)
             $0.bottom.equalToSuperview()
@@ -302,46 +309,81 @@ private extension WrittenPostTableViewCell {
     }
 
     func configureKeywords(_ keywords: [String]) {
-        keywordStackView.arrangedSubviews.forEach {
-            keywordStackView.removeArrangedSubview($0)
-            $0.removeFromSuperview()
-        }
+        self.keywords = keywords
+        keywordCollectionView.reloadData()
+        keywordCollectionView.collectionViewLayout.invalidateLayout()
 
-        keywords.prefix(3).forEach { keyword in
-            let keywordChip = makeKeywordChip(title: keyword)
-            keywordStackView.addArrangedSubview(keywordChip)
-        }
+        contentView.layoutIfNeeded()
+        keywordCollectionView.layoutIfNeeded()
+
+        let contentHeight = keywordCollectionView.collectionViewLayout
+            .collectionViewContentSize.height
+        keywordCollectionHeightConstraint?.update(offset: contentHeight)
     }
 
-    func makeKeywordChip(title: String) -> UIView {
-        let containerView = UIView()
-        let titleLabel = UILabel()
+    func configureOverflowCount(_ participantCount: Int) {
+        let overflowCount = max(participantCount - profileAvatarCount, 0)
+        overflowCountLabel.text = overflowCount > 0 ? "+\(overflowCount)" : nil
+        overflowCountLabel.isHidden = overflowCount == 0
 
-        containerView.do {
-            $0.backgroundColor = UIColor.primary50.withAlphaComponent(0.10)
-            $0.layer.cornerRadius = 14
-            $0.clipsToBounds = true
+        peopleStackView.setCustomSpacing(
+            overflowCount > 0 ? 0 : 6,
+            after: peopleImageStackView
+        )
+        peopleStackView.setCustomSpacing(6, after: overflowCountLabel)
+    }
+
+    func makeKeywordLayout() -> UICollectionViewFlowLayout {
+        let layout = LeftAlignedCollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 8
+        layout.minimumInteritemSpacing = 8
+        return layout
+    }
+
+    func setCollectionView() {
+        keywordCollectionView.dataSource = self
+        keywordCollectionView.delegate = self
+        keywordCollectionView.register(
+            WrittenPostKeywordCell.self,
+            forCellWithReuseIdentifier: WrittenPostKeywordCell.identifier
+        )
+    }
+}
+
+// MARK: - UICollectionViewDataSource
+
+extension WrittenPostTableViewCell: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        keywords.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: WrittenPostKeywordCell.identifier,
+            for: indexPath
+        ) as? WrittenPostKeywordCell else {
+            return UICollectionViewCell()
         }
 
-        titleLabel.do {
-            $0.font = NearbyFont.b3M14.font
-            $0.text = title
-            $0.textColor = .primary50
-            $0.textAlignment = .center
-            $0.numberOfLines = 1
-        }
+        cell.configure(title: keywords[indexPath.item])
+        return cell
+    }
+}
 
-        containerView.addSubview(titleLabel)
+// MARK: - UICollectionViewDelegateFlowLayout
 
-        titleLabel.snp.makeConstraints {
-            $0.verticalEdges.equalToSuperview().inset(8)
-            $0.horizontalEdges.equalToSuperview().inset(16)
-        }
+extension WrittenPostTableViewCell: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let title = keywords[indexPath.item]
+        let titleWidth = (title as NSString).size(
+            withAttributes: [.font: NearbyFont.b3M14.font]
+        ).width
+        let availableWidth = collectionView.bounds.width
 
-        containerView.snp.makeConstraints {
-            $0.height.equalTo(36)
-        }
-
-        return containerView
+        return CGSize(
+            width: min(ceil(titleWidth + 32), availableWidth),
+            height: 36
+        )
     }
 }

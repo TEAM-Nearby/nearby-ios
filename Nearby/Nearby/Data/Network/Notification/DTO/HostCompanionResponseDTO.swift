@@ -14,10 +14,12 @@ struct HostCompanionDetailResponseDTO: Decodable {
     let placeName: String
     let meetingTimeType: PostType
     let meetingAt: String
+    let openChatUrl: String?
     let applicantProfile: ApplicantProfile
     let applicantAccount: ApplicantAccount
-    
+
     struct ApplicantProfile: Decodable {
+        let profileId: Int
         let profileImageUrl: String?
         let nickname: String
         let gender: NearbyGender

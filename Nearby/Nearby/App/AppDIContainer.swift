@@ -289,8 +289,15 @@ final class AppDIContainer {
         )
     }
     
-    func makeHostRequestAllowViewModel(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) -> HostRequestAllowViewModel {
-        HostRequestAllowViewModel(applicantProfileImageUrl: applicantProfileImageUrl, applicantName: applicantName, locationName: locationName, meetingAt: meetingAt, matchId: matchId, postType: postType
+    func makeHostRequestAllowViewModel(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String) -> HostRequestAllowViewModel {
+        HostRequestAllowViewModel(
+            applicantProfileImageUrl: applicantProfileImageUrl,
+            applicantName: applicantName,
+            locationName: locationName,
+            meetingAt: meetingAt,
+            matchId: matchId,
+            postType: postType,
+            openChatUrl: openChatUrl
         )
     }
     
@@ -536,7 +543,7 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) -> UIViewController {
+    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String) -> UIViewController {
         let viewController = HostRequestAllowViewController(
             viewModel: makeHostRequestAllowViewModel(
                 applicantName: applicantName,
@@ -544,7 +551,8 @@ final class AppDIContainer {
                 locationName: locationName,
                 meetingAt: meetingAt,
                 matchId: matchId,
-                postType: postType
+                postType: postType,
+                openChatUrl: openChatUrl
             )
         )
         viewController.coordinator = coordinator

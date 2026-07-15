@@ -9,20 +9,23 @@ import Alamofire
 
 enum MyPageTarget {
     case fetchMyPage
+    case fetchMyCompanionPosts
 }
 
 extension MyPageTarget: BaseTargetType {
-
     var path: String {
         switch self {
         case .fetchMyPage:
             return "/api/users/me/mypage"
+
+        case .fetchMyCompanionPosts:
+            return "/api/users/me/recruitment-posts"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .fetchMyPage:
+        case .fetchMyPage, .fetchMyCompanionPosts:
             return .get
         }
     }

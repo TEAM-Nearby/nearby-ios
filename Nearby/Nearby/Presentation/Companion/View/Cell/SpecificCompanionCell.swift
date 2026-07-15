@@ -14,7 +14,7 @@ final class SpecificCompanionCell: UICollectionViewCell {
     
     // MARK: - Property
     
-    private let profileAvatarCount: Int = 2
+    private let profileAvatarCount = 4
     
     // MARK: - UI Components
     
@@ -33,6 +33,7 @@ final class SpecificCompanionCell: UICollectionViewCell {
     
     private let applyInfoStackView = UIStackView()
     private let profileStackView = AvatarStackView()
+    private let overflowCountLabel = UILabel()
     private let currentStatusLabel = UILabel()
     
     // MARK: - Initializer
@@ -95,8 +96,15 @@ final class SpecificCompanionCell: UICollectionViewCell {
         
         applyInfoStackView.do {
             $0.axis = .horizontal
-            $0.spacing = 7
+            $0.spacing = 6
             $0.alignment = .center
+        }
+
+        overflowCountLabel.do {
+            $0.setFont(.b2M16, textColor: .grey40)
+            $0.isHidden = true
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
         
         currentStatusLabel.do {
@@ -111,7 +119,11 @@ final class SpecificCompanionCell: UICollectionViewCell {
     private func setUI() {
         hostStackView.addArrangedSubviews(hostNameLabel, hostGenderChip)
         timeStackView.addArrangedSubviews(meetingTimeLabel, closedTimeLabel)
-        applyInfoStackView.addArrangedSubviews(profileStackView, currentStatusLabel)
+        applyInfoStackView.addArrangedSubviews(
+            profileStackView,
+            overflowCountLabel,
+            currentStatusLabel
+        )
         contentView.addSubviews(profileImageView, hostStackView, writtenTimeLabel, contentLabel, timeStackView, applyInfoStackView)
     }
     
@@ -155,7 +167,24 @@ final class SpecificCompanionCell: UICollectionViewCell {
         contentLabel.text = item.content
         meetingTimeLabel.text = item.meetingTime
         closedTimeLabel.text = item.closedTime
-        profileStackView.configure(withImageURLs: item.participantImageURLs)
+        profileStackView.configure(
+            withImageURLs: Array(
+                item.participantImageURLs.prefix(profileAvatarCount)
+            )
+        )
+        configureOverflowCount(item.detailState.participantCount)
         currentStatusLabel.text = item.statusText
+    }
+
+    private func configureOverflowCount(_ participantCount: Int) {
+        let overflowCount = max(participantCount - profileAvatarCount, 0)
+        overflowCountLabel.text = overflowCount > 0 ? "+\(overflowCount)" : nil
+        overflowCountLabel.isHidden = overflowCount == 0
+
+        applyInfoStackView.setCustomSpacing(
+            overflowCount > 0 ? 0 : 6,
+            after: profileStackView
+        )
+        applyInfoStackView.setCustomSpacing(6, after: overflowCountLabel)
     }
 }

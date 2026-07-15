@@ -27,6 +27,11 @@ final class CompanionView: BaseView {
     var categoryCollectionView: UICollectionView {
         topSectionView.categoryCollectionView
     }
+
+    var onAlarmButtonDidTap: (() -> Void)? {
+        get { topSectionView.onAlarmButtonDidTap }
+        set { topSectionView.onAlarmButtonDidTap = newValue }
+    }
     
     // MARK: - Life Cycle
     

@@ -11,6 +11,8 @@ import SnapKit
 import Then
 
 final class CompanionDetailBottomView: BaseView {
+
+    private let profileAvatarCount = 4
     
     // MARK: - UI Components
 
@@ -32,7 +34,9 @@ final class CompanionDetailBottomView: BaseView {
     private let peopleStackView = UIStackView()
     private let peopleIconImageView = UIImageView()
     private let peopleImageStackView = AvatarStackView()
+    private let overflowCountLabel = UILabel()
     private let peopleStatusLabel = UILabel()
+    private let peopleSpacerView = UIView()
     
     private let containerView = UIView()
     private let contentLabel = UILabel()
@@ -111,9 +115,18 @@ final class CompanionDetailBottomView: BaseView {
             $0.tintColor = .grey80
         }
 
+        overflowCountLabel.do {
+            $0.setFont(.b2M16, textColor: .grey40)
+            $0.isHidden = true
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+        }
+
         peopleStatusLabel.do {
             $0.setFont(.b2M16, textColor: .grey80)
             $0.transform = CGAffineTransform(translationX: 0, y: -1)
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
         
         containerView.do {
@@ -133,7 +146,13 @@ final class CompanionDetailBottomView: BaseView {
         headerStackView.addArrangedSubviews(expirationBannerView, infoTitleLabel)
         placeStackView.addArrangedSubviews(placeIconImageView, placeLabel)
         dateStackView.addArrangedSubviews(dateIconImageView, dateLabel)
-        peopleStackView.addArrangedSubviews(peopleIconImageView, peopleImageStackView, peopleStatusLabel)
+        peopleStackView.addArrangedSubviews(
+            peopleIconImageView,
+            peopleImageStackView,
+            overflowCountLabel,
+            peopleStatusLabel,
+            peopleSpacerView
+        )
         infoStackView.addArrangedSubviews(placeStackView, dateStackView, peopleStackView)
         containerView.addSubview(contentLabel)
         addSubviews(headerStackView, mapView, infoStackView, containerView)
@@ -197,7 +216,12 @@ final class CompanionDetailBottomView: BaseView {
 
         placeLabel.setFont(.b2M16, text: state.placeName, textColor: .grey80)
         dateLabel.setFont(.b2M16, text: state.meetingTimeText, textColor: .grey80)
-        peopleImageStackView.configure(withImageURLs: state.participantImageURLs)
+        peopleImageStackView.configure(
+            withImageURLs: Array(
+                state.participantImageURLs.prefix(profileAvatarCount)
+            )
+        )
+        configureOverflowCount(state.participantCount)
         peopleStatusLabel.setFont(.b2M16, text: state.participantSummaryText, textColor: .grey80)
         contentLabel.setFont(.b3M14, text: state.content, textColor: .grey60)
 
@@ -212,5 +236,17 @@ final class CompanionDetailBottomView: BaseView {
         case .undecided:
             break
         }
+    }
+
+    private func configureOverflowCount(_ participantCount: Int) {
+        let overflowCount = max(participantCount - profileAvatarCount, 0)
+        overflowCountLabel.text = overflowCount > 0 ? "+\(overflowCount)" : nil
+        overflowCountLabel.isHidden = overflowCount == 0
+
+        peopleStackView.setCustomSpacing(
+            overflowCount > 0 ? 0 : 6,
+            after: peopleImageStackView
+        )
+        peopleStackView.setCustomSpacing(6, after: overflowCountLabel)
     }
 }

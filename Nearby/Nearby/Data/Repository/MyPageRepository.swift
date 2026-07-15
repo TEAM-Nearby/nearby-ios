@@ -7,6 +7,7 @@
 
 protocol MyPageRepository {
     func fetchMyPage() async throws -> MyPageResponseDTO
+    func fetchMyCompanionPosts() async throws -> MyCompanionPostsResponseDTO
 }
 
 final class DefaultMyPageRepository {
@@ -28,5 +29,9 @@ extension DefaultMyPageRepository: MyPageRepository {
 
     func fetchMyPage() async throws -> MyPageResponseDTO {
         try await service.fetchMyPage()
+    }
+
+    func fetchMyCompanionPosts() async throws -> MyCompanionPostsResponseDTO {
+        try await service.fetchMyCompanionPosts()
     }
 }

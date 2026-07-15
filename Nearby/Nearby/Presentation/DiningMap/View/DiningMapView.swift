@@ -19,6 +19,11 @@ final class DiningMapView: BaseView {
     private let topSectionView = DiningMapTopSectionView()
     let currentLocationButton = UIButton()
     let bookmarkButton = UIButton()
+
+    var onAlarmButtonDidTap: (() -> Void)? {
+        get { topSectionView.onAlarmButtonDidTap }
+        set { topSectionView.onAlarmButtonDidTap = newValue }
+    }
     
     // MARK: - Custom Methods
 

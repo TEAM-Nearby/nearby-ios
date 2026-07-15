@@ -8,6 +8,12 @@
 import UIKit
 
 final class MainTabBarController: UITabBarController {
+
+    // MARK: - Properties
+
+    private let tabBarItemWidth: CGFloat = 64
+    private let tabBarItemSpacing: CGFloat = 6
+    private var didRefreshInitialTabBarLayout = false
     
     // MARK: - Life Cycle
     
@@ -16,6 +22,18 @@ final class MainTabBarController: UITabBarController {
         view.backgroundColor = .clear
         delegate = self
         configureTabBarAppearance()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard !didRefreshInitialTabBarLayout, tabBar.bounds.width > 0 else {
+            return
+        }
+
+        didRefreshInitialTabBarLayout = true
+        tabBar.setNeedsLayout()
+        tabBar.layoutIfNeeded()
     }
     
     // MARK: - Method
@@ -41,14 +59,16 @@ final class MainTabBarController: UITabBarController {
         itemAppearance.normal.titlePositionAdjustment = offset
         itemAppearance.selected.titlePositionAdjustment = offset
         
-        barAppearance.stackedItemPositioning = .fill
+        barAppearance.stackedItemPositioning = .centered
+        barAppearance.stackedItemWidth = tabBarItemWidth
+        barAppearance.stackedItemSpacing = tabBarItemSpacing
         barAppearance.stackedLayoutAppearance = itemAppearance
         barAppearance.inlineLayoutAppearance = itemAppearance
         barAppearance.compactInlineLayoutAppearance = itemAppearance
         
         tabBar.standardAppearance = barAppearance
         tabBar.scrollEdgeAppearance = barAppearance
-        tabBar.itemPositioning = .fill
+        tabBar.itemPositioning = .centered
         tabBar.backgroundColor = .clear
         tabBar.tintColor = .grey80
         tabBar.unselectedItemTintColor = .grey60
@@ -58,6 +78,8 @@ final class MainTabBarController: UITabBarController {
         tabBar.layer.borderWidth = 0.5
         tabBar.layer.borderColor = UIColor.grey10.cgColor
         tabBar.layer.masksToBounds = true
+        tabBar.itemWidth = tabBarItemWidth
+        tabBar.itemSpacing = tabBarItemSpacing
     }
 }
 

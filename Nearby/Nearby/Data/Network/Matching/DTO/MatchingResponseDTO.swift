@@ -75,16 +75,6 @@ struct MatchMyScheduleResponseDTO: Decodable {
 
 struct ConfirmCompanionScheduleRequestDTO {
     let scheduledAt: String
-    let place: Place
-    let openChatUrl: String
-
-    struct Place {
-        let googlePlaceId: String
-        let name: String
-        let address: String
-        let latitude: Double
-        let longitude: Double
-    }
 }
 
 struct ConfirmCompanionScheduleResponseDTO: Decodable {

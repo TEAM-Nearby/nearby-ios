@@ -30,25 +30,51 @@ final class NotificationCoordinator {
 
 extension NotificationCoordinator: Coordinator {
     func start() {
-        let alarmViewController = diContainer.makeAlarmViewController()
-        alarmViewController.coordinator = self
-        alarmViewController.onBackButtonDidTap = { [weak self] in
-            self?.navigationController.popViewController(animated: true)
-        }
+        let alarmViewController = makeAlarmViewController()
 
-        alarmViewController.hidesBottomBarWhenPushed = true
-        navigationController.pushViewController(alarmViewController, animated: true)
+        navigationController.setViewControllers([alarmViewController], animated: false)
     }
 
     func finish() {
         parentCoordinator?.removeChildCoordinator(self)
     }
+
+    func showAlarm(initialTab: AlarmTab = .sent) {
+        let alarmViewController = makeAlarmViewController(initialTab: initialTab)
+        alarmViewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(alarmViewController, animated: true)
+    }
+
+    private func makeAlarmViewController(initialTab: AlarmTab = .sent) -> AlarmViewController {
+        let alarmViewController = diContainer.makeAlarmViewController(
+            initialTab: initialTab
+        )
+        alarmViewController.coordinator = self
+
+        alarmViewController.onBackButtonDidTap = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        alarmViewController.onRequestActionDidTap = { [weak self] requestItem in
+            guard let self else { return }
+            switch requestItem.displayType {
+            case .sentAccepted:
+                showCompanionRequestAccept(applicationId: requestItem.applicationId)
+            case .sentRejected:
+                showCompanionRequestDecline()
+
+            case .receivedPending:
+                showHostRequestRecieve(applicationId: requestItem.applicationId)
+            default:
+                break
+            }
+        }
+
+        return alarmViewController
+    }
 }
 
-// MARK: - Companion Request 네비게이션
-
 extension NotificationCoordinator {
-
     func showCompanionRequestSent(hostName: String) {
         let viewController = diContainer.makeCompanionRequestSentViewController(coordinator: self, hostName: hostName)
         navigationController.pushViewController(viewController, animated: true)
@@ -66,8 +92,6 @@ extension NotificationCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
 }
-
-// MARK: - Host Request 네비게이션
 
 extension NotificationCoordinator {
     func showHostRequestRecieve(applicationId: Int) {
@@ -103,10 +127,7 @@ extension NotificationCoordinator {
     }
 }
 
-// MARK: - Tab 네비게이션
-
 extension NotificationCoordinator {
-
     func showCompanionTab() {
         navigationController.popToRootViewController(animated: false)
         mainTabCoordinator?.switchTab(to: .companion)
@@ -138,10 +159,7 @@ extension NotificationCoordinator {
     }
 }
 
-// MARK: - Matching 네비게이션
-
 extension NotificationCoordinator {
-
     func showMatchingScheduleDetail(matchId: Int) {
         let matchingCoordinator = makeChildMatchingCoordinator()
         let viewController = diContainer.makeMatchingScheduleDetailViewController(

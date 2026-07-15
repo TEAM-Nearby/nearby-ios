@@ -62,7 +62,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        profileImageView.layer.cornerRadius = profileImageView.bounds.width / 2
+        updateProfileImageCornerRadius()
     }
 
     override func prepareForReuse() {
@@ -70,6 +70,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
         profileImageView.kf.cancelDownloadTask()
         profileImageView.image = .imgProfileDefault
+        updateProfileImageCornerRadius()
         profileClusterView.reset()
         onNextButtonDidTap = nil
     }
@@ -82,9 +83,17 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.clipsToBounds = true
         }
 
+        profileContainerView.do {
+            $0.layer.cornerRadius = Metric.profileSize / 2
+            $0.layer.masksToBounds = true
+            $0.clipsToBounds = true
+        }
+
         profileImageView.do {
             $0.image = .imgProfileDefault
             $0.contentMode = .scaleAspectFill
+            $0.layer.cornerRadius = Metric.profileSize / 2
+            $0.layer.masksToBounds = true
             $0.clipsToBounds = true
         }
 
@@ -242,6 +251,20 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
     }
 
+    private func updateProfileImageCornerRadius() {
+        let imageDiameter = min(profileImageView.bounds.width, profileImageView.bounds.height)
+        let containerDiameter = min(profileContainerView.bounds.width, profileContainerView.bounds.height)
+        let fallbackRadius = Metric.profileSize / 2
+
+        profileImageView.layer.cornerRadius = imageDiameter > 0 ? imageDiameter / 2 : fallbackRadius
+        profileImageView.layer.masksToBounds = true
+        profileImageView.clipsToBounds = true
+
+        profileContainerView.layer.cornerRadius = containerDiameter > 0 ? containerDiameter / 2 : fallbackRadius
+        profileContainerView.layer.masksToBounds = true
+        profileContainerView.clipsToBounds = true
+    }
+
     private func updateContentLabelTrailingConstraint(isNextButtonHidden: Bool) {
         contentLabel.snp.remakeConstraints {
             $0.top.equalTo(profileContainerView.snp.bottom).offset(Metric.contentTopOffset)
@@ -320,12 +343,17 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
            let url = URL(string: profileImageUrl) {
             profileImageView.kf.setImage(
                 with: url,
-                placeholder: content.profileImage ?? .imgProfileDefault
+                placeholder: content.profileImage ?? .imgProfileDefault,
+                completionHandler: { [weak self] _ in
+                    self?.updateProfileImageCornerRadius()
+                }
             )
+            updateProfileImageCornerRadius()
             return
         }
 
         profileImageView.image = content.profileImage ?? .imgProfileDefault
+        updateProfileImageCornerRadius()
     }
 
     private func makeProfileImageUrls(content: MatchingMatchedCardContentModel) -> [String?] {

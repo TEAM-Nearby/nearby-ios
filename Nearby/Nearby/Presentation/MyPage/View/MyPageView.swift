@@ -225,7 +225,6 @@ final class MyPageView: BaseView {
         boardingPassImageView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(408)
         }
 
         profileImageView.snp.makeConstraints {
@@ -383,7 +382,6 @@ private extension MyPageView {
 
     func configurePersonalityKeywords(_ keywords: [String]) {
         removeAllArrangedSubviews(from: personalityFirstLineStackView)
-
         removeAllArrangedSubviews(from: personalitySecondLineStackView)
 
         keywords.enumerated().forEach { index, keyword in
@@ -396,12 +394,15 @@ private extension MyPageView {
             }
         }
 
-        personalitySecondLineStackView.isHidden = keywords.count <= 3
-    }
+        let hasSecondLine = keywords.count > 3
 
+        personalitySecondLineStackView.isHidden = !hasSecondLine
+
+        updatePersonalityChipLayout(hasSecondLine: hasSecondLine)
+    }
+    
     func configureMannerKeywords(_ keywords: [String]) {
         removeAllArrangedSubviews(from: mannerFirstLineStackView)
-
         removeAllArrangedSubviews(from: mannerSecondLineStackView)
 
         keywords.enumerated().forEach { index, keyword in
@@ -414,10 +415,45 @@ private extension MyPageView {
             }
         }
 
-        mannerChipContainerView.isHidden = keywords.isEmpty
-        mannerSecondLineStackView.isHidden = keywords.count <= 2
-    }
+        let hasMannerKeywords = !keywords.isEmpty
 
+        mannerChipContainerView.isHidden = !hasMannerKeywords
+        mannerSecondLineStackView.isHidden = keywords.count <= 2
+
+        updateMannerScoreLayout(hasKeywords: hasMannerKeywords)
+    }
+    
+    func updateMannerScoreLayout(hasKeywords: Bool) {
+        starRatingView.snp.remakeConstraints {
+            $0.top.equalTo(mannerTitleLabel.snp.bottom).offset(17)
+            $0.leading.equalToSuperview().offset(54)
+            $0.trailing.equalToSuperview().inset(54)
+            $0.height.equalTo(30)
+
+            if !hasKeywords {
+                $0.bottom.equalToSuperview().inset(20)
+            }
+        }
+
+        if hasKeywords {
+            mannerChipContainerView.snp.remakeConstraints {
+                $0.top.equalTo(starRatingView.snp.bottom).offset(20)
+                $0.leading.equalToSuperview().offset(20)
+                $0.trailing.lessThanOrEqualToSuperview().inset(20)
+                $0.bottom.equalToSuperview().inset(24)
+            }
+        } else {
+            mannerChipContainerView.snp.remakeConstraints {
+                $0.top.equalTo(starRatingView.snp.bottom)
+                $0.leading.equalToSuperview().offset(20)
+                $0.trailing.lessThanOrEqualToSuperview().inset(20)
+                $0.height.equalTo(0)
+            }
+        }
+
+        setNeedsLayout()
+    }
+    
     func removeAllArrangedSubviews(from stackView: UIStackView) {
         stackView.arrangedSubviews.forEach { arrangedSubview in
             stackView.removeArrangedSubview(arrangedSubview)
@@ -446,6 +482,33 @@ private extension MyPageView {
         }
 
         return chip
+    }
+    
+    func updatePersonalityChipLayout(hasSecondLine: Bool) {
+        personalityFirstLineStackView.snp.remakeConstraints {
+            $0.top.equalToSuperview()
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(36)
+
+            if !hasSecondLine {
+                $0.bottom.equalToSuperview()
+            }
+        }
+
+        personalitySecondLineStackView.snp.remakeConstraints {
+            $0.centerX.equalToSuperview()
+
+            if hasSecondLine {
+                $0.top.equalTo(personalityFirstLineStackView.snp.bottom).offset(4)
+                $0.height.equalTo(36)
+                $0.bottom.equalToSuperview()
+            } else {
+                $0.top.equalTo(personalityFirstLineStackView.snp.bottom)
+                $0.height.equalTo(0)
+            }
+        }
+
+        setNeedsLayout()
     }
 }
 

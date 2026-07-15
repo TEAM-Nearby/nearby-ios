@@ -46,13 +46,13 @@ final class SplashView: BaseView {
     override func setStyle() {
         backgroundColor = .white
 
-        gradientLayer.colors = [
-            UIColor.white.cgColor,
-            UIColor(red: 185 / 255, green: 174 / 255, blue: 250 / 255, alpha: 1).cgColor
-        ]
+        let purpleColor = UIColor(red: 185 / 255, green: 174 / 255, blue: 250 / 255, alpha: 1)
 
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        gradientLayer.colors = [UIColor.white.cgColor, purpleColor.cgColor]
+        gradientLayer.locations = [0.0, 1.0]
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
+
         gradientLayer.opacity = 0.17
 
         logoImageView.do {

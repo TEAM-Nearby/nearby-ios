@@ -30,6 +30,17 @@ final class AvatarStackView: UIStackView {
         contentSize
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        arrangedSubviews.compactMap { $0 as? UIImageView }.forEach {
+            let diameter = min($0.bounds.width, $0.bounds.height)
+            $0.layer.cornerRadius = diameter / 2
+            $0.layer.masksToBounds = true
+            $0.clipsToBounds = true
+        }
+    }
+
     // MARK: - Initializer
 
     init(avatarSize: CGFloat = 16, avatarOverlap: CGFloat = 6) {
@@ -116,6 +127,7 @@ final class AvatarStackView: UIStackView {
             $0.layer.borderColor = UIColor.white.cgColor
             $0.layer.borderWidth = 1
             $0.layer.cornerRadius = avatarSize / 2
+            $0.layer.masksToBounds = true
             $0.clipsToBounds = true
         }
 

@@ -44,10 +44,10 @@ extension MatchingCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
 
-    func showManageScheduleDetail(item: MatchingMatchedCardItem) {
+    func showManageScheduleDetail(displayData: MatchingScheduleDetailDisplayData) {
         let viewController = diContainer.makeMatchingManageScheduleDetailViewController(
             coordinator: self,
-            item: item
+            displayData: displayData
         )
         navigationController.pushViewController(viewController, animated: true)
     }

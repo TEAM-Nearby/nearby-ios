@@ -25,6 +25,7 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
         super.viewWillAppear(animated)
 
         navigationController?.setNavigationBarHidden(true, animated: false)
+        viewModel.action(.viewDidLoad)
     }
 
     // MARK: - Methods
@@ -74,8 +75,6 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
                 self?.coordinator?.showCompanionTab()
             }
             .store(in: &cancellables)
-
-        viewModel.action(.viewDidLoad)
     }
 
     // MARK: - Action
@@ -121,6 +120,10 @@ extension MatchingViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: 110)
+        let item = viewModel.item(at: indexPath.item)
+        return CGSize(
+            width: collectionView.bounds.width,
+            height: MatchingMatchedCardCell.height(for: item.content)
+        )
     }
 }

@@ -5,19 +5,20 @@
 //  Created by 신서연 on 7/10/26.
 //
 
+import Combine
 import UIKit
 
-final class AlarmViewController:
-    BaseViewController<AlarmViewModel> {
+final class AlarmViewController: BaseViewController<AlarmViewModel> {
 
     // MARK: - Properties
 
     var onBackButtonDidTap: (() -> Void)?
-    var onRequestActionDidTap:
-        ((AlarmRequestItem) -> Void)?
+    var onRequestActionDidTap: ((AlarmRequestItem) -> Void)?
 
-    private var selectedTab: AlarmTab = .sent
-    private var requestItems: [AlarmRequestItem] = []
+    weak var coordinator: NotificationCoordinator?
+
+    private var items = [AlarmRequestItem]()
+    private var hasAppearedOnce = false
 
     // MARK: - UI Component
 
@@ -29,46 +30,27 @@ final class AlarmViewController:
         view = alarmView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        viewModel.action(.viewDidLoad)
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setNavigationBarHidden(
-            true,
-            animated: animated
-        )
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+
+        if hasAppearedOnce {
+            viewModel.action(.viewWillAppear)
+        } else {
+            hasAppearedOnce = true
+        }
     }
 
     // MARK: - Custom Methods
 
     override func setAddTarget() {
         alarmView.navigationBar.leftButtonAction = { [weak self] in
-
-            self?.viewModel.action(
-                .backButtonDidTap
-            )
+            self?.viewModel.action(.backButtonDidTap)
         }
 
-        alarmView.sentRequestButton.addTarget(
-            self,
-            action: #selector(
-                sentRequestButtonDidTap
-            ),
-            for: .touchUpInside
-        )
-
-        alarmView.receivedRequestButton.addTarget(
-            self,
-            action: #selector(
-                receivedRequestButtonDidTap
-            ),
-            for: .touchUpInside
-        )
+        alarmView.sentRequestButton.addTarget(self, action: #selector(sentRequestButtonDidTap), for: .touchUpInside)
+        alarmView.receivedRequestButton.addTarget(self, action: #selector(receivedRequestButtonDidTap), for: .touchUpInside)
     }
 
     override func setDelegate() {
@@ -77,83 +59,114 @@ final class AlarmViewController:
     }
 
     override func bindState() {
-        viewModel.output.selectedTab = { [weak self] tab in
+        bindSelectedTab()
+        bindItems()
+        bindNavigation()
+        bindError()
 
-            guard let self else {
-                return
+        viewModel.action(.viewDidLoad)
+    }
+}
+
+// MARK: - Bind
+
+private extension AlarmViewController {
+
+    func bindSelectedTab() {
+        viewModel.output.selectedTab
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] selectedTab in
+                guard let self else { return }
+
+                alarmView.updateSelectedTab(selectedTab)
+                alarmView.updateContent(items: items, selectedTab: selectedTab)
+                alarmView.scrollToTop()
             }
+            .store(in: &cancellables)
+    }
 
-            selectedTab = tab
+    func bindItems() {
+        viewModel.output.items
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] items in
+                guard let self else { return }
 
-            alarmView.updateSelectedTab(tab)
-            alarmView.scrollToTop()
-        }
+                self.items = items
 
-        viewModel.output.requestItems = { [weak self] items in
-
-            guard let self else {
-                return
+                alarmView.requestTableView.reloadData()
+                alarmView.updateContent(items: items, selectedTab: viewModel.output.selectedTab.value)
             }
+            .store(in: &cancellables)
+    }
 
-            requestItems = items
+    func bindNavigation() {
+        viewModel.output.backButtonDidTap
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.onBackButtonDidTap?()
+            }
+            .store(in: &cancellables)
 
-            alarmView.requestTableView.reloadData()
+        viewModel.output.showCompanionRequestAccept
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] applicationId in
+                self?.coordinator?.showCompanionRequestAccept(applicationId: applicationId)
+            }
+            .store(in: &cancellables)
 
-            alarmView.updateContent(
-                items: items,
-                selectedTab: selectedTab
-            )
-        }
+        viewModel.output.showCompanionRequestDecline
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.coordinator?.showCompanionRequestDecline()
+            }
+            .store(in: &cancellables)
 
-        viewModel.output.backButtonDidTap = { [weak self] in
+        viewModel.output.showHostRequestReceive
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] applicationId in
+                self?.coordinator?.showHostRequestRecieve(applicationId: applicationId)
+            }
+            .store(in: &cancellables)
 
-            self?.onBackButtonDidTap?()
-        }
+        viewModel.output.showSchedule
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] matchId in
+                self?.coordinator?.showMatchingScheduleDetail(matchId: matchId)
+            }
+            .store(in: &cancellables)
+    }
 
-        viewModel.output.requestActionDidTap = { [weak self] requestItem in
-
-            self?.onRequestActionDidTap?(
-                requestItem
-            )
-        }
+    func bindError() {
+        viewModel.output.errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { errorMessage in
+            }
+            .store(in: &cancellables)
     }
 }
 
 // MARK: - UITableViewDataSource
 
-extension AlarmViewController:
-    UITableViewDataSource {
+extension AlarmViewController: UITableViewDataSource {
 
-    func tableView(
-        _ tableView: UITableView,
-        numberOfRowsInSection section: Int
-    ) -> Int {
-        return requestItems.count
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        items.count
     }
 
-    func tableView(
-        _ tableView: UITableView,
-        cellForRowAt indexPath: IndexPath
-    ) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
-            withIdentifier:
-                AlarmRequestTableViewCell.identifier,
+            withIdentifier: AlarmRequestTableViewCell.identifier,
             for: indexPath
         ) as? AlarmRequestTableViewCell else {
             return UITableViewCell()
         }
 
-        let requestItem = requestItems[indexPath.row]
+        let item = items[indexPath.row]
 
-        cell.configure(with: requestItem)
+        cell.configure(with: item)
 
         cell.onActionButtonDidTap = { [weak self] in
-
-            self?.viewModel.action(
-                .requestActionButtonDidTap(
-                    id: requestItem.id
-                )
-            )
+            self?.viewModel.action(.actionButtonDidTap(item))
         }
 
         return cell
@@ -162,37 +175,32 @@ extension AlarmViewController:
 
 // MARK: - UITableViewDelegate
 
-extension AlarmViewController:
-    UITableViewDelegate {
+extension AlarmViewController: UITableViewDelegate {
 
-    func tableView(
-        _ tableView: UITableView,
-        didSelectRowAt indexPath: IndexPath
-    ) {
-        let requestItem = requestItems[indexPath.row]
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
 
-        viewModel.action(
-            .requestActionButtonDidTap(
-                id: requestItem.id
-            )
-        )
+        guard items.indices.contains(indexPath.row) else {
+            return
+        }
+
+        let item = items[indexPath.row]
+
+        viewModel.action(.actionButtonDidTap(item))
     }
 }
 
 // MARK: - Actions
 
 private extension AlarmViewController {
+
     @objc
     func sentRequestButtonDidTap() {
-        viewModel.action(
-            .sentRequestButtonDidTap
-        )
+        viewModel.action(.sentRequestButtonDidTap)
     }
 
     @objc
     func receivedRequestButtonDidTap() {
-        viewModel.action(
-            .receivedRequestButtonDidTap
-        )
+        viewModel.action(.receivedRequestButtonDidTap)
     }
 }

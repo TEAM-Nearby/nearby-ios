@@ -26,7 +26,7 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<MatchingScheduleDetailDisplayData, Never>()
         let showBack = PassthroughSubject<Void, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
-        let showEdit = PassthroughSubject<MatchingMatchedCardItem, Never>()
+        let showEdit = PassthroughSubject<MatchingScheduleDetailDisplayData, Never>()
         let showShare = PassthroughSubject<Void, Never>()
     }
 
@@ -59,8 +59,8 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
             output.showAlarm.send(())
 
         case .editButtonDidTap:
-            guard let item = currentDisplayData?.cardItem else { return }
-            output.showEdit.send(item)
+            guard let displayData = currentDisplayData else { return }
+            output.showEdit.send(displayData)
 
         case .shareButtonDidTap:
             output.showShare.send(())
@@ -79,13 +79,14 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
 
                 let scheduleResponse = try await scheduleResponseTask
                 let previewResponse = try? await previewResponseTask
+                let currentUserRole = scheduleResponse.currentUserRole
                 let cardItem = previewResponse?.toCardItem(
-                    type: .participant,
+                    type: currentUserRole,
                     matchStatus: scheduleResponse.matchStatus.rawValue,
                     fallbackPlaceName: scheduleResponse.schedule?.place.name ?? ""
-                ) ?? scheduleResponse.toCardItem(type: .participant)
+                ) ?? scheduleResponse.toCardItem(type: currentUserRole)
                 let displayData = scheduleResponse.toDisplayData(
-                    type: .participant,
+                    type: currentUserRole,
                     cardItem: cardItem
                 )
                 currentDisplayData = displayData

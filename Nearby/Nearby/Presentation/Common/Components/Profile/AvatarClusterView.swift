@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -14,20 +15,34 @@ final class AvatarClusterView: UIView {
     
     // MARK: - Properties
     
-    private let avatarSize: CGFloat = 32
-    private let overlap: CGFloat = 9
+    private static let avatarOverlap: CGFloat = 8
+    private var avatarCount: Int = 0
+    private var currentAvatarSize: CGFloat {
+        Self.avatarSize(for: avatarCount)
+    }
     
-    private var step: CGFloat { avatarSize - overlap }
-    private var clusterSide: CGFloat { avatarSize + step }
+    private var step: CGFloat { currentAvatarSize - Self.avatarOverlap }
+    var contentSize: CGSize {
+        Self.contentSize(for: avatarCount)
+    }
     
     override var intrinsicContentSize: CGSize {
-        CGSize(width: clusterSide, height: clusterSide)
+        contentSize
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        subviews.compactMap { $0 as? UIImageView }.forEach {
+            $0.layer.cornerRadius = $0.bounds.width / 2
+        }
     }
     
     // MARK: - Initializer
 
     init() {
         super.init(frame: .zero)
+
         setContentHuggingPriority(.required, for: .horizontal)
         setContentHuggingPriority(.required, for: .vertical)
         setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -39,21 +54,44 @@ final class AvatarClusterView: UIView {
     }
     
     // MARK: - Methods
+
+    static func contentSize(for count: Int) -> CGSize {
+        let avatarCount = min(count, 4)
+        let avatarSize = Self.avatarSize(for: avatarCount)
+        let step = avatarSize - Self.avatarOverlap
+        let width = avatarCount > 1 ? avatarSize + step : avatarSize
+        let height = avatarCount > 2 ? avatarSize + step : avatarSize
+
+        return CGSize(width: width, height: height)
+    }
+
+    private static func avatarSize(for count: Int) -> CGFloat {
+        switch count {
+        case 0:
+            return 0
+        case ...2:
+            return 40
+        case 3:
+            return 36
+        default:
+            return 32
+        }
+    }
     
     private func offsets(for count: Int) -> [CGPoint] {
         switch count {
         case ...1:
-            return [CGPoint(x: step / 2, y: step / 2)]
+            return [.zero]
         case 2:
             return [
-                CGPoint(x: 0, y: step / 2),
-                CGPoint(x: step, y: step / 2)
+                .zero,
+                CGPoint(x: step, y: 0)
             ]
         case 3:
             return [
                 CGPoint(x: 0, y: 0),
-                CGPoint(x: 0, y: step),
-                CGPoint(x: step, y: step / 2)
+                CGPoint(x: step, y: 0),
+                CGPoint(x: 0, y: step)
             ]
         default:
             return [
@@ -65,29 +103,73 @@ final class AvatarClusterView: UIView {
         }
     }
     
-    private func makeAvatarView(image: UIImage?) -> UIImageView {
+    private func makeAvatarView() -> UIImageView {
         UIImageView().then {
+            $0.reset()
             $0.contentMode = .scaleAspectFill
             $0.layer.borderColor = UIColor.white.cgColor
             $0.layer.borderWidth = 1
-            $0.layer.cornerRadius = avatarSize / 2
+            $0.layer.cornerRadius = currentAvatarSize / 2
+            $0.layer.masksToBounds = true
             $0.clipsToBounds = true
-            $0.image = image
-            $0.backgroundColor = image == nil ? .grey20 : .clear
+        }
+    }
+
+    private func removeAvatarViews() {
+        subviews.forEach {
+            ($0 as? UIImageView)?.reset()
+            $0.removeFromSuperview()
         }
     }
     
     func configure(with images: [UIImage?]) {
-        subviews.forEach { $0.removeFromSuperview() }
-        
-        zip(images.prefix(4), offsets(for: images.count)).forEach { image, offset in
-            let avatarView = makeAvatarView(image: image)
+        configureAvatarViews(count: images.count) { avatarView, index in
+            let image = images[index]
+            if let image {
+                avatarView.image = image
+            }
+        }
+    }
+
+    func configure(withImageURLs imageURLs: [String?]) {
+        configureAvatarViews(count: imageURLs.count) { avatarView, index in
+            let imageURL = imageURLs[index]
+            if let imageURL,
+               let url = URL(string: imageURL) {
+                avatarView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
+            }
+        }
+    }
+
+    private func configureAvatarViews(count: Int, configure: (UIImageView, Int) -> Void) {
+        removeAvatarViews()
+        avatarCount = min(count, 4)
+
+        offsets(for: avatarCount).enumerated().forEach { index, offset in
+            let avatarView = makeAvatarView()
+            configure(avatarView, index)
             addSubview(avatarView)
             avatarView.snp.makeConstraints {
                 $0.leading.equalToSuperview().offset(offset.x)
                 $0.top.equalToSuperview().offset(offset.y)
-                $0.size.equalTo(avatarSize)
+                $0.size.equalTo(currentAvatarSize)
             }
         }
+
+        invalidateIntrinsicContentSize()
+    }
+
+    func reset() {
+        removeAvatarViews()
+        avatarCount = 0
+        invalidateIntrinsicContentSize()
+    }
+}
+
+private extension UIImageView {
+    func reset() {
+        kf.cancelDownloadTask()
+        image = .imgProfileDefault
+        backgroundColor = .clear
     }
 }

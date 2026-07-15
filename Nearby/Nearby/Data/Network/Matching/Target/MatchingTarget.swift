@@ -33,7 +33,7 @@ extension MatchedCompanionListTarget: BaseTargetType {
         case .matches, .preview, .detail:
             return .get
         case .confirmSchedule:
-            return .post
+            return .patch
         }
     }
 
@@ -43,15 +43,7 @@ extension MatchedCompanionListTarget: BaseTargetType {
         switch self {
         case .confirmSchedule(_, let request):
             return [
-                "scheduledAt": request.scheduledAt,
-                "place": [
-                    "googlePlaceId": request.place.googlePlaceId,
-                    "name": request.place.name,
-                    "address": request.place.address,
-                    "latitude": request.place.latitude,
-                    "longitude": request.place.longitude
-                ],
-                "openChatUrl": request.openChatUrl
+                "scheduledAt": request.scheduledAt
             ]
         case .matches, .preview, .detail:
             return nil

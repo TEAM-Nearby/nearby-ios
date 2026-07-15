@@ -112,6 +112,10 @@ final class AppDIContainer {
         DefaultMyPageService(networkProvider: networkProvider)
     }
     
+    private func makeCompanionRequestService() -> CompanionRequestService {
+        DefaultCompanionRequestService(networkProvider: networkProvider)
+    }
+    
     // MARK: - Repositories
     
     private func makeAuthRepository() -> AuthRepository {
@@ -163,6 +167,10 @@ final class AppDIContainer {
     
     private func makeMyPageRepository() -> MyPageRepository {
         DefaultMyPageRepository(service: makeMyPageService())
+    }
+    
+    private func makeCompanionRequestRepository() -> CompanionRequestRepository {
+        DefaultCompanionRequestRepository(service: makeCompanionRequestService())
     }
     
     // MARK: - ViewModels
@@ -235,7 +243,7 @@ final class AppDIContainer {
     }
     
     func makeAlarmViewModel(initialTab: AlarmTab = .sent) -> AlarmViewModel {
-        AlarmViewModel(initialTab: initialTab)
+        AlarmViewModel(initialTab: initialTab, repository: makeCompanionRequestRepository())
     }
     
     func makeSettingViewModel() -> SettingViewModel {
@@ -395,13 +403,26 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeMatchingManageScheduleDetailViewController(coordinator: MatchingCoordinator, item: MatchingMatchedCardItem) -> UIViewController {
-        let viewController = MatchingManageDetailViewController(item: item)
+    func makeMatchingManageScheduleDetailViewController(coordinator: MatchingCoordinator, displayData: MatchingScheduleDetailDisplayData) -> UIViewController {
+        let viewController = MatchingManageDetailViewController(
+            displayData: displayData,
+            repository: makeMatchedCompanionListRepository()
+        )
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
-    
+
+    func makeMatchingManageScheduleDetailViewController(coordinator: MatchingCoordinator, item: MatchingMatchedCardItem) -> UIViewController {
+        let viewController = MatchingManageDetailViewController(
+            item: item,
+            repository: makeMatchedCompanionListRepository()
+        )
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+
     func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = MeetingTabViewController(viewModel: makeMeetingViewModel())
         viewController.coordinator = coordinator

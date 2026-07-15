@@ -18,11 +18,22 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     var onNextButtonDidTap: (() -> Void)?
     private let descriptionLimit = 29
 
+    private enum Metric {
+        static let horizontalInset: CGFloat = 20
+        static let verticalInset: CGFloat = 16
+        static let profileSize: CGFloat = 40
+        static let titleHeight: CGFloat = 22
+        static let informationTopOffset: CGFloat = 4
+        static let informationHeight: CGFloat = 20
+        static let contentTopOffset: CGFloat = 12
+        static let contentHeight: CGFloat = 20
+    }
+
     // MARK: - UI Components
 
     private let profileContainerView = UIView()
     private let profileImageView = UIImageView()
-    private let profileStackView = AvatarStackView(avatarSize: 40, avatarOverlap: 12)
+    private let profileClusterView = AvatarClusterView()
     private let nameLabel = UILabel()
     private let genderLabel = UILabel()
     private let uploadedTimeLabel = UILabel()
@@ -51,7 +62,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        profileImageView.layer.cornerRadius = profileImageView.bounds.width / 2
+        updateProfileImageCornerRadius()
     }
 
     override func prepareForReuse() {
@@ -59,7 +70,8 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
         profileImageView.kf.cancelDownloadTask()
         profileImageView.image = .imgProfileDefault
-        profileStackView.reset()
+        updateProfileImageCornerRadius()
+        profileClusterView.reset()
         onNextButtonDidTap = nil
     }
 
@@ -71,13 +83,21 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.clipsToBounds = true
         }
 
-        profileImageView.do {
-            $0.image = .imgProfileDefault
-            $0.contentMode = .scaleAspectFill
+        profileContainerView.do {
+            $0.layer.cornerRadius = Metric.profileSize / 2
+            $0.layer.masksToBounds = true
             $0.clipsToBounds = true
         }
 
-        profileStackView.do {
+        profileImageView.do {
+            $0.image = .imgProfileDefault
+            $0.contentMode = .scaleAspectFill
+            $0.layer.cornerRadius = Metric.profileSize / 2
+            $0.layer.masksToBounds = true
+            $0.clipsToBounds = true
+        }
+
+        profileClusterView.do {
             $0.isHidden = true
         }
 
@@ -117,7 +137,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     }
 
     private func setUI() {
-        profileContainerView.addSubviews(profileImageView, profileStackView)
+        profileContainerView.addSubviews(profileImageView, profileClusterView)
         contentView.addSubviews(
             profileContainerView, nameLabel,
             genderLabel, dotLabel, uploadedTimeLabel,
@@ -127,53 +147,51 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     private func setLayout() {
         profileContainerView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(19)
-            $0.leading.equalToSuperview().inset(20)
-            $0.size.equalTo(40)
+            $0.top.equalToSuperview().inset(Metric.verticalInset)
+            $0.leading.equalToSuperview().inset(Metric.horizontalInset)
+            $0.size.equalTo(Metric.profileSize)
         }
 
         profileImageView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
 
-        profileStackView.snp.makeConstraints {
-            $0.leading.centerY.equalToSuperview()
-        }
+        updateProfileClusterSizeConstraint()
 
         nameLabel.snp.makeConstraints {
             $0.top.equalTo(profileContainerView.snp.top)
             $0.leading.equalTo(profileContainerView.snp.trailing).offset(12)
-            $0.height.equalTo(22)
+            $0.height.equalTo(Metric.titleHeight)
         }
 
         genderLabel.snp.makeConstraints {
             $0.centerY.equalTo(nameLabel.snp.centerY)
             $0.leading.equalTo(nameLabel.snp.trailing).offset(8)
-            $0.height.equalTo(22)
+            $0.height.equalTo(Metric.titleHeight)
         }
 
         dotLabel.snp.makeConstraints {
             $0.centerY.equalTo(nameLabel.snp.centerY)
             $0.leading.equalTo(genderLabel.snp.trailing).offset(4)
-            $0.height.equalTo(22)
+            $0.height.equalTo(Metric.titleHeight)
         }
 
         uploadedTimeLabel.snp.makeConstraints {
             $0.centerY.equalTo(nameLabel.snp.centerY)
             $0.leading.equalTo(dotLabel.snp.trailing).offset(4)
-            $0.height.equalTo(22)
+            $0.height.equalTo(Metric.titleHeight)
         }
 
         informationLabel.snp.makeConstraints {
-            $0.top.equalTo(nameLabel.snp.bottom).offset(4)
+            $0.top.equalTo(nameLabel.snp.bottom).offset(Metric.informationTopOffset)
             $0.leading.equalTo(nameLabel.snp.leading)
-            $0.height.equalTo(20)
+            $0.height.equalTo(Metric.informationHeight)
         }
 
         updateContentLabelTrailingConstraint(isNextButtonHidden: false)
 
         nextButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview().inset(Metric.horizontalInset)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(24)
         }
@@ -219,46 +237,104 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     private func updateProfileTopConstraint() {
         profileContainerView.snp.remakeConstraints {
-            $0.top.equalToSuperview().inset(19)
-            $0.leading.equalToSuperview().inset(20)
+            $0.top.equalToSuperview().inset(Metric.verticalInset)
+            $0.leading.equalToSuperview().inset(Metric.horizontalInset)
             $0.width.equalTo(profileContainerWidth())
-            $0.height.equalTo(40)
+            $0.height.equalTo(profileContainerHeight())
         }
+    }
+
+    private func updateProfileClusterSizeConstraint() {
+        profileClusterView.snp.remakeConstraints {
+            $0.center.equalToSuperview()
+            $0.size.equalTo(profileClusterView.contentSize)
+        }
+    }
+
+    private func updateProfileImageCornerRadius() {
+        let imageDiameter = min(profileImageView.bounds.width, profileImageView.bounds.height)
+        let containerDiameter = min(profileContainerView.bounds.width, profileContainerView.bounds.height)
+        let fallbackRadius = Metric.profileSize / 2
+
+        profileImageView.layer.cornerRadius = imageDiameter > 0 ? imageDiameter / 2 : fallbackRadius
+        profileImageView.layer.masksToBounds = true
+        profileImageView.clipsToBounds = true
+
+        profileContainerView.layer.cornerRadius = containerDiameter > 0 ? containerDiameter / 2 : fallbackRadius
+        profileContainerView.layer.masksToBounds = true
+        profileContainerView.clipsToBounds = true
     }
 
     private func updateContentLabelTrailingConstraint(isNextButtonHidden: Bool) {
         contentLabel.snp.remakeConstraints {
-            $0.top.equalTo(profileContainerView.snp.bottom).offset(12)
+            $0.top.equalTo(profileContainerView.snp.bottom).offset(Metric.contentTopOffset)
             $0.leading.equalTo(profileContainerView.snp.leading)
 
             if isNextButtonHidden {
-                $0.trailing.lessThanOrEqualToSuperview().inset(20)
+                $0.trailing.lessThanOrEqualToSuperview().inset(Metric.horizontalInset)
             } else {
                 $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8)
             }
 
-            $0.height.equalTo(20)
+            $0.height.equalTo(Metric.contentHeight)
+            $0.bottom.equalToSuperview().inset(Metric.verticalInset)
         }
     }
 
     private func profileContainerWidth() -> CGFloat {
-        if profileStackView.isHidden {
-            return 40
+        if profileClusterView.isHidden {
+            return Metric.profileSize
         }
 
-        return max(profileStackView.contentSize.width, 40)
+        return max(profileClusterView.contentSize.width, Metric.profileSize)
+    }
+
+    private func profileContainerHeight() -> CGFloat {
+        if profileClusterView.isHidden {
+            return Metric.profileSize
+        }
+
+        return max(profileClusterView.contentSize.height, Metric.profileSize)
+    }
+
+    static func height(
+        for content: MatchingMatchedCardContentModel,
+        displayMode: MatchingMatchedCardDisplayMode = .list
+    ) -> CGFloat {
+        return height(participantCount: content.participantCount, displayMode: displayMode)
+    }
+
+    static func height(
+        participantCount: Int = 1,
+        displayMode: MatchingMatchedCardDisplayMode = .list
+    ) -> CGFloat {
+        let profileHeight: CGFloat
+        switch displayMode {
+        case .list:
+            profileHeight = Metric.profileSize
+        case .scheduleDetail:
+            let avatarCount = min(max(participantCount, 1), 4)
+            profileHeight = AvatarClusterView.contentSize(for: avatarCount).height
+        }
+
+        return Metric.verticalInset
+            + profileHeight
+            + Metric.contentTopOffset
+            + Metric.contentHeight
+            + Metric.verticalInset
     }
 
     private func updateProfile(content: MatchingMatchedCardContentModel, displayMode: MatchingMatchedCardDisplayMode) {
         switch displayMode {
         case .list:
             profileImageView.isHidden = false
-            profileStackView.isHidden = true
+            profileClusterView.isHidden = true
             updateProfileImage(content: content)
         case .scheduleDetail:
             profileImageView.isHidden = true
-            profileStackView.isHidden = false
-            profileStackView.configure(withImageURLs: makeProfileImageUrls(content: content))
+            profileClusterView.isHidden = false
+            profileClusterView.configure(withImageURLs: makeProfileImageUrls(content: content))
+            updateProfileClusterSizeConstraint()
         }
     }
 
@@ -267,12 +343,17 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
            let url = URL(string: profileImageUrl) {
             profileImageView.kf.setImage(
                 with: url,
-                placeholder: content.profileImage ?? .imgProfileDefault
+                placeholder: content.profileImage ?? .imgProfileDefault,
+                completionHandler: { [weak self] _ in
+                    self?.updateProfileImageCornerRadius()
+                }
             )
+            updateProfileImageCornerRadius()
             return
         }
 
         profileImageView.image = content.profileImage ?? .imgProfileDefault
+        updateProfileImageCornerRadius()
     }
 
     private func makeProfileImageUrls(content: MatchingMatchedCardContentModel) -> [String?] {

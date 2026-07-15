@@ -158,40 +158,19 @@ private extension AlarmViewModel {
                 readingNotificationIDs.remove(item.notificationId)
             }
 
-            do {
-                let response = try await repository.markNotificationAsRead(
-                    notificationId: item.notificationId
-                )
+            do {_ = try await repository.markNotificationAsRead(notificationId: item.notificationId)
 
-                guard !Task.isCancelled else {
-                    return
-                }
-
-                updateNotificationReadState(notificationId: response.notificationId, isRead: response.isRead)
+                guard !Task.isCancelled else { return }
                 handleAction(for: item)
-                
+
             } catch is CancellationError {
                 return
-            } catch {
-                guard !Task.isCancelled else {
-                    return
-                }
 
+            } catch {
+                guard !Task.isCancelled else { return }
                 output.errorMessage.send(error.localizedDescription)
             }
         }
-    }
-
-    func updateNotificationReadState(notificationId: Int, isRead: Bool) {
-        var updatedItems = output.items.value
-
-        guard let index = updatedItems.firstIndex(where: { $0.notificationId == notificationId })
-        else {
-            return
-        }
-
-        updatedItems[index].isRead = isRead
-        output.items.send(updatedItems)
     }
 
     func handleAction(for item: AlarmRequestItem) {

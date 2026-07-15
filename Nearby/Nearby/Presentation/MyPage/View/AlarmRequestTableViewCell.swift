@@ -93,7 +93,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
         informationLabel.text = [item.nickname, item.dateText].joined(separator: " · ")
 
         configureActionButton(with: item.displayType)
-        configureIcon(with: item.displayType)
+        configureIcon(with: item.displayType, isRead: item.isRead)
         configureAppearance(with: item.displayType, isRead: item.isRead)
     }
 
@@ -188,7 +188,6 @@ private extension AlarmRequestTableViewCell {
             $0.top.equalTo(titleStackView.snp.bottom).offset(6)
             $0.leading.equalTo(titleStackView)
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
-
             informationBottomConstraint = $0.bottom.equalToSuperview().inset(20).constraint
         }
 
@@ -234,76 +233,83 @@ private extension AlarmRequestTableViewCell {
         actionButtonBottomConstraint?.activate()
     }
 
-    func configureIcon(with displayType: AlarmRequestDisplayType) {
-        guard let icon = displayType.icon else {
+    func configureIcon(with displayType: AlarmRequestDisplayType, isRead: Bool) {
+        statusIconImageView.isHidden = false
+        statusIconImageView.tintColor = nil
+
+        switch displayType {
+
+        case .sentAccepted:
+            statusIconWidthConstraint?.update(offset: 20)
+            statusIconHeightConstraint?.update(offset: 20)
+            statusIconImageView.image = isRead ? .imgCheckGrey : .imgCheckPurple
+
+        case .receivedAccepted:
+            statusIconWidthConstraint?.update(offset: 24)
+            statusIconHeightConstraint?.update(offset: 24)
+
+            if isRead {
+                statusIconImageView.image = UIImage(resource: .calenderFillPurple).withRenderingMode(.alwaysTemplate)
+
+                statusIconImageView.tintColor = .grey50
+            } else {
+                statusIconImageView.image = .calenderFillPurple
+                statusIconImageView.tintColor = nil
+            }
+
+        case .sentRejected:
+            statusIconWidthConstraint?.update(offset: 20)
+            statusIconHeightConstraint?.update(offset: 20)
+
+            statusIconImageView.image = isRead ? .imgCancelGrey : .imgCancelRed
+
+        case .receivedPending:
+            statusIconWidthConstraint?.update(offset: 24)
+            statusIconHeightConstraint?.update(offset: 24)
+
+            statusIconImageView.image = isRead ? .peopleIconGrey : .peopleIconPurple
+
+        default:
             statusIconImageView.image = nil
             statusIconImageView.isHidden = true
+            statusIconImageView.tintColor = nil
 
             statusIconWidthConstraint?.update(offset: 0)
             statusIconHeightConstraint?.update(offset: 0)
-
-            return
-        }
-
-        statusIconImageView.isHidden = false
-        statusIconWidthConstraint?.update(offset: displayType.iconSize.width)
-        statusIconHeightConstraint?.update(offset: displayType.iconSize.height)
-
-        if let tintColor =
-            displayType.iconTintColor {
-            statusIconImageView.image = icon.withRenderingMode(.alwaysTemplate)
-
-            statusIconImageView.tintColor = tintColor
-        } else {
-            statusIconImageView.image = icon.withRenderingMode(.alwaysOriginal)
-            statusIconImageView.tintColor = nil
         }
     }
-
-    func configureAppearance(
-        with displayType: AlarmRequestDisplayType,
-        isRead: Bool
-    ) {
+    
+    func configureAppearance(with displayType: AlarmRequestDisplayType, isRead: Bool) {
         if isRead {
             configureReadAppearance()
-            return
+        } else {
+            configureUnreadAppearance(with: displayType)
         }
+    }
+    
+    func configureUnreadAppearance(with displayType: AlarmRequestDisplayType) {
+        cardView.backgroundColor = UIColor.bgSurfacePurple
+        actionButton.backgroundColor = UIColor.btnChatBg
+        actionButton.setTitleColor(.grey80, for: .normal)
 
         if displayType.isHighlighted {
-            configureHighlightedAppearance()
+            cardView.layer.borderWidth = 1
+            cardView.layer.borderColor = UIColor.btnChatBg.cgColor
         } else {
-            configureDefaultAppearance()
+            cardView.layer.borderWidth = 0
+            cardView.layer.borderColor = UIColor.clear.cgColor
         }
-    }
-
-    func configureHighlightedAppearance() {
-        cardView.backgroundColor = UIColor.primary50.withAlphaComponent(0.05)
-        cardView.layer.borderColor = UIColor.primary50.withAlphaComponent(0.25).cgColor
-        actionButton.backgroundColor = UIColor.primary50.withAlphaComponent(0.18)
-        actionButton.setTitleColor(.grey80, for: .normal)
-
-        contentView.alpha = 1.0
-    }
-
-    func configureDefaultAppearance() {
-        cardView.backgroundColor = .grey5
-        cardView.layer.borderColor = UIColor.clear.cgColor
-        actionButton.backgroundColor = .grey10
-        actionButton.setTitleColor(.grey80, for: .normal)
 
         contentView.alpha = 1.0
     }
     
     func configureReadAppearance() {
         cardView.backgroundColor = .grey5
+        cardView.layer.borderWidth = 0
         cardView.layer.borderColor = UIColor.clear.cgColor
 
         actionButton.backgroundColor = .grey10
         actionButton.setTitleColor(.grey80, for: .normal)
-
-        if statusIconImageView.image?.renderingMode == .alwaysTemplate {
-            statusIconImageView.tintColor = .grey40
-        }
 
         contentView.alpha = 1.0
     }

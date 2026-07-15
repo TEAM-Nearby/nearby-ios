@@ -50,7 +50,8 @@ extension NotificationCoordinator: Coordinator {
             }
         }
 
-        navigationController.setViewControllers([alarmViewController], animated: false)
+        alarmViewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(alarmViewController, animated: true)
     }
     
     func finish() {

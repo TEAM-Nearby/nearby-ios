@@ -33,9 +33,6 @@
 		771209E72FF423C900D688FD /* Exceptions for "Nearby" folder in "Nearby" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Data/Network/DiningMap/DTO/.gitkeep,
-				Data/Network/MyPage/DTO/.gitkeep,
-				Data/Network/Notification/DTO/.gitkeep,
 				Presentation/Notification/View/.gitkeep,
 				Presentation/Notification/ViewController/.gitkeep,
 				Presentation/Notification/ViewModel/.gitkeep,
@@ -266,6 +263,7 @@
 		};
 		771209EA2FF423C900D688FD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -370,6 +368,7 @@
 		};
 		771209EC2FF423C900D688FD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

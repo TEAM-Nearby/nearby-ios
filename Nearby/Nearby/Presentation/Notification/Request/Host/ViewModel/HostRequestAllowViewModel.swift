@@ -26,7 +26,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<URL, Never>()
         let showChatLinkPopup = PassthroughSubject<String, Never>()
-        let showScheduleDetail = PassthroughSubject<Void, Never>()
+        let showScheduleDetail = PassthroughSubject<Int, Never>()
         let showScheduleConfirm = PassthroughSubject<Void, Never>()
     }
     
@@ -89,7 +89,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
             case .chat:
                 switch postType {
                 case .immediate:
-                    output.showScheduleDetail.send(())
+                    output.showScheduleDetail.send(matchId)
                 case .scheduled:
                     output.showScheduleConfirm.send(())
                 case .undecided:

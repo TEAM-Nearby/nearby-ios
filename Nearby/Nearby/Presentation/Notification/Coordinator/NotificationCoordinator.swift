@@ -110,6 +110,15 @@ extension NotificationCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
+    func showMatchingScheduleDetail(matchId: Int) {
+        let matchingCoordinator = makeChildMatchingCoordinator()
+        let viewController = diContainer.makeMatchingScheduleDetailViewController(
+            coordinator: matchingCoordinator,
+            matchId: matchId
+        )
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
     func showMatchingManageDetail(item: MatchingMatchedCardItem) {
         let matchingCoordinator = makeChildMatchingCoordinator()
         let viewController = diContainer.makeMatchingManageScheduleDetailViewController(

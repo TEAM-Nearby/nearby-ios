@@ -109,7 +109,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     }
 
     private func confirmSchedule() {
-        guard let request = makeRequestDTO() else { return }
+        let request = makeRequestDTO()
 
         Task { @MainActor [weak self] in
             guard let self else { return }
@@ -123,25 +123,8 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         }
     }
 
-    private func makeRequestDTO() -> ConfirmCompanionScheduleRequestDTO? {
-        guard let googlePlaceId = displayData.googlePlaceId else {
-            AppLogger.error(
-                AppError.apiError(message: "동행 일정 확정에 필요한 장소 ID가 없습니다.")
-            )
-            return nil
-        }
-
-        return ConfirmCompanionScheduleRequestDTO(
-            scheduledAt: selectedDate.apiDateString,
-            place: ConfirmCompanionScheduleRequestDTO.Place(
-                googlePlaceId: googlePlaceId,
-                name: displayData.placeName,
-                address: displayData.placeAddress,
-                latitude: displayData.latitude,
-                longitude: displayData.longitude
-            ),
-            openChatUrl: displayData.openChatUrl
-        )
+    private func makeRequestDTO() -> ConfirmCompanionScheduleRequestDTO {
+        return ConfirmCompanionScheduleRequestDTO(scheduledAt: selectedDate.apiDateString)
     }
 }
 

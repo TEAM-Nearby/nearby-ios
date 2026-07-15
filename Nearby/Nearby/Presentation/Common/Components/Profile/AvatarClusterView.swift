@@ -29,6 +29,14 @@ final class AvatarClusterView: UIView {
     override var intrinsicContentSize: CGSize {
         contentSize
     }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        subviews.compactMap { $0 as? UIImageView }.forEach {
+            $0.layer.cornerRadius = $0.bounds.width / 2
+        }
+    }
     
     // MARK: - Initializer
 
@@ -102,6 +110,7 @@ final class AvatarClusterView: UIView {
             $0.layer.borderColor = UIColor.white.cgColor
             $0.layer.borderWidth = 1
             $0.layer.cornerRadius = currentAvatarSize / 2
+            $0.layer.masksToBounds = true
             $0.clipsToBounds = true
         }
     }

@@ -11,15 +11,11 @@ import Alamofire
 
 protocol AuthService {
     func loginWithKakao(request: KakaoLoginRequestDTO) async throws -> KakaoLoginResponseDTO
-
+    func logout(request: LogoutRequestDTO) async throws -> LogoutResponseDTO
     func sendVerificationCode(request: PhoneVerificationRequestDTO) async throws -> PhoneVerificationResponseDTO
-
     func confirmVerificationCode(phoneVerificationId: Int, request: PhoneVerificationConfirmRequestDTO) async throws -> PhoneVerificationConfirmResponseDTO
-
     func issueProfileImageUploadURL(request: ProfileImageUploadURLRequestDTO) async throws -> ProfileImageUploadURLResponseDTO
-
     func uploadProfileImage(data: Data, uploadURL: String, headers: [String: String]) async throws
-
     func createCompanionProfile(request: CompanionProfileRequestDTO) async throws -> CompanionProfileResponseDTO
 }
 
@@ -49,6 +45,13 @@ extension DefaultAuthService: AuthService {
         try await networkProvider.request(
             AuthTarget.kakaoLogin(request),
             responseType: KakaoLoginResponseDTO.self
+        )
+    }
+
+    func logout(request: LogoutRequestDTO) async throws -> LogoutResponseDTO {
+        try await networkProvider.request(
+            AuthTarget.logout(request),
+            responseType: LogoutResponseDTO.self
         )
     }
 

@@ -10,6 +10,7 @@ import Alamofire
 enum AuthTarget {
     case kakaoLogin(KakaoLoginRequestDTO)
     case refresh(TokenRefreshRequestDTO)
+    case logout(LogoutRequestDTO)
     case sendVerificationCode(PhoneVerificationRequestDTO)
     case confirmVerificationCode(phoneVerificationId: Int, request: PhoneVerificationConfirmRequestDTO)
     case issueProfileImageUploadURL(ProfileImageUploadURLRequestDTO)
@@ -25,6 +26,9 @@ extension AuthTarget: BaseTargetType {
 
         case .refresh:
             return "/api/auth/refresh"
+
+        case .logout:
+            return "/api/auth/logout"
 
         case .sendVerificationCode:
             return "/api/onboarding/phone-verifications"
@@ -44,6 +48,7 @@ extension AuthTarget: BaseTargetType {
         switch self {
         case .kakaoLogin,
              .refresh,
+             .logout,
              .sendVerificationCode,
              .issueProfileImageUploadURL,
              .createCompanionProfile:
@@ -60,6 +65,9 @@ extension AuthTarget: BaseTargetType {
             return ["idToken": request.idToken, "nonce": request.nonce]
 
         case .refresh(let request):
+            return ["refreshToken": request.refreshToken]
+
+        case .logout(let request):
             return ["refreshToken": request.refreshToken]
 
         case .sendVerificationCode(let request):
@@ -99,7 +107,8 @@ extension AuthTarget: BaseTargetType {
         case .kakaoLogin, .refresh:
             return false
 
-        case .sendVerificationCode,
+        case .logout,
+             .sendVerificationCode,
              .confirmVerificationCode,
              .issueProfileImageUploadURL,
              .createCompanionProfile:

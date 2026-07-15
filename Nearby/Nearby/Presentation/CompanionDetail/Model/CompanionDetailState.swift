@@ -25,6 +25,7 @@ struct CompanionDetailState {
     let meetingTimeText: String
     let participantSummaryText: String
     let participantCount: Int
+    let participantImageURLs: [String?]
     let content: String
 
     init(
@@ -45,6 +46,7 @@ struct CompanionDetailState {
         meetingTimeText: String = "",
         participantSummaryText: String = "",
         participantCount: Int = 0,
+        participantImageURLs: [String?] = [],
         content: String = ""
     ) {
         self.postId = postId
@@ -64,6 +66,7 @@ struct CompanionDetailState {
         self.meetingTimeText = meetingTimeText
         self.participantSummaryText = participantSummaryText
         self.participantCount = participantCount
+        self.participantImageURLs = participantImageURLs
         self.content = content
     }
 }

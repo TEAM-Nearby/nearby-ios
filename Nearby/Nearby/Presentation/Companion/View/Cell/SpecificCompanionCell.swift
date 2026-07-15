@@ -148,14 +148,14 @@ final class SpecificCompanionCell: UICollectionViewCell {
     }
     
     func configure(with item: SpecificCompanionCellItem) {
-        profileImageView.configure(image: item.profileImage)
+        profileImageView.configure(imageUrl: item.profileImageURL)
         hostNameLabel.text = item.hostName
         hostGenderChip.updateTitle(item.genderTitle)
         writtenTimeLabel.text = item.writtenTime
         contentLabel.text = item.content
         meetingTimeLabel.text = item.meetingTime
         closedTimeLabel.text = item.closedTime
-        profileStackView.configure(with: item.participantImages)
+        profileStackView.configure(withImageURLs: item.participantImageURLs)
         currentStatusLabel.text = item.statusText
     }
 }

@@ -39,6 +39,8 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
     // MARK: - Custom Methods
 
     override func setAddTarget() {
+        addKeyboardDismissGesture()
+
         rootView.backButtonAction = { [weak self] in
             self?.viewModel.action(.backButtonDidTap)
         }

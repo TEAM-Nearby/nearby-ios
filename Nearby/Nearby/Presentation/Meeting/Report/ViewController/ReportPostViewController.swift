@@ -37,6 +37,8 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
     }
     
     override func setAddTarget() {
+        addKeyboardDismissGesture()
+
         reportPostView.onBackButtonDidTap = { [weak self] in
             self?.coordinator?.popReportPost()
         }

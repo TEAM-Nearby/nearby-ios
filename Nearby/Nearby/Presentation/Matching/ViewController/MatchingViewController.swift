@@ -25,6 +25,7 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
         super.viewWillAppear(animated)
 
         navigationController?.setNavigationBarHidden(true, animated: false)
+        viewModel.action(.viewDidLoad)
     }
 
     // MARK: - Methods
@@ -74,8 +75,6 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
                 self?.coordinator?.showCompanionTab()
             }
             .store(in: &cancellables)
-
-        viewModel.action(.viewDidLoad)
     }
 
     // MARK: - Action

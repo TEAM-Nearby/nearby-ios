@@ -13,6 +13,7 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
     // MARK: - Properties
 
     var onBackButtonDidTap: (() -> Void)?
+    var onRequestActionDidTap: ((AlarmRequestItem) -> Void)?
 
     weak var coordinator: NotificationCoordinator?
 

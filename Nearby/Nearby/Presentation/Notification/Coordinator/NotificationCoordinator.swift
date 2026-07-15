@@ -63,6 +63,7 @@ extension NotificationCoordinator: Coordinator {
                 showCompanionRequestAccept(applicationId: requestItem.applicationId)
             case .sentRejected:
                 showCompanionRequestDecline()
+
             case .receivedPending:
                 showHostRequestRecieve(applicationId: requestItem.applicationId)
             default:

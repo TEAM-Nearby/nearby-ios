@@ -43,7 +43,7 @@ final class LoginView: BaseView {
 
         kakaoLoginButton.do {
             $0.backgroundColor = UIColor(red: 254 / 255, green: 229 / 255, blue: 0 / 255, alpha: 1)
-            $0.layer.cornerRadius = 16
+            $0.layer.cornerRadius = 12
             $0.clipsToBounds = true
 
             var configuration = UIButton.Configuration.plain()
@@ -68,14 +68,13 @@ final class LoginView: BaseView {
 
     override func setUI() {
         addSubviews(logoStackView, kakaoLoginButton)
-
         logoStackView.addArrangedSubviews(logoImageView, subtitleLabel)
     }
 
     override func setLayout() {
         logoStackView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-70)
+            $0.top.equalTo(safeAreaLayoutGuide).offset(276)
+            $0.centerX.equalToSuperview()
         }
 
         logoImageView.snp.makeConstraints {

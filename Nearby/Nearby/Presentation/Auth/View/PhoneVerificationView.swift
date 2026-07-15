@@ -162,7 +162,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         phoneTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(36)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(26)
             $0.leading.equalToSuperview().offset(20)
         }
 

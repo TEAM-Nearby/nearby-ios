@@ -186,7 +186,7 @@ final class HostRequestRecieveView: BaseView {
         }
         
         titleView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom).offset(58)
+            $0.top.equalTo(self.snp.centerY).multipliedBy(0.39)
             $0.horizontalEdges.equalToSuperview()
         }
 

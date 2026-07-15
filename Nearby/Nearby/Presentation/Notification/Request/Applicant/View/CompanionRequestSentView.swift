@@ -84,7 +84,7 @@ final class CompanionRequestSentView: BaseView {
         }
         
         imageView.snp.makeConstraints {
-            $0.bottom.equalTo(self.snp.centerY).offset(-40)
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.9)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(177)
         }

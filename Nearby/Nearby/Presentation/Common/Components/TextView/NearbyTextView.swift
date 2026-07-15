@@ -23,6 +23,9 @@ final class NearbyTextView: BaseView {
     
     private let placeholder: String
     private let contentInsets: UIEdgeInsets
+    private var placeholderTopConstraint: Constraint?
+    private let placeholderVerticalAdjustment: CGFloat = -2
+    private let textFont: NearbyFont = .b3M14
     
     var text: String { textView.text ?? "" }
     
@@ -30,6 +33,13 @@ final class NearbyTextView: BaseView {
         didSet {
             clearButton.isHidden = isClearButtonHidden
             remakeTextViewConstraints()
+        }
+    }
+
+    var verticallyCentersSingleLineText: Bool = false {
+        didSet {
+            remakeTextViewConstraints()
+            setNeedsLayout()
         }
     }
     
@@ -46,6 +56,12 @@ final class NearbyTextView: BaseView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        updateTextVerticalInset()
+    }
     
     // MARK: - Custom Methods
     
@@ -56,15 +72,15 @@ final class NearbyTextView: BaseView {
         
         textView.do {
             $0.backgroundColor = .clear
-            $0.font = NearbyFont.b3M14.font
             $0.textColor = .grey80
             $0.textContainerInset = .zero
             $0.textContainer.lineFragmentPadding = 0
             $0.delegate = self
+            applyTextViewTypography()
         }
         
         placeholderLabel.do {
-            $0.setFont(.b3M14, text: placeholder, textColor: .grey20)
+            $0.setFont(textFont, text: placeholder, textColor: .grey20)
         }
         
         clearButton.do {
@@ -81,10 +97,10 @@ final class NearbyTextView: BaseView {
         remakeTextViewConstraints()
         
         placeholderLabel.snp.makeConstraints {
-            $0.top.equalTo(textView.snp.top)
+            placeholderTopConstraint = $0.top.equalToSuperview().offset(contentInsets.top).constraint
             $0.leading.equalTo(textView.snp.leading)
             $0.trailing.equalTo(textView.snp.trailing)
-            $0.bottom.lessThanOrEqualToSuperview().inset(contentInsets.bottom)
+            $0.bottom.lessThanOrEqualTo(textView.snp.bottom)
         }
         
         clearButton.snp.makeConstraints {
@@ -98,15 +114,50 @@ final class NearbyTextView: BaseView {
     
     private func remakeTextViewConstraints() {
         textView.snp.remakeConstraints {
-            $0.top.equalToSuperview().offset(contentInsets.top)
             $0.leading.equalToSuperview().offset(contentInsets.left)
-            $0.bottom.equalToSuperview().inset(contentInsets.bottom)
             if isClearButtonHidden {
                 $0.trailing.equalToSuperview().inset(contentInsets.right)
             } else {
                 $0.trailing.equalTo(clearButton.snp.leading).offset(-12)
             }
+
+            if verticallyCentersSingleLineText {
+                $0.top.bottom.equalToSuperview()
+            } else {
+                $0.top.equalToSuperview().offset(contentInsets.top)
+                $0.bottom.equalToSuperview().inset(contentInsets.bottom)
+            }
         }
+    }
+
+    private func updateTextVerticalInset() {
+        guard verticallyCentersSingleLineText, bounds.height > 0 else {
+            textView.textContainerInset = .zero
+            placeholderTopConstraint?.update(offset: contentInsets.top)
+            return
+        }
+
+        let lineHeight = textFont.property.lineHeight
+        let topInset = max(0, (bounds.height - lineHeight) / 2)
+        textView.textContainerInset = UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0)
+        placeholderTopConstraint?.update(offset: topInset + placeholderVerticalAdjustment)
+    }
+
+    private func applyTextViewTypography() {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.minimumLineHeight = textFont.property.lineHeight
+        paragraphStyle.maximumLineHeight = textFont.property.lineHeight
+
+        let baselineOffset = (textFont.property.lineHeight - textFont.font.lineHeight) / 4
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: textFont.font,
+            .paragraphStyle: paragraphStyle,
+            .baselineOffset: baselineOffset,
+            .foregroundColor: UIColor.grey80
+        ]
+
+        textView.font = textFont.font
+        textView.typingAttributes = attributes
     }
     
     func updatePlaceholder(isHidden: Bool) {
@@ -121,6 +172,7 @@ final class NearbyTextView: BaseView {
     func setPlaceholderTruncation(numberOfLines: Int) {
         placeholderLabel.numberOfLines = numberOfLines
         placeholderLabel.lineBreakMode = .byTruncatingTail
+        setNeedsLayout()
     }
 }
 

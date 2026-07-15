@@ -56,6 +56,7 @@ final class RecruitCompanionBottomView: BaseView {
             $0.clearButton.tintColor = .grey40
             $0.isClearButtonHidden = false
             $0.setPlaceholderTruncation(numberOfLines: 1)
+            $0.verticallyCentersSingleLineText = true
             $0.textView.isScrollEnabled = false
         }
 
@@ -78,6 +79,7 @@ final class RecruitCompanionBottomView: BaseView {
             $0.updatePlaceholder(isHidden: false)
             $0.isClearButtonHidden = true
             $0.setPlaceholderTruncation(numberOfLines: 1)
+            $0.verticallyCentersSingleLineText = true
         }
 
         placeSearchResultTableView.do {

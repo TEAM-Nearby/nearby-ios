@@ -190,6 +190,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         companionView.setCategoryChipsHidden(false)
         setTabBarHidden(false, animated: animated)
         bottomSheetViewController.setContentViewController(emptySheetViewController)
+        (emptySheetViewController as? EmptyCompanionSheetViewController)?.restartAnimation()
         bottomSheetViewController.setState(content: .nearbyCompanionEmpty, animated: animated)
     }
 

@@ -11,7 +11,7 @@ import UIKit
 
 protocol LinkPresentable {
     func presentSafariViewController(url: URL, asBottomSheet: Bool)
-    func presentLinkCopyPopup(title: String, link: String)
+    func presentLinkCopyPopup(title: String, link: String, onCopy: (() -> Void)?)
 }
 
 extension LinkPresentable where Self: UIViewController {
@@ -27,27 +27,28 @@ extension LinkPresentable where Self: UIViewController {
         present(safariViewController, animated: true)
     }
     
-    func presentLinkCopyPopup(title: String = "오픈채팅 링크", link: String) {
+    func presentLinkCopyPopup(title: String = "오픈채팅 링크", link: String, onCopy: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: link, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "링크 복사", style: .default) { _ in
             UIPasteboard.general.string = link
+            onCopy?()
         })
         alert.addAction(UIAlertAction(title: "닫기", style: .cancel))
         present(alert, animated: true)
     }
-    
-    func bindOpenChat(_ output: OpenChatDisplayable, cancellables: inout Set<AnyCancellable>) {
+
+    func bindOpenChat(_ output: OpenChatDisplayable, cancellables: inout Set<AnyCancellable>, onLinkCopied: (() -> Void)? = nil) {
         output.showOpenChat
             .receive(on: DispatchQueue.main)
             .sink { [weak self] url in
                 self?.presentSafariViewController(url: url, asBottomSheet: false)
             }
             .store(in: &cancellables)
-        
+
         output.showChatLinkPopup
             .receive(on: DispatchQueue.main)
             .sink { [weak self] link in
-                self?.presentLinkCopyPopup(title: "오픈채팅 링크", link: link)
+                self?.presentLinkCopyPopup(title: "오픈채팅 링크", link: link, onCopy: onLinkCopied)
             }
             .store(in: &cancellables)
     }

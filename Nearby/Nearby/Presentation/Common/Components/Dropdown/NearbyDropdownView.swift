@@ -27,6 +27,10 @@ final class NearbyDropdownView: BaseView {
     private let arrowImageView = UIImageView()
     private let menuContainerView = UIView()
     private let tableView = UITableView()
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: titleLabel.intrinsicContentSize.width + 52, height: 32)
+    }
     
     // MARK: - Initializer
     
@@ -65,6 +69,8 @@ final class NearbyDropdownView: BaseView {
         
         titleLabel.do {
             $0.setFont(.b3Sb14, text: selectedItem, textColor: .grey70)
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
         
         arrowImageView.do {
@@ -106,7 +112,6 @@ final class NearbyDropdownView: BaseView {
     
     override func setLayout() {
         snp.makeConstraints {
-            $0.width.equalTo(89)
             $0.height.equalTo(32)
         }
         
@@ -152,7 +157,9 @@ final class NearbyDropdownView: BaseView {
         
         let changes = {
             self.menuContainerView.alpha = isExpanded ? 1 : 0
-            self.arrowImageView.transform = isExpanded ? CGAffineTransform(rotationAngle: .pi) : .identity
+            self.arrowImageView.transform = isExpanded
+                ? CGAffineTransform(scaleX: 1, y: -1)
+                : .identity
         }
         
         let completion: (Bool) -> Void = { [weak self] _ in
@@ -172,6 +179,8 @@ final class NearbyDropdownView: BaseView {
         guard items.contains(item) else { return }
         selectedItem = item
         titleLabel.text = item
+        titleLabel.invalidateIntrinsicContentSize()
+        invalidateIntrinsicContentSize()
         tableView.reloadData()
     }
 }

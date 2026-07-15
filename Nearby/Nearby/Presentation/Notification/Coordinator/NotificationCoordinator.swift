@@ -30,7 +30,27 @@ final class NotificationCoordinator {
 
 extension NotificationCoordinator: Coordinator {
     func start() {
-        let alarmViewController = diContainer.makeAlarmViewController()
+        let alarmViewController = makeAlarmViewController()
+
+        navigationController.setViewControllers([alarmViewController], animated: false)
+    }
+
+    func finish() {
+        parentCoordinator?.removeChildCoordinator(self)
+    }
+
+    func showAlarm(initialTab: AlarmTab = .sent) {
+        let alarmViewController = makeAlarmViewController(initialTab: initialTab)
+        alarmViewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(alarmViewController, animated: true)
+    }
+
+    private func makeAlarmViewController(
+        initialTab: AlarmTab = .sent
+    ) -> AlarmViewController {
+        let alarmViewController = diContainer.makeAlarmViewController(
+            initialTab: initialTab
+        )
 
         alarmViewController.onBackButtonDidTap = { [weak self] in
             self?.navigationController.popViewController(animated: true)
@@ -50,11 +70,7 @@ extension NotificationCoordinator: Coordinator {
             }
         }
 
-        navigationController.setViewControllers([alarmViewController], animated: false)
-    }
-    
-    func finish() {
-        parentCoordinator?.removeChildCoordinator(self)
+        return alarmViewController
     }
     
     func showCompanionRequestSent(hostName: String) {

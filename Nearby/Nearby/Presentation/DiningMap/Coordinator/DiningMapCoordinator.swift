@@ -23,6 +23,15 @@ final class DiningMapCoordinator {
         self.navigationController = navigationController
         self.diContainer = diContainer
     }
+
+    private func showAlarm() {
+        let coordinator = diContainer.makeNotificationCoordinator(
+            navigationController: navigationController
+        )
+        coordinator.parentCoordinator = parentCoordinator
+        parentCoordinator?.addChildCoordinator(coordinator)
+        coordinator.showAlarm()
+    }
 }
 
 // MARK: - Coordinator
@@ -30,6 +39,9 @@ final class DiningMapCoordinator {
 extension DiningMapCoordinator: Coordinator {
     func start() {
         let viewController = diContainer.makeDiningMapViewController()
+        viewController.onAlarmButtonDidTap = { [weak self] in
+            self?.showAlarm()
+        }
         navigationController.setViewControllers([viewController], animated: false)
     }
 

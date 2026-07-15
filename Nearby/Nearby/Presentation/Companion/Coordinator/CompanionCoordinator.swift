@@ -60,12 +60,20 @@ final class CompanionCoordinator {
     }
 
     private func showCompanionRequestSent(hostName: String) {
-        let notificationCoordinator = diContainer.makeNotificationCoordinator(
+        makeNotificationCoordinator().showCompanionRequestSent(hostName: hostName)
+    }
+
+    private func showAlarm() {
+        makeNotificationCoordinator().showAlarm()
+    }
+
+    private func makeNotificationCoordinator() -> NotificationCoordinator {
+        let coordinator = diContainer.makeNotificationCoordinator(
             navigationController: navigationController
         )
-        notificationCoordinator.parentCoordinator = parentCoordinator
-        parentCoordinator?.addChildCoordinator(notificationCoordinator)
-        notificationCoordinator.showCompanionRequestSent(hostName: hostName)
+        coordinator.parentCoordinator = parentCoordinator
+        parentCoordinator?.addChildCoordinator(coordinator)
+        return coordinator
     }
 
     func showCompanionDetail(state: CompanionDetailState) {
@@ -89,6 +97,9 @@ extension CompanionCoordinator: Coordinator {
         }
         
         let companionViewController = diContainer.makeCompanionViewController(viewModel: viewModel)
+        companionViewController.onAlarmButtonDidTap = { [weak self] in
+            self?.showAlarm()
+        }
         navigationController.setViewControllers([companionViewController], animated: false)
     }
     

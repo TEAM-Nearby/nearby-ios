@@ -11,6 +11,10 @@ import SnapKit
 import Then
 
 final class CompanionTopSectionView: BaseView {
+
+    // MARK: - Properties
+
+    var onAlarmButtonDidTap: (() -> Void)?
     
     // MARK: - UI Components
     
@@ -104,5 +108,11 @@ final class CompanionTopSectionView: BaseView {
     
     override func registerCells() {
         categoryCollectionView.register(NearbyChipCollectionViewCell.self)
+    }
+
+    override func setAddTarget() {
+        navigationBar.rightFirstButtonAction = { [weak self] in
+            self?.onAlarmButtonDidTap?()
+        }
     }
 }

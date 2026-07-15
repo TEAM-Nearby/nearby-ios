@@ -11,6 +11,8 @@ import Combine
 import SnapKit
 
 final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
+
+    var onAlarmButtonDidTap: (() -> Void)?
     
     // MARK: - Properties
     
@@ -147,6 +149,9 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     }
 
     override func setAddTarget() {
+        diningMapView.onAlarmButtonDidTap = { [weak self] in
+            self?.onAlarmButtonDidTap?()
+        }
         diningMapView.currentLocationButton.addTarget(self, action: #selector(currentLocationButtonDidTap), for: .touchUpInside)
         diningMapView.bookmarkButton.addTarget(self, action: #selector(bookmarkButtonDidTap), for: .touchUpInside)
     }

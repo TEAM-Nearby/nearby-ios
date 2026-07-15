@@ -32,13 +32,19 @@ struct CompanionDTO: Decodable {
     let contentPreviewTruncated: Bool
     let meetingTimeType: String
     let meetingAt: String?
-    let meetingAtText: String
+    let meetingAtText: String?
     let participantCount: Int
     let maxParticipants: Int
+    let participants: [CompanionParticipantDTO]
     let participantSummaryText: String
     let createdAt: String
     let createdAgoText: String
     let mapMarkerText: String
+}
+
+struct CompanionParticipantDTO: Decodable {
+    let userId: Int
+    let profileImageUrl: String?
 }
 
 struct CompanionHostDTO: Decodable {

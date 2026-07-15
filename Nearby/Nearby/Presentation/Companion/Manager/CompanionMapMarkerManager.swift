@@ -125,6 +125,7 @@ final class CompanionMapMarkerManager {
         let marker = GMSMarker(position: location.coordinate)
         marker.iconView = makeCurrentLocationMarkerView()
         marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
+        marker.zIndex = 1_000
         marker.map = mapView
         marker.tracksViewChanges = true
         currentLocationMarker = marker

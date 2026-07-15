@@ -39,6 +39,7 @@ struct DiningPlaceDTO: Decodable {
     let googlePlaceId: String
     let name: String
     let address: String?
+    let imageUrl: String?
     let photoReference: String?
     let category: String?
     let distanceMeters: Int
@@ -62,6 +63,7 @@ struct DiningDetailResponseDTO: Decodable {
     let rating: Double?
     let reviewCount: Int?
     let phoneNumber: String?
+    let imageUrl: String?
     let photoReference: String?
     let photoReferences: [String]?
     let businessStatus: String

@@ -12,11 +12,7 @@ import SnapKit
 import Then
 
 final class NearCompanionCell: UICollectionViewCell {
-    
-    // MARK: - Property
-    
-    private let profileAvatarCount: Int = 0
-    
+
     // MARK: - UI Components
     
     private let dividerView = UIView()
@@ -93,10 +89,6 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.alignment = .center
         }
         
-        profileStackView.do {
-            $0.configureWithDefaultAvatars(count: profileAvatarCount)
-        }
-        
         scheduleLabel.do {
             $0.setFont(.c1R12, textColor: .grey70)
         }
@@ -163,10 +155,6 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.leading.equalTo(contentLabel.snp.leading).offset(3)
         }
         
-        profileStackView.snp.makeConstraints {
-            $0.height.equalTo(profileStackView.contentSize.height)
-        }
-        
         arrowIcon.snp.makeConstraints {
             $0.size.equalTo(16)
             $0.trailing.equalToSuperview().inset(20)
@@ -184,7 +172,7 @@ final class NearCompanionCell: UICollectionViewCell {
         timeLabel.text = item.writtenTime
         contentLabel.setFont(.c1M12, text: item.content, textColor: .grey70, lineSpacing: 3)
         scheduleLabel.text = item.schedule
-        profileStackView.configure(with: item.participantImages)
+        profileStackView.configure(withImageURLs: item.participantImageURLs)
         currentStatusLabel.text = item.statusText
     }
 }

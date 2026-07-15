@@ -45,7 +45,7 @@ final class DiningMapViewModel: BaseViewModelType {
 
 private extension CompanionMapConfiguration {
     static let diningMap = CompanionMapConfiguration(
-        referenceCoordinate: CLLocationCoordinate2D(latitude: 41.389458, longitude: 2.168289),
+        referenceCoordinate: CLLocationCoordinate2D(latitude: 41.3879706, longitude: 2.1671360),
         initialZoom: 16.2,
         smallMarkerMaximumZoom: -1,
         largeMarkerMinimumZoom: 100,

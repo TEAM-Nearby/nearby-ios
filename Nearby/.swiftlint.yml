@@ -5,7 +5,9 @@ analyzer_rules:
 disabled_rules:
   - line_length
   - type_body_length
+  - file_length
   - function_body_length
+  - function_parameter_count
   - cyclomatic_complexity
   - identifier_name
   - todo

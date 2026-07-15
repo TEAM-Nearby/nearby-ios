@@ -63,7 +63,7 @@ final class CompanionViewModel: BaseViewModelType {
 
 private extension CompanionMapConfiguration {
     static let mock = CompanionMapConfiguration(
-        referenceCoordinate: CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.978),
+        referenceCoordinate: CLLocationCoordinate2D(latitude: 41.3879706, longitude: 2.1671360),
         initialZoom: 16.2,
         smallMarkerMaximumZoom: 14.0,
         largeMarkerMinimumZoom: 15.6,

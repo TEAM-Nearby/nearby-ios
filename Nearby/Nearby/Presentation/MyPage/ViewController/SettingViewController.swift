@@ -58,6 +58,26 @@ private extension SettingViewController {
         viewModel.output.logoutButtonDidTap = { [weak self] in
             self?.onLogoutButtonDidTap?()
         }
+
+        viewModel.output.logoutErrorMessage = { [weak self] message in
+            self?.showLogoutErrorAlert(message: message)
+        }
+
+        viewModel.output.isLogoutLoading = { [weak self] isLoading in
+            self?.settingView.logoutButton.isEnabled = !isLoading
+        }
+    }
+
+    func showLogoutErrorAlert(message: String) {
+        guard presentedViewController == nil else { return }
+
+        let alertController = UIAlertController(
+            title: "로그아웃 실패",
+            message: message,
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alertController, animated: true)
     }
 }
 

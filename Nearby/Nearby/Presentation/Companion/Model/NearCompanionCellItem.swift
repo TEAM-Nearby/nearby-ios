@@ -14,7 +14,7 @@ struct NearCompanionCellItem {
     let writtenTime: String
     let content: String
     let schedule: String
-    let participantImages: [UIImage?]
+    let participantImageURLs: [String?]
     let statusText: String
     let detailState: CompanionDetailState
 }
@@ -30,10 +30,7 @@ extension NearCompanionCellItem {
             writtenTime: dto.createdAgoText,
             content: dto.contentPreview,
             schedule: dto.nearMeetingTimeTitle,
-            participantImages: Array(
-                repeating: nil,
-                count: max(dto.participantCount, 1)
-            ),
+            participantImageURLs: dto.participantProfileImageURLs,
             statusText: dto.participantSummaryText,
             detailState: CompanionDetailState(
                 postId: dto.postId,
@@ -42,6 +39,7 @@ extension NearCompanionCellItem {
                 tags: [],
                 hostName: dto.host.nickname,
                 genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
+                profileImageURL: dto.participants.first?.profileImageUrl.flatMap(URL.init(string:)),
                 placeName: dto.place.name,
                 googlePlaceId: dto.place.googlePlaceId,
                 placeLatitude: dto.place.latitude,
@@ -49,8 +47,17 @@ extension NearCompanionCellItem {
                 meetingTimeText: dto.nearMeetingTimeTitle,
                 participantSummaryText: dto.participantSummaryText,
                 participantCount: dto.participantCount,
+                participantImageURLs: dto.participantProfileImageURLs,
                 content: dto.contentPreview
             )
         )
+    }
+}
+
+extension CompanionDTO {
+    var participantProfileImageURLs: [String?] {
+        let imageURLs = participants.map(\.profileImageUrl)
+        let missingCount = max(participantCount - imageURLs.count, 0)
+        return imageURLs + [String?](repeating: nil, count: missingCount)
     }
 }

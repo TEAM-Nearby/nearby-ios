@@ -103,6 +103,8 @@ final class GradientCircleView: BaseView {
     // MARK: - Method
 
     func configure(imageUrl: String?) {
+        imageView.kf.cancelDownloadTask()
+
         if let imageUrl, let url = URL(string: imageUrl) {
             imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
         } else {

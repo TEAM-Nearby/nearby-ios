@@ -51,7 +51,7 @@ private extension CompanionDTO {
         case "UNDECIDED":
             return "시간 미정"
         default:
-            guard let meetingDate else { return meetingAtText }
+            guard let meetingDate else { return meetingAtText ?? "" }
 
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "ko_KR")

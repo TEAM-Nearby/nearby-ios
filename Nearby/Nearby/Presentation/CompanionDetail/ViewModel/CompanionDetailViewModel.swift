@@ -153,8 +153,15 @@ private extension CompanionDetailResponseDTO {
             meetingTimeText: detailMeetingTimeTitle ?? previousState.meetingTimeText,
             participantSummaryText: "\(participantCount)/\(maxParticipants)명",
             participantCount: participantCount,
+            participantImageURLs: participantProfileImageURLs,
             content: content
         )
+    }
+
+    var participantProfileImageURLs: [String?] {
+        let imageURLs = participants.map(\.profileImageUrl)
+        let missingCount = max(participantCount - imageURLs.count, 0)
+        return imageURLs + [String?](repeating: nil, count: missingCount)
     }
 
     var postType: PostType {

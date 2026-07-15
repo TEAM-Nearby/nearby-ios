@@ -48,6 +48,7 @@ final class DiningInfoSheetView: BaseView {
     
     private lazy var imageCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
     private var restaurantImages: [UIImage?] = []
+    private var restaurantImageURLs: [URL?] = []
     
     // MARK: - Custom Methods
     
@@ -297,6 +298,7 @@ final class DiningInfoSheetView: BaseView {
         placeTitleLabel.text = "\(item.distance) · \(item.address)"
         phoneLabel.text = phoneNumber
         restaurantImages = item.images
+        restaurantImageURLs = item.imageURLs
         imageCollectionView.reloadData()
         imageCollectionView.layoutIfNeeded()
         imageCollectionView.setContentOffset(CGPoint(x: -imageCollectionView.contentInset.left, y: 0), animated: false)
@@ -312,7 +314,10 @@ extension DiningInfoSheetView: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(DiningImageCell.self, for: indexPath)
-        cell.configure(image: restaurantImages[indexPath.item])
+        let imageURL = restaurantImageURLs.indices.contains(indexPath.item)
+            ? restaurantImageURLs[indexPath.item]
+            : nil
+        cell.configure(image: restaurantImages[indexPath.item], imageURL: imageURL)
         return cell
     }
 }

@@ -21,6 +21,7 @@ struct NearDiningCellItem {
     let rating: Double
     let reviewCount: Int
     let images: [UIImage?]
+    let imageURLs: [URL?]
     var isBookmarked: Bool
     let latitude: Double?
     let longitude: Double?
@@ -40,6 +41,7 @@ struct NearDiningCellItem {
         rating: Double,
         reviewCount: Int,
         images: [UIImage?],
+        imageURLs: [URL?] = [],
         isBookmarked: Bool,
         latitude: Double? = nil,
         longitude: Double? = nil,
@@ -58,6 +60,7 @@ struct NearDiningCellItem {
         self.rating = rating
         self.reviewCount = reviewCount
         self.images = images
+        self.imageURLs = imageURLs
         self.isBookmarked = isBookmarked
         self.latitude = latitude
         self.longitude = longitude
@@ -97,6 +100,7 @@ extension NearDiningCellItem {
             rating: dto.rating ?? 0,
             reviewCount: dto.reviewCount ?? 0,
             images: [.restaurantPlaceholder],
+            imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
             isBookmarked: dto.isFavorite,
             latitude: dto.latitude,
             longitude: dto.longitude
@@ -104,8 +108,6 @@ extension NearDiningCellItem {
     }
 
     init(dto: DiningDetailResponseDTO) {
-        let photoCount = max(dto.photoReferences?.count ?? 0, dto.photoReference == nil ? 0 : 1)
-
         self.init(
             placeId: dto.placeId,
             googlePlaceId: dto.googlePlaceId,
@@ -116,7 +118,8 @@ extension NearDiningCellItem {
             address: dto.address ?? "",
             rating: dto.rating ?? 0,
             reviewCount: dto.reviewCount ?? 0,
-            images: Array(repeating: .restaurantPlaceholder, count: max(photoCount, 1)),
+            images: [.restaurantPlaceholder],
+            imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
             isBookmarked: dto.isFavorite,
             latitude: dto.latitude,
             longitude: dto.longitude,

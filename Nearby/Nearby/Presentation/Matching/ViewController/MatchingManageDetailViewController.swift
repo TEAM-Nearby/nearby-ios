@@ -17,8 +17,12 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
 
     // MARK: - Initializer
 
-    init(item: MatchingMatchedCardItem) {
-        super.init(viewModel: MatchingManageDetailViewModel(item: item))
+    init(displayData: MatchingScheduleDetailDisplayData, repository: MatchedCompanionListRepository) {
+        super.init(viewModel: MatchingManageDetailViewModel(displayData: displayData, repository: repository))
+    }
+
+    init(item: MatchingMatchedCardItem, repository: MatchedCompanionListRepository) {
+        super.init(viewModel: MatchingManageDetailViewModel(item: item, repository: repository))
     }
 
     // MARK: - Life Cycles
@@ -79,14 +83,6 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.coordinator?.showAlarm()
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.submitSchedule
-            .receive(on: DispatchQueue.main)
-            .sink { request in
-                // TODO: - 일정 확정 API 연결
-                AppLogger.data(request)
             }
             .store(in: &cancellables)
 

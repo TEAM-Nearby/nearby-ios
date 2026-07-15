@@ -27,7 +27,6 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         let dateButtonTitle = PassthroughSubject<String, Never>()
         let showBack = PassthroughSubject<Void, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
-        let submitSchedule = PassthroughSubject<MatchingManageScheduleRequestModel, Never>()
     }
 
     struct DisplayData {
@@ -45,13 +44,32 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     let output = Output()
 
-    private let item: MatchingMatchedCardItem
+    private let displayData: MatchingScheduleDetailDisplayData
+    private let repository: MatchedCompanionListRepository
     private var selectedDate = Date()
 
     // MARK: - Initializer
 
-    init(item: MatchingMatchedCardItem) {
-        self.item = item
+    init(displayData: MatchingScheduleDetailDisplayData, repository: MatchedCompanionListRepository) {
+        self.displayData = displayData
+        self.repository = repository
+        self.selectedDate = displayData.scheduledAt?.apiDate ?? Date()
+    }
+
+    init(item: MatchingMatchedCardItem, repository: MatchedCompanionListRepository) {
+        self.displayData = MatchingScheduleDetailDisplayData(
+            cardItem: item,
+            placeName: item.content.place,
+            placeAddress: "",
+            googlePlaceId: nil,
+            latitude: 0,
+            longitude: 0,
+            scheduledAt: nil,
+            scheduledAtText: item.content.meetingTime,
+            openChatUrl: "",
+            type: item.type
+        )
+        self.repository = repository
     }
 
     // MARK: - Action
@@ -72,7 +90,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
             output.dateButtonTitle.send(selectedDate.displayDateString)
 
         case .confirmButtonDidTap:
-            output.submitSchedule.send(makeRequestModel())
+            confirmSchedule()
         }
     }
 
@@ -80,21 +98,42 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     private func makeDisplayData() -> DisplayData {
         return DisplayData(
-            cardItem: item, placeName: item.content.place, placeAddress: "Siutat condal, Rambla de Catalunya, 16",
-            googlePlaceId: "ChIJmSmV-_KipBIR1rXbKL9Yhp4", latitude: 37.566508, longitude: 126.977945,
+            cardItem: displayData.cardItem,
+            placeName: displayData.placeName,
+            placeAddress: displayData.placeAddress,
+            googlePlaceId: displayData.googlePlaceId,
+            latitude: displayData.latitude,
+            longitude: displayData.longitude,
             selectedDate: selectedDate, dateButtonTitle: selectedDate.displayDateString
         )
     }
 
-    private func makeRequestModel() -> MatchingManageScheduleRequestModel {
-        return MatchingManageScheduleRequestModel(
-            scheduledAt: selectedDate.apiDateString,
-            place: MatchingManageSchedulePlaceRequestModel(
-                googlePlaceId: "", name: item.content.place, address: "Siutat condal, Rambla de Catalunya, 16",
-                latitude: 37.566508, longitude: 126.977945
-            ),
-            openChatUrl: "kakaotalk.hcmvietnam.tistory.com/36"
-        )
+    private func confirmSchedule() {
+        let request = makeRequestDTO()
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                _ = try await repository.confirmSchedule(matchId: displayData.cardItem.matchId, request: request)
+                output.showBack.send(())
+            } catch {
+                AppLogger.error(error, message: "동행 일정 확정에 실패했습니다.")
+            }
+        }
+    }
+
+    private func makeRequestDTO() -> ConfirmCompanionScheduleRequestDTO {
+        return ConfirmCompanionScheduleRequestDTO(scheduledAt: selectedDate.apiDateString)
+    }
+}
+
+private extension String {
+    var apiDate: Date? {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter.date(from: self)
     }
 }
 

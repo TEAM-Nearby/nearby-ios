@@ -20,6 +20,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     private let saveDiningSheetViewController: SaveDiningSheetViewController
     private let diningInfoSheetViewController: DiningInfoSheetViewController
     private var isSaveDiningSheetPresented = false
+    private var isBottomSheetInitialized = false
     private lazy var mapController = CompanionMapController(mapView: diningMapView.mapView, configuration: viewModel.output.mapConfiguration)
     private var bottomSheetHostView: UIView { tabBarController?.view ?? view }
     private var bottomSheetParentViewController: UIViewController { tabBarController ?? self }
@@ -46,6 +47,18 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     
     override func loadView() {
         view = diningMapView
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard !isBottomSheetInitialized,
+              view.bounds.width > 0,
+              view.bounds.height > 0 else { return }
+
+        isBottomSheetInitialized = true
+        bottomSheetViewController.setState(content: .diningMapList, level: .standard, animated: false)
+        bottomSheetViewController.setContentViewController(nearDiningSheetViewController)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -81,8 +94,6 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
             self?.diningMapView.bookmarkButton.isHidden = shouldHideMapButtons
             self?.updateBottomSheetLayer(for: state)
         }
-        bottomSheetViewController.setContentViewController(nearDiningSheetViewController)
-        bottomSheetViewController.setState(content: .diningMapList, level: .standard, animated: false)
         bottomSheetViewController.setTrailingOverlayViews(lowerView: diningMapView.currentLocationButton, upperView: diningMapView.bookmarkButton)
 
         nearDiningSheetViewController.onRestaurantSelected = { [weak self] item in
@@ -155,22 +166,22 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         isSaveDiningSheetPresented = true
         saveDiningSheetViewController.refresh()
         setTabBarHidden(true, animated: animated)
-        bottomSheetViewController.setContentViewController(saveDiningSheetViewController)
         bottomSheetViewController.setState(content: .savedRestaurantList, animated: animated)
+        bottomSheetViewController.setContentViewController(saveDiningSheetViewController)
     }
 
     private func showNearDiningSheet(animated: Bool = true) {
         isSaveDiningSheetPresented = false
         setTabBarHidden(false, animated: animated)
-        bottomSheetViewController.setContentViewController(nearDiningSheetViewController)
         bottomSheetViewController.setState(content: .diningMapList, animated: animated)
+        bottomSheetViewController.setContentViewController(nearDiningSheetViewController)
     }
 
     private func showDiningInfoSheet(for item: NearDiningCellItem, animated: Bool = true) {
         setTabBarHidden(true, animated: animated)
         diningInfoSheetViewController.configure(with: item)
-        bottomSheetViewController.setContentViewController(diningInfoSheetViewController)
         bottomSheetViewController.setState(content: .diningInfo, animated: animated)
+        bottomSheetViewController.setContentViewController(diningInfoSheetViewController)
     }
 
     private func hideBottomSheetAfterTransition() {

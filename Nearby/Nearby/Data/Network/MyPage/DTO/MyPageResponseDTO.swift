@@ -8,9 +8,6 @@
 import Foundation
 
 struct MyPageResponseDTO: Decodable {
-
-    // MARK: - Properties
-
     let profileImageUrl: String?
     let nickname: String
     let isPhoneVerified: Bool
@@ -22,6 +19,35 @@ struct MyPageResponseDTO: Decodable {
     let mealTogetherCount: Int
     let visitedCityCount: Int
     let receivedReviewCount: Int
+}
+
+struct MyCompanionPostsResponseDTO: Decodable {
+    let posts: [MyCompanionPostDTO]
+}
+
+struct MyCompanionPostDTO: Decodable {
+    let postId: Int
+    let cityName: String
+    let scheduledAt: String?
+    let place: MyCompanionPostPlaceDTO
+    let hostProfileImageUrl: String?
+    let members: [MyCompanionPostMemberDTO]
+    let currentParticipants: Int
+    let maxParticipants: Int
+    let content: String
+    let reviewKeywords: [String]
+}
+
+struct MyCompanionPostMemberDTO: Decodable {
+    let userId: Int
+    let profileImageUrl: String?
+}
+
+struct MyCompanionPostPlaceDTO: Decodable {
+    let googlePlaceId: String
+    let name: String
+    let latitude: Double?
+    let longitude: Double?
 }
 
 enum MyPageAgeGroup: String, Decodable {

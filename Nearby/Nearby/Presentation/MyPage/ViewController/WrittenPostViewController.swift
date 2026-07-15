@@ -35,6 +35,11 @@ final class WrittenPostViewController:
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        writtenPostView.playEmptyAnimationIfNeeded()
+    }
+
     // MARK: - Custom Methods
 
     override func setAddTarget() {

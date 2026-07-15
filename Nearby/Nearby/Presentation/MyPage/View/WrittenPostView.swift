@@ -114,5 +114,16 @@ final class WrittenPostView: BaseView {
         tableView.isHidden = isEmpty
 
         bottomButtonContainerView.isHidden = !isEmpty
+
+        if isEmpty {
+            emptyView.playAnimationIfNeeded()
+        } else {
+            emptyView.stopAnimation()
+        }
+    }
+
+    func playEmptyAnimationIfNeeded() {
+        guard !emptyView.isHidden else { return }
+        emptyView.playAnimationIfNeeded()
     }
 }

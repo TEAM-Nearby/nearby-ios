@@ -48,6 +48,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     private(set) var placeName: String = ""
     private(set) var meetingAt: String = ""
     private(set) var matchId: Int?
+    private(set) var meetingTimeType: PostType = .scheduled
     private(set) var applicantProfileImageUrl: String?
     private let repository: HostCompanionRepository
     private var cancellables = Set<AnyCancellable>()
@@ -95,6 +96,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
                 applicantProfileImageUrl = DTO.applicantProfile.profileImageUrl
                 placeName = DTO.placeName
                 meetingAt = DTO.meetingAt
+                meetingTimeType = DTO.meetingTimeType
                 output.displayData.send(data)
             } catch {
                 AppLogger.error(error)

@@ -57,7 +57,7 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self else { return }
-                self.coordinator?.showHostRequestDecline(
+                coordinator?.showHostRequestDecline(
                     applicantName: viewModel.applicantNickname,
                     applicationId: viewModel.applicationId
                 )
@@ -68,13 +68,13 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self else { return }
-                self.coordinator?.showHostRequestAllow(
+                coordinator?.showHostRequestAllow(
                     applicantName: viewModel.applicantNickname,
                     applicantProfileImageUrl: viewModel.applicantProfileImageUrl,
                     locationName: viewModel.placeName,
                     meetingAt: viewModel.meetingAt,
                     matchId: viewModel.matchId,
-                    postType: .scheduled  // TODO: 서버에서 postType 받으면 교체
+                    postType: viewModel.meetingTimeType
                 )
             }
             .store(in: &cancellables)

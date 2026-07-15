@@ -12,6 +12,7 @@ struct HostCompanionDetailResponseDTO: Decodable {
     let postId: Int
     let applicationStatus: String
     let placeName: String
+    let meetingTimeType: PostType
     let meetingAt: String
     let applicantProfile: ApplicantProfile
     let applicantAccount: ApplicantAccount

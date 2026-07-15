@@ -45,7 +45,7 @@ struct AlarmRequestItem: Identifiable {
 
         placeName = dto.placeName
         meetingAt = dto.meetingAt
-        dateText = dto.meetingAt.toDate()?.meetingDisplayText ?? dto.meetingAt
+        dateText = dto.meetingAt.toDate()?.alarmMeetingDisplayText ?? dto.meetingAt
 
         matchId = dto.matchId
         actionType = dto.actionType

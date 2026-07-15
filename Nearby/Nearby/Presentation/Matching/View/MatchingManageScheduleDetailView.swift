@@ -19,6 +19,7 @@ final class MatchingManageScheduleDetailView: BaseView {
     var dateDidChange: ((Date) -> Void)?
     var confirmButtonAction: (() -> Void)?
     private var isDatePickerVisible = false
+    private var matchedCardViewHeightConstraint: Constraint?
 
     // MARK: - UI Components
 
@@ -128,7 +129,9 @@ final class MatchingManageScheduleDetailView: BaseView {
         matchedCardView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(18)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(110)
+            matchedCardViewHeightConstraint = $0.height.equalTo(
+                MatchingMatchedCardCell.height(displayMode: .scheduleDetail)
+            ).constraint
         }
     }
 
@@ -215,6 +218,12 @@ final class MatchingManageScheduleDetailView: BaseView {
     func configure(with output: MatchingManageDetailViewModel.DisplayData) {
         matchedCardView.configure(content: output.cardItem.content, displayMode: .scheduleDetail)
         matchedCardView.setNextButtonHidden(true)
+        matchedCardViewHeightConstraint?.update(
+            offset: MatchingMatchedCardCell.height(
+                for: output.cardItem.content,
+                displayMode: .scheduleDetail
+            )
+        )
         datePicker.date = output.selectedDate
         placeDetailLabel.setFont(.b3M14, text: output.placeAddress, textColor: .grey30)
         mapView.configure(latitude: output.latitude, longitude: output.longitude, placeName: output.placeName, placeID: output.googlePlaceId)

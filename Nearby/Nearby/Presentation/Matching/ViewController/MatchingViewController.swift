@@ -121,6 +121,10 @@ extension MatchingViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: 110)
+        let item = viewModel.item(at: indexPath.item)
+        return CGSize(
+            width: collectionView.bounds.width,
+            height: MatchingMatchedCardCell.height(for: item.content)
+        )
     }
 }

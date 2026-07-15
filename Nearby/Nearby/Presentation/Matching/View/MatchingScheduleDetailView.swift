@@ -18,6 +18,7 @@ final class MatchingScheduleDetailView: BaseView {
     var alarmButtonAction: (() -> Void)?
     var editButtonAction: (() -> Void)?
     var shareButtonAction: (() -> Void)?
+    private var matchedCardViewHeightConstraint: Constraint?
     
     // MARK: - UI Components
     
@@ -150,7 +151,9 @@ final class MatchingScheduleDetailView: BaseView {
         matchedCardView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(18)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(110)
+            matchedCardViewHeightConstraint = $0.height.equalTo(
+                MatchingMatchedCardCell.height(displayMode: .scheduleDetail)
+            ).constraint
         }
         
         placeImageView.snp.makeConstraints {
@@ -273,6 +276,12 @@ extension MatchingScheduleDetailView {
             displayMode: .scheduleDetail
         )
         matchedCardView.setNextButtonHidden(true)
+        matchedCardViewHeightConstraint?.update(
+            offset: MatchingMatchedCardCell.height(
+                for: displayData.cardItem.content,
+                displayMode: .scheduleDetail
+            )
+        )
         placeNameLabel.setFont(.b2M16, text: displayData.placeName, textColor: .grey80)
         placeDetailLabel.setFont(.b3M14, text: displayData.placeAddress, textColor: .grey30)
         dateAndTimeDetailLabel.setFont(.b2M16, text: displayData.scheduledAtText, textColor: .grey80)
@@ -303,12 +312,19 @@ extension MatchingScheduleDetailView {
     
     @objc
     private func placeCopyButtonDidTap() {
-        UIPasteboard.general.string = placeDetailLabel.text
+        copyToPasteboard(placeDetailLabel.text)
     }
     
     @objc
     private func kakaoLinkCopyButtonDidTap() {
-        UIPasteboard.general.string = kakaoLinkDetailLabel.text
+        copyToPasteboard(kakaoLinkDetailLabel.text)
+    }
+
+    private func copyToPasteboard(_ text: String?) {
+        guard let text, !text.isEmpty else { return }
+
+        UIPasteboard.general.string = text
+        showToast(title: "복사되었어요", above: bottomButtonStackView)
     }
     
     @objc

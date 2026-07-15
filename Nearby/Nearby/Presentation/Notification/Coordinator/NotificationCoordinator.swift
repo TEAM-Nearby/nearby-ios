@@ -92,7 +92,18 @@ extension NotificationCoordinator: Coordinator {
     
     func showCompanionTab() {
         navigationController.popToRootViewController(animated: false)
-        (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
+        mainTabCoordinator?.switchTab(to: .companion)
+    }
+
+    private var mainTabCoordinator: MainTabCoordinator? {
+        var current = parentCoordinator
+        while let coordinator = current {
+            if let mainTabCoordinator = coordinator as? MainTabCoordinator {
+                return mainTabCoordinator
+            }
+            current = coordinator.parentCoordinator
+        }
+        return nil
     }
     
     func showRecruitCompanion() {
@@ -105,7 +116,8 @@ extension NotificationCoordinator: Coordinator {
     }
     
     func showMeetingList() {
-        (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .meeting)
+        navigationController.popToRootViewController(animated: false)
+        mainTabCoordinator?.switchTab(to: .meeting)
     }
     
     func showMatchingScheduleDetail(matchId: Int) {

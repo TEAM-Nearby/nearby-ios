@@ -303,7 +303,6 @@ final class HostRequestAllowView: BaseView {
         let buttonTitle = isChat ? "일정 확인하기" : "확인했어요"
         confirmButton.setTitle(buttonTitle, for: .normal)
 
-        // TODO: - 애니메이션 수정하기
         UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseInOut) {
             if isChat {
                 self.matchedContainer.transform = CGAffineTransform(translationX: -width, y: 0)

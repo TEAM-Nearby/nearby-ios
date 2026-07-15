@@ -36,6 +36,10 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
             self?.navigationController?.popViewController(animated: true)
         }
         
+        hostRequestRecieveView.onNextButtonDidTap = { [weak self] in
+            self?.viewModel.action(.nextButtonDidTap)
+        }
+        
         hostRequestRecieveView.onAllowButtonDidTap = { [weak self] in
             self?.viewModel.action(.allowButtonDidTap)
         }
@@ -76,6 +80,13 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
                     matchId: viewModel.matchId,
                     postType: viewModel.meetingTimeType
                 )
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.showApplicantProfile
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] profileId in
+                self?.coordinator?.showHostProfile(profileId: profileId)
             }
             .store(in: &cancellables)
         

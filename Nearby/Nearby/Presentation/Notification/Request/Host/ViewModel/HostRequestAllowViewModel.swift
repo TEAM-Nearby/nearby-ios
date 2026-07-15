@@ -52,9 +52,8 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     private let meetingAt: String
     private let matchId: Int?
     private let postType: PostType
-    private let profileImageUrl: String?
-    // TODO: - 서버 연동 시 응답값으로 교체
-    let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
+    private let profileImageUrl: String
+    let openChatURLString: String?
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer

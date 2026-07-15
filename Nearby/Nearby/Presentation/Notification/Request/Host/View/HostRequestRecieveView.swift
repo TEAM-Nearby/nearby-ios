@@ -15,6 +15,7 @@ final class HostRequestRecieveView: BaseView {
     // MARK: - Properties
     
     var onBackButtonDidTap: (() -> Void)?
+    var onNextButtonDidTap: (() -> Void)?
     var onAllowButtonDidTap: (() -> Void)?
     var onRejectButtonDidTap: (() -> Void)?
     
@@ -273,6 +274,7 @@ final class HostRequestRecieveView: BaseView {
         navigationBar.leftButtonAction = { [weak self] in
             self?.onBackButtonDidTap?()
         }
+        nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
         rejectButton.addTarget(self, action: #selector(rejectButtonDidTap), for: .touchUpInside)
         allowButton.addTarget(self, action: #selector(allowButtonDidTap), for: .touchUpInside)
     }
@@ -296,6 +298,11 @@ final class HostRequestRecieveView: BaseView {
     @objc
     private func allowButtonDidTap() {
         onAllowButtonDidTap?()
+    }
+    
+    @objc
+    private func nextButtonDidTap() {
+        onNextButtonDidTap?()
     }
     
     @objc

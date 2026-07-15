@@ -119,6 +119,12 @@ extension NotificationCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
+    func showHostProfile(profileId: Int) {
+        let viewController = diContainer.makeHostProfileViewController(profileId: profileId)
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
     private func makeChildMatchingCoordinator() -> MatchingCoordinator {
         let matchingCoordinator = diContainer.makeMatchingCoordinator(navigationController: navigationController)
         matchingCoordinator.parentCoordinator = self

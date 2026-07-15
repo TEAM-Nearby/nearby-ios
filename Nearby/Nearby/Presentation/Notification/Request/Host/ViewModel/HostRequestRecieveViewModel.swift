@@ -16,6 +16,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
         case viewDidLoad
         case rejectButtonDidTap
         case allowButtonDidTap
+        case nextButtonDidTap
     }
 
     // MARK: - Output
@@ -25,6 +26,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
         let showHostRejectView = PassthroughSubject<Void, Never>()
         let showHostAllowView = PassthroughSubject<Void, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
+        let showApplicantProfile = PassthroughSubject<Int, Never>()
     }
 
     struct DisplayData {
@@ -50,6 +52,8 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     private(set) var matchId: Int?
     private(set) var meetingTimeType: PostType = .scheduled
     private(set) var applicantProfileImageUrl: String?
+    // TODO: - 서버가 applicantProfile.profileId 내려주면 fetchDetail에서 저장하도록 교체 (임시: 윤짱 profileId)
+    private(set) var applicantProfileId: Int? = 7
     private let repository: HostCompanionRepository
     private var cancellables = Set<AnyCancellable>()
     
@@ -72,6 +76,10 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
             
         case .allowButtonDidTap:
             allowApplication()
+            
+        case .nextButtonDidTap:
+            guard let applicantProfileId else { return }
+            output.showApplicantProfile.send(applicantProfileId)
         }
     }
     

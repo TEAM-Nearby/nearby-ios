@@ -41,13 +41,16 @@ extension NotificationCoordinator: Coordinator {
             guard let self else { return }
             switch requestItem.displayType {
             case .sentAccepted:
-                // TODO: - 알림 API 연동
                 showCompanionRequestAccept(applicationId: 6)
+
             case .sentRejected:
                 showCompanionRequestDecline()
+
             case .receivedPending:
-                // TODO: - 알림 API 연동
                 showHostRequestRecieve(applicationId: 7)
+
+            default:
+                break
             }
         }
 

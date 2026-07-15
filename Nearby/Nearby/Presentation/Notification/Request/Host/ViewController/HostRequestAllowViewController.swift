@@ -69,10 +69,8 @@ final class HostRequestAllowViewController: BaseViewController<HostRequestAllowV
 
         viewModel.output.showScheduleConfirm
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                // TODO: - 서버 연동 시 데이터로 교체
-                let mockItem = MatchingMatchedCardItem.sample
-                self?.coordinator?.showMatchingManageDetail(item: mockItem)
+            .sink { [weak self] matchId in
+                self?.coordinator?.showMatchingManageDetail(matchId: matchId)
             }
             .store(in: &cancellables)
         

@@ -27,7 +27,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         let showOpenChat = PassthroughSubject<URL, Never>()
         let showChatLinkPopup = PassthroughSubject<String, Never>()
         let showScheduleDetail = PassthroughSubject<Int, Never>()
-        let showScheduleConfirm = PassthroughSubject<Void, Never>()
+        let showScheduleConfirm = PassthroughSubject<Int, Never>()
     }
     
     enum Step {
@@ -87,12 +87,12 @@ final class HostRequestAllowViewModel: BaseViewModelType {
             case .matched:
                 output.step.send(.chat)
             case .chat:
+                guard let matchId else { return }
                 switch postType {
                 case .immediate:
-                    guard let matchId else { return }
                     output.showScheduleDetail.send(matchId)
                 case .scheduled:
-                    output.showScheduleConfirm.send(())
+                    output.showScheduleConfirm.send(matchId)
                 case .undecided:
                     break
                 }

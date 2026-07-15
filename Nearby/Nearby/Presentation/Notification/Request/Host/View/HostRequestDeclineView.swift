@@ -81,7 +81,7 @@ final class HostRequestDeclineView: BaseView {
         }
         
         applicantProfileView.snp.makeConstraints {
-            $0.top.equalTo(self.snp.centerY).offset(-172)
+            $0.top.equalTo(self.snp.centerY).multipliedBy(0.6)
             $0.horizontalEdges.equalToSuperview()
         }
         

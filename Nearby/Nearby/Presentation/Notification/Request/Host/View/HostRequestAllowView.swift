@@ -192,12 +192,12 @@ final class HostRequestAllowView: BaseView {
     
     override func setLayout() {
         matchedContainer.snp.makeConstraints {
-            $0.top.equalTo(self.snp.centerY).offset(-298)
+            $0.top.equalTo(self.snp.centerY).multipliedBy(0.3)
             $0.horizontalEdges.equalToSuperview()
         }
-        
+
         chatContainer.snp.makeConstraints {
-            $0.top.equalTo(self.snp.centerY).offset(-160)
+            $0.top.equalTo(self.snp.centerY).multipliedBy(0.62)
             $0.horizontalEdges.equalToSuperview()
         }
         

@@ -43,7 +43,7 @@ final class LoginView: BaseView {
 
         kakaoLoginButton.do {
             $0.backgroundColor = UIColor(red: 254 / 255, green: 229 / 255, blue: 0 / 255, alpha: 1)
-            $0.layer.cornerRadius = 16
+            $0.layer.cornerRadius = 12
             $0.clipsToBounds = true
 
             var configuration = UIButton.Configuration.plain()

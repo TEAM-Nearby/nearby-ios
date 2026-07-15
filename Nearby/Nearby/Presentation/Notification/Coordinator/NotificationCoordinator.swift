@@ -29,26 +29,11 @@ final class NotificationCoordinator {
 // MARK: - Coordinator
 
 extension NotificationCoordinator: Coordinator {
-
     func start() {
         let alarmViewController = diContainer.makeAlarmViewController()
         alarmViewController.coordinator = self
         alarmViewController.onBackButtonDidTap = { [weak self] in
             self?.navigationController.popViewController(animated: true)
-        }
-
-        alarmViewController.onRequestActionDidTap = { [weak self] requestItem in
-            guard let self else { return }
-            switch requestItem.displayType {
-            case .sentAccepted:
-                // TODO: - 알림 API 연동
-                showCompanionRequestAccept(applicationId: 6)
-            case .sentRejected:
-                showCompanionRequestDecline()
-            case .receivedPending:
-                // TODO: - 알림 API 연동
-                showHostRequestRecieve(applicationId: 7)
-            }
         }
 
         alarmViewController.hidesBottomBarWhenPushed = true
@@ -80,14 +65,11 @@ extension NotificationCoordinator {
         viewController.hidesBottomBarWhenPushed = true
         navigationController.pushViewController(viewController, animated: true)
     }
-    
-    func showHostRequestAllow(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String) {
 }
 
 // MARK: - Host Request 네비게이션
 
 extension NotificationCoordinator {
-
     func showHostRequestRecieve(applicationId: Int) {
         let viewController = diContainer.makeHostRequestRecieveViewController(coordinator: self, applicationId: applicationId)
 
@@ -98,7 +80,8 @@ extension NotificationCoordinator {
 
     func showHostRequestAllow(applicantName: String, applicantProfileImageUrl: String?,
                               locationName: String, meetingAt: String,
-                              matchId: Int?, postType: PostType
+                              matchId: Int?, postType: PostType,
+                              openChatUrl: String
     ) {
         let viewController = diContainer.makeHostRequestAllowViewController(
             coordinator: self,
@@ -109,13 +92,6 @@ extension NotificationCoordinator {
             matchId: matchId,
             postType: postType,
             openChatUrl: openChatUrl
-                             coordinator: self,
-                             applicantName: applicantName,
-                             applicantProfileImageUrl: applicantProfileImageUrl,
-                             locationName: locationName,
-                             meetingAt: meetingAt,
-                             matchId: matchId,
-                             postType: postType
         )
 
         navigationController.pushViewController(viewController, animated: true)
@@ -134,12 +110,6 @@ extension NotificationCoordinator {
     func showCompanionTab() {
         navigationController.popToRootViewController(animated: false)
         mainTabCoordinator?.switchTab(to: .companion)
-        guard let mainTabCoordinator = parentCoordinator as? MainTabCoordinator
-        else {
-            return
-        }
-
-        mainTabCoordinator.switchTab(to: .companion)
     }
 
     private var mainTabCoordinator: MainTabCoordinator? {
@@ -152,15 +122,10 @@ extension NotificationCoordinator {
         }
         return nil
     }
-    
 
     func showMeetingList() {
-        guard let mainTabCoordinator = parentCoordinator as? MainTabCoordinator
-        else {
-            return
-        }
-
-        mainTabCoordinator.switchTab(to: .meeting)
+        navigationController.popToRootViewController(animated: false)
+        mainTabCoordinator?.switchTab(to: .meeting)
     }
 
     func showRecruitCompanion() {
@@ -169,17 +134,8 @@ extension NotificationCoordinator {
         addChildCoordinator(companionCoordinator)
 
         let viewController = diContainer.makeRecruitCompanionViewController(coordinator: companionCoordinator)
-        let viewController = diContainer.makeRecruitCompanionViewController()
-
         navigationController.pushViewController(viewController, animated: true)
     }
-    
-    func showMeetingList() {
-        navigationController.popToRootViewController(animated: false)
-        mainTabCoordinator?.switchTab(to: .meeting)
-    }
-    
-    func showMatchingScheduleDetail(matchId: Int) {
 }
 
 // MARK: - Matching 네비게이션
@@ -192,26 +148,24 @@ extension NotificationCoordinator {
             coordinator: matchingCoordinator,
             matchId: matchId
         )
-        let viewController = diContainer.makeMatchingScheduleDetailViewController(coordinator: matchingCoordinator, matchId: matchId)
-
         navigationController.pushViewController(viewController, animated: true)
     }
-    
-    func showMatchingManageDetail(matchId: Int) {
 
     func showMatchingScheduleDetail(item: MatchingMatchedCardItem) {
         showMatchingScheduleDetail(matchId: item.matchId)
     }
 
-    func showMatchingManageDetail(item: MatchingMatchedCardItem) {
+    func showMatchingManageDetail(matchId: Int) {
         let matchingCoordinator = makeChildMatchingCoordinator()
         let viewController = diContainer.makeMatchingManageScheduleDetailViewController(
             coordinator: matchingCoordinator,
             matchId: matchId
         )
-        let viewController = diContainer.makeMatchingManageScheduleDetailViewController(coordinator: matchingCoordinator, item: item)
-
         navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showMatchingManageDetail(item: MatchingMatchedCardItem) {
+        showMatchingManageDetail(matchId: item.matchId)
     }
     
     func showHostProfile(profileId: Int) {

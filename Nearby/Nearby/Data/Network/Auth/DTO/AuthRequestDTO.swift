@@ -16,6 +16,10 @@ struct TokenRefreshRequestDTO: Encodable {
     let refreshToken: String
 }
 
+struct LogoutRequestDTO: Encodable {
+    let refreshToken: String
+}
+
 struct PhoneVerificationConfirmRequestDTO: Encodable {
     let verificationCode: String
 }

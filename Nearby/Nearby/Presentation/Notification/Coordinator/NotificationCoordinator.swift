@@ -91,6 +91,7 @@ extension NotificationCoordinator: Coordinator {
     }
     
     func showCompanionTab() {
+        navigationController.popToRootViewController(animated: false)
         (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
     }
     

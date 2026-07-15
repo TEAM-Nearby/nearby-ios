@@ -7,7 +7,6 @@
 
 import UIKit
 
-import Kingfisher
 import SnapKit
 import Then
 
@@ -173,16 +172,6 @@ final class CompanionDetailTopView: BaseView {
         mannerScoreLabel.setFont(.b1Sb18, text: state.mannerScoreText, textColor: .primary50)
         introduceLabel.text = nil
 
-        guard let profileImageURL = state.profileImageURL else {
-            hostProfileImageView.configure(image: nil)
-            return
-        }
-
-        KingfisherManager.shared.retrieveImage(with: profileImageURL) { [weak self] result in
-            guard case .success(let value) = result else { return }
-            Task { @MainActor [weak self] in
-                self?.hostProfileImageView.configure(image: value.image)
-            }
-        }
+        hostProfileImageView.configure(imageUrl: state.profileImageURL?.absoluteString)
     }
 }

@@ -67,8 +67,8 @@ final class AvatarStackView: UIStackView {
                     $0.image = validImage
                     $0.backgroundColor = .clear
                 } else {
-                    $0.image = nil
-                    $0.backgroundColor = .grey20
+                    $0.image = .imgProfileDefault
+                    $0.backgroundColor = .clear
                 }
             }
         }

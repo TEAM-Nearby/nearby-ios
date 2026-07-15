@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -38,12 +39,20 @@ final class DiningImageCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        imageView.kf.cancelDownloadTask()
         imageView.image = nil
     }
 
     // MARK: - Method
     
-    func configure(image: UIImage?) {
-        imageView.image = image ?? .restaurantPlaceholder
+    func configure(image: UIImage?, imageURL: URL?) {
+        let placeholder = image ?? .restaurantPlaceholder
+
+        guard let imageURL else {
+            imageView.image = placeholder
+            return
+        }
+
+        imageView.kf.setImage(with: imageURL, placeholder: placeholder)
     }
 }

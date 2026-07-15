@@ -16,13 +16,19 @@ extension Date {
     }
     
     var meetingDisplayText: String {
-        let formatter = DateFormatter.cached(format: "M월 d일 (E) a h시 m분")
+        let format = Calendar.current.component(.minute, from: self) == 0
+            ? "M월 d일 (E) a h시"
+            : "M월 d일 (E) a h시 m분"
+        let formatter = DateFormatter.cached(format: format)
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.string(from: self)
     }
     
     var timeDisplayText: String {
-        let formatter = DateFormatter.cached(format: "a h시 m분")
+        let format = Calendar.current.component(.minute, from: self) == 0
+            ? "a h시"
+            : "a h시 m분"
+        let formatter = DateFormatter.cached(format: format)
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.string(from: self)
     }

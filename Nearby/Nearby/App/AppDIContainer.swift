@@ -194,7 +194,7 @@ final class AppDIContainer {
     func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
         DiningInfoSheetViewModel(
             repository: makeDiningMapRepository(),
-            coordinate: CLLocationCoordinate2D(latitude: 41.389458, longitude: 2.168289)
+            coordinate: CLLocationCoordinate2D(latitude: 41.3879706, longitude: 2.1671360)
         )
     }
     
@@ -227,7 +227,7 @@ final class AppDIContainer {
     }
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
-        RecruitCompanionViewModel(repository: makeRecruitCompanionRepository(), searchCoordinate: (latitude: 41.389458, longitude: 2.168289))
+        RecruitCompanionViewModel(repository: makeRecruitCompanionRepository(), searchCoordinate: (latitude: 41.3879706, longitude: 2.1671360))
     }
     
     func makeMyPageViewModel() -> MyPageViewModel {
@@ -239,7 +239,7 @@ final class AppDIContainer {
     }
     
     func makeSettingViewModel() -> SettingViewModel {
-        SettingViewModel()
+        SettingViewModel(authRepository: makeAuthRepository())
     }
     
     func makeWrittenPostViewModel() -> WrittenPostViewModel {

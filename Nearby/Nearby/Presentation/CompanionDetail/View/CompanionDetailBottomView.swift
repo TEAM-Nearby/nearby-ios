@@ -197,7 +197,7 @@ final class CompanionDetailBottomView: BaseView {
 
         placeLabel.setFont(.b2M16, text: state.placeName, textColor: .grey80)
         dateLabel.setFont(.b2M16, text: state.meetingTimeText, textColor: .grey80)
-        peopleImageStackView.configureWithDefaultAvatars(count: state.participantCount)
+        peopleImageStackView.configure(withImageURLs: state.participantImageURLs)
         peopleStatusLabel.setFont(.b2M16, text: state.participantSummaryText, textColor: .grey80)
         contentLabel.setFont(.b3M14, text: state.content, textColor: .grey60)
 

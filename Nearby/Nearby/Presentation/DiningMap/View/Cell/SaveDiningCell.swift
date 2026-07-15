@@ -26,6 +26,7 @@ final class SaveDiningCell: UICollectionViewCell {
     private let bookmarkButton = UIButton()
     private lazy var imageCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
     private var restaurantImages: [UIImage?] = []
+    private var restaurantImageURLs: [URL?] = []
     private let dividerView = UIView()
 
     // MARK: - Initializer
@@ -50,6 +51,7 @@ final class SaveDiningCell: UICollectionViewCell {
         onBookmarkTap = nil
         onImageTap = nil
         restaurantImages = []
+        restaurantImageURLs = []
         resetImageCollectionViewOffset()
         imageCollectionView.reloadData()
     }
@@ -164,6 +166,7 @@ final class SaveDiningCell: UICollectionViewCell {
         bookmarkButton.isSelected = item.isBookmarked
         dividerView.isHidden = isLast
         restaurantImages = item.images
+        restaurantImageURLs = item.imageURLs
         imageCollectionView.reloadData()
         resetImageCollectionViewOffset()
     }
@@ -185,7 +188,10 @@ extension SaveDiningCell: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(DiningImageCell.self, for: indexPath)
-        cell.configure(image: restaurantImages[indexPath.item])
+        let imageURL = restaurantImageURLs.indices.contains(indexPath.item)
+            ? restaurantImageURLs[indexPath.item]
+            : nil
+        cell.configure(image: restaurantImages[indexPath.item], imageURL: imageURL)
         
         return cell
     }

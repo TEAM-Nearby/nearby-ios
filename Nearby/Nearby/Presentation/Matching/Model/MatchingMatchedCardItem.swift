@@ -27,7 +27,8 @@ struct MatchingMatchedCardItem {
 }
 
 extension MatchingMatchedCardItem {
-    static let sample = MatchingMatchedCardItem(
+    static let matchedHostMock = MatchingMatchedCardItem(
+        matchId: 1,
         content: MatchingMatchedCardContentModel(
             profileImage: .imgProfileDefault,
             name: "정지영",
@@ -38,6 +39,9 @@ extension MatchingMatchedCardItem {
             meetingTime: "오후 4:30",
             description: "오늘 저녁 바르셀로나에서 같이 타파스 드실 분 구해요!"
         ),
+        matchStatus: "MATCHED",
         type: .host
     )
+
+    static let sample = matchedHostMock
 }

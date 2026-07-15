@@ -10,6 +10,8 @@ import UIKit
 import SnapKit
 
 final class CompanionViewController: BaseViewController<CompanionViewModel> {
+
+    var onAlarmButtonDidTap: (() -> Void)?
     
     // MARK: - Properties
 
@@ -103,6 +105,9 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
 
     override func setAddTarget() {
+        companionView.onAlarmButtonDidTap = { [weak self] in
+            self?.onAlarmButtonDidTap?()
+        }
         companionView.currentLocationButton.addTarget(self, action: #selector(currentLocationButtonDidTap), for: .touchUpInside)
         companionView.recruitCompanionButton.addTarget(self, action: #selector(recruitCompanionButtonDidTap), for: .touchUpInside)
     }

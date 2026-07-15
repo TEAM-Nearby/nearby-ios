@@ -251,7 +251,7 @@ final class AppDIContainer {
     }
     
     func makeWrittenPostViewModel() -> WrittenPostViewModel {
-        WrittenPostViewModel()
+        WrittenPostViewModel(repository: makeMyPageRepository())
     }
     
     func makeHostReviewListViewModel(meetingId: Int) -> HostReviewListViewModel {
@@ -403,13 +403,26 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeMatchingManageScheduleDetailViewController(coordinator: MatchingCoordinator, item: MatchingMatchedCardItem) -> UIViewController {
-        let viewController = MatchingManageDetailViewController(item: item)
+    func makeMatchingManageScheduleDetailViewController(coordinator: MatchingCoordinator, displayData: MatchingScheduleDetailDisplayData) -> UIViewController {
+        let viewController = MatchingManageDetailViewController(
+            displayData: displayData,
+            repository: makeMatchedCompanionListRepository()
+        )
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
-    
+
+    func makeMatchingManageScheduleDetailViewController(coordinator: MatchingCoordinator, item: MatchingMatchedCardItem) -> UIViewController {
+        let viewController = MatchingManageDetailViewController(
+            item: item,
+            repository: makeMatchedCompanionListRepository()
+        )
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+
     func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
         let viewController = MeetingTabViewController(viewModel: makeMeetingViewModel())
         viewController.coordinator = coordinator

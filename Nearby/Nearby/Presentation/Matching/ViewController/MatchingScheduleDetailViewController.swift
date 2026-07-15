@@ -35,6 +35,7 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(true, animated: false)
+        viewModel.action(.viewDidLoad)
     }
     
     // MARK: - Methods
@@ -82,8 +83,8 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         
         viewModel.output.showEdit
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
-                self?.coordinator?.showManageScheduleDetail(item: item)
+            .sink { [weak self] displayData in
+                self?.coordinator?.showManageScheduleDetail(displayData: displayData)
             }
             .store(in: &cancellables)
         
@@ -94,8 +95,6 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
                 self?.share(displayData: displayData)
             }
             .store(in: &cancellables)
-        
-        viewModel.action(.viewDidLoad)
     }
     
     private func share(displayData: MatchingScheduleDetailDisplayData) {

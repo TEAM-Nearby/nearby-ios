@@ -40,6 +40,7 @@ extension MatchingScheduleDetailResponseModel {
             googlePlaceId: schedule.place.googlePlaceId,
             latitude: schedule.place.latitude,
             longitude: schedule.place.longitude,
+            scheduledAt: schedule.scheduledAt,
             scheduledAtText: schedule.scheduledAt.matchingDetailDateTimeTitle,
             openChatUrl: openChatUrl,
             type: type
@@ -101,6 +102,7 @@ extension MatchMyScheduleResponseDTO {
             googlePlaceId: schedule?.place.googlePlaceId,
             latitude: schedule?.place.latitude ?? 0,
             longitude: schedule?.place.longitude ?? 0,
+            scheduledAt: schedule?.scheduledAt,
             scheduledAtText: schedule?.scheduledAt.matchingDetailDateTimeTitle ?? meetingTimeType.displayTitle,
             openChatUrl: openChatUrl ?? "",
             type: type

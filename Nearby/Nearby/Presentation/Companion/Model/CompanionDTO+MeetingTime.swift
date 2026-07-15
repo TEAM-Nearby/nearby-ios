@@ -9,11 +9,17 @@ import Foundation
 
 extension CompanionDTO {
     var nearMeetingTimeTitle: String {
-        meetingTimeTitle(dateFormat: "M월 d일 a h시 m분")
+        meetingTimeTitle(
+            hourDateFormat: "M월 d일 a h시",
+            minuteDateFormat: "M월 d일 a h시 m분"
+        )
     }
 
     var specificMeetingTimeTitle: String {
-        meetingTimeTitle(dateFormat: "a h시 m분")
+        meetingTimeTitle(
+            hourDateFormat: "a h시",
+            minuteDateFormat: "a h시 m분"
+        )
     }
 
     var closingTimeTitle: String {
@@ -38,7 +44,7 @@ extension CompanionDTO {
 }
 
 private extension CompanionDTO {
-    func meetingTimeTitle(dateFormat: String) -> String {
+    func meetingTimeTitle(hourDateFormat: String, minuteDateFormat: String) -> String {
         switch meetingTimeType {
         case "NOW":
             return "지금 바로"
@@ -50,7 +56,9 @@ private extension CompanionDTO {
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "ko_KR")
             formatter.timeZone = .current
-            formatter.dateFormat = dateFormat
+            formatter.dateFormat = Calendar.current.component(.minute, from: meetingDate) == 0
+                ? hourDateFormat
+                : minuteDateFormat
             return formatter.string(from: meetingDate)
         }
     }

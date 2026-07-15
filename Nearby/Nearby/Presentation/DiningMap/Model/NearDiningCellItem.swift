@@ -84,6 +84,7 @@ extension NearDiningCellItem {
             rating: dto.rating ?? 0,
             reviewCount: dto.reviewCount ?? 0,
             images: [.restaurantPlaceholder],
+            imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
             isBookmarked: dto.isFavorite
         )
     }

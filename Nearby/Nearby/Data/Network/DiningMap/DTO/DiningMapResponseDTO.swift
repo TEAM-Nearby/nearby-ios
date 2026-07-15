@@ -25,6 +25,7 @@ struct DiningFavoritePlaceDTO: Decodable {
     let googlePlaceId: String
     let name: String
     let address: String?
+    let imageUrl: String?
     let photoReference: String?
     let category: String?
     let distanceMeters: Int

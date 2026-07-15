@@ -20,7 +20,7 @@ final class MeetingEmptyView: BaseView {
     // MARK: - UI Components
     
     private let stackView = UIStackView()
-    private let animationView = LottieAnimationView(name: "EmptyHere")
+    private let animationView = LottieAnimationView(name: "PostNone")
     private let titleLabel = UILabel()
     private let subTitleLabel = UILabel()
     let searchButton = NearbyButton(style: .primary, title: "내 주변의 동행 찾아보기")
@@ -57,14 +57,21 @@ final class MeetingEmptyView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(stackView, searchButton)
-        stackView.addArrangedSubviews(animationView, titleLabel, subTitleLabel)
+        addSubviews(animationView, stackView, searchButton)
+        stackView.addArrangedSubviews(titleLabel, subTitleLabel)
         stackView.setCustomSpacing(16, after: titleLabel)
     }
     
     override func setLayout() {
+        animationView.snp.makeConstraints {
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(1.0)
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(300)
+            $0.height.equalTo(animationView.snp.width)
+        }
+        
         stackView.snp.makeConstraints {
-            $0.centerY.equalToSuperview().multipliedBy(0.97)
+            $0.top.equalTo(animationView.snp.bottom).offset(-70)
             $0.horizontalEdges.equalToSuperview()
         }
         
@@ -79,7 +86,7 @@ final class MeetingEmptyView: BaseView {
         searchButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     func playAnimationIfNeeded() {
         guard !animationView.isAnimationPlaying else { return }

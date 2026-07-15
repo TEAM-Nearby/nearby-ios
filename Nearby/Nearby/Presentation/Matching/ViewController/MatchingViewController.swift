@@ -20,6 +20,11 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
     override func loadView() {
         view = matchedCardView
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        matchedCardView.playEmptyAnimationIfNeeded()
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

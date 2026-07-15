@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Lottie
 import SnapKit
 import Then
 
@@ -16,14 +17,17 @@ final class MatchingEmptyView: BaseView {
 
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
-    private let emptyImageView = UIImageView()
+    private let animationView = LottieAnimationView(name: "EmptyHere")
     let findCompanionButton = NearbyButton(style: .primary, title: "내 주변의 동행 찾아보기")
 
     // MARK: - Custom Methods
 
     override func setStyle() {
-        emptyImageView.do {
-            $0.image = .illustEmptyBench
+        animationView.do {
+            $0.backgroundColor = .clear
+            $0.contentMode = .scaleAspectFit
+            $0.loopMode = .loop
+            $0.backgroundBehavior = .pauseAndRestore
         }
 
         titleLabel.do {
@@ -39,19 +43,19 @@ final class MatchingEmptyView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(emptyImageView, titleLabel, descriptionLabel, findCompanionButton)
+        addSubviews(animationView, titleLabel, descriptionLabel, findCompanionButton)
     }
 
     override func setLayout() {
-        emptyImageView.snp.makeConstraints {
+        animationView.snp.makeConstraints {
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.98)
             $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-80)
-            $0.height.equalTo(115)
-            $0.width.equalTo(186)
+            $0.width.equalTo(300)
+            $0.height.equalTo(animationView.snp.width)
         }
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(emptyImageView.snp.bottom).offset(40)
+            $0.top.equalTo(animationView.snp.bottom).offset(-70)
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(28)
         }
@@ -66,5 +70,16 @@ final class MatchingEmptyView: BaseView {
             $0.bottom.equalToSuperview().inset(16)
             $0.height.equalTo(56)
         }
+    }
+    
+    // MARK: - Methods
+    
+    func playAnimationIfNeeded() {
+        guard !animationView.isAnimationPlaying else { return }
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
+    }
+
+    func stopAnimation() {
+        animationView.stop()
     }
 }

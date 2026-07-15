@@ -88,9 +88,9 @@ final class CompanionRequestSentView: BaseView {
         }
         
         animationView.snp.makeConstraints {
-            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.97)
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.95)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(500)
+            $0.width.equalTo(300)
             $0.height.equalTo(animationView.snp.width)
         }
 

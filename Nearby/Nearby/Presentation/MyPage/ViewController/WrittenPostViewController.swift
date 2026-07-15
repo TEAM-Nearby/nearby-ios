@@ -71,27 +71,29 @@ final class WrittenPostViewController:
             self?.onFindCompanionButtonDidTap?()
         }
     }
+    
+    // MARK: - Action
+    
+    @objc
+    func findCompanionButtonDidTap() {
+        viewModel.action(.findCompanionButtonDidTap)
+    }
 }
 
 // MARK: - UITableViewDataSource
 
 extension WrittenPostViewController: UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return writtenPostItems.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell =
-                tableView.dequeueReusableCell(
-                    withIdentifier: WrittenPostTableViewCell.identifier, for: indexPath
-                ) as? WrittenPostTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: WrittenPostTableViewCell.identifier, for: indexPath) as? WrittenPostTableViewCell
         else {
             return UITableViewCell()
         }
 
         let item = writtenPostItems[indexPath.row]
-
         cell.configure(with: item)
 
         return cell
@@ -105,6 +107,5 @@ extension WrittenPostViewController: UITableViewDelegate { func tableView(_ tabl
 // MARK: - Action
 
 private extension WrittenPostViewController {
-    @objc
-    func findCompanionButtonDidTap() {viewModel.action(.findCompanionButtonDidTap)}
+    
 }

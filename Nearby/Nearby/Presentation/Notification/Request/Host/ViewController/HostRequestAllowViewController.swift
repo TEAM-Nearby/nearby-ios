@@ -62,7 +62,7 @@ final class HostRequestAllowViewController: BaseViewController<HostRequestAllowV
         
         viewModel.output.showScheduleDetail
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
+            .sink { [weak self] matchId in
                 self?.coordinator?.showMatchingScheduleDetail(matchId: matchId)
             }
             .store(in: &cancellables)

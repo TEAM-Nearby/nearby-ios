@@ -89,6 +89,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
             case .chat:
                 switch postType {
                 case .immediate:
+                    guard let matchId else { return }
                     output.showScheduleDetail.send(matchId)
                 case .scheduled:
                     output.showScheduleConfirm.send(())

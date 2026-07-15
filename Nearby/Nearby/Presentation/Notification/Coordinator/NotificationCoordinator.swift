@@ -96,7 +96,11 @@ extension NotificationCoordinator: Coordinator {
     }
     
     func showRecruitCompanion() {
-        let viewController = diContainer.makeRecruitCompanionViewController()
+        let companionCoordinator = diContainer.makeCompanionCoordinator(navigationController: navigationController)
+        companionCoordinator.parentCoordinator = self
+        addChildCoordinator(companionCoordinator)
+
+        let viewController = diContainer.makeRecruitCompanionViewController(coordinator: companionCoordinator)
         navigationController.pushViewController(viewController, animated: true)
     }
     

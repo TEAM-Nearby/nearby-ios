@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Lottie
 import SnapKit
 import Then
 
@@ -14,7 +15,7 @@ final class AlarmEmptyView: UIView {
 
     // MARK: - UI Components
 
-    private let emptyImageView = UIImageView()
+    private let animationView = LottieAnimationView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
 
@@ -42,6 +43,8 @@ final class AlarmEmptyView: UIView {
         case .received:
             configureReceivedRequestEmptyView()
         }
+
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
     }
 }
 
@@ -51,8 +54,11 @@ private extension AlarmEmptyView {
     func setStyle() {
         backgroundColor = .white
 
-        emptyImageView.do {
+        animationView.do {
+            $0.backgroundColor = .clear
             $0.contentMode = .scaleAspectFit
+            $0.loopMode = .loop
+            $0.backgroundBehavior = .pauseAndRestore
         }
 
         titleLabel.do {
@@ -69,13 +75,11 @@ private extension AlarmEmptyView {
     }
 
     func setUI() {
-        addSubviews(emptyImageView, titleLabel, descriptionLabel)
+        addSubviews(animationView, titleLabel, descriptionLabel)
     }
 
     func configureSentRequestEmptyView() {
-        emptyImageView.image = UIImage(
-            named: "illust_empty_bench"
-        )
+        animationView.animation = LottieAnimation.named("EmptyHere")
 
         titleLabel.text = "보낸 요청이 없어요"
 
@@ -88,15 +92,12 @@ private extension AlarmEmptyView {
 
         setLayout(
             imageTopOffset: 164,
-            imageSize: CGSize(width: 186, height: 115),
             titleToDescriptionSpacing: 16
         )
     }
 
     func configureReceivedRequestEmptyView() {
-        emptyImageView.image = UIImage(
-            named: "illust_letter_empty"
-        )
+        animationView.animation = LottieAnimation.named("PostNone")
 
         titleLabel.text = "받은 요청이 없어요"
 
@@ -109,7 +110,6 @@ private extension AlarmEmptyView {
 
         setLayout(
             imageTopOffset: 156,
-            imageSize: CGSize(width: 184, height: 124),
             titleToDescriptionSpacing: 8
         )
     }
@@ -140,17 +140,17 @@ private extension AlarmEmptyView {
 
     func setLayout(
         imageTopOffset: CGFloat,
-        imageSize: CGSize,
         titleToDescriptionSpacing: CGFloat
     ) {
-        emptyImageView.snp.remakeConstraints {
-            $0.top.equalToSuperview().offset(imageTopOffset)
+        animationView.snp.remakeConstraints {
+            $0.top.equalToSuperview().inset(50)
             $0.centerX.equalToSuperview()
-            $0.size.equalTo(imageSize)
+            $0.width.equalTo(300)
+            $0.height.equalTo(animationView.snp.width)
         }
 
         titleLabel.snp.remakeConstraints {
-            $0.top.equalTo(emptyImageView.snp.bottom).offset(40)
+            $0.top.equalTo(animationView.snp.bottom).offset(-70)
 
             $0.horizontalEdges.equalToSuperview().inset(20)
         }

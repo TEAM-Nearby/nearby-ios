@@ -29,7 +29,6 @@ final class NotificationCoordinator {
 // MARK: - Coordinator
 
 extension NotificationCoordinator: Coordinator {
-
     func start() {
         let alarmViewController = makeAlarmViewController()
 
@@ -105,15 +104,18 @@ extension NotificationCoordinator {
 
     func showHostRequestAllow(applicantName: String, applicantProfileImageUrl: String?,
                               locationName: String, meetingAt: String,
-                              matchId: Int?, postType: PostType) {
+                              matchId: Int?, postType: PostType,
+                              openChatUrl: String
+    ) {
         let viewController = diContainer.makeHostRequestAllowViewController(
-                             coordinator: self,
-                             applicantName: applicantName,
-                             applicantProfileImageUrl: applicantProfileImageUrl,
-                             locationName: locationName,
-                             meetingAt: meetingAt,
-                             matchId: matchId,
-                             postType: postType
+            coordinator: self,
+            applicantName: applicantName,
+            applicantProfileImageUrl: applicantProfileImageUrl,
+            locationName: locationName,
+            meetingAt: meetingAt,
+            matchId: matchId,
+            postType: postType,
+            openChatUrl: openChatUrl
         )
 
         navigationController.pushViewController(viewController, animated: true)
@@ -127,26 +129,32 @@ extension NotificationCoordinator {
 
 extension NotificationCoordinator {
     func showCompanionTab() {
-        guard let mainTabCoordinator = parentCoordinator as? MainTabCoordinator
-        else {
-            return
-        }
+        navigationController.popToRootViewController(animated: false)
+        mainTabCoordinator?.switchTab(to: .companion)
+    }
 
-        mainTabCoordinator.switchTab(to: .companion)
+    private var mainTabCoordinator: MainTabCoordinator? {
+        var current = parentCoordinator
+        while let coordinator = current {
+            if let mainTabCoordinator = coordinator as? MainTabCoordinator {
+                return mainTabCoordinator
+            }
+            current = coordinator.parentCoordinator
+        }
+        return nil
     }
 
     func showMeetingList() {
-        guard let mainTabCoordinator = parentCoordinator as? MainTabCoordinator
-        else {
-            return
-        }
-
-        mainTabCoordinator.switchTab(to: .meeting)
+        navigationController.popToRootViewController(animated: false)
+        mainTabCoordinator?.switchTab(to: .meeting)
     }
 
     func showRecruitCompanion() {
-        let viewController = diContainer.makeRecruitCompanionViewController()
+        let companionCoordinator = diContainer.makeCompanionCoordinator(navigationController: navigationController)
+        companionCoordinator.parentCoordinator = self
+        addChildCoordinator(companionCoordinator)
 
+        let viewController = diContainer.makeRecruitCompanionViewController(coordinator: companionCoordinator)
         navigationController.pushViewController(viewController, animated: true)
     }
 }
@@ -154,8 +162,10 @@ extension NotificationCoordinator {
 extension NotificationCoordinator {
     func showMatchingScheduleDetail(matchId: Int) {
         let matchingCoordinator = makeChildMatchingCoordinator()
-        let viewController = diContainer.makeMatchingScheduleDetailViewController(coordinator: matchingCoordinator, matchId: matchId)
-
+        let viewController = diContainer.makeMatchingScheduleDetailViewController(
+            coordinator: matchingCoordinator,
+            matchId: matchId
+        )
         navigationController.pushViewController(viewController, animated: true)
     }
 
@@ -163,12 +173,25 @@ extension NotificationCoordinator {
         showMatchingScheduleDetail(matchId: item.matchId)
     }
 
-    func showMatchingManageDetail(item: MatchingMatchedCardItem) {
+    func showMatchingManageDetail(matchId: Int) {
         let matchingCoordinator = makeChildMatchingCoordinator()
-        let viewController = diContainer.makeMatchingManageScheduleDetailViewController(coordinator: matchingCoordinator, item: item)
-
+        let viewController = diContainer.makeMatchingManageScheduleDetailViewController(
+            coordinator: matchingCoordinator,
+            matchId: matchId
+        )
         navigationController.pushViewController(viewController, animated: true)
     }
+
+    func showMatchingManageDetail(item: MatchingMatchedCardItem) {
+        showMatchingManageDetail(matchId: item.matchId)
+    }
+    
+    func showHostProfile(profileId: Int) {
+        let viewController = diContainer.makeHostProfileViewController(profileId: profileId)
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
 
     private func makeChildMatchingCoordinator() -> MatchingCoordinator {
         let matchingCoordinator = diContainer.makeMatchingCoordinator(navigationController: navigationController)

@@ -44,8 +44,9 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     let output = Output()
 
-    private let displayData: MatchingScheduleDetailDisplayData
+    private var displayData: MatchingScheduleDetailDisplayData
     private let repository: MatchedCompanionListRepository
+    private let matchId: Int?
     private var selectedDate = Date()
 
     // MARK: - Initializer
@@ -54,6 +55,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         self.displayData = displayData
         self.repository = repository
         self.selectedDate = displayData.scheduledAt?.apiDate ?? Date()
+        self.matchId = nil
     }
 
     init(item: MatchingMatchedCardItem, repository: MatchedCompanionListRepository) {
@@ -69,6 +71,25 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
             openChatUrl: "",
             type: item.type
         )
+        self.matchId = nil
+        self.repository = repository
+    }
+    
+    init(matchId: Int, repository: MatchedCompanionListRepository) {
+        self.matchId = matchId
+        self.displayData = MatchingScheduleDetailDisplayData(
+            cardItem: MatchingMatchedCardItem(
+                matchId: matchId,
+                content: MatchingMatchedCardContentModel(
+                    name: "", participantCount: 1, gender: "",
+                    uploadedTime: "", place: "", meetingTime: "", description: ""
+                )
+            ),
+            placeName: "", placeAddress: "", googlePlaceId: nil,
+            latitude: 0, longitude: 0,
+            scheduledAt: nil, scheduledAtText: "", openChatUrl: "",
+            type: .host
+        )
         self.repository = repository
     }
 
@@ -77,7 +98,11 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            output.displayData.send(makeDisplayData())
+            if matchId != nil {
+                fetchDisplayData()
+            } else {
+                output.displayData.send(makeDisplayData())
+            }
 
         case .backButtonDidTap:
             output.showBack.send(())
@@ -125,6 +150,32 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     private func makeRequestDTO() -> ConfirmCompanionScheduleRequestDTO {
         return ConfirmCompanionScheduleRequestDTO(scheduledAt: selectedDate.apiDateString)
+    }
+    
+    private func fetchDisplayData() {
+        Task { @MainActor [weak self] in
+            guard let self, let matchId else { return }
+
+            do {
+                async let scheduleResponseTask = repository.fetchMatchMySchedule(matchId: matchId)
+                async let previewResponseTask = repository.fetchMatchPreview(matchId: matchId)
+
+                let scheduleResponse = try await scheduleResponseTask
+                let previewResponse = try? await previewResponseTask
+                let currentUserRole = scheduleResponse.currentUserRole
+                let cardItem = previewResponse?.toCardItem(
+                    type: currentUserRole,
+                    matchStatus: scheduleResponse.matchStatus.rawValue,
+                    fallbackPlaceName: scheduleResponse.schedule?.place.name ?? ""
+                ) ?? scheduleResponse.toCardItem(type: currentUserRole)
+
+                displayData = scheduleResponse.toDisplayData(type: currentUserRole, cardItem: cardItem)
+                selectedDate = displayData.scheduledAt?.apiDate ?? Date()
+                output.displayData.send(makeDisplayData())
+            } catch {
+                AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
+            }
+        }
     }
 }
 

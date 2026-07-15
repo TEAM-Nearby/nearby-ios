@@ -9,24 +9,35 @@ import Combine
 import UIKit
 
 final class CompanionRequestDeclineViewController: BaseViewController<CompanionRequestDeclineViewModel> {
-
+    
     // MARK: - UI Component
-
+    
     private let companionRequestDeclineView = CompanionRequestDeclineView()
     
     // MARK: - Property
     
     weak var coordinator: NotificationCoordinator?
-
+    
     // MARK: - Life Cycles
-
+    
     override func loadView() {
         view = companionRequestDeclineView
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        companionRequestDeclineView.restartAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 
     // MARK: - Custom Methods

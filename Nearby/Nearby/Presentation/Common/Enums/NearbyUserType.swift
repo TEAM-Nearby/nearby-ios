@@ -17,6 +17,4 @@ enum NearbyUserType: String, Decodable {
             return "후기 저장하기"
         }
     }
-    
-    // TODO: - model 구현 후 정의
 }

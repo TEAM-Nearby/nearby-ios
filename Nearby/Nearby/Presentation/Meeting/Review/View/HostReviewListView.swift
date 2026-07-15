@@ -157,7 +157,6 @@ final class HostReviewListView: BaseView {
     // MARK: - Methods
     
     func configure(people: String, information: String, location: String, avatarImages: [UIImage?]) {
-        // TODO: - 서버 연동 시 수정
         avatarClusterView.configure(with: avatarImages)
         peopleLabel.text = people
         informationLabel.text = information

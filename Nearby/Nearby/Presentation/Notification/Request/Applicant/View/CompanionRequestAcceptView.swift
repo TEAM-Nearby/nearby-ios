@@ -238,7 +238,7 @@ final class CompanionRequestAcceptView: BaseView {
         
         matchedProfileView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.top.equalToSuperview().inset(74)
+            $0.top.equalTo(self.snp.centerY).multipliedBy(0.31)
         }
         
         imageView.snp.makeConstraints {
@@ -275,7 +275,7 @@ final class CompanionRequestAcceptView: BaseView {
         }
         
         chatProfileView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(176)
+            $0.top.equalTo(self.snp.centerY).multipliedBy(0.55)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         

@@ -16,6 +16,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
         case viewDidLoad
         case rejectButtonDidTap
         case allowButtonDidTap
+        case nextButtonDidTap
     }
 
     // MARK: - Output
@@ -25,6 +26,7 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
         let showHostRejectView = PassthroughSubject<Void, Never>()
         let showHostAllowView = PassthroughSubject<Void, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
+        let showApplicantProfile = PassthroughSubject<Int, Never>()
     }
 
     struct DisplayData {
@@ -48,7 +50,10 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     private(set) var placeName: String = ""
     private(set) var meetingAt: String = ""
     private(set) var matchId: Int?
+    private(set) var meetingTimeType: PostType = .scheduled
     private(set) var applicantProfileImageUrl: String?
+    private(set) var applicantProfileId: Int?
+    private(set) var openChatUrl: String = ""
     private let repository: HostCompanionRepository
     private var cancellables = Set<AnyCancellable>()
     
@@ -71,6 +76,10 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
             
         case .allowButtonDidTap:
             allowApplication()
+            
+        case .nextButtonDidTap:
+            guard let applicantProfileId else { return }
+            output.showApplicantProfile.send(applicantProfileId)
         }
     }
     
@@ -93,8 +102,11 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
                 )
                 applicantNickname = DTO.applicantProfile.nickname
                 applicantProfileImageUrl = DTO.applicantProfile.profileImageUrl
+                applicantProfileId = DTO.applicantProfile.profileId
                 placeName = DTO.placeName
                 meetingAt = DTO.meetingAt
+                meetingTimeType = DTO.meetingTimeType
+                openChatUrl = DTO.openChatUrl ?? ""
                 output.displayData.send(data)
             } catch {
                 AppLogger.error(error)

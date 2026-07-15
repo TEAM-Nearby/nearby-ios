@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Lottie
 import SnapKit
 import Then
 
@@ -19,7 +20,7 @@ final class MeetingEmptyView: BaseView {
     // MARK: - UI Components
     
     private let stackView = UIStackView()
-    private let imageView = UIImageView()
+    private let animationView = LottieAnimationView(name: "PostNone")
     private let titleLabel = UILabel()
     private let subTitleLabel = UILabel()
     let searchButton = NearbyButton(style: .primary, title: "내 주변의 동행 찾아보기")
@@ -32,9 +33,11 @@ final class MeetingEmptyView: BaseView {
             $0.spacing = 40
         }
         
-        imageView.do {
-            $0.image = .illustLetterEmpty
+        animationView.do {
+            $0.backgroundColor = .clear
             $0.contentMode = .scaleAspectFit
+            $0.loopMode = .loop
+            $0.backgroundBehavior = .pauseAndRestore
         }
         
         titleLabel.do {
@@ -54,16 +57,22 @@ final class MeetingEmptyView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(stackView, searchButton)
-        stackView.addArrangedSubviews(imageView, titleLabel, subTitleLabel)
+        addSubviews(animationView, stackView, searchButton)
+        stackView.addArrangedSubviews(titleLabel, subTitleLabel)
         stackView.setCustomSpacing(16, after: titleLabel)
     }
     
     override func setLayout() {
-        stackView.snp.makeConstraints {
-            $0.bottom.equalTo(searchButton.snp.top).offset(-142)
-            $0.horizontalEdges.equalToSuperview()
+        animationView.snp.makeConstraints {
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(1.0)
             $0.centerX.equalToSuperview()
+            $0.width.equalTo(300)
+            $0.height.equalTo(animationView.snp.width)
+        }
+        
+        stackView.snp.makeConstraints {
+            $0.top.equalTo(animationView.snp.bottom).offset(-70)
+            $0.horizontalEdges.equalToSuperview()
         }
         
         searchButton.snp.makeConstraints {
@@ -75,6 +84,17 @@ final class MeetingEmptyView: BaseView {
     
     override func setAddTarget() {
         searchButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
+    }
+    
+    // MARK: - Methods
+    
+    func playAnimationIfNeeded() {
+        guard !animationView.isAnimationPlaying else { return }
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
+    }
+
+    func stopAnimation() {
+        animationView.stop()
     }
     
     // MARK: - Action

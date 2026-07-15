@@ -243,7 +243,7 @@ final class AppDIContainer {
     }
     
     func makeWrittenPostViewModel() -> WrittenPostViewModel {
-        WrittenPostViewModel()
+        WrittenPostViewModel(repository: makeMyPageRepository())
     }
     
     func makeHostReviewListViewModel(meetingId: Int) -> HostReviewListViewModel {

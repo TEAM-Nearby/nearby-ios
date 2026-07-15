@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Lottie
 import SnapKit
 import Then
 
@@ -24,7 +25,7 @@ final class HostRequestRecieveView: BaseView {
     private let navigationBar = NearbyNavigationBar()
     
     private let titleView = UIView()
-    private let imageView = UIImageView()
+    private let animationView = LottieAnimationView(name: "RequestAccept")
     private let titleLabel = UILabel()
     private let subTitleLabel = UILabel()
     
@@ -62,8 +63,11 @@ final class HostRequestRecieveView: BaseView {
     // MARK: - Custom Methods
     
     override func setStyle() {
-        imageView.do {
-            $0.contentMode = .scaleAspectFill
+        animationView.do {
+            $0.backgroundColor = .clear
+            $0.contentMode = .scaleAspectFit
+            $0.loopMode = .loop
+            $0.backgroundBehavior = .pauseAndRestore
         }
         
         titleLabel.do {
@@ -167,7 +171,7 @@ final class HostRequestRecieveView: BaseView {
     
     override func setUI() {
         addSubviews(navigationBar, titleView, applicantView, rejectButton, allowButton)
-        titleView.addSubviews(imageView, titleLabel, subTitleLabel)
+        titleView.addSubviews(animationView, titleLabel, subTitleLabel)
         applicantView.addArrangedSubviews(profileView, dividerView, informationView)
         applicantView.setCustomSpacing(12, after: dividerView)
         profileView.addArrangedSubviews(profileImageView, labelStackView)
@@ -190,14 +194,14 @@ final class HostRequestRecieveView: BaseView {
             $0.horizontalEdges.equalToSuperview()
         }
 
-        imageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
+        animationView.snp.makeConstraints {
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(1.0)
             $0.centerX.equalToSuperview()
-            $0.size.equalTo(129)
+            $0.height.equalTo(300)
         }
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom).offset(40)
+            $0.top.equalTo(animationView.snp.bottom).offset(-70)
             $0.centerX.equalToSuperview()
         }
 
@@ -279,10 +283,9 @@ final class HostRequestRecieveView: BaseView {
         allowButton.addTarget(self, action: #selector(allowButtonDidTap), for: .touchUpInside)
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     func configure(with output: HostRequestRecieveViewModel.DisplayData) {
-        imageView.image = output.image
         nameLabel.text = output.name
         profileImageView.configure(imageUrl: output.profileImageUrl)
         genderLabel.text = output.gender
@@ -291,6 +294,12 @@ final class HostRequestRecieveView: BaseView {
         subTitleLabel.text = output.subtitle
         locationLabel.text = output.location
         dateLabel.text = output.date
+    }
+    
+    func restartAnimation() {
+        animationView.stop()
+        animationView.currentProgress = 0
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
     }
     
     // MARK: - Actions

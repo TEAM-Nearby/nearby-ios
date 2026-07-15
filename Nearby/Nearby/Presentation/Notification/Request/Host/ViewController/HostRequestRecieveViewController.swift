@@ -24,6 +24,11 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
         view = hostRequestRecieveView
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        hostRequestRecieveView.restartAnimation()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)

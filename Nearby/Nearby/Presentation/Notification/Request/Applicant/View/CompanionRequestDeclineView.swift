@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Lottie
 import SnapKit
 import Then
 
@@ -22,7 +23,7 @@ final class CompanionRequestDeclineView: BaseView {
     
     private let navigationBar = NearbyNavigationBar()
 
-    private let imageView = UIImageView()
+    private let animationView = LottieAnimationView(name: "RequestFailed")
 
     private let labelStackView = UIStackView()
     private let titleLabel = UILabel()
@@ -35,8 +36,11 @@ final class CompanionRequestDeclineView: BaseView {
     // MARK: - Custom Methods
 
     override func setStyle() {
-        imageView.do {
+        animationView.do {
+            $0.backgroundColor = .clear
             $0.contentMode = .scaleAspectFit
+            $0.loopMode = .loop
+            $0.backgroundBehavior = .pauseAndRestore
         }
 
         labelStackView.do {
@@ -70,7 +74,7 @@ final class CompanionRequestDeclineView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(navigationBar, imageView, labelStackView, writeButton, searchButton)
+        addSubviews(navigationBar, animationView, labelStackView, writeButton, searchButton)
         labelStackView.addArrangedSubviews(titleLabel, subtitleLabel)
     }
 
@@ -80,14 +84,14 @@ final class CompanionRequestDeclineView: BaseView {
             $0.horizontalEdges.equalToSuperview()
         }
         
-        imageView.snp.makeConstraints {
-            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.92)
+        animationView.snp.makeConstraints {
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(1.0)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(185)
+            $0.height.equalTo(300)
         }
 
         labelStackView.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom).offset(40)
+            $0.top.equalTo(animationView.snp.bottom).offset(-60)
             $0.centerX.equalToSuperview()
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
@@ -114,14 +118,19 @@ final class CompanionRequestDeclineView: BaseView {
         searchButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     func configure(with output: CompanionRequestDeclineViewModel.DisplayData) {
-        imageView.image = output.image
         titleLabel.text = output.title
         subtitleLabel.text = output.subtitle
         writeButton.setTitle(output.writeButtonTitle, for: .normal)
         searchButton.setTitle(output.buttonTitle, for: .normal)
+    }
+    
+    func restartAnimation() {
+        animationView.stop()
+        animationView.currentProgress = 0
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
     }
     
     // MARK: - Actions

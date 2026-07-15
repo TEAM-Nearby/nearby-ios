@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Lottie
 import SnapKit
 import Then
 
@@ -19,7 +20,7 @@ final class MeetingEmptyView: BaseView {
     // MARK: - UI Components
     
     private let stackView = UIStackView()
-    private let imageView = UIImageView()
+    private let animationView = LottieAnimationView(name: "EmptyHere")
     private let titleLabel = UILabel()
     private let subTitleLabel = UILabel()
     let searchButton = NearbyButton(style: .primary, title: "내 주변의 동행 찾아보기")
@@ -32,9 +33,11 @@ final class MeetingEmptyView: BaseView {
             $0.spacing = 40
         }
         
-        imageView.do {
-            $0.image = .illustLetterEmpty
+        animationView.do {
+            $0.backgroundColor = .clear
             $0.contentMode = .scaleAspectFit
+            $0.loopMode = .loop
+            $0.backgroundBehavior = .pauseAndRestore
         }
         
         titleLabel.do {
@@ -55,13 +58,13 @@ final class MeetingEmptyView: BaseView {
     
     override func setUI() {
         addSubviews(stackView, searchButton)
-        stackView.addArrangedSubviews(imageView, titleLabel, subTitleLabel)
+        stackView.addArrangedSubviews(animationView, titleLabel, subTitleLabel)
         stackView.setCustomSpacing(16, after: titleLabel)
     }
     
     override func setLayout() {
         stackView.snp.makeConstraints {
-            $0.centerY.equalToSuperview().multipliedBy(0.85)
+            $0.centerY.equalToSuperview().multipliedBy(0.97)
             $0.horizontalEdges.equalToSuperview()
         }
         
@@ -74,6 +77,17 @@ final class MeetingEmptyView: BaseView {
     
     override func setAddTarget() {
         searchButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
+    }
+    
+    // MARK: - Method
+    
+    func playAnimationIfNeeded() {
+        guard !animationView.isAnimationPlaying else { return }
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
+    }
+
+    func stopAnimation() {
+        animationView.stop()
     }
     
     // MARK: - Action

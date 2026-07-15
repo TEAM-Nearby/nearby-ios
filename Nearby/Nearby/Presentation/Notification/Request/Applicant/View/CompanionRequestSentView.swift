@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Lottie
 import SnapKit
 import Then
 
@@ -21,7 +22,7 @@ final class CompanionRequestSentView: BaseView {
     
     private let navigationBar = NearbyNavigationBar()
 
-    private let imageView = UIImageView()
+    private let animationView = LottieAnimationView(name: "RequestSent")
 
     private let labelStackView = UIStackView()
     private let titleLabel = UILabel()
@@ -35,8 +36,11 @@ final class CompanionRequestSentView: BaseView {
     // MARK: - Custom Methods
 
     override func setStyle() {
-        imageView.do {
+        animationView.do {
+            $0.backgroundColor = .clear
             $0.contentMode = .scaleAspectFit
+            $0.loopMode = .loop
+            $0.backgroundBehavior = .pauseAndRestore
         }
 
         labelStackView.do {
@@ -72,7 +76,7 @@ final class CompanionRequestSentView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(navigationBar, imageView, labelStackView, descriptionView, searchButton)
+        addSubviews(navigationBar, animationView, labelStackView, descriptionView, searchButton)
         labelStackView.addArrangedSubviews(titleLabel, subtitleLabel)
         descriptionView.addSubview(descriptionLabel)
     }
@@ -83,14 +87,15 @@ final class CompanionRequestSentView: BaseView {
             $0.horizontalEdges.equalToSuperview()
         }
         
-        imageView.snp.makeConstraints {
-            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.9)
+        animationView.snp.makeConstraints {
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.97)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(177)
+            $0.width.equalTo(500)
+            $0.height.equalTo(animationView.snp.width)
         }
 
         labelStackView.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom).offset(40)
+            $0.top.equalTo(animationView.snp.bottom).offset(-70)
             $0.centerX.equalToSuperview()
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
@@ -119,14 +124,19 @@ final class CompanionRequestSentView: BaseView {
         searchButton.addTarget(self, action: #selector(searchButtonDidTap), for: .touchUpInside)
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     func configure(with output: CompanionRequestSentViewModel.DisplayData) {
-        imageView.image = output.image
         titleLabel.text = output.title
         subtitleLabel.text = output.subtitle
         descriptionLabel.attributedText = output.description.withLineHeightMultiple(1.4, font: NearbyFont.b3M14.font, color: .grey40)
         searchButton.setTitle(output.buttonTitle, for: .normal)
+    }
+    
+    func restartAnimation() {
+        animationView.stop()
+        animationView.currentProgress = 0
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
     }
     
     // MARK: - Action

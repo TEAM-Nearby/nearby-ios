@@ -21,6 +21,8 @@ final class MainTabBarController: UITabBarController {
     // MARK: - Method
     
     private func configureTabBarAppearance() {
+        let itemWidth: CGFloat = 50
+        let itemSpacing: CGFloat = 20
         let barAppearance = UITabBarAppearance()
         barAppearance.configureWithOpaqueBackground()
         barAppearance.backgroundColor = .white
@@ -41,14 +43,16 @@ final class MainTabBarController: UITabBarController {
         itemAppearance.normal.titlePositionAdjustment = offset
         itemAppearance.selected.titlePositionAdjustment = offset
         
-        barAppearance.stackedItemPositioning = .fill
+        barAppearance.stackedItemPositioning = .centered
+        barAppearance.stackedItemWidth = itemWidth
+        barAppearance.stackedItemSpacing = itemSpacing
         barAppearance.stackedLayoutAppearance = itemAppearance
         barAppearance.inlineLayoutAppearance = itemAppearance
         barAppearance.compactInlineLayoutAppearance = itemAppearance
         
         tabBar.standardAppearance = barAppearance
         tabBar.scrollEdgeAppearance = barAppearance
-        tabBar.itemPositioning = .fill
+        tabBar.itemPositioning = .centered
         tabBar.backgroundColor = .clear
         tabBar.tintColor = .grey80
         tabBar.unselectedItemTintColor = .grey60
@@ -58,6 +62,8 @@ final class MainTabBarController: UITabBarController {
         tabBar.layer.borderWidth = 0.5
         tabBar.layer.borderColor = UIColor.grey10.cgColor
         tabBar.layer.masksToBounds = true
+        tabBar.itemWidth = itemWidth
+        tabBar.itemSpacing = itemSpacing
     }
 }
 

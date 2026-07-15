@@ -8,26 +8,50 @@
 import UIKit
 
 enum AlarmRequestDisplayType {
+    case sentPending
     case sentAccepted
     case sentRejected
+    case sentCanceled
+
     case receivedPending
+    case receivedAccepted
+    case receivedRejected
+    case receivedCanceled
+
+    // MARK: - Properties
 
     var title: String {
         switch self {
+        case .sentPending:
+            return "동행 요청을 확인하고 있어요"
+
         case .sentAccepted:
             return "동행이 수락되었어요"
 
         case .sentRejected:
             return "아쉽지만 다른 동행을 찾아봐요"
 
+        case .sentCanceled:
+            return "취소한 동행 요청이에요"
+
         case .receivedPending:
             return "동행을 원하는 분이 있어요"
+
+        case .receivedAccepted:
+            return "동행 일정이 수정되었어요"
+
+        case .receivedRejected:
+            return "거절한 동행 요청이에요"
+
+        case .receivedCanceled:
+            return "취소된 동행 요청이에요"
         }
     }
 
-    var buttonTitle: String {
+    var buttonTitle: String? {
         switch self {
-        case .sentAccepted:
+        case .sentAccepted,
+             .receivedAccepted:
             return "일정 확정하기"
 
         case .sentRejected:
@@ -35,85 +59,88 @@ enum AlarmRequestDisplayType {
 
         case .receivedPending:
             return "수락하러 가기"
+
+        case .sentPending,
+             .sentCanceled,
+             .receivedRejected,
+             .receivedCanceled:
+            return nil
         }
     }
 
     var icon: UIImage? {
         switch self {
-        case .sentAccepted:
+        case .sentAccepted,
+             .receivedAccepted:
             return .imgCheckPurple
 
         case .sentRejected:
-            return nil
+            return .imgCancelRed
 
         case .receivedPending:
-            return .peopleIcon
+            return .peopleIconGrey
+
+        case .sentPending,
+             .sentCanceled,
+             .receivedRejected,
+             .receivedCanceled:
+            return nil
         }
     }
 
     var iconSize: CGSize {
         switch self {
-        case .sentAccepted:
+        case .sentAccepted,
+             .sentRejected,
+             .receivedAccepted:
             return CGSize(width: 20, height: 20)
-
-        case .sentRejected:
-            return .zero
 
         case .receivedPending:
             return CGSize(width: 24, height: 24)
+
+        case .sentPending,
+             .sentCanceled,
+             .receivedRejected,
+             .receivedCanceled:
+            return .zero
         }
     }
 
     var iconTintColor: UIColor? {
         switch self {
-        case .sentAccepted:
-            return nil
+        case .sentAccepted,
+             .receivedAccepted,
+             .receivedPending:
+            return .primary40
 
         case .sentRejected:
-            return nil
+            return .systemRed
 
-        case .receivedPending:
-            return .primary40
+        case .sentPending,
+             .sentCanceled,
+             .receivedRejected,
+             .receivedCanceled:
+            return nil
         }
     }
 
     var isHighlighted: Bool {
         switch self {
-        case .sentAccepted, .receivedPending:
+        case .sentAccepted,
+             .receivedPending,
+             .receivedAccepted:
             return true
 
-        case .sentRejected:
+        case .sentPending,
+             .sentRejected,
+             .sentCanceled,
+             .receivedRejected,
+             .receivedCanceled:
             return false
         }
     }
-}
 
-struct AlarmRequestItem {
-
-    // MARK: - Properties
-
-    let id: UUID
-    let tab: AlarmTab
-    let displayType: AlarmRequestDisplayType
-    let nickname: String
-    let dateText: String
-    let profileImage: UIImage?
-
-    // MARK: - Initializer
-
-    init(
-        id: UUID = UUID(),
-        tab: AlarmTab,
-        displayType: AlarmRequestDisplayType,
-        nickname: String,
-        dateText: String,
-        profileImage: UIImage? = nil
-    ) {
-        self.id = id
-        self.tab = tab
-        self.displayType = displayType
-        self.nickname = nickname
-        self.dateText = dateText
-        self.profileImage = profileImage
+    var showsActionButton: Bool {
+        buttonTitle != nil
     }
 }

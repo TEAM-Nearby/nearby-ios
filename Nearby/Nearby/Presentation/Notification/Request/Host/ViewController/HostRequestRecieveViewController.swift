@@ -78,7 +78,8 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
                     locationName: viewModel.placeName,
                     meetingAt: viewModel.meetingAt,
                     matchId: viewModel.matchId,
-                    postType: viewModel.meetingTimeType
+                    postType: viewModel.meetingTimeType,
+                    openChatUrl: viewModel.openChatUrl
                 )
             }
             .store(in: &cancellables)

@@ -70,7 +70,7 @@ extension NotificationCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showHostRequestAllow(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
+    func showHostRequestAllow(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String) {
         let viewController = diContainer.makeHostRequestAllowViewController(
             coordinator: self,
             applicantName: applicantName,
@@ -78,7 +78,8 @@ extension NotificationCoordinator: Coordinator {
             locationName: locationName,
             meetingAt: meetingAt,
             matchId: matchId,
-            postType: postType
+            postType: postType,
+            openChatUrl: openChatUrl
         )
         navigationController.pushViewController(viewController, animated: true)
     }

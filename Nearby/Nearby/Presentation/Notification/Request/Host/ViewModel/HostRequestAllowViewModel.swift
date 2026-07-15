@@ -53,19 +53,19 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     private let matchId: Int?
     private let postType: PostType
     private let profileImageUrl: String?
-    // TODO: - 서버가 수락(또는 신청 상세) 응답에 openChatUrl 추가하면 init 파라미터로 교체
-    let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
+    let openChatURLString: String
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
 
-    init(applicantProfileImageUrl: String?, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
+    init(applicantProfileImageUrl: String?, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String) {
         self.profileImageUrl = applicantProfileImageUrl
         self.applicantName = applicantName
         self.locationName = locationName
         self.meetingAt = meetingAt
         self.matchId = matchId
         self.postType = postType
+        self.openChatURLString = openChatUrl
     }
     
     // MARK: - Action

@@ -52,8 +52,8 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
     private(set) var matchId: Int?
     private(set) var meetingTimeType: PostType = .scheduled
     private(set) var applicantProfileImageUrl: String?
-    // TODO: - 서버가 applicantProfile.profileId 내려주면 fetchDetail에서 저장하도록 교체 (임시: 윤짱 profileId)
-    private(set) var applicantProfileId: Int? = 7
+    private(set) var applicantProfileId: Int?
+    private(set) var openChatUrl: String = ""
     private let repository: HostCompanionRepository
     private var cancellables = Set<AnyCancellable>()
     
@@ -102,9 +102,11 @@ final class HostRequestRecieveViewModel: BaseViewModelType {
                 )
                 applicantNickname = DTO.applicantProfile.nickname
                 applicantProfileImageUrl = DTO.applicantProfile.profileImageUrl
+                applicantProfileId = DTO.applicantProfile.profileId
                 placeName = DTO.placeName
                 meetingAt = DTO.meetingAt
                 meetingTimeType = DTO.meetingTimeType
+                openChatUrl = DTO.openChatUrl ?? ""
                 output.displayData.send(data)
             } catch {
                 AppLogger.error(error)

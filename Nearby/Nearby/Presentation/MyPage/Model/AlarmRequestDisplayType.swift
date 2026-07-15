@@ -38,7 +38,7 @@ enum AlarmRequestDisplayType {
             return "동행을 원하는 분이 있어요"
 
         case .receivedAccepted:
-            return "수락한 동행 요청이에요"
+            return "동행 일정이 수정되었어요"
 
         case .receivedRejected:
             return "거절한 동행 요청이에요"
@@ -74,11 +74,13 @@ enum AlarmRequestDisplayType {
              .receivedAccepted:
             return .imgCheckPurple
 
+        case .sentRejected:
+            return .imgCancelRed
+
         case .receivedPending:
-            return .peopleIcon
+            return .peopleIconGrey
 
         case .sentPending,
-             .sentRejected,
              .sentCanceled,
              .receivedRejected,
              .receivedCanceled:
@@ -89,6 +91,7 @@ enum AlarmRequestDisplayType {
     var iconSize: CGSize {
         switch self {
         case .sentAccepted,
+             .sentRejected,
              .receivedAccepted:
             return CGSize(width: 20, height: 20)
 
@@ -96,7 +99,6 @@ enum AlarmRequestDisplayType {
             return CGSize(width: 24, height: 24)
 
         case .sentPending,
-             .sentRejected,
              .sentCanceled,
              .receivedRejected,
              .receivedCanceled:
@@ -106,14 +108,16 @@ enum AlarmRequestDisplayType {
 
     var iconTintColor: UIColor? {
         switch self {
-        case .receivedPending:
+        case .sentAccepted,
+             .receivedAccepted,
+             .receivedPending:
             return .primary40
 
+        case .sentRejected:
+            return .systemRed
+
         case .sentPending,
-             .sentAccepted,
-             .sentRejected,
              .sentCanceled,
-             .receivedAccepted,
              .receivedRejected,
              .receivedCanceled:
             return nil

@@ -11,14 +11,14 @@ struct SpecificCompanionCellItem {
     let placeImageURL: URL?
     let placeName: String
     let placeInfo: String
-    let profileImage: UIImage?
+    let profileImageURL: String?
     let hostName: String
     let genderTitle: String
     let writtenTime: String
     let content: String
     let meetingTime: String
     let closedTime: String
-    let participantImages: [UIImage?]
+    let participantImageURLs: [String?]
     let statusText: String
     let detailState: CompanionDetailState
 }
@@ -29,14 +29,14 @@ extension SpecificCompanionCellItem {
             placeImageURL: dto.place.imageSource == "DEFAULT" ? nil : URL(string: dto.place.imageUrl),
             placeName: dto.place.name,
             placeInfo: "\(dto.place.categoryTitle) · \(dto.place.distanceTitle)",
-            profileImage: nil,
+            profileImageURL: dto.participants.first?.profileImageUrl,
             hostName: dto.host.nickname,
             genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
             writtenTime: dto.createdAgoText,
             content: dto.contentPreview,
             meetingTime: dto.specificMeetingTimeTitle,
             closedTime: dto.closingTimeTitle,
-            participantImages: Array(repeating: nil, count: max(dto.participantCount, 1)),
+            participantImageURLs: dto.participantProfileImageURLs,
             statusText: dto.participantSummaryText,
             detailState: CompanionDetailState(
                 postId: dto.postId,
@@ -45,6 +45,7 @@ extension SpecificCompanionCellItem {
                 tags: [],
                 hostName: dto.host.nickname,
                 genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
+                profileImageURL: dto.participants.first?.profileImageUrl.flatMap(URL.init(string:)),
                 placeName: dto.place.name,
                 googlePlaceId: dto.place.googlePlaceId,
                 placeLatitude: dto.place.latitude,
@@ -52,6 +53,7 @@ extension SpecificCompanionCellItem {
                 meetingTimeText: dto.specificMeetingTimeTitle,
                 participantSummaryText: dto.participantSummaryText,
                 participantCount: dto.participantCount,
+                participantImageURLs: dto.participantProfileImageURLs,
                 content: dto.contentPreview
             )
         )

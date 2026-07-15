@@ -5,6 +5,7 @@
 //  Created by soomin on 7/5/26.
 //
 
+import CoreLocation
 import UIKit
 
 final class AppDIContainer {
@@ -67,6 +68,14 @@ final class AppDIContainer {
         DefaultCompanionService(networkProvider: networkProvider)
     }
 
+    private func makeDiningMapService() -> DiningMapService {
+        DefaultDiningMapService(networkProvider: networkProvider)
+    }
+
+    private func makeReviewService() -> ReviewService {
+        DefaultReviewService(networkProvider: networkProvider)
+    }
+
     private func makeGooglePlaceService() -> GooglePlaceService {
         GooglePlaceService()
     }
@@ -115,6 +124,14 @@ final class AppDIContainer {
     
     private func makeCompanionRepository() -> CompanionRepository {
         DefaultCompanionRepository(service: makeCompanionService())
+    }
+
+    private func makeDiningMapRepository() -> DiningMapRepository {
+        DefaultDiningMapRepository(service: makeDiningMapService())
+    }
+
+    private func makeReviewRepository() -> ReviewRepository {
+        DefaultReviewRepository(service: makeReviewService())
     }
 
     private func makeRecruitCompanionRepository() -> RecruitCompanionRepository {
@@ -175,15 +192,18 @@ final class AppDIContainer {
     }
     
     func makeNearDiningBottomSheetViewModel() -> NearDiningBottomSheetViewModel {
-        NearDiningBottomSheetViewModel()
+        NearDiningBottomSheetViewModel(repository: makeDiningMapRepository())
     }
     
     func makeSaveDiningSheetViewModel() -> SaveDiningSheetViewModel {
-        SaveDiningSheetViewModel()
+        SaveDiningSheetViewModel(repository: makeDiningMapRepository())
     }
     
     func makeDiningInfoSheetViewModel() -> DiningInfoSheetViewModel {
-        DiningInfoSheetViewModel()
+        DiningInfoSheetViewModel(
+            repository: makeDiningMapRepository(),
+            coordinate: CLLocationCoordinate2D(latitude: 41.3879706, longitude: 2.1671360)
+        )
     }
     
     func makeCompanionDetailViewModel(state: CompanionDetailState) -> CompanionDetailViewModel {
@@ -205,7 +225,8 @@ final class AppDIContainer {
     func makeMeetingProgressViewModel(meetingId: Int) -> MeetingProgressViewModel {
         MeetingProgressViewModel(
             meetingId: meetingId,
-            repository: makeMeetingRepository()
+            repository: makeMeetingRepository(),
+            reviewRepository: makeReviewRepository()
         )
     }
     
@@ -214,14 +235,7 @@ final class AppDIContainer {
     }
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
-        RecruitCompanionViewModel(
-            repository: makeRecruitCompanionRepository(),
-            searchCoordinate: (latitude: 41.389458, longitude: 2.168289)
-        )
-    }
-
-    func makeMeetingProgressViewModel(meetingId: Int, repository: MeetingRepository) -> MeetingProgressViewModel {
-        MeetingProgressViewModel(meetingId: meetingId, repository: makeMeetingRepository())
+        RecruitCompanionViewModel(repository: makeRecruitCompanionRepository(), searchCoordinate: (latitude: 41.3879706, longitude: 2.1671360))
     }
     
     func makeMyPageViewModel() -> MyPageViewModel {
@@ -233,15 +247,15 @@ final class AppDIContainer {
     }
     
     func makeSettingViewModel() -> SettingViewModel {
-        SettingViewModel()
+        SettingViewModel(authRepository: makeAuthRepository())
     }
     
     func makeWrittenPostViewModel() -> WrittenPostViewModel {
         WrittenPostViewModel()
     }
     
-    func makeHostReviewListViewModel() -> HostReviewListViewModel {
-        HostReviewListViewModel()
+    func makeHostReviewListViewModel(meetingId: Int) -> HostReviewListViewModel {
+        HostReviewListViewModel(meetingId: meetingId, repository: makeReviewRepository())
     }
     
     func makeReportPostViewModel() -> ReportPostViewModel {
@@ -249,7 +263,8 @@ final class AppDIContainer {
     }
     
     func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool) -> ReviewPostViewModel {
-        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast)
+        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast, repository: makeReviewRepository()
+        )
     }
     
     func makeCompanionRequestSentViewModel(hostName: String) -> CompanionRequestSentViewModel {
@@ -337,7 +352,14 @@ final class AppDIContainer {
     func makeCompanionDetailViewController(viewModel: CompanionDetailViewModel) -> CompanionDetailViewController {
         CompanionDetailViewController(viewModel: viewModel)
     }
-
+    
+    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator? = nil) -> UIViewController {
+        let viewController = RecruitCompanionViewController(viewModel: makeRecruitCompanionViewModel())
+        viewController.coordinator = coordinator
+        viewController.hidesBottomBarWhenPushed = true
+        return viewController
+    }
+    
     func makeDiningMapViewController() -> DiningMapViewController {
         DiningMapViewController(
             viewModel: makeDiningMapViewModel(),
@@ -419,18 +441,10 @@ final class AppDIContainer {
         WrittenPostViewController(viewModel: makeWrittenPostViewModel())
     }
     
-    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator? = nil) -> UIViewController {
-        let viewController = RecruitCompanionViewController(viewModel: makeRecruitCompanionViewModel())
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-        return viewController
-    }
-    
     func makeReviewViewController(coordinator: MeetingTabCoordinator, type: NearbyUserType, reviewItem: ReviewItem) -> UIViewController {
         switch type {
         case .host:
-            return makeHostReviewListViewController(coordinator: coordinator)
-
+            return makeHostReviewListViewController(coordinator: coordinator, meetingId: reviewItem.meetingId)
         case .participant:
             return makeReviewPostViewController(
                 coordinator: coordinator,
@@ -441,9 +455,9 @@ final class AppDIContainer {
             )
         }
     }
-    
-    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
-        let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel())
+
+    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator, meetingId: Int) -> UIViewController {
+        let viewController = HostReviewListViewController(viewModel: makeHostReviewListViewModel(meetingId: meetingId))
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true
         return viewController

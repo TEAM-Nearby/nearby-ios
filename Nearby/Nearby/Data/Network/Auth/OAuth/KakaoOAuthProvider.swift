@@ -22,6 +22,7 @@ enum KakaoOAuthError: Error { case missingIDToken }
 
 protocol KakaoOAuthProvider {
     func requestCredential() async throws -> KakaoCredential
+    func logout() async throws
 }
 
 final class DefaultKakaoOAuthProvider {}
@@ -42,6 +43,19 @@ extension DefaultKakaoOAuthProvider: KakaoOAuthProvider {
                     return
                 }
                 continuation.resume(returning: KakaoCredential(idToken: idToken, nonce: nonce))
+            }
+        }
+    }
+
+    func logout() async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            UserApi.shared.logout { error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                continuation.resume()
             }
         }
     }

@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Lottie
 import SnapKit
 import Then
 
@@ -15,7 +16,7 @@ final class EmptyCompanionSheetView: BaseView {
     // MARK: - UI Components
     
     private let titleLabel = UILabel()
-    private let imageView = UIImageView()
+    private let animationView = LottieAnimationView(name: "MainEmpty")
     
     // MARK: - Custom Methods
     
@@ -27,14 +28,16 @@ final class EmptyCompanionSheetView: BaseView {
             $0.numberOfLines = 0
         }
         
-        imageView.do {
-            $0.image = .illustMainEmpty
+        animationView.do {
+            $0.backgroundColor = .clear
             $0.contentMode = .scaleAspectFit
+            $0.loopMode = .loop
+            $0.backgroundBehavior = .pauseAndRestore
         }
     }
     
     override func setUI() {
-        addSubviews(titleLabel, imageView)
+        addSubviews(titleLabel, animationView)
     }
     
     override func setLayout() {
@@ -43,10 +46,16 @@ final class EmptyCompanionSheetView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        imageView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.width.equalTo(196)
-            $0.height.equalTo(112)
+        animationView.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(-50)
+            $0.centerX.equalToSuperview()
+            $0.size.equalTo(300)
         }
+    }
+
+    func restartAnimation() {
+        animationView.stop()
+        animationView.currentProgress = 0
+        animationView.play(fromProgress: 0, toProgress: 1, loopMode: .loop)
     }
 }

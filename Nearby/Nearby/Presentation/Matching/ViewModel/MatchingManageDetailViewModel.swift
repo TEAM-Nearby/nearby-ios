@@ -80,14 +80,9 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     private func makeDisplayData() -> DisplayData {
         return DisplayData(
-            cardItem: item,
-            placeName: item.content.place,
-            placeAddress: "Siutat condal, Rambla de Catalunya, 16",
-            googlePlaceId: "ChIJmSmV-_KipBIR1rXbKL9Yhp4",
-            latitude: 37.566508,
-            longitude: 126.977945,
-            selectedDate: selectedDate,
-            dateButtonTitle: selectedDate.displayDateString
+            cardItem: item, placeName: item.content.place, placeAddress: "Siutat condal, Rambla de Catalunya, 16",
+            googlePlaceId: "ChIJmSmV-_KipBIR1rXbKL9Yhp4", latitude: 37.566508, longitude: 126.977945,
+            selectedDate: selectedDate, dateButtonTitle: selectedDate.displayDateString
         )
     }
 
@@ -95,11 +90,8 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         return MatchingManageScheduleRequestModel(
             scheduledAt: selectedDate.apiDateString,
             place: MatchingManageSchedulePlaceRequestModel(
-                googlePlaceId: "",
-                name: item.content.place,
-                address: "Siutat condal, Rambla de Catalunya, 16",
-                latitude: 37.566508,
-                longitude: 126.977945
+                googlePlaceId: "", name: item.content.place, address: "Siutat condal, Rambla de Catalunya, 16",
+                latitude: 37.566508, longitude: 126.977945
             ),
             openChatUrl: "kakaotalk.hcmvietnam.tistory.com/36"
         )

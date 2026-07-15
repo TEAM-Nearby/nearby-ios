@@ -48,6 +48,7 @@ final class DiningInfoSheetView: BaseView {
     
     private lazy var imageCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
     private var restaurantImages: [UIImage?] = []
+    private var restaurantImageURLs: [URL?] = []
     
     // MARK: - Custom Methods
     
@@ -56,10 +57,16 @@ final class DiningInfoSheetView: BaseView {
         
         nameLabel.do {
             $0.setFont(.h3Sb20, textColor: .grey80)
+            $0.numberOfLines = 3
+            $0.lineBreakMode = .byCharWrapping
+            $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .vertical)
         }
         
         categoryLabel.do {
             $0.setFont(.b3M14, textColor: .grey30)
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
         
         bookmarkButton.do {
@@ -172,11 +179,13 @@ final class DiningInfoSheetView: BaseView {
         nameLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(14)
             $0.leading.equalToSuperview().inset(20)
+            $0.trailing.lessThanOrEqualTo(bookmarkButton.snp.leading).offset(-8)
         }
         
         categoryLabel.snp.makeConstraints {
             $0.leading.equalTo(nameLabel.snp.trailing).offset(8)
-            $0.centerY.equalTo(nameLabel)
+            $0.trailing.lessThanOrEqualTo(bookmarkButton.snp.leading).offset(-8)
+            $0.firstBaseline.equalTo(nameLabel.snp.firstBaseline)
         }
         
         closeButton.snp.makeConstraints {
@@ -283,18 +292,16 @@ final class DiningInfoSheetView: BaseView {
         ratingLabel.text = String(format: "%.1f", item.rating)
         reviewCountLabel.text = "(\(item.reviewCount.formatted())) ·"
         priceLabel.text = price
-        contentLabel.text = description
+        contentLabel.setFont(.b3M14, text: description, textColor: .grey80, lineSpacing: 3)
         timeTitleLabel.text = item.businessStatus
         timeSubTitleLabel.text = closingTime
         placeTitleLabel.text = "\(item.distance) · \(item.address)"
         phoneLabel.text = phoneNumber
         restaurantImages = item.images
+        restaurantImageURLs = item.imageURLs
         imageCollectionView.reloadData()
         imageCollectionView.layoutIfNeeded()
-        imageCollectionView.setContentOffset(
-            CGPoint(x: -imageCollectionView.contentInset.left, y: 0),
-            animated: false
-        )
+        imageCollectionView.setContentOffset(CGPoint(x: -imageCollectionView.contentInset.left, y: 0), animated: false)
     }
 }
 
@@ -307,7 +314,10 @@ extension DiningInfoSheetView: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(DiningImageCell.self, for: indexPath)
-        cell.configure(image: restaurantImages[indexPath.item])
+        let imageURL = restaurantImageURLs.indices.contains(indexPath.item)
+            ? restaurantImageURLs[indexPath.item]
+            : nil
+        cell.configure(image: restaurantImages[indexPath.item], imageURL: imageURL)
         return cell
     }
 }

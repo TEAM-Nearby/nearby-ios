@@ -36,8 +36,22 @@ extension NotificationCoordinator: Coordinator {
         alarmViewController.onBackButtonDidTap = { [weak self] in
             self?.navigationController.popViewController(animated: true)
         }
-        navigationController.setViewControllers([alarmViewController], animated: false
-        )
+
+        alarmViewController.onRequestActionDidTap = { [weak self] requestItem in
+            guard let self else { return }
+            switch requestItem.displayType {
+            case .sentAccepted:
+                // TODO: - 알림 API 연동
+                showCompanionRequestAccept(applicationId: 6)
+            case .sentRejected:
+                showCompanionRequestDecline()
+            case .receivedPending:
+                // TODO: - 알림 API 연동
+                showHostRequestRecieve(applicationId: 7)
+            }
+        }
+
+        navigationController.setViewControllers([alarmViewController], animated: false)
     }
 
     func finish() {

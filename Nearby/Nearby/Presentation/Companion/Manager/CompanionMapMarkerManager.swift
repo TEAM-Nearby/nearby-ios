@@ -125,6 +125,7 @@ final class CompanionMapMarkerManager {
         let marker = GMSMarker(position: location.coordinate)
         marker.iconView = makeCurrentLocationMarkerView()
         marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
+        marker.zIndex = 1_000
         marker.map = mapView
         marker.tracksViewChanges = true
         currentLocationMarker = marker
@@ -151,7 +152,20 @@ final class CompanionMapMarkerManager {
         items.forEach { item in
             addCompanionMarker(at: item.coordinate, placeId: item.placeId,
                                nickname: item.nickname, written: item.written,
-                               place: item.place, date: item.date)
+                               place: item.place, date: item.date, style: item.style)
+        }
+    }
+
+    func replaceDiningMarkers(with items: [CompanionMapMarkerData]) {
+        entries
+            .filter { $0.content.style != .companion }
+            .forEach { $0.marker.map = nil }
+        entries.removeAll { $0.content.style != .companion }
+
+        items.forEach { item in
+            addCompanionMarker(at: item.coordinate, placeId: item.placeId,
+                               nickname: item.nickname, written: item.written,
+                               place: item.place, date: item.date, style: item.style)
         }
     }
     

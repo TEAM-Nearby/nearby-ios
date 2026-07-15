@@ -25,6 +25,10 @@ struct TokenRefreshResponseDTO: Decodable {
     let refreshTokenExpiresIn: Int
 }
 
+struct LogoutResponseDTO: Decodable {
+    let loggedOut: Bool
+}
+
 struct PhoneVerificationConfirmResponseDTO: Decodable {
     let phoneVerified: Bool
     let onboardingStatus: OnboardingStatus

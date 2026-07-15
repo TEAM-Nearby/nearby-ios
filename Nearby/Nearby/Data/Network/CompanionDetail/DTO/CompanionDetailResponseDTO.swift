@@ -21,6 +21,7 @@ struct CompanionDetailResponseDTO: Decodable {
     let meetingTimeType: String
     let expiresAt: String?
     let participantCount: Int
+    let participants: [CompanionParticipantDTO]
     let applyStatus: String
     let hostProfileSummary: CompanionHostProfileSummaryDTO
 }

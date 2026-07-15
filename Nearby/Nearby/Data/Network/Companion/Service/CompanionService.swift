@@ -9,13 +9,20 @@ protocol CompanionService {
     func fetchList(query: CompanionListQuery) async throws -> CompanionListResponseDTO
 }
 
-final class DefaultCompanionService: CompanionService {
+final class DefaultCompanionService {
+    
+    // MARK: - Property
+    
     private let networkProvider: NetworkProvider
-
+    
+    // MARK: - Initializer
+    
     init(networkProvider: NetworkProvider) {
         self.networkProvider = networkProvider
     }
+}
 
+extension DefaultCompanionService: CompanionService {
     func fetchList(query: CompanionListQuery) async throws -> CompanionListResponseDTO {
         try await networkProvider.request(
             CompanionTarget.list(query),

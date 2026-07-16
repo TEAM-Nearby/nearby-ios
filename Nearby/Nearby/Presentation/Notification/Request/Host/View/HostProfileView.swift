@@ -290,25 +290,27 @@ private extension HostProfileView {
         }
 
         profileImageView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(12)
+            $0.top.equalToSuperview().offset(20)
             $0.centerX.equalToSuperview()
             $0.size.equalTo(80)
         }
 
         nameStackView.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(5)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(12)
             $0.centerX.equalToSuperview()
         }
 
         verificationChip.snp.makeConstraints {
-            $0.top.equalTo(nameStackView.snp.bottom).offset(-4)
+            $0.top.equalTo(nameStackView.snp.bottom).offset(2)
             $0.centerX.equalToSuperview()
+            $0.height.equalTo(29)
         }
 
         personalityChipContainerView.snp.makeConstraints {
             $0.top.equalTo(verificationChip.snp.bottom).offset(32)
-            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(24)
+            $0.centerX.equalToSuperview()
+            $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
         }
 
         personalityFirstLineStackView.snp.makeConstraints {

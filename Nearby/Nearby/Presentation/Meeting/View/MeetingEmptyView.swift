@@ -64,7 +64,7 @@ final class MeetingEmptyView: BaseView {
     
     override func setLayout() {
         animationView.snp.makeConstraints {
-            $0.bottom.equalTo(self.snp.centerY).multipliedBy(1.0)
+            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.98)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(300)
             $0.height.equalTo(animationView.snp.width)

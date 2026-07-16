@@ -77,6 +77,7 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.backgroundColor = .white
             $0.datePickerMode = .dateAndTime
             $0.preferredDatePickerStyle = .inline
+            $0.minuteInterval = 5
             $0.minimumDate = Date()
             $0.locale = Locale(identifier: "ko_KR")
             $0.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
@@ -95,6 +96,8 @@ final class MatchingManageScheduleDetailView: BaseView {
 
         placeDetailLabel.do {
             $0.setFont(.b3M14, textColor: .grey30)
+            $0.numberOfLines = 2
+            $0.lineBreakMode = .byTruncatingTail
         }
 
         confirmExplainLabel.do {
@@ -178,9 +181,9 @@ final class MatchingManageScheduleDetailView: BaseView {
         }
 
         placeDetailLabel.snp.makeConstraints {
-            $0.centerY.equalTo(placeImageView.snp.centerY).offset(-1)
+            $0.top.equalTo(placeImageView.snp.top).offset(-2)
             $0.leading.equalTo(placeImageView.snp.trailing).offset(8)
-            $0.height.equalTo(20)
+            $0.trailing.equalToSuperview().inset(20)
         }
 
         mapView.snp.makeConstraints {

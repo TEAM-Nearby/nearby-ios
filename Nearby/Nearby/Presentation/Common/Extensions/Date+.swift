@@ -49,4 +49,12 @@ extension Date {
 
         return formatter.string(from: self)
     }
+
+    var utcAPIDateTimeString: String {
+        let formatter = DateFormatter.cached(
+            format: "yyyy-MM-dd'T'HH:mm:ss",
+            timeZone: TimeZone(secondsFromGMT: 0)
+        )
+        return formatter.string(from: self)
+    }
 }

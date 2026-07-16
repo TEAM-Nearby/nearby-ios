@@ -209,6 +209,24 @@ final class RecruitCompanionBottomView: BaseView {
         meetingPlaceTextView.textView.resignFirstResponder()
     }
 
+    func focusedInputVisibleRect() -> CGRect? {
+        if kakaoLinkTextView.textView.isFirstResponder {
+            let inputRect = kakaoLinkTextView.convert(kakaoLinkTextView.bounds, to: self)
+            let buttonRect = completeButton.convert(completeButton.bounds, to: self)
+            return inputRect.union(buttonRect).insetBy(dx: 0, dy: -16)
+        }
+
+        if descriptionTextView.textView.isFirstResponder {
+            return descriptionTextView.convert(descriptionTextView.bounds, to: self).insetBy(dx: 0, dy: -16)
+        }
+
+        if meetingPlaceTextView.textView.isFirstResponder {
+            return meetingPlaceTextView.convert(meetingPlaceTextView.bounds, to: self).insetBy(dx: 0, dy: -16)
+        }
+
+        return nil
+    }
+
     // MARK: - Actions
 
     @objc

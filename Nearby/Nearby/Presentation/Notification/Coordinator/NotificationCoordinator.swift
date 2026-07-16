@@ -155,6 +155,11 @@ extension NotificationCoordinator {
         mainTabCoordinator?.switchTab(to: .meeting)
     }
 
+    func showMatchingTab() {
+        navigationController.popToRootViewController(animated: false)
+        mainTabCoordinator?.switchTab(to: .matching)
+    }
+
     func showRecruitCompanion() {
         let companionCoordinator = diContainer.makeCompanionCoordinator(navigationController: navigationController)
         companionCoordinator.parentCoordinator = self
@@ -198,7 +203,6 @@ extension NotificationCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-
     private func makeChildMatchingCoordinator() -> MatchingCoordinator {
         let matchingCoordinator = diContainer.makeMatchingCoordinator(navigationController: navigationController)
         matchingCoordinator.parentCoordinator = self

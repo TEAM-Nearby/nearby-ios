@@ -323,7 +323,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             ),
             meetingTimeType: draft.meetingTimeType == .scheduled ? .scheduled : .now,
             meetingAt: draft.meetingTimeType == .scheduled
-                ? draft.meetingAt?.apiDateString
+                ? draft.meetingAt?.utcAPIDateTimeString
                 : nil,
             maxParticipants: draft.maxParticipants,
             styleKeywords: RecruitCompanionStyleKeyword.allCases.filter {

@@ -126,4 +126,29 @@ final class RecruitCompanionView: BaseView {
     func updatePlaceSuggestions(_ suggestions: [PlaceSearchResultItem]) {
         bottomView.updatePlaceSuggestions(suggestions)
     }
+
+    func updateKeyboardInset(
+        keyboardFrame: CGRect?,
+        animationDuration: TimeInterval,
+        animationOptions: UIView.AnimationOptions
+    ) {
+        let keyboardOverlap = keyboardFrame.map {
+            max(bounds.maxY - convert($0, from: nil).minY, 0)
+        } ?? 0
+        let bottomInset = keyboardOverlap > 0 ? keyboardOverlap + 16 : 0
+
+        UIView.animate(withDuration: animationDuration, delay: 0, options: animationOptions) {
+            self.scrollView.contentInset.bottom = bottomInset
+            self.scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
+        } completion: { _ in
+            guard keyboardOverlap > 0 else { return }
+            self.scrollToFocusedInput()
+        }
+    }
+
+    private func scrollToFocusedInput() {
+        guard let focusedRect = bottomView.focusedInputVisibleRect() else { return }
+        let visibleRect = bottomView.convert(focusedRect, to: contentView)
+        scrollView.scrollRectToVisible(visibleRect, animated: true)
+    }
 }

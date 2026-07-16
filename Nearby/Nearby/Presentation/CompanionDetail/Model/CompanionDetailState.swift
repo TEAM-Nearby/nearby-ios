@@ -16,6 +16,7 @@ struct CompanionDetailState {
     let hostName: String
     let genderTitle: String
     let profileImageURL: URL?
+    let hostIntroduction: String?
     let mannerScoreText: String
     let isPhoneVerified: Bool
     let placeName: String
@@ -37,6 +38,7 @@ struct CompanionDetailState {
         hostName: String = "",
         genderTitle: String = "",
         profileImageURL: URL? = nil,
+        hostIntroduction: String? = nil,
         mannerScoreText: String = "",
         isPhoneVerified: Bool = false,
         placeName: String = "",
@@ -57,6 +59,7 @@ struct CompanionDetailState {
         self.hostName = hostName
         self.genderTitle = genderTitle
         self.profileImageURL = profileImageURL
+        self.hostIntroduction = hostIntroduction
         self.mannerScoreText = mannerScoreText
         self.isPhoneVerified = isPhoneVerified
         self.placeName = placeName

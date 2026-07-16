@@ -144,6 +144,7 @@ private extension CompanionDetailResponseDTO {
             hostName: hostProfileSummary.nickname,
             genderTitle: hostProfileSummary.gender == "FEMALE" ? "여성" : "남성",
             profileImageURL: hostProfileSummary.profileImageUrl.flatMap(URL.init(string:)),
+            hostIntroduction: hostProfileSummary.intro,
             mannerScoreText: String(format: "%.1f", hostProfileSummary.mannerScore),
             isPhoneVerified: hostProfileSummary.phoneVerifiedAt != nil,
             placeName: previousState.placeName,

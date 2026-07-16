@@ -85,7 +85,7 @@ final class NearbyTextView: BaseView {
         
         clearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
-            $0.tintColor = .grey20
+            $0.tintColor = .grey80
         }
     }
     

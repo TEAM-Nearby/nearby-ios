@@ -16,11 +16,7 @@ final class HostProfileView: BaseView {
     // MARK: - Properties
 
     var onBackButtonDidTap: (() -> Void)?
-
-    var onReviewChipDidTap: ((
-        HostProfileReviewCategory,
-        Int
-    ) -> Void)?
+    var onReviewChipDidTap: ((HostProfileReviewCategory, Int) -> Void)?
 
     private var communicationChipButtons = [NearbyChipButton]()
     private var punctualityChipButtons = [NearbyChipButton]()
@@ -75,10 +71,7 @@ final class HostProfileView: BaseView {
 
         navigationBar.do {
             $0.backgroundColor = .bgDefaultGrey
-            $0.configure(
-                leftItem: .back,
-                centerItem: .title("프로필")
-            )
+            $0.configure(leftItem: .back, centerItem: .title("프로필"))
         }
 
         scrollView.do {
@@ -99,11 +92,7 @@ final class HostProfileView: BaseView {
             $0.isUserInteractionEnabled = true
         }
 
-        [
-            mannerScoreCardView,
-            introductionCardView,
-            reviewCardView
-        ].forEach {
+        [mannerScoreCardView, introductionCardView, reviewCardView].forEach {
             configureCardStyle($0)
         }
 
@@ -132,10 +121,7 @@ final class HostProfileView: BaseView {
             $0.isUserInteractionEnabled = false
         }
 
-        [
-            personalityFirstLineStackView,
-            personalitySecondLineStackView
-        ].forEach {
+        [personalityFirstLineStackView, personalitySecondLineStackView].forEach {
             configurePersonalityStackView($0)
         }
 
@@ -174,12 +160,8 @@ final class HostProfileView: BaseView {
             $0.numberOfLines = 1
         }
 
-        [
-            communicationFirstLineStackView,
-            communicationSecondLineStackView,
-            punctualityFirstLineStackView,
-            punctualitySecondLineStackView
-        ].forEach {
+        [communicationFirstLineStackView, communicationSecondLineStackView,
+        punctualityFirstLineStackView, punctualitySecondLineStackView].forEach {
             configureReviewStackView($0)
         }
     }
@@ -285,10 +267,7 @@ final class HostProfileView: BaseView {
         }
     }
 
-    func updateReviewChipSelection(
-        selectedCommunicationIndexes: Set<Int>,
-        selectedPunctualityIndexes: Set<Int>
-    ) {
+    func updateReviewChipSelection(selectedCommunicationIndexes: Set<Int>, selectedPunctualityIndexes: Set<Int>) {
         communicationChipButtons.enumerated().forEach { index, chipButton in
             chipButton.updateSelected(selectedCommunicationIndexes.contains(index))
         }

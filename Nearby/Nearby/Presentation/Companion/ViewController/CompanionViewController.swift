@@ -20,6 +20,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     private var isBottomSheetInitialized = false
     private var currentBottomSheetState = BottomSheetState(content: .nearbyCompanionList)
     private var selectedCategoryIndex: Int? = 0
+    private var shouldShowCompanionMarkers = true
     private var categoryItems: [CategoryItem] { viewModel.output.categoryItems }
 
     // MARK: - UI Components
@@ -187,7 +188,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
                 self?.companionView.companionCountChip.updateTitle(summaryText)
             }
             nearbySheetViewController.onMapMarkersChanged = { [weak self] markers in
-                self?.mapController.updateCompanionMarkers(markers)
+                guard let self else { return }
+                mapController.updateCompanionMarkers(shouldShowCompanionMarkers ? markers : [])
             }
             nearbySheetViewController.onTitleMultilineChanged = { [weak self] isMultiline in
                 self?.updateBottomSheetHeight(
@@ -367,10 +369,13 @@ extension CompanionViewController: UICollectionViewDelegateFlowLayout {
         }
 
         let nearbySheet = nearbySheetViewController as? NearCompanionSheetViewController
-        if isDeselecting || item.isRestaurant {
+        shouldShowCompanionMarkers = isDeselecting || item.isRestaurant
+
+        if shouldShowCompanionMarkers {
             nearbySheet?.updatePlaceCategory("RESTAURANT")
             showNearbyBottomSheet()
         } else {
+            mapController.updateCompanionMarkers([])
             showEmptyBottomSheet()
         }
     }

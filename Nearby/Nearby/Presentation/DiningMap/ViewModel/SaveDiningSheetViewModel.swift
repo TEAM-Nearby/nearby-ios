@@ -47,6 +47,7 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
         let selectedSort = CurrentValueSubject<DiningFavoriteSortOption, Never>(.latest)
         let totalCount = CurrentValueSubject<Int, Never>(0)
         let restaurants = CurrentValueSubject<[NearDiningCellItem], Never>([])
+        let mapMarkers = CurrentValueSubject<[CompanionMapMarkerData], Never>([])
         let selectedRestaurant = PassthroughSubject<NearDiningCellItem, Never>()
         let favoriteDidUpdate = PassthroughSubject<(placeId: Int, isFavorite: Bool), Never>()
         let error = PassthroughSubject<Error, Never>()
@@ -128,8 +129,14 @@ private extension SaveDiningSheetViewModel {
                     )
                 )
                 guard !Task.isCancelled else { return }
+                let restaurants = await favoriteRestaurants(
+                    from: response.favorites,
+                    coordinate: currentCoordinate
+                )
+                guard !Task.isCancelled else { return }
                 output.totalCount.send(response.totalCount)
-                output.restaurants.send(response.favorites.map(NearDiningCellItem.init(dto:)))
+                output.restaurants.send(restaurants)
+                updateMapMarkers(from: restaurants)
             } catch is CancellationError {
                 return
             } catch {
@@ -170,6 +177,45 @@ private extension SaveDiningSheetViewModel {
         guard let index = restaurants.firstIndex(where: { $0.placeId == placeId }) else { return }
         restaurants.remove(at: index)
         output.restaurants.send(restaurants)
+        updateMapMarkers(from: restaurants)
         output.totalCount.send(max(0, output.totalCount.value - 1))
+    }
+
+    func favoriteRestaurants(
+        from favorites: [DiningFavoritePlaceDTO],
+        coordinate: CLLocationCoordinate2D
+    ) async -> [NearDiningCellItem] {
+        var restaurants = favorites.map(NearDiningCellItem.init(dto:))
+
+        await withTaskGroup(of: (Int, DiningDetailResponseDTO?).self) { group in
+            for (index, favorite) in favorites.enumerated() {
+                group.addTask { [repository] in
+                    let response = try? await repository.fetchPlaceDetail(
+                        query: DiningDetailQuery(
+                            placeId: favorite.placeId,
+                            latitude: coordinate.latitude,
+                            longitude: coordinate.longitude
+                        )
+                    )
+                    return (index, response)
+                }
+            }
+
+            for await (index, response) in group {
+                guard let response else { continue }
+                restaurants[index] = NearDiningCellItem(dto: response)
+            }
+        }
+
+        return restaurants
+    }
+
+    @MainActor
+    func updateMapMarkers(from restaurants: [NearDiningCellItem]) {
+        output.mapMarkers.send(
+            restaurants.compactMap {
+                CompanionMapMarkerData(diningItem: $0, style: .savedRestaurant)
+            }
+        )
     }
 }

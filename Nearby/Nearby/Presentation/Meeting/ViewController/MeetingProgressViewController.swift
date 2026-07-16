@@ -91,13 +91,18 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
                 }
             }
             .store(in: &cancellables)
+        
+        viewModel.output.checkInSucceeded
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.coordinator?.showCheckInSuccessAlert()
+            }
+            .store(in: &cancellables)
 
         viewModel.output.errorMessage
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message in
-                let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "확인", style: .default))
-                self?.present(alert, animated: true)
+                self?.coordinator?.showErrorAlert(message: message)
             }
             .store(in: &cancellables)
         

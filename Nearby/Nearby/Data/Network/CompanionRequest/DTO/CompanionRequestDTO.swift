@@ -33,12 +33,12 @@ struct CompanionRequestListResponseDTO: Decodable {
 }
 
 struct CompanionRequestDTO: Decodable {
-    let notificationId: Int
+    let notificationId: Int?
     let applicationId: Int
     let applicationStatus: CompanionRequestStatus
     let host: CompanionRequestHostDTO
-    let placeName: String
-    let meetingAt: String
+    let placeName: String?
+    let meetingAt: String?
     let matchId: Int?
     let actionType: CompanionRequestActionType
     let isRead: Bool

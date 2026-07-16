@@ -58,7 +58,7 @@ final class CompanionMapController: NSObject {
 
     private func startUpdatingHeadingIfNeeded() {
         guard CLLocationManager.headingAvailable() else { return }
-        locationManager.headingFilter = 1
+        locationManager.headingFilter = 3
         locationManager.startUpdatingHeading()
     }
 

@@ -32,7 +32,7 @@ extension SpecificCompanionCellItem {
             profileImageURL: dto.participants.first?.profileImageUrl,
             hostName: dto.host.nickname,
             genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
-            writtenTime: dto.createdAgoText,
+            writtenTime: dto.createdAgoDisplayText,
             content: dto.contentPreview,
             meetingTime: dto.specificMeetingTimeTitle,
             closedTime: dto.closingTimeTitle,

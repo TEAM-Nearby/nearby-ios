@@ -23,6 +23,7 @@ final class DiningImageCell: UICollectionViewCell {
         super.init(frame: frame)
 
         imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = .grey5
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 16
         contentView.addSubview(imageView)
@@ -46,13 +47,13 @@ final class DiningImageCell: UICollectionViewCell {
     // MARK: - Method
     
     func configure(image: UIImage?, imageURL: URL?) {
-        let placeholder = image ?? .restaurantPlaceholder
+        imageView.kf.cancelDownloadTask()
+        imageView.image = image
 
         guard let imageURL else {
-            imageView.image = placeholder
             return
         }
 
-        imageView.kf.setImage(with: imageURL, placeholder: placeholder)
+        imageView.kf.setImage(with: imageURL, placeholder: image)
     }
 }

@@ -16,11 +16,7 @@ final class HostProfileView: BaseView {
     // MARK: - Properties
 
     var onBackButtonDidTap: (() -> Void)?
-
-    var onReviewChipDidTap: ((
-        HostProfileReviewCategory,
-        Int
-    ) -> Void)?
+    var onReviewChipDidTap: ((HostProfileReviewCategory, Int) -> Void)?
 
     private var communicationChipButtons = [NearbyChipButton]()
     private var punctualityChipButtons = [NearbyChipButton]()
@@ -75,10 +71,7 @@ final class HostProfileView: BaseView {
 
         navigationBar.do {
             $0.backgroundColor = .bgDefaultGrey
-            $0.configure(
-                leftItem: .back,
-                centerItem: .title("프로필")
-            )
+            $0.configure(leftItem: .back, centerItem: .title("프로필"))
         }
 
         scrollView.do {
@@ -99,11 +92,7 @@ final class HostProfileView: BaseView {
             $0.isUserInteractionEnabled = true
         }
 
-        [
-            mannerScoreCardView,
-            introductionCardView,
-            reviewCardView
-        ].forEach {
+        [mannerScoreCardView, introductionCardView, reviewCardView].forEach {
             configureCardStyle($0)
         }
 
@@ -132,10 +121,7 @@ final class HostProfileView: BaseView {
             $0.isUserInteractionEnabled = false
         }
 
-        [
-            personalityFirstLineStackView,
-            personalitySecondLineStackView
-        ].forEach {
+        [personalityFirstLineStackView, personalitySecondLineStackView].forEach {
             configurePersonalityStackView($0)
         }
 
@@ -174,12 +160,8 @@ final class HostProfileView: BaseView {
             $0.numberOfLines = 1
         }
 
-        [
-            communicationFirstLineStackView,
-            communicationSecondLineStackView,
-            punctualityFirstLineStackView,
-            punctualitySecondLineStackView
-        ].forEach {
+        [communicationFirstLineStackView, communicationSecondLineStackView,
+        punctualityFirstLineStackView, punctualitySecondLineStackView].forEach {
             configureReviewStackView($0)
         }
     }
@@ -285,10 +267,7 @@ final class HostProfileView: BaseView {
         }
     }
 
-    func updateReviewChipSelection(
-        selectedCommunicationIndexes: Set<Int>,
-        selectedPunctualityIndexes: Set<Int>
-    ) {
+    func updateReviewChipSelection(selectedCommunicationIndexes: Set<Int>, selectedPunctualityIndexes: Set<Int>) {
         communicationChipButtons.enumerated().forEach { index, chipButton in
             chipButton.updateSelected(selectedCommunicationIndexes.contains(index))
         }
@@ -311,25 +290,27 @@ private extension HostProfileView {
         }
 
         profileImageView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(12)
+            $0.top.equalToSuperview().offset(20)
             $0.centerX.equalToSuperview()
             $0.size.equalTo(80)
         }
 
         nameStackView.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(5)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(12)
             $0.centerX.equalToSuperview()
         }
 
         verificationChip.snp.makeConstraints {
-            $0.top.equalTo(nameStackView.snp.bottom).offset(-4)
+            $0.top.equalTo(nameStackView.snp.bottom).offset(2)
             $0.centerX.equalToSuperview()
+            $0.height.equalTo(29)
         }
 
         personalityChipContainerView.snp.makeConstraints {
             $0.top.equalTo(verificationChip.snp.bottom).offset(32)
-            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(24)
+            $0.centerX.equalToSuperview()
+            $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
         }
 
         personalityFirstLineStackView.snp.makeConstraints {

@@ -53,12 +53,12 @@ extension MatchingCoordinator: Coordinator {
     }
 
     func showAlarm() {
-        let viewController = diContainer.makeAlarmViewController()
-        viewController.hidesBottomBarWhenPushed = true
-        viewController.onBackButtonDidTap = { [weak self] in
-            self?.navigationController.popViewController(animated: true)
-        }
-        navigationController.pushViewController(viewController, animated: true)
+        let notificationCoordinator = diContainer.makeNotificationCoordinator(
+            navigationController: navigationController
+        )
+        notificationCoordinator.parentCoordinator = self
+        addChildCoordinator(notificationCoordinator)
+        notificationCoordinator.showAlarm()
     }
 
     func showCompanionTab() {

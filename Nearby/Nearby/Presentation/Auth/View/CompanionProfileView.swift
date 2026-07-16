@@ -121,7 +121,7 @@ final class CompanionProfileView: BaseView {
         
         nicknameClearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
-            $0.tintColor = .grey20
+            $0.tintColor = .grey80
             $0.isHidden = false
         }
         

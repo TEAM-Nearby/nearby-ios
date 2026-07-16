@@ -81,7 +81,7 @@ final class PhoneVerificationView: BaseView {
 
         phoneClearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
-            $0.tintColor = .grey20
+            $0.tintColor = .grey80
             $0.isHidden = true
         }
 
@@ -113,7 +113,7 @@ final class PhoneVerificationView: BaseView {
 
         verificationClearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
-            $0.tintColor = .grey20
+            $0.tintColor = .grey80
         }
 
         verificationErrorLabel.do {

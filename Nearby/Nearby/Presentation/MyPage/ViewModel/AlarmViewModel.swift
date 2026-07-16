@@ -163,7 +163,8 @@ private extension AlarmViewModel {
                 readingNotificationIDs.remove(notificationId)
             }
 
-            do {_ = try await repository.markNotificationAsRead(notificationId: notificationId)
+            do {
+                _ = try await repository.markNotificationAsRead(notificationId: notificationId)
 
                 guard !Task.isCancelled else { return }
                 handleAction(for: item)

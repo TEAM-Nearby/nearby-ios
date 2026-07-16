@@ -13,6 +13,7 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
     // MARK: - Properties
     
     private var tags: [String] = []
+    private let initialLoadingTracker = InitialLoadingTracker()
     
     // MARK: - UI Component
     
@@ -28,7 +29,11 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(true, animated: animated)
-        tabBarController?.tabBar.isHidden = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        viewModel.action(.viewWillDisappear)
     }
 
     // MARK: - Custom Methods
@@ -39,7 +44,9 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
     
     override func setAddTarget() {
         companionDetailView.onBackButtonDidTap = { [weak self] in
-            self?.viewModel.action(.backButtonDidTap)
+            guard let self,
+                  navigationController?.transitionCoordinator == nil else { return }
+            viewModel.action(.backButtonDidTap)
         }
         
         companionDetailView.onApplyButtonDidTap = { [weak self] in
@@ -61,14 +68,20 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
         viewModel.output.displayState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
-                self?.tags = state.tags
-                self?.companionDetailView.configure(state: state)
-                self?.companionDetailView.tagCollectionView.reloadData()
+                guard let self else { return }
+                initialLoadingTracker.complete(in: self)
+                tags = state.tags
+                companionDetailView.configure(state: state)
+                companionDetailView.tagCollectionView.reloadData()
             }
             .store(in: &cancellables)
 
         viewModel.output.error
-            .sink { error in
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let self {
+                    initialLoadingTracker.complete(in: self)
+                }
                 AppLogger.error(error)
             }
             .store(in: &cancellables)
@@ -82,6 +95,7 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
             .store(in: &cancellables)
         
         viewModel.action(.viewDidLoad)
+        initialLoadingTracker.begin(in: self)
     }
 }
 

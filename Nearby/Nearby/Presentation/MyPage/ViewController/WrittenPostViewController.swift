@@ -16,6 +16,7 @@ final class WrittenPostViewController:
     var onFindCompanionButtonDidTap: (() -> Void)?
 
     private var writtenPostItems: [WrittenPostItem] = []
+    private let initialLoadingTracker = InitialLoadingTracker()
 
     // MARK: - UI Component
 
@@ -27,6 +28,7 @@ final class WrittenPostViewController:
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        initialLoadingTracker.begin(in: self)
         viewModel.action(.viewDidLoad)
     }
 
@@ -63,6 +65,7 @@ final class WrittenPostViewController:
 
             guard let self else { return }
 
+            initialLoadingTracker.complete(in: self)
             writtenPostItems = items
             writtenPostView.tableView.reloadData()
             writtenPostView.updateContent(items: items)
@@ -74,6 +77,11 @@ final class WrittenPostViewController:
 
         viewModel.output.findCompanionButtonDidTap = { [weak self] in
             self?.onFindCompanionButtonDidTap?()
+        }
+
+        viewModel.output.errorMessage = { [weak self] _ in
+            guard let self else { return }
+            initialLoadingTracker.complete(in: self)
         }
     }
     

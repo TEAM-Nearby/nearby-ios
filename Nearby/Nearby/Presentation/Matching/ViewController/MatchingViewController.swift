@@ -13,6 +13,7 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
     // MARK: - Properties
 
     weak var coordinator: MatchingCoordinator?
+    private let initialLoadingTracker = InitialLoadingTracker()
     private let matchedCardView = MatchedCardCollectionView()
 
     // MARK: - Life Cycles
@@ -30,6 +31,7 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
         super.viewWillAppear(animated)
 
         navigationController?.setNavigationBarHidden(true, animated: false)
+        initialLoadingTracker.begin(in: self)
         viewModel.action(.viewDidLoad)
     }
 
@@ -55,8 +57,10 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
         viewModel.output.items
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
-                self?.matchedCardView.updateEmptyState(isEmpty: items.isEmpty)
-                self?.matchedCardView.matchedCardCollectionView.reloadData()
+                guard let self else { return }
+                initialLoadingTracker.complete(in: self)
+                matchedCardView.updateEmptyState(isEmpty: items.isEmpty)
+                matchedCardView.matchedCardCollectionView.reloadData()
             }
             .store(in: &cancellables)
 

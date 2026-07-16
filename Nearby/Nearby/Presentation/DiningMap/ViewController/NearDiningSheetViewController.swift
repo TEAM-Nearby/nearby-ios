@@ -16,6 +16,7 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     var onRestaurantSelected: ((NearDiningCellItem) -> Void)?
     var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
 
+    private let initialLoadingTracker = InitialLoadingTracker()
     private let nearDiningBottomSheetView = NearDiningBottomSheetView(diningCategories: DiningCategory.allCases)
 
     // MARK: - Life Cycle
@@ -48,7 +49,9 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
         viewModel.output.restaurants
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.nearDiningBottomSheetView.collectionView.reloadData()
+                guard let self else { return }
+                initialLoadingTracker.complete(in: self)
+                nearDiningBottomSheetView.collectionView.reloadData()
             }
             .store(in: &cancellables)
 
@@ -67,7 +70,11 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
             .store(in: &cancellables)
 
         viewModel.output.error
-            .sink { error in
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let self {
+                    initialLoadingTracker.complete(in: self)
+                }
                 AppLogger.error(error)
             }
             .store(in: &cancellables)
@@ -76,6 +83,7 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     // MARK: - Methods
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
+        initialLoadingTracker.begin(in: self)
         viewModel.action(.locationDidUpdate(coordinate))
     }
 
@@ -85,6 +93,10 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
 
     func updateFavorite(placeId: Int, isFavorite: Bool) {
         viewModel.updateFavorite(placeId: placeId, isFavorite: isFavorite)
+    }
+
+    func updateNickname(_ nickname: String) {
+        nearDiningBottomSheetView.updateNickname(nickname)
     }
 }
 

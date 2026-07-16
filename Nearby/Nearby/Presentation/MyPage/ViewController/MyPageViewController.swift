@@ -17,6 +17,7 @@ final class MyPageViewController:
     var onWrittenPostRowDidTap: (() -> Void)?
     var onSentRequestRowDidTap: (() -> Void)?
     var onReceivedRequestRowDidTap: (() -> Void)?
+    private let initialLoadingTracker = InitialLoadingTracker()
 
     // MARK: - UI Component
 
@@ -31,6 +32,7 @@ final class MyPageViewController:
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        initialLoadingTracker.begin(in: self)
         viewModel.action(.viewWillAppear)
     }
 
@@ -60,11 +62,15 @@ final class MyPageViewController:
 
     override func bindState() {
         viewModel.output.myPageData = { [weak self] displayModel in
-            self?.myPageView.configure(with: displayModel)
+            guard let self else { return }
+            initialLoadingTracker.complete(in: self)
+            myPageView.configure(with: displayModel)
         }
 
         viewModel.output.errorMessage = { [weak self] message in
-            self?.showErrorAlert(message: message)
+            guard let self else { return }
+            initialLoadingTracker.complete(in: self)
+            showErrorAlert(message: message)
         }
         
         viewModel.output.alarmButtonDidTap = { [weak self] in

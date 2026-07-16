@@ -17,6 +17,7 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
     // MARK: - Property
     
     weak var coordinator: MeetingTabCoordinator?
+    private let initialLoadingTracker = InitialLoadingTracker()
 
     // MARK: - Life Cycles
 
@@ -31,6 +32,7 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        initialLoadingTracker.begin(in: self)
         viewModel.action(.viewDidLoad)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
@@ -54,8 +56,19 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
         viewModel.output.items
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
-                self?.meetingTabView.updateState(isEmpty: items.isEmpty)
-                self?.meetingTabView.collectionView.reloadData()
+                guard let self else { return }
+                initialLoadingTracker.complete(in: self)
+                meetingTabView.updateState(isEmpty: items.isEmpty)
+                meetingTabView.collectionView.reloadData()
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                if let self {
+                    initialLoadingTracker.complete(in: self)
+                }
             }
             .store(in: &cancellables)
     }

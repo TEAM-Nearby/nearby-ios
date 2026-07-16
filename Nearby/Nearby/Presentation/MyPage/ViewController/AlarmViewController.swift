@@ -19,6 +19,7 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
 
     private var items = [AlarmRequestItem]()
     private var hasAppearedOnce = false
+    private let initialLoadingTracker = InitialLoadingTracker()
 
     // MARK: - UI Component
 
@@ -63,6 +64,7 @@ final class AlarmViewController: BaseViewController<AlarmViewModel> {
         bindItems()
         bindNavigation()
         bindError()
+        bindLoading()
 
         viewModel.action(.viewDidLoad)
     }
@@ -139,7 +141,21 @@ private extension AlarmViewController {
     func bindError() {
         viewModel.output.errorMessage
             .receive(on: DispatchQueue.main)
-            .sink { errorMessage in
+            .sink { _ in
+            }
+            .store(in: &cancellables)
+    }
+
+    func bindLoading() {
+        viewModel.output.isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                guard let self else { return }
+                if isLoading {
+                    initialLoadingTracker.begin(in: self)
+                } else {
+                    initialLoadingTracker.complete(in: self)
+                }
             }
             .store(in: &cancellables)
     }
@@ -185,7 +201,6 @@ extension AlarmViewController: UITableViewDelegate {
         }
 
         let item = items[indexPath.row]
-
         viewModel.action(.actionButtonDidTap(item))
     }
 }

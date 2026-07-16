@@ -16,6 +16,7 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
     var onRestaurantSelected: ((NearDiningCellItem) -> Void)?
     var onFavoriteUpdate: ((Int, Bool) -> Void)?
 
+    private let initialLoadingTracker = InitialLoadingTracker()
     private let saveDiningBottomSheetView = SaveDiningBottomSheetView(diningCategories: DiningCategory.allCases)
 
     // MARK: - Life Cycles
@@ -49,7 +50,9 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
         viewModel.output.restaurants
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.saveDiningBottomSheetView.collectionView.reloadData()
+                guard let self else { return }
+                initialLoadingTracker.complete(in: self)
+                saveDiningBottomSheetView.collectionView.reloadData()
             }
             .store(in: &cancellables)
 
@@ -75,7 +78,11 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
             .store(in: &cancellables)
 
         viewModel.output.error
-            .sink { error in
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let self {
+                    initialLoadingTracker.complete(in: self)
+                }
                 AppLogger.error(error)
             }
             .store(in: &cancellables)
@@ -84,6 +91,7 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
     // MARK: - Methods
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
+        initialLoadingTracker.begin(in: self)
         viewModel.action(.locationDidUpdate(coordinate))
     }
 

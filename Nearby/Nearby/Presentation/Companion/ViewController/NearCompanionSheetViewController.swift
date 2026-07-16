@@ -16,7 +16,9 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
     var onCompanionSelected: ((NearCompanionCellItem) -> Void)?
     var onSummaryTextChanged: ((String) -> Void)?
     var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
+    var onTitleMultilineChanged: ((Bool) -> Void)?
 
+    private let initialLoadingTracker = InitialLoadingTracker()
     private var nearCompanionSheetView = NearCompanionBottomView(sortOptions: SortOption.allCases)
 
     // MARK: - Life Cycle
@@ -33,6 +35,9 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
     }
 
     override func bindAction() {
+        nearCompanionSheetView.titleMultilineDidChange = { [weak self] isMultiline in
+            self?.onTitleMultilineChanged?(isMultiline)
+        }
         nearCompanionSheetView.sortOptionDidTap = { [weak self] option in
             self?.viewModel.action(.sortOptionDidTap(option))
         }
@@ -49,7 +54,9 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
         viewModel.output.companions
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.nearCompanionSheetView.collectionView.reloadData()
+                guard let self else { return }
+                initialLoadingTracker.complete(in: self)
+                nearCompanionSheetView.collectionView.reloadData()
             }
             .store(in: &cancellables)
 
@@ -69,7 +76,11 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
             .store(in: &cancellables)
 
         viewModel.output.error
-            .sink { error in
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let self {
+                    initialLoadingTracker.complete(in: self)
+                }
                 AppLogger.error(error)
             }
             .store(in: &cancellables)
@@ -85,6 +96,7 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
     // MARK: - Method
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
+        initialLoadingTracker.begin(in: self)
         viewModel.action(.locationDidUpdate(coordinate))
     }
 
@@ -94,6 +106,10 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
 
     func updatePlaceCategory(_ category: String) {
         viewModel.action(.placeCategoryDidSelect(category))
+    }
+
+    func updateNickname(_ nickname: String) {
+        nearCompanionSheetView.updateNickname(nickname)
     }
 }
 

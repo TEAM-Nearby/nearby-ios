@@ -30,6 +30,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let showReviewList = PassthroughSubject<ReviewItem?, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
         let requestLocation = PassthroughSubject<Void, Never>()
+        let checkInSucceeded = PassthroughSubject<Void, Never>()
     }
     
     struct DisplayData {
@@ -153,6 +154,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 canMoveToComplete = DTO.canMoveToComplete
                 output.step.send(.completion)
                 updateVerifyButtonState()
+                output.checkInSucceeded.send(())
             } catch {
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)

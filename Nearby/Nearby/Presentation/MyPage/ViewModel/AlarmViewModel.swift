@@ -147,18 +147,24 @@ private extension AlarmViewModel {
             return
         }
 
-        guard !readingNotificationIDs.contains(item.notificationId) else { return }
+        guard let notificationId = item.notificationId else {
+            handleAction(for: item)
+            return
+        }
 
-        readingNotificationIDs.insert(item.notificationId)
+        guard !readingNotificationIDs.contains(notificationId) else { return }
+
+        readingNotificationIDs.insert(notificationId)
 
         notificationReadTask = Task { [weak self] in
             guard let self else { return }
 
             defer {
-                readingNotificationIDs.remove(item.notificationId)
+                readingNotificationIDs.remove(notificationId)
             }
 
-            do {_ = try await repository.markNotificationAsRead(notificationId: item.notificationId)
+            do {
+                _ = try await repository.markNotificationAsRead(notificationId: notificationId)
 
                 guard !Task.isCancelled else { return }
                 handleAction(for: item)
@@ -178,8 +184,11 @@ private extension AlarmViewModel {
         case .confirmSchedule:
             handleConfirmSchedule(item)
 
-        case .viewRejection, .viewResult:
+        case .viewRejection:
             output.showCompanionRequestDecline.send(())
+
+        case .viewResult:
+            output.showCompanionRequestAccept.send(item.applicationId)
 
         case .acceptRequest:
             output.showHostRequestReceive.send(item.applicationId)

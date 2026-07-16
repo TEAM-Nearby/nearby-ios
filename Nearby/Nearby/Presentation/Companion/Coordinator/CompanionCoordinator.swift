@@ -76,8 +76,8 @@ final class CompanionCoordinator {
         let coordinator = diContainer.makeNotificationCoordinator(
             navigationController: navigationController
         )
-        coordinator.parentCoordinator = parentCoordinator
-        parentCoordinator?.addChildCoordinator(coordinator)
+        coordinator.parentCoordinator = self
+        addChildCoordinator(coordinator)
         return coordinator
     }
 

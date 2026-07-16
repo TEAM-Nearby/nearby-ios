@@ -10,7 +10,7 @@ import Foundation
 extension DateFormatter {
     private static var cache: [String: DateFormatter] = [:]
     
-    static func cached(format: String, timeZone: TimeZone? = TimeZone(identifier: "Asia/Seoul")) -> DateFormatter {
+    static func cached(format: String, timeZone: TimeZone? = .current) -> DateFormatter {
         let key = "\(format)|\(timeZone?.identifier ?? "current")"
         if let cachedFormatter = cache[key] { return cachedFormatter }
 

@@ -42,7 +42,7 @@ extension MainTabCoordinator {
 
 private extension MainTabCoordinator {
     func makeNavigationController(for item: NearbyTabItem) -> UINavigationController {
-        let navigationController = UINavigationController()
+        let navigationController = NearbyNavigationController()
         navigationController.view.backgroundColor = .clear
         navigationController.edgesForExtendedLayout = [.bottom]
         navigationController.extendedLayoutIncludesOpaqueBars = true

@@ -184,7 +184,7 @@ final class CompanionRequestAcceptView: BaseView {
         }
         
         chatDescriptionLabel.do {
-            $0.setFont(.b2M16, text: "(호스트)님이 만남 약속을 위한 오픈채팅방을 열어뒀어요. 입장해서 인사를 나눠보세요!", textColor: .grey60)
+            $0.setFont(.b2M16, text: "", textColor: .grey60)
             $0.numberOfLines = 2
             $0.textAlignment = .left
         }
@@ -338,6 +338,7 @@ final class CompanionRequestAcceptView: BaseView {
         dateLabel.text = output.date
         peopleLabel.text = output.people
         chatTitleLabel.text = output.title
+        chatDescriptionLabel.text = output.chatDescription
         confirmButton.setTitle(output.buttonTitle, for: .normal)
         avatarStackView.configure(with: output.avatarImages)
     }

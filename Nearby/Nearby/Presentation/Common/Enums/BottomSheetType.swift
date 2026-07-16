@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum BottomSheetContent {
+enum BottomSheetContent: Hashable {
     case nearbyCompanionList
     case nearbyCompanionEmpty
     case specificRestaurantCompanionList

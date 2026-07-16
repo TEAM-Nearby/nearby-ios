@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Combine
 import SnapKit
 
 final class CompanionViewController: BaseViewController<CompanionViewModel> {
@@ -63,6 +64,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             guard let nearbySheet = self?.nearbySheetViewController as? NearCompanionSheetViewController else { return }
             nearbySheet.updateLocation(coordinate)
         }
+
+        viewModel.action(.viewDidLoad)
     }
 
     override func viewDidLayoutSubviews() {
@@ -115,6 +118,16 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func setDelegate() {
         companionView.categoryCollectionView.dataSource = self
         companionView.categoryCollectionView.delegate = self
+    }
+
+    override func bindState() {
+        viewModel.output.nickname
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] nickname in
+                (self?.nearbySheetViewController as? NearCompanionSheetViewController)?.updateNickname(nickname)
+                (self?.specificSheetViewController as? SpecificCompanionSheetViewController)?.updateNickname(nickname)
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Methods
@@ -176,6 +189,12 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             nearbySheetViewController.onMapMarkersChanged = { [weak self] markers in
                 self?.mapController.updateCompanionMarkers(markers)
             }
+            nearbySheetViewController.onTitleMultilineChanged = { [weak self] isMultiline in
+                self?.updateBottomSheetHeight(
+                    for: .nearbyCompanionList,
+                    isTitleMultiline: isMultiline
+                )
+            }
         }
 
         if let specificSheetViewController = specificSheetViewController as? SpecificCompanionSheetViewController {
@@ -185,6 +204,19 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             specificSheetViewController.onCompanionSelected = { [weak self] item in
                 self?.showCompanionDetail(for: item)
             }
+            specificSheetViewController.onTitleMultilineChanged = { [weak self] isMultiline in
+                self?.updateBottomSheetHeight(
+                    for: .specificRestaurantCompanionList,
+                    isTitleMultiline: isMultiline
+                )
+            }
+        }
+    }
+
+    private func updateBottomSheetHeight(for content: BottomSheetContent, isTitleMultiline: Bool) {
+        let adjustment = isTitleMultiline ? NearbyBottomSheetValue.nearCompanionTitleHeight : 0
+        DispatchQueue.main.async { [weak self] in
+            self?.bottomSheetViewController.setHeightAdjustment(adjustment, for: content)
         }
     }
 

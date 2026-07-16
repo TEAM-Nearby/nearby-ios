@@ -13,6 +13,7 @@ final class DiningMapViewModel: BaseViewModelType {
     // MARK: - Input
     
     enum Input {
+        case viewDidLoad
         case bookmarkDidTap
     }
 
@@ -21,24 +22,56 @@ final class DiningMapViewModel: BaseViewModelType {
     struct Output {
         let mapConfiguration: CompanionMapConfiguration
         let isBookmarkSelected = CurrentValueSubject<Bool, Never>(false)
+        let nickname = PassthroughSubject<String, Never>()
     }
     
     // MARK: - Property
 
     let output: Output
 
+    private let myPageRepository: MyPageRepository
+    private var nicknameTask: Task<Void, Never>?
+
     // MARK: - Initializer
     
-    init(mapConfiguration: CompanionMapConfiguration = .diningMap) {
+    init(
+        myPageRepository: MyPageRepository,
+        mapConfiguration: CompanionMapConfiguration = .diningMap
+    ) {
+        self.myPageRepository = myPageRepository
         self.output = Output(mapConfiguration: mapConfiguration)
+    }
+
+    deinit {
+        nicknameTask?.cancel()
     }
 
     // MARK: - Action
     
     func action(_ trigger: Input) {
         switch trigger {
+        case .viewDidLoad:
+            fetchNickname()
         case .bookmarkDidTap:
             output.isBookmarkSelected.send(!output.isBookmarkSelected.value)
+        }
+    }
+}
+
+private extension DiningMapViewModel {
+    func fetchNickname() {
+        nicknameTask?.cancel()
+        nicknameTask = Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let response = try await myPageRepository.fetchMyPage()
+                guard !Task.isCancelled else { return }
+                output.nickname.send(response.nickname)
+            } catch {
+                guard !Task.isCancelled else { return }
+                AppLogger.error(error)
+            }
         }
     }
 }

@@ -51,6 +51,11 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         view = diningMapView
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        viewModel.action(.viewDidLoad)
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -161,6 +166,13 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isSelected in
                 self?.diningMapView.bookmarkButton.isSelected = isSelected
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.nickname
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] nickname in
+                self?.nearDiningSheetViewController.updateNickname(nickname)
             }
             .store(in: &cancellables)
     }

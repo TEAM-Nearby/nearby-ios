@@ -75,6 +75,11 @@ final class NearbyTextView: BaseView {
             $0.textColor = .grey80
             $0.textContainerInset = .zero
             $0.textContainer.lineFragmentPadding = 0
+            $0.autocorrectionType = .no
+            $0.spellCheckingType = .no
+            $0.smartDashesType = .no
+            $0.smartQuotesType = .no
+            $0.smartInsertDeleteType = .no
             $0.delegate = self
             applyTextViewTypography()
         }

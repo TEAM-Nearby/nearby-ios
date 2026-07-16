@@ -219,7 +219,7 @@ final class CompanionProfileView: BaseView {
         }
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(32)
+            $0.top.equalToSuperview().offset(26)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         

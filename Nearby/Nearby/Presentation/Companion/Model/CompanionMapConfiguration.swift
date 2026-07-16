@@ -68,7 +68,7 @@ extension CompanionMapMarkerData {
             placeId: dto.place.placeId,
             coordinate: CLLocationCoordinate2D(latitude: dto.place.latitude, longitude: dto.place.longitude),
             nickname: dto.host.nickname,
-            written: dto.createdAgoText,
+            written: dto.createdAgoDisplayText,
             place: dto.place.name,
             date: dto.nearMeetingTimeTitle,
             style: .companion

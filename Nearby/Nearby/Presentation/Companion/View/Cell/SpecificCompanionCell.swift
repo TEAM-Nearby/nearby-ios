@@ -11,6 +11,12 @@ import SnapKit
 import Then
 
 final class SpecificCompanionCell: UICollectionViewCell {
+
+    override var isHighlighted: Bool {
+        didSet {
+            contentView.backgroundColor = isHighlighted ? .bgSurfacePurple : .white
+        }
+    }
     
     // MARK: - Property
     

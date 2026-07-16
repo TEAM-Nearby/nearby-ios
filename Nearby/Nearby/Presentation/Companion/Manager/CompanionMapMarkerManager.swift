@@ -30,8 +30,8 @@ final class CompanionMapMarkerManager {
     // MARK: - UI Components
     
     private weak var mapView: GMSMapView?
-    private weak var currentLocationDirectionView: UIView?
-    private var currentLocationMarker: GMSMarker?
+    private var currentLocationMarkers: [GMSMarker] = []
+    private var currentLocationDirectionMarker: GMSMarker?
     private var entries: [Entry] = []
     private var level: CompanionMarkerLevel
     private let configuration: CompanionMapConfiguration
@@ -86,21 +86,28 @@ final class CompanionMapMarkerManager {
         stopTrackingViewChanges(for: marker)
     }
     
-    private func makeCurrentLocationMarkerView() -> UIView {
+    private func makeCurrentLocationMarkerView(image: UIImage, frame: CGRect) -> UIView {
         let markerView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        let backgroundImageView = UIImageView(image: .markerMyLocationBg)
-        backgroundImageView.frame = markerView.bounds
-        
-        let directionView = UIView(frame: markerView.bounds)
-        let arrowImageView = UIImageView(image: .markerMyLocationArrow)
-        arrowImageView.frame = CGRect(x: 13, y: 0, width: 24, height: 24)
-        let profileImageView = UIImageView(image: .markerMyLocationProfile)
-        profileImageView.frame = CGRect(x: 10, y: 10, width: 30, height: 30)
-        
-        directionView.addSubviews(arrowImageView, profileImageView)
-        markerView.addSubviews(backgroundImageView, directionView)
-        currentLocationDirectionView = directionView
+        let imageView = UIImageView(image: image)
+        imageView.frame = frame
+        imageView.contentMode = .scaleAspectFit
+        markerView.addSubview(imageView)
         return markerView
+    }
+
+    private func makeCurrentLocationMarker(
+        at coordinate: CLLocationCoordinate2D,
+        image: UIImage,
+        frame: CGRect,
+        zIndex: Int32
+    ) -> GMSMarker {
+        let marker = GMSMarker(position: coordinate)
+        marker.iconView = makeCurrentLocationMarkerView(image: image, frame: frame)
+        marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
+        marker.zIndex = zIndex
+        marker.tracksViewChanges = false
+        marker.map = mapView
+        return marker
     }
     
     private func makeImageMarker(image: UIImage, size: CGFloat) -> UIView {
@@ -117,19 +124,32 @@ final class CompanionMapMarkerManager {
     }
     
     func updateCurrentLocation(to location: CLLocation) {
-        if let currentLocationMarker {
-            currentLocationMarker.position = location.coordinate
+        if !currentLocationMarkers.isEmpty {
+            currentLocationMarkers.forEach { $0.position = location.coordinate }
             return
         }
-        
-        let marker = GMSMarker(position: location.coordinate)
-        marker.iconView = makeCurrentLocationMarkerView()
-        marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
-        marker.zIndex = 1_000
-        marker.map = mapView
-        marker.tracksViewChanges = true
-        currentLocationMarker = marker
-        stopTrackingViewChanges(for: marker)
+
+        let backgroundMarker = makeCurrentLocationMarker(
+            at: location.coordinate,
+            image: .markerMyLocationBg,
+            frame: CGRect(x: 0, y: 0, width: 50, height: 50),
+            zIndex: 1_000
+        )
+        let directionMarker = makeCurrentLocationMarker(
+            at: location.coordinate,
+            image: .markerMyLocationArrow,
+            frame: CGRect(x: 13, y: 0, width: 24, height: 24),
+            zIndex: 1_001
+        )
+        let profileMarker = makeCurrentLocationMarker(
+            at: location.coordinate,
+            image: .markerMyLocationProfile,
+            frame: CGRect(x: 10, y: 10, width: 30, height: 30),
+            zIndex: 1_002
+        )
+
+        currentLocationMarkers = [backgroundMarker, directionMarker, profileMarker]
+        currentLocationDirectionMarker = directionMarker
     }
     
     @discardableResult
@@ -186,12 +206,11 @@ final class CompanionMapMarkerManager {
     }
     
     func updateHeading(_ heading: CLHeading) {
+        guard heading.headingAccuracy >= 0 else { return }
+
         let degree = heading.trueHeading >= 0 ? heading.trueHeading : heading.magneticHeading
-        let radian = CGFloat(degree * .pi / 180)
-        
-        guard let currentLocationMarker else { return }
-        currentLocationMarker.tracksViewChanges = true
-        currentLocationDirectionView?.transform = CGAffineTransform(rotationAngle: radian)
-        stopTrackingViewChanges(for: currentLocationMarker)
+        guard degree >= 0 else { return }
+
+        currentLocationDirectionMarker?.rotation = degree
     }
 }

@@ -12,6 +12,12 @@ import SnapKit
 import Then
 
 final class SpecificCompanionSheetView: BaseView {
+
+    // MARK: - Properties
+
+    var titleMultilineDidChange: ((Bool) -> Void)?
+
+    private var isTitleMultiline: Bool?
     
     // MARK: - UI Components
     
@@ -21,6 +27,20 @@ final class SpecificCompanionSheetView: BaseView {
     private let placeNameLabel = UILabel()
     private let placeInfoLabel = UILabel()
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        guard titleLabel.bounds.width > 0 else { return }
+        let fittingHeight = titleLabel.sizeThatFits(
+            CGSize(width: titleLabel.bounds.width, height: .greatestFiniteMagnitude)
+        ).height
+        let isMultiline = fittingHeight > NearbyFont.h3Sb20.property.lineHeight + 0.5
+
+        guard isTitleMultiline != isMultiline else { return }
+        isTitleMultiline = isMultiline
+        titleMultilineDidChange?(isMultiline)
+    }
     
     // MARK: - Custom Methods
     
@@ -28,13 +48,14 @@ final class SpecificCompanionSheetView: BaseView {
         backgroundColor = .white
         
         placeImageView.do {
-            $0.image = .restaurantPlaceholder
+            $0.backgroundColor = .grey5
             $0.contentMode = .scaleAspectFill
             $0.clipsToBounds = true
         }
         
         titleLabel.do {
-            $0.setFont(.h3Sb20, text: "지영님 주변에서 동행을 구하고 있어요", textColor: .grey80)
+            $0.setFont(.h3Sb20, text: "내 주변에서 동행을 구하고 있어요", textColor: .grey80)
+            $0.numberOfLines = 2
         }
         
         closeButton.do {
@@ -64,8 +85,8 @@ final class SpecificCompanionSheetView: BaseView {
     override func setLayout() {
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(14)
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(NearbyFont.h3Sb20.property.lineHeight)
+            $0.leading.equalToSuperview().inset(20)
+            $0.trailing.lessThanOrEqualTo(closeButton.snp.leading).offset(-8)
         }
         
         closeButton.snp.makeConstraints {
@@ -102,8 +123,10 @@ final class SpecificCompanionSheetView: BaseView {
     }
 
     func configurePlace(with item: SpecificCompanionCellItem?) {
+        placeImageView.kf.cancelDownloadTask()
+        placeImageView.image = nil
+
         guard let item else {
-            placeImageView.image = .restaurantPlaceholder
             placeNameLabel.text = nil
             placeInfoLabel.text = nil
             return
@@ -113,8 +136,17 @@ final class SpecificCompanionSheetView: BaseView {
         placeInfoLabel.setFont(.b3M14, text: item.placeInfo, textColor: .white)
         placeImageView.kf.setImage(
             with: item.placeImageURL,
-            placeholder: UIImage.restaurantPlaceholder
+            placeholder: nil
         )
+    }
+
+    func updateNickname(_ nickname: String) {
+        titleLabel.setFont(
+            .h3Sb20,
+            text: "\(nickname)님 주변에서 동행을 구하고 있어요",
+            textColor: .grey80
+        )
+        setNeedsLayout()
     }
     
     // MARK: - Method

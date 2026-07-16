@@ -28,7 +28,7 @@ enum NearbyChipStyle: Equatable {
     var backgroundColor: UIColor {
         switch self {
         case .personalityDefault, .category, .companionCategoryUnselected, .diningCategoryUnselected,
-                .tagStateUnselected, .mapInfo:
+                .filterSortUnselected, .tagStateUnselected, .mapInfo:
             return .white
         case .companionCategorySelected:
             return .primary40
@@ -37,7 +37,7 @@ enum NearbyChipStyle: Equatable {
         case .categoryHonbapSelected, .diningCategorySelected,
                 .filterSortSelected, .tagStateSelected:
             return .chipBgPurple
-        case .categoryHonbapUnselected, .filterSortUnselected, .badgeProfile:
+        case .categoryHonbapUnselected, .badgeProfile:
             return .chipBgGrey
         case .badgeVerification:
             return .bgDefaultGrey

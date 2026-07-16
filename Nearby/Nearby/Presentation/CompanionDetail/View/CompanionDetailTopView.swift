@@ -165,12 +165,31 @@ final class CompanionDetailTopView: BaseView {
         return layout
     }
 
+    private func configureIntroduction(_ text: String?) {
+        let introduction = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let hasIntroduction = !introduction.isEmpty
+
+        introduceLabel.text = introduction
+        introduceLabel.isHidden = !hasIntroduction
+
+        tagCollectionView.snp.remakeConstraints {
+            if hasIntroduction {
+                $0.top.equalTo(introduceLabel.snp.bottom).offset(16)
+            } else {
+                $0.top.equalToSuperview().inset(16)
+            }
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(tagCollectionHeight)
+            $0.bottom.equalToSuperview().inset(16)
+        }
+    }
+
     func configure(state: CompanionDetailState) {
         hostNameLabel.setFont(.h3Sb20, text: state.hostName)
         genderLabel.setFont(.b2M16, text: state.genderTitle, textColor: .primary50)
         hostSubInfoLabel.setFont(.b3M14, text: state.isPhoneVerified ? "본인 인증 완료 · 매너 지수" : "매너 지수", textColor: .grey60)
         mannerScoreLabel.setFont(.b1Sb18, text: state.mannerScoreText, textColor: .primary50)
-        introduceLabel.text = nil
+        configureIntroduction(state.hostIntroduction)
 
         hostProfileImageView.configure(imageUrl: state.profileImageURL?.absoluteString)
     }

@@ -13,6 +13,12 @@ import Then
 
 final class NearCompanionCell: UICollectionViewCell {
 
+    override var isHighlighted: Bool {
+        didSet {
+            contentView.backgroundColor = isHighlighted ? .bgSurfacePurple : .white
+        }
+    }
+
     private let profileAvatarCount = 4
 
     // MARK: - UI Components
@@ -50,12 +56,14 @@ final class NearCompanionCell: UICollectionViewCell {
     // MARK: - Methods
     
     private func setStyle() {
+        contentView.backgroundColor = .white
+
         dividerView.do {
             $0.backgroundColor = .grey5
         }
         
         placeImageView.do {
-            $0.image = .restaurantPlaceholder
+            $0.backgroundColor = .grey5
             $0.clipsToBounds = true
             $0.layer.cornerRadius = 16
         }
@@ -176,11 +184,16 @@ final class NearCompanionCell: UICollectionViewCell {
         }
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        placeImageView.kf.cancelDownloadTask()
+        placeImageView.image = nil
+    }
+
     func configure(with item: NearCompanionCellItem) {
+        placeImageView.image = item.placeImage
         if let placeImageURL = item.placeImageURL {
-            placeImageView.kf.setImage(with: placeImageURL, placeholder: UIImage.restaurantPlaceholder)
-        } else {
-            placeImageView.image = item.placeImage ?? .restaurantPlaceholder
+            placeImageView.kf.setImage(with: placeImageURL, placeholder: item.placeImage)
         }
         placeNameLabel.text = item.placeName
         timeLabel.text = item.writtenTime

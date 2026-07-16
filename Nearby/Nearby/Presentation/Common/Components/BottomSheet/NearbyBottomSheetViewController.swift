@@ -29,6 +29,7 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     private var containerHeight = Metric.initialContainerHeight
     private var panStartHeight: CGFloat = 0
     private var initialContainerHeight: CGFloat = 24
+    private var heightAdjustments = [BottomSheetContent: CGFloat]()
     
     var onStateChange: ((CGFloat, BottomSheetState) -> Void)?
     
@@ -152,7 +153,9 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
     }
     
     private func resolvedHeight(for state: BottomSheetState) -> CGFloat {
-        NearbyBottomSheetHeightResolver.height(for: state, context: heightContext)
+        let height = NearbyBottomSheetHeightResolver.height(for: state, context: heightContext)
+        guard state.level != .expanded else { return height }
+        return height + (heightAdjustments[state.content] ?? 0)
     }
     
     private func nextLevel(translationY: CGFloat, velocityY: CGFloat) -> BottomSheetLevel {
@@ -197,7 +200,7 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
 
         trailingView.snp.remakeConstraints {
             $0.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(centerView)
+            $0.centerY.equalTo(centerView)
             $0.size.equalTo(40)
         }
     }
@@ -218,11 +221,7 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
         }
     }
     
-    func setState(
-        content: BottomSheetContent,
-        level: BottomSheetLevel? = nil,
-        animated: Bool = false
-    ) {
+    func setState(content: BottomSheetContent, level: BottomSheetLevel? = nil, animated: Bool = false) {
         setState(BottomSheetState(content: content, level: level), animated: animated)
     }
     
@@ -251,6 +250,15 @@ final class NearbyBottomSheetViewController: BaseViewController<EmptyViewModel> 
         }
         
         onStateChange?(bottomSheetHeight, currentState)
+    }
+
+    func setHeightAdjustment(_ adjustment: CGFloat, for content: BottomSheetContent, animated: Bool = true) {
+        let adjustment = max(0, adjustment)
+        guard abs((heightAdjustments[content] ?? 0) - adjustment) > 0.5 else { return }
+
+        heightAdjustments[content] = adjustment
+        guard currentState.content == content else { return }
+        updateSheetLayout(animated: animated)
     }
     
     func setContentViewController(_ viewController: UIViewController) {

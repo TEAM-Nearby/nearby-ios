@@ -11,6 +11,12 @@ import SnapKit
 import Then
 
 final class NearDiningCell: UICollectionViewCell {
+
+    override var isHighlighted: Bool {
+        didSet {
+            contentView.backgroundColor = isHighlighted ? .bgSurfacePurple : .white
+        }
+    }
     
     // MARK: - Property
     
@@ -108,6 +114,7 @@ final class NearDiningCell: UICollectionViewCell {
         }
         
         imageCollectionView.do {
+            $0.backgroundColor = .clear
             $0.dataSource = self
             $0.delegate = self
             $0.showsHorizontalScrollIndicator = false

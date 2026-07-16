@@ -21,6 +21,7 @@ final class CompanionViewModel: BaseViewModelType {
     // MARK: - Input
 
     enum Input {
+        case viewDidLoad
         case recruitCompanionButtonDidTap
         case companionDidSelect(CompanionDetailState)
     }
@@ -30,6 +31,7 @@ final class CompanionViewModel: BaseViewModelType {
     struct Output {
         let categoryItems: [CategoryItem]
         let mapConfiguration: CompanionMapConfiguration
+        let nickname = PassthroughSubject<String, Never>()
     }
 
     // MARK: - Properties
@@ -37,26 +39,55 @@ final class CompanionViewModel: BaseViewModelType {
     var route: ((Route) -> Void)?
     var output: Output
 
+    private let myPageRepository: MyPageRepository
+    private var nicknameTask: Task<Void, Never>?
+
     // MARK: - Initializer
 
     init(
+        myPageRepository: MyPageRepository,
         categoryItems: [CategoryItem] = CategoryItem.categoryItems,
         mapConfiguration: CompanionMapConfiguration = .mock
     ) {
+        self.myPageRepository = myPageRepository
         self.output = Output(
             categoryItems: categoryItems,
             mapConfiguration: mapConfiguration
         )
     }
 
+    deinit {
+        nicknameTask?.cancel()
+    }
+
     // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {
+        case .viewDidLoad:
+            fetchNickname()
         case .recruitCompanionButtonDidTap:
             route?(.recruitCompanion)
         case .companionDidSelect(let state):
             route?(.companionDetail(state))
+        }
+    }
+}
+
+private extension CompanionViewModel {
+    func fetchNickname() {
+        nicknameTask?.cancel()
+        nicknameTask = Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let response = try await myPageRepository.fetchMyPage()
+                guard !Task.isCancelled else { return }
+                output.nickname.send(response.nickname)
+            } catch {
+                guard !Task.isCancelled else { return }
+                AppLogger.error(error)
+            }
         }
     }
 }

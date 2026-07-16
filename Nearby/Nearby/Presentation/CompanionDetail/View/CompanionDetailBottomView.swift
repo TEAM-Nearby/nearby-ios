@@ -169,7 +169,7 @@ final class CompanionDetailBottomView: BaseView {
         }
 
         expirationLabel.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(10)
+            $0.edges.equalToSuperview()
         }
         
         mapView.snp.makeConstraints {
@@ -226,15 +226,15 @@ final class CompanionDetailBottomView: BaseView {
         contentLabel.setFont(.b3M14, text: state.content, textColor: .grey60)
 
         switch state.postType {
-        case .scheduled:
+        case .scheduled, .undecided:
             expirationBannerView.isHidden = true
             expirationLabel.text = nil
-        case .immediate:
-            // TODO: - 서버 immediate 값 질문
-//            expirationLabel.setFont(.b3M14, text: "이 글은 \(expirationTime)에 사라져요!", textColor: .grey60)
+        case .immediate(let expirationTime):
+            let message = expirationTime == "곧"
+                ? "이 글은 곧 사라져요!"
+                : "이 글은 \(expirationTime)에 사라져요!"
+            expirationLabel.setFont(.b3M14, text: message, textColor: .grey60)
             expirationBannerView.isHidden = false
-        case .undecided:
-            break
         }
     }
 

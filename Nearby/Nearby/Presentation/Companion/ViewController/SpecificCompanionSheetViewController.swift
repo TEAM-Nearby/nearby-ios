@@ -15,6 +15,7 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
     private let specificCompanionSheetView = SpecificCompanionSheetView()
     var onClose: (() -> Void)?
     var onCompanionSelected: ((SpecificCompanionCellItem) -> Void)?
+    var onTitleMultilineChanged: ((Bool) -> Void)?
     
     // MARK: - Life Cycle
     
@@ -31,6 +32,12 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
 
     override func setAddTarget() {
         specificCompanionSheetView.closeButton.addTarget(self, action: #selector(closeButtonDidTap), for: .touchUpInside)
+    }
+
+    override func bindAction() {
+        specificCompanionSheetView.titleMultilineDidChange = { [weak self] isMultiline in
+            self?.onTitleMultilineChanged?(isMultiline)
+        }
     }
     
     override func bindState() {
@@ -52,6 +59,10 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
     func updateCompanions(_ companions: [SpecificCompanionCellItem]) {
         specificCompanionSheetView.configurePlace(with: companions.first)
         viewModel.updateCompanions(companions)
+    }
+
+    func updateNickname(_ nickname: String) {
+        specificCompanionSheetView.updateNickname(nickname)
     }
 }
 

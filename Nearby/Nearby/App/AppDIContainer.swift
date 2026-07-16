@@ -180,7 +180,7 @@ final class AppDIContainer {
     }
     
     func makeCompanionViewModel() -> CompanionViewModel {
-        CompanionViewModel()
+        CompanionViewModel(myPageRepository: makeMyPageRepository())
     }
     
     func makeCompanionProfileViewModel() -> CompanionProfileViewModel {
@@ -188,7 +188,7 @@ final class AppDIContainer {
     }
 
     func makeDiningMapViewModel() -> DiningMapViewModel {
-        DiningMapViewModel()
+        DiningMapViewModel(myPageRepository: makeMyPageRepository())
     }
     
     func makeNearDiningBottomSheetViewModel() -> NearDiningBottomSheetViewModel {

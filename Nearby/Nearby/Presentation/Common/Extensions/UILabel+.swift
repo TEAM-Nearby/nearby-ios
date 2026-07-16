@@ -15,6 +15,7 @@ extension UILabel {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.minimumLineHeight = nearbyFont.property.lineHeight
         paragraphStyle.maximumLineHeight = nearbyFont.property.lineHeight
+        paragraphStyle.alignment = textAlignment
         
         let baselineOffset = (nearbyFont.property.lineHeight - nearbyFont.font.lineHeight) / 4
         
@@ -32,6 +33,7 @@ extension UILabel {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = lineSpacing
         paragraphStyle.lineBreakMode = lineBreakMode
+        paragraphStyle.alignment = textAlignment
 
         attributedText = NSAttributedString(
             string: text,

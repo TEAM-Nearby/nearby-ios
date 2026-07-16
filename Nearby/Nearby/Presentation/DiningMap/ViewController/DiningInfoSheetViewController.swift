@@ -15,6 +15,7 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
     var onClose: (() -> Void)?
     var onFavoriteUpdate: ((Int, Bool) -> Void)?
 
+    private let initialLoadingTracker = InitialLoadingTracker()
     private let diningInfoSheetView = DiningInfoSheetView()
     
     // MARK: - Life Cycles
@@ -37,7 +38,9 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
             .compactMap { $0 }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
-                self?.configureView(with: item)
+                guard let self else { return }
+                initialLoadingTracker.complete(in: self)
+                configureView(with: item)
             }
             .store(in: &cancellables)
 
@@ -49,7 +52,11 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
             .store(in: &cancellables)
 
         viewModel.output.error
-            .sink { error in
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let self {
+                    initialLoadingTracker.complete(in: self)
+                }
                 AppLogger.error(error)
             }
             .store(in: &cancellables)
@@ -65,5 +72,8 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
     func configure(with item: NearDiningCellItem) {
         loadViewIfNeeded()
         viewModel.action(.updateRestaurant(item))
+        if item.placeId != nil {
+            initialLoadingTracker.begin(in: self)
+        }
     }
 }

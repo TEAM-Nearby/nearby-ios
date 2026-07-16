@@ -41,6 +41,15 @@ extension CompanionDTO {
         let day = Int(ceil(remainingTime / 86_400))
         return " | 마감 \(day)일 전"
     }
+
+    var createdAgoDisplayText: String {
+        guard let createdDate = parsedDate(from: createdAt) else { return createdAgoText }
+
+        let elapsedTime = Date().timeIntervalSince(createdDate)
+        guard elapsedTime >= 86_400 else { return createdAgoText }
+
+        return "\(Int(elapsedTime / 86_400))일 전"
+    }
 }
 
 private extension CompanionDTO {
@@ -66,14 +75,19 @@ private extension CompanionDTO {
     var meetingDate: Date? {
         guard let meetingAt else { return nil }
 
+        return parsedDate(from: meetingAt)
+    }
+
+    func parsedDate(from value: String) -> Date? {
+
         let isoFormatter = ISO8601DateFormatter()
         isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = isoFormatter.date(from: meetingAt) {
+        if let date = isoFormatter.date(from: value) {
             return date
         }
 
         isoFormatter.formatOptions = [.withInternetDateTime]
-        if let date = isoFormatter.date(from: meetingAt) {
+        if let date = isoFormatter.date(from: value) {
             return date
         }
 
@@ -90,7 +104,7 @@ private extension CompanionDTO {
 
         for dateFormat in dateFormats {
             localFormatter.dateFormat = dateFormat
-            if let date = localFormatter.date(from: meetingAt) {
+            if let date = localFormatter.date(from: value) {
                 return date
             }
         }

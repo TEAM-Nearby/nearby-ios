@@ -18,6 +18,9 @@ final class NearCompanionBottomView: BaseView {
     private var sortButtons = [SortOption: NearbyChipButton]()
     
     var sortOptionDidTap: ((SortOption) -> Void)?
+    var titleMultilineDidChange: ((Bool) -> Void)?
+
+    private var isTitleMultiline: Bool?
     
     // MARK: - UI Components
     
@@ -35,6 +38,20 @@ final class NearCompanionBottomView: BaseView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        guard titleLabel.bounds.width > 0 else { return }
+        let fittingHeight = titleLabel.sizeThatFits(
+            CGSize(width: titleLabel.bounds.width, height: .greatestFiniteMagnitude)
+        ).height
+        let isMultiline = fittingHeight > NearbyFont.h3Sb20.property.lineHeight + 0.5
+
+        guard isTitleMultiline != isMultiline else { return }
+        isTitleMultiline = isMultiline
+        titleMultilineDidChange?(isMultiline)
+    }
     
     // MARK: - Custom Methods
     
@@ -43,6 +60,7 @@ final class NearCompanionBottomView: BaseView {
         
         titleLabel.do {
             $0.setFont(.h3Sb20, text: "내 주변에서 동행을 구하고 있어요", textColor: .grey80)
+            $0.numberOfLines = 2
         }
         
         sortButtonStackView.do {
@@ -67,7 +85,6 @@ final class NearCompanionBottomView: BaseView {
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(8)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(NearbyFont.h3Sb20.property.lineHeight)
         }
         
         sortButtonStackView.snp.makeConstraints {
@@ -118,5 +135,14 @@ final class NearCompanionBottomView: BaseView {
         sortButtons.forEach { option, button in
             button.updateSelected(option == selectedOption)
         }
+    }
+
+    func updateNickname(_ nickname: String) {
+        titleLabel.setFont(
+            .h3Sb20,
+            text: "\(nickname)님 주변에서 동행을 구하고 있어요",
+            textColor: .grey80
+        )
+        setNeedsLayout()
     }
 }

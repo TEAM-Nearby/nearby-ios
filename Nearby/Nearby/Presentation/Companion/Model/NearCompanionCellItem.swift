@@ -27,7 +27,7 @@ extension NearCompanionCellItem {
                 ? nil
                 : URL(string: dto.place.imageUrl),
             placeName: dto.place.name,
-            writtenTime: dto.createdAgoText,
+            writtenTime: dto.createdAgoDisplayText,
             content: dto.contentPreview,
             schedule: dto.nearMeetingTimeTitle,
             participantImageURLs: dto.participantProfileImageURLs,

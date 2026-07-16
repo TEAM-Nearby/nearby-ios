@@ -24,6 +24,11 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
         view = hostRequestRecieveView
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        hostRequestRecieveView.restartAnimation()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -34,6 +39,10 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
     override func setAddTarget() {
         hostRequestRecieveView.onBackButtonDidTap = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
+        }
+        
+        hostRequestRecieveView.onNextButtonDidTap = { [weak self] in
+            self?.viewModel.action(.nextButtonDidTap)
         }
         
         hostRequestRecieveView.onAllowButtonDidTap = { [weak self] in
@@ -57,7 +66,7 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self else { return }
-                self.coordinator?.showHostRequestDecline(
+                coordinator?.showHostRequestDecline(
                     applicantName: viewModel.applicantNickname,
                     applicationId: viewModel.applicationId
                 )
@@ -68,14 +77,22 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self else { return }
-                self.coordinator?.showHostRequestAllow(
+                coordinator?.showHostRequestAllow(
                     applicantName: viewModel.applicantNickname,
                     applicantProfileImageUrl: viewModel.applicantProfileImageUrl,
                     locationName: viewModel.placeName,
                     meetingAt: viewModel.meetingAt,
                     matchId: viewModel.matchId,
-                    postType: .scheduled  // TODO: 서버에서 postType 받으면 교체
+                    postType: viewModel.meetingTimeType,
+                    openChatUrl: viewModel.openChatUrl
                 )
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.showApplicantProfile
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] profileId in
+                self?.coordinator?.showHostProfile(profileId: profileId)
             }
             .store(in: &cancellables)
         

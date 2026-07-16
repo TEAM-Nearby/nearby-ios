@@ -38,6 +38,8 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
     // MARK: - Custom Method
 
     override func setAddTarget() {
+        addKeyboardDismissGesture()
+
         phoneVerificationView.navigationBar.leftButtonAction = { [weak self] in
             self?.view.endEditing(true)
             self?.viewModel.action(.backButtonDidTap)

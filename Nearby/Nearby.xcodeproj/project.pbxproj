@@ -33,7 +33,6 @@
 		771209E72FF423C900D688FD /* Exceptions for "Nearby" folder in "Nearby" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Data/Network/Notification/DTO/.gitkeep,
 				Presentation/Notification/View/.gitkeep,
 				Presentation/Notification/ViewController/.gitkeep,
 				Presentation/Notification/ViewModel/.gitkeep,
@@ -231,7 +230,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2YTVA7GW5S;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Nearby/Resource/Info.plist;
@@ -264,13 +263,14 @@
 		};
 		771209EA2FF423C900D688FD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2YTVA7GW5S;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Nearby/Resource/Info.plist;
@@ -295,6 +295,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -367,6 +368,7 @@
 		};
 		771209EC2FF423C900D688FD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

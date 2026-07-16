@@ -26,8 +26,8 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<URL, Never>()
         let showChatLinkPopup = PassthroughSubject<String, Never>()
-        let showScheduleDetail = PassthroughSubject<Void, Never>()
-        let showScheduleConfirm = PassthroughSubject<Void, Never>()
+        let showScheduleDetail = PassthroughSubject<Int, Never>()
+        let showScheduleConfirm = PassthroughSubject<Int, Never>()
     }
     
     enum Step {
@@ -53,19 +53,19 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     private let matchId: Int?
     private let postType: PostType
     private let profileImageUrl: String?
-    // TODO: - 서버 연동 시 응답값으로 교체
-    let openChatURLString = "https://open.kakao.com/o/s3lwQwDi"
+    let openChatURLString: String
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
 
-    init(applicantProfileImageUrl: String?, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType) {
+    init(applicantProfileImageUrl: String?, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String) {
         self.profileImageUrl = applicantProfileImageUrl
         self.applicantName = applicantName
         self.locationName = locationName
         self.meetingAt = meetingAt
         self.matchId = matchId
         self.postType = postType
+        self.openChatURLString = openChatUrl
     }
     
     // MARK: - Action
@@ -87,11 +87,12 @@ final class HostRequestAllowViewModel: BaseViewModelType {
             case .matched:
                 output.step.send(.chat)
             case .chat:
+                guard let matchId else { return }
                 switch postType {
                 case .immediate:
-                    output.showScheduleDetail.send(())
+                    output.showScheduleDetail.send(matchId)
                 case .scheduled:
-                    output.showScheduleConfirm.send(())
+                    output.showScheduleConfirm.send(matchId)
                 case .undecided:
                     break
                 }

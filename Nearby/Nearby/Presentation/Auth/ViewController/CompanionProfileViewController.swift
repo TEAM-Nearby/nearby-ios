@@ -27,6 +27,8 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     // MARK: - Custom Methods
     
     override func setAddTarget() {
+        addKeyboardDismissGesture()
+
         companionProfileView.navigationBar.leftButtonAction = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }

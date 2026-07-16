@@ -81,7 +81,7 @@ final class HostRequestDeclineView: BaseView {
         }
         
         applicantProfileView.snp.makeConstraints {
-            $0.top.equalTo(self.snp.centerY).offset(-172)
+            $0.top.equalTo(self.snp.centerY).multipliedBy(0.6)
             $0.horizontalEdges.equalToSuperview()
         }
         
@@ -114,6 +114,7 @@ final class HostRequestDeclineView: BaseView {
             $0.top.equalTo(rejectReasonLabel.snp.bottom).offset(10)
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(92)
+            $0.bottom.equalToSuperview()
         }
         
         rejectButton.snp.makeConstraints {

@@ -26,7 +26,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         let step = CurrentValueSubject<Step, Never>(.matched)
         let showOpenChat = PassthroughSubject<URL, Never>()
         let showChatLinkPopup = PassthroughSubject<String, Never>()
-        let showScheduleDetail = PassthroughSubject<Void, Never>()
+        let showScheduleDetail = PassthroughSubject<Int, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
     }
 
@@ -51,6 +51,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
 
     let applicationId: Int
     private(set) var openChatURLString: String = ""
+    private var matchId: Int?
     private let repository: ApplicantCompanionRepository
     private var cancellables = Set<AnyCancellable>()
 
@@ -73,7 +74,8 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
             case .matched:
                 output.step.send(.chat)
             case .chat:
-                output.showScheduleDetail.send(())
+                guard let matchId else { return }
+                output.showScheduleDetail.send(matchId)
             }
 
         case .enterChatButtonDidTap:
@@ -97,6 +99,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                 }
 
                 openChatURLString = result.openChatUrl ?? ""
+                matchId = result.matchId
 
                 let data = DisplayData(
                     hostProfileImageUrl: result.host.profileImageUrl,

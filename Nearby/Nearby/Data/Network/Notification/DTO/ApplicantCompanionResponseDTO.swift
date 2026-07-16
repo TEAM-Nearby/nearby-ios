@@ -18,7 +18,7 @@ struct CompanionRequestResultResponseDTO: Decodable {
         let postId: Int
         let host: Host
         let place: Place
-        let meetingTimeType: String
+        let meetingTimeType: PostType
         let meetingAt: String?
         let participantCount: Int
         let maxParticipants: Int

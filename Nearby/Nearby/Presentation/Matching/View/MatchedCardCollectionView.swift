@@ -104,5 +104,16 @@ final class MatchedCardCollectionView: BaseView {
         titleLabel.isHidden = isEmpty
         matchedCardCollectionView.isHidden = isEmpty
         emptyView.isHidden = !isEmpty
+
+        if isEmpty {
+            emptyView.playAnimationIfNeeded()
+        } else {
+            emptyView.stopAnimation()
+        }
+    }
+    
+    func playEmptyAnimationIfNeeded() {
+        guard !emptyView.isHidden else { return }
+        emptyView.playAnimationIfNeeded()
     }
 }

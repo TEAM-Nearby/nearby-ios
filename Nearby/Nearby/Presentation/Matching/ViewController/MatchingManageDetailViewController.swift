@@ -24,6 +24,10 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
     init(item: MatchingMatchedCardItem, repository: MatchedCompanionListRepository) {
         super.init(viewModel: MatchingManageDetailViewModel(item: item, repository: repository))
     }
+    
+    init(matchId: Int, repository: MatchedCompanionListRepository) {
+        super.init(viewModel: MatchingManageDetailViewModel(matchId: matchId, repository: repository))
+    }
 
     // MARK: - Life Cycles
 

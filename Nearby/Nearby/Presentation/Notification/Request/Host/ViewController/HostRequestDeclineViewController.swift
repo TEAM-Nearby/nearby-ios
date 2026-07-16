@@ -32,6 +32,8 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
     // MARK: - Custom Methods
 
     override func setAddTarget() {
+        addKeyboardDismissGesture()
+
         hostRequestDeclineView.onBackButtonDidTap = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }

@@ -9,6 +9,7 @@ import Foundation
 
 struct MeetingItem {
     let id: Int
+    let meetingId: Int?
     let matchId: Int
     let name: String
     let gender: String

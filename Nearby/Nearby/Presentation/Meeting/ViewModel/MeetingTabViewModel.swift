@@ -79,12 +79,14 @@ final class MeetingTabViewModel: BaseViewModelType {
 
     private func makeMeetingItem(from DTO: MeetingResponseDTO) -> MeetingItem {
         let meetingDate = DTO.meetingAt?.toDate()
-        let information = [DTO.placeName, meetingDate?.timeDisplayText]
+        let timeText = DTO.progressStatus == .scheduling ? "일정 조율 중" : meetingDate?.timeDisplayText
+        let information = [DTO.placeName, timeText]
             .compactMap { $0 }
             .joined(separator: " · ")
 
         return MeetingItem(
-            id: DTO.meetingId,
+            id: DTO.meetingId ?? DTO.matchId,
+            meetingId: DTO.meetingId,
             matchId: DTO.matchId,
             name: DTO.companion.nickname,
             gender: DTO.companion.gender.genderDisplayText,

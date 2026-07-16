@@ -36,10 +36,15 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     private let nameLabel = UILabel()
     private let genderLabel = UILabel()
     private let uploadedTimeLabel = UILabel()
-    private let informationLabel = UILabel()
+    private let informationStackView = UIStackView()
+    private let placeLabel = UILabel()
+    private let informationDotLabel = UILabel()
+    private let meetingTimeLabel = UILabel()
     private let contentLabel = UILabel()
     private let nextButton = UIButton()
     private let dotLabel = UILabel()
+    private var informationTrailingToButtonConstraint: Constraint?
+    private var informationTrailingToSuperviewConstraint: Constraint?
 
     // MARK: - Initializer
 
@@ -116,8 +121,31 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.setFont(.b2M16, textColor: .grey50)
         }
 
-        informationLabel.do {
+        informationStackView.do {
+            $0.axis = .horizontal
+            $0.alignment = .center
+            $0.spacing = 4
+        }
+
+        placeLabel.do {
             $0.setFont(.b3M14, textColor: .grey80)
+            $0.numberOfLines = 1
+            $0.lineBreakMode = .byTruncatingTail
+            $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        }
+
+        informationDotLabel.do {
+            $0.setFont(.b3M14, text: "·", textColor: .grey80)
+            $0.textAlignment = .center
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+        }
+
+        meetingTimeLabel.do {
+            $0.setFont(.b3M14, textColor: .grey80)
+            $0.numberOfLines = 1
+            $0.setContentHuggingPriority(.required, for: .horizontal)
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
 
         contentLabel.do {
@@ -139,10 +167,11 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     private func setUI() {
         profileContainerView.addSubviews(profileImageView, profileClusterView)
+        informationStackView.addArrangedSubviews(placeLabel, informationDotLabel, meetingTimeLabel)
         contentView.addSubviews(
             profileContainerView, nameLabel,
             genderLabel, dotLabel, uploadedTimeLabel,
-            informationLabel, contentLabel, nextButton
+            informationStackView, contentLabel, nextButton
         )
     }
 
@@ -183,11 +212,19 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.height.equalTo(Metric.titleHeight)
         }
 
-        informationLabel.snp.makeConstraints {
+        informationStackView.snp.makeConstraints {
             $0.top.equalTo(nameLabel.snp.bottom).offset(Metric.informationTopOffset)
             $0.leading.equalTo(nameLabel.snp.leading)
+            informationTrailingToButtonConstraint = $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8).constraint
+            informationTrailingToSuperviewConstraint = $0.trailing.lessThanOrEqualToSuperview().inset(Metric.horizontalInset).constraint
             $0.height.equalTo(Metric.informationHeight)
         }
+
+        informationDotLabel.snp.makeConstraints {
+            $0.width.equalTo(4)
+        }
+
+        informationTrailingToSuperviewConstraint?.deactivate()
 
         updateContentLabelTrailingConstraint(isNextButtonHidden: false)
 
@@ -222,18 +259,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         }
 
         return "\(content.name)님 외 \(companionCount)명과의 동행"
-    }
-
-    private func makeInformationText(content: MatchingMatchedCardContentModel) -> String {
-        if content.place.isEmpty {
-            return content.meetingTime
-        }
-
-        if content.meetingTime.isEmpty {
-            return content.place
-        }
-
-        return "\(content.place) · \(content.meetingTime)"
     }
 
     private func updateProfileTopConstraint() {
@@ -374,7 +399,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         updateProfile(content: content, displayMode: displayMode)
 
         updateHeader(content: content, displayMode: displayMode)
-        informationLabel.setFont(.b3M14, text: makeInformationText(content: content), textColor: .grey80)
+        updateInformation(content: content)
         configureContentLabel(text: content.description, textColor: displayMode.descriptionColor)
         updateProfileTopConstraint()
     }
@@ -382,6 +407,46 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     func setNextButtonHidden(_ isHidden: Bool) {
         nextButton.isHidden = isHidden
         updateContentLabelTrailingConstraint(isNextButtonHidden: isHidden)
+
+        if isHidden {
+            informationTrailingToButtonConstraint?.deactivate()
+            informationTrailingToSuperviewConstraint?.activate()
+        } else {
+            informationTrailingToSuperviewConstraint?.deactivate()
+            informationTrailingToButtonConstraint?.activate()
+        }
+    }
+
+    private func updateInformation(content: MatchingMatchedCardContentModel) {
+        let hasPlace = !content.place.isEmpty
+        let hasMeetingTime = !content.meetingTime.isEmpty
+
+        configurePlaceLabel(text: content.place)
+        meetingTimeLabel.setFont(.b3M14, text: content.meetingTime, textColor: .grey80)
+
+        informationDotLabel.isHidden = !(hasPlace && hasMeetingTime)
+        placeLabel.isHidden = !hasPlace
+        meetingTimeLabel.isHidden = !hasMeetingTime
+    }
+
+    private func configurePlaceLabel(text: String) {
+        let nearbyFont = NearbyFont.b3M14
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.minimumLineHeight = nearbyFont.property.lineHeight
+        paragraphStyle.maximumLineHeight = nearbyFont.property.lineHeight
+        paragraphStyle.lineBreakMode = .byTruncatingTail
+
+        let baselineOffset = (nearbyFont.property.lineHeight - nearbyFont.font.lineHeight) / 4
+
+        placeLabel.attributedText = NSAttributedString(
+            string: text,
+            attributes: [
+                .font: nearbyFont.font,
+                .paragraphStyle: paragraphStyle,
+                .baselineOffset: baselineOffset,
+                .foregroundColor: UIColor.grey80
+            ]
+        )
     }
 
     private func configureContentLabel(text: String, textColor: UIColor) {

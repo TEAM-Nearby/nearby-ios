@@ -126,22 +126,12 @@ private extension MeetingTimeType {
 private extension String {
     var matchingDetailTimeTitle: String {
         guard let date = isoDate else { return self }
-
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.timeZone = .current
-        formatter.dateFormat = "a h시 m분"
-        return formatter.string(from: date)
+        return date.timeDisplayText
     }
 
     var matchingDetailDateTimeTitle: String {
         guard let date = isoDate else { return self }
-
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.timeZone = .current
-        formatter.dateFormat = "M월 d일 (E) a h시 m분"
-        return formatter.string(from: date)
+        return date.meetingDisplayText
     }
 
     var isoDate: Date? {

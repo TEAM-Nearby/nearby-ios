@@ -135,6 +135,7 @@ extension NotificationCoordinator {
 extension NotificationCoordinator {
     func showCompanionTab() {
         navigationController.popToRootViewController(animated: false)
+        (navigationController.viewControllers.first as? CompanionViewController)?.resetToInitialState()
         mainTabCoordinator?.switchTab(to: .companion)
     }
 

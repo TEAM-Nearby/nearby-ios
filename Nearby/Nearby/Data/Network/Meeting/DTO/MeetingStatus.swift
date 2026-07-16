@@ -10,9 +10,20 @@ enum MeetingStatus: String, Decodable {
     case canceled = "CANCELED"
     case completed = "COMPLETED"
     case unknown
-    
+
     init(from decoder: Decoder) throws {
         let rawValue = try decoder.singleValueContainer().decode(String.self)
         self = MeetingStatus(rawValue: rawValue) ?? .unknown
+    }
+}
+
+enum MeetingProgressStatus: String, Decodable {
+    case scheduling = "SCHEDULING"
+    case ongoing = "ONGOING"
+    case unknown
+
+    init(from decoder: Decoder) throws {
+        let rawValue = try decoder.singleValueContainer().decode(String.self)
+        self = MeetingProgressStatus(rawValue: rawValue) ?? .unknown
     }
 }

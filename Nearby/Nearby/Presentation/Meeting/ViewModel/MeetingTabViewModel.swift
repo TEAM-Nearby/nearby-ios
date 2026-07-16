@@ -84,7 +84,8 @@ final class MeetingTabViewModel: BaseViewModelType {
             .joined(separator: " · ")
 
         return MeetingItem(
-            id: DTO.meetingId,
+            id: DTO.meetingId ?? DTO.matchId,
+            meetingId: DTO.meetingId,
             matchId: DTO.matchId,
             name: DTO.companion.nickname,
             gender: DTO.companion.gender.genderDisplayText,

@@ -29,6 +29,7 @@ struct MeetingItem {
     }
     
     var cellType: MeetingVerificationCellType {
-        (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
+        guard meetingId != nil else { return .notYet }
+        return (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
     }
 }

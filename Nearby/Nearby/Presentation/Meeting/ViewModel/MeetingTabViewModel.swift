@@ -79,8 +79,7 @@ final class MeetingTabViewModel: BaseViewModelType {
 
     private func makeMeetingItem(from DTO: MeetingResponseDTO) -> MeetingItem {
         let meetingDate = DTO.meetingAt?.toDate()
-        let timeText = DTO.progressStatus == .scheduling ? "일정 조율 중" : meetingDate?.timeDisplayText
-        let information = [DTO.placeName, timeText]
+        let information = [DTO.placeName, meetingDate?.timeDisplayText]
             .compactMap { $0 }
             .joined(separator: " · ")
 

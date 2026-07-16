@@ -77,7 +77,12 @@ extension NotificationCoordinator: Coordinator {
 extension NotificationCoordinator {
     func showCompanionRequestSent(hostName: String) {
         let viewController = diContainer.makeCompanionRequestSentViewController(coordinator: self, hostName: hostName)
-        navigationController.pushViewController(viewController, animated: true)
+
+        if let rootViewController = navigationController.viewControllers.first {
+            navigationController.setViewControllers([rootViewController, viewController], animated: true)
+        } else {
+            navigationController.pushViewController(viewController, animated: true)
+        }
     }
 
     func showCompanionRequestAccept(applicationId: Int) {

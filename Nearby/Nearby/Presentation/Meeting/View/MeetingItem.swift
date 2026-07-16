@@ -9,6 +9,7 @@ import Foundation
 
 struct MeetingItem {
     let id: Int
+    let meetingId: Int?
     let matchId: Int
     let name: String
     let gender: String
@@ -28,6 +29,7 @@ struct MeetingItem {
     }
     
     var cellType: MeetingVerificationCellType {
-        (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
+        guard meetingId != nil else { return .notYet }
+        return (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
     }
 }

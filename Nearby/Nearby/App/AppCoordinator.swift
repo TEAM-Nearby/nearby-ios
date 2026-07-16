@@ -88,7 +88,7 @@ private extension AppCoordinator {
             }
         }
         
-        let navigationController = UINavigationController(
+        let navigationController = NearbyNavigationController(
             rootViewController: loginViewController
         )
         

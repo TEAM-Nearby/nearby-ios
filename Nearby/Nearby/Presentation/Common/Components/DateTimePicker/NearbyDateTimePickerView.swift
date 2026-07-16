@@ -54,11 +54,12 @@ final class NearbyDateTimePickerView: BaseView {
     // MARK: - Initializer
 
     init(date: Date = Date()) {
-        let components = Calendar.current.dateComponents([.month, .day, .hour, .minute], from: date)
+        let roundedDate = Self.nextSelectableDate(from: date)
+        let components = Calendar.current.dateComponents([.month, .day, .hour, .minute], from: roundedDate)
         selectedMonth = components.month ?? 1
         selectedDay = components.day ?? 1
         selectedHour = components.hour ?? 0
-        selectedMinute = ((components.minute ?? 0) / 5) * 5
+        selectedMinute = components.minute ?? 0
 
         super.init(frame: .zero)
 
@@ -120,6 +121,22 @@ final class NearbyDateTimePickerView: BaseView {
         }
     }
 
+    private func updateSelection(from date: Date) {
+        let components = calendar.dateComponents([.month, .day, .hour, .minute], from: date)
+        selectedMonth = components.month ?? selectedMonth
+        selectedDay = components.day ?? selectedDay
+        selectedHour = components.hour ?? selectedHour
+        selectedMinute = components.minute ?? selectedMinute
+    }
+
+    private func clampSelectionToFutureIfNeeded() {
+        guard calendar.compare(selectedDate, to: Date(), toGranularity: .minute) == .orderedAscending else { return }
+
+        updateSelection(from: Self.nextSelectableDate())
+        pickerView.reloadAllComponents()
+        setPickerPosition()
+    }
+
     private func title(component: Int, row: Int) -> String {
         switch component {
         case 0:
@@ -148,6 +165,20 @@ final class NearbyDateTimePickerView: BaseView {
         default:
             return false
         }
+    }
+
+    private static func nextSelectableDate(from date: Date = Date()) -> Date {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        let minute = components.minute ?? 0
+        let remainder = minute % 5
+        let minuteOffset = remainder == 0 ? 0 : 5 - remainder
+
+        guard let dateWithoutSeconds = calendar.date(from: components) else {
+            return date
+        }
+
+        return calendar.date(byAdding: .minute, value: minuteOffset, to: dateWithoutSeconds) ?? date
     }
 }
 
@@ -221,6 +252,7 @@ extension NearbyDateTimePickerView: UIPickerViewDelegate {
             break
         }
 
+        clampSelectionToFutureIfNeeded()
         dateDidChange?(selectedDate)
     }
 }

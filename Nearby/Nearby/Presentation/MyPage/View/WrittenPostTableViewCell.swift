@@ -86,7 +86,7 @@ final class WrittenPostTableViewCell: UITableViewCell {
     // MARK: - Methods
 
     func configure(with item: WrittenPostItem) {
-        cityNameLabel.text = item.cityName
+        cityNameLabel.text = "바르셀로나"
 
         placeLabel.text = item.placeName
         dateLabel.text = item.meetingDateText

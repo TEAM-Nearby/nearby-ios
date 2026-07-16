@@ -29,11 +29,7 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        viewModel.action(.viewWillDisappear)
+        tabBarController?.tabBar.isHidden = true
     }
 
     // MARK: - Custom Methods
@@ -44,9 +40,7 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
     
     override func setAddTarget() {
         companionDetailView.onBackButtonDidTap = { [weak self] in
-            guard let self,
-                  navigationController?.transitionCoordinator == nil else { return }
-            viewModel.action(.backButtonDidTap)
+            self?.viewModel.action(.backButtonDidTap)
         }
         
         companionDetailView.onApplyButtonDidTap = { [weak self] in

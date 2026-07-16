@@ -151,11 +151,7 @@ final class CompanionProfileView: BaseView {
         }
         
         travelStyleGuideLabel.do {
-            $0.setFont(
-                .c1M12,
-                text: "최대 6개까지 선택할 수 있어요",
-                textColor: .grey30
-            )
+            $0.setFont(.c1M12, text: "최대 6개까지 선택할 수 있어요", textColor: .grey30)
         }
         
         travelStyleStackView.do {

@@ -40,7 +40,7 @@ final class CompanionProfileViewModel: BaseViewModelType {
     private let authRepository: AuthRepository
     
     private var nickname = ""
-    private var selectedGender: NearbyGender = .female
+    private var selectedGender: NearbyGender = .male
     private var introduction = ""
     private var selectedKeywords: Set<String> = []
     

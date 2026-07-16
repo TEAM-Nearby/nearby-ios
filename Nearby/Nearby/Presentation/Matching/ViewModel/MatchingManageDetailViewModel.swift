@@ -149,7 +149,12 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     }
 
     private func makeRequestDTO() -> ConfirmCompanionScheduleRequestDTO {
-        return ConfirmCompanionScheduleRequestDTO(scheduledAt: selectedDate.apiDateString)
+        let normalizedDate = Calendar.current.date(
+            bySetting: .second,
+            value: 0,
+            of: selectedDate
+        ) ?? selectedDate
+        return ConfirmCompanionScheduleRequestDTO(scheduledAt: normalizedDate.apiDateString)
     }
     
     private func fetchDisplayData() {

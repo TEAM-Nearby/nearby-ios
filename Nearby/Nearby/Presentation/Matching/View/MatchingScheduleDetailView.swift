@@ -286,7 +286,8 @@ extension MatchingScheduleDetailView {
         placeDetailLabel.setFont(.b3M14, text: displayData.placeAddress, textColor: .grey30)
         dateAndTimeDetailLabel.setFont(.b2M16, text: displayData.scheduledAtText, textColor: .grey80)
         kakaoLinkDetailLabel.setFont(.b2M16, text: displayData.openChatUrl, textColor: .grey80)
-        mapView.configure(latitude: displayData.latitude, longitude: displayData.longitude)
+        mapView.configure(latitude: displayData.latitude, longitude: displayData.longitude,
+            placeName: displayData.placeName, placeID: displayData.googlePlaceId)
         configure(type: displayData.type)
     }
     

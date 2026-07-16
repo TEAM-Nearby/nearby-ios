@@ -83,7 +83,7 @@ extension NearDiningCellItem {
             address: dto.address ?? "",
             rating: dto.rating ?? 0,
             reviewCount: dto.reviewCount ?? 0,
-            images: [.restaurantPlaceholder],
+            images: [nil],
             imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
             isBookmarked: dto.isFavorite
         )
@@ -100,7 +100,7 @@ extension NearDiningCellItem {
             address: dto.address ?? "",
             rating: dto.rating ?? 0,
             reviewCount: dto.reviewCount ?? 0,
-            images: [.restaurantPlaceholder],
+            images: [nil],
             imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
             isBookmarked: dto.isFavorite,
             latitude: dto.latitude,
@@ -119,7 +119,7 @@ extension NearDiningCellItem {
             address: dto.address ?? "",
             rating: dto.rating ?? 0,
             reviewCount: dto.reviewCount ?? 0,
-            images: [.restaurantPlaceholder],
+            images: [nil],
             imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
             isBookmarked: dto.isFavorite,
             latitude: dto.latitude,

@@ -49,6 +49,8 @@ final class DiningInfoSheetView: BaseView {
     private lazy var imageCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
     private var restaurantImages: [UIImage?] = []
     private var restaurantImageURLs: [URL?] = []
+    private var contentHeightConstraint: Constraint?
+    private var dividerTopConstraint: Constraint?
     
     // MARK: - Custom Methods
     
@@ -225,11 +227,11 @@ final class DiningInfoSheetView: BaseView {
         contentLabel.snp.makeConstraints {
             $0.top.equalTo(starRatingView.snp.bottom).offset(14)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(NearbyFont.b3M14.property.lineHeight * 2)
+            contentHeightConstraint = $0.height.equalTo(NearbyFont.b3M14.property.lineHeight * 2).constraint
         }
         
         dividerView.snp.makeConstraints {
-            $0.top.equalTo(contentLabel.snp.bottom).offset(10)
+            dividerTopConstraint = $0.top.equalTo(contentLabel.snp.bottom).offset(10).constraint
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(1)
         }
@@ -285,6 +287,9 @@ final class DiningInfoSheetView: BaseView {
     }
     
     func configure(with item: NearDiningCellItem, description: String, closingTime: String, phoneNumber: String, price: String) {
+        let description = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        let hasContent = !description.isEmpty
+
         nameLabel.text = item.name
         categoryLabel.text = item.category
         bookmarkButton.isSelected = item.isBookmarked
@@ -293,6 +298,9 @@ final class DiningInfoSheetView: BaseView {
         reviewCountLabel.text = "(\(item.reviewCount.formatted())) ·"
         priceLabel.text = price
         contentLabel.setFont(.b3M14, text: description, textColor: .grey80, lineSpacing: 3)
+        contentLabel.isHidden = !hasContent
+        contentHeightConstraint?.update(offset: hasContent ? NearbyFont.b3M14.property.lineHeight * 2 : 0)
+        dividerTopConstraint?.update(offset: hasContent ? 10 : 0)
         timeTitleLabel.text = item.businessStatus
         timeSubTitleLabel.text = closingTime
         placeTitleLabel.text = "\(item.distance) · \(item.address)"

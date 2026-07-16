@@ -45,6 +45,7 @@ final class CompanionProfileView: BaseView {
     )
     
     private let travelStyleTitleLabel = UILabel()
+    private let travelStyleGuideLabel = UILabel()
     private let travelStyleStackView = UIStackView()
     let bottomButton = NearbyButton(style: .primary, title: "완료")
     
@@ -149,6 +150,10 @@ final class CompanionProfileView: BaseView {
             $0.setRequiredTitle("여행스타일 키워드")
         }
         
+        travelStyleGuideLabel.do {
+            $0.setFont(.c1M12, text: "최대 6개까지 선택할 수 있어요", textColor: .grey30)
+        }
+        
         travelStyleStackView.do {
             $0.axis = .vertical
             $0.spacing = 12
@@ -165,7 +170,8 @@ final class CompanionProfileView: BaseView {
         contentView.addSubviews(titleLabel, descriptionLabel, profileImageButton,
                                 nicknameTitleLabel, nicknameTextFieldContainerView,
                                 genderTitleLabel, genderStackView, introductionTitleLabel,
-                                introductionTextView, travelStyleTitleLabel, travelStyleStackView)
+                                introductionTextView, travelStyleTitleLabel, travelStyleGuideLabel,
+                                travelStyleStackView)
         
         profileImageButton.addSubviews(profileImageView, imageSelectLabel)
         nicknameTextFieldContainerView.addSubviews(nicknameTextField, nicknameClearButton)
@@ -209,7 +215,7 @@ final class CompanionProfileView: BaseView {
         }
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(32)
+            $0.top.equalToSuperview().offset(26)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -276,7 +282,7 @@ final class CompanionProfileView: BaseView {
         introductionTextView.snp.makeConstraints {
             $0.top.equalTo(introductionTitleLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(72)
+            $0.height.equalTo(56)
         }
         
         travelStyleTitleLabel.snp.makeConstraints {
@@ -285,9 +291,14 @@ final class CompanionProfileView: BaseView {
         }
         
         travelStyleStackView.snp.makeConstraints {
-            $0.top.equalTo(travelStyleTitleLabel.snp.bottom).offset(20)
+            $0.top.equalTo(travelStyleGuideLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(24)
+        }
+        
+        travelStyleGuideLabel.snp.makeConstraints {
+            $0.top.equalTo(travelStyleTitleLabel.snp.bottom).offset(4)
+            $0.leading.equalToSuperview().offset(20)
         }
     }
     

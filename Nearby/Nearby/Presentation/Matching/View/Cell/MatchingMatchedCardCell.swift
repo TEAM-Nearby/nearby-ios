@@ -36,14 +36,15 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     private let nameLabel = UILabel()
     private let genderLabel = UILabel()
     private let uploadedTimeLabel = UILabel()
+    private let informationStackView = UIStackView()
     private let placeLabel = UILabel()
     private let informationDotLabel = UILabel()
     private let meetingTimeLabel = UILabel()
     private let contentLabel = UILabel()
     private let nextButton = UIButton()
     private let dotLabel = UILabel()
-    private var meetingTimeTrailingToButtonConstraint: Constraint?
-    private var meetingTimeTrailingToSuperviewConstraint: Constraint?
+    private var informationTrailingToButtonConstraint: Constraint?
+    private var informationTrailingToSuperviewConstraint: Constraint?
 
     // MARK: - Initializer
 
@@ -120,6 +121,12 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.setFont(.b2M16, textColor: .grey50)
         }
 
+        informationStackView.do {
+            $0.axis = .horizontal
+            $0.alignment = .center
+            $0.spacing = 4
+        }
+
         placeLabel.do {
             $0.setFont(.b3M14, textColor: .grey80)
             $0.numberOfLines = 1
@@ -160,11 +167,11 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
     private func setUI() {
         profileContainerView.addSubviews(profileImageView, profileClusterView)
+        informationStackView.addArrangedSubviews(placeLabel, informationDotLabel, meetingTimeLabel)
         contentView.addSubviews(
             profileContainerView, nameLabel,
             genderLabel, dotLabel, uploadedTimeLabel,
-            placeLabel, informationDotLabel, meetingTimeLabel,
-            contentLabel, nextButton
+            informationStackView, contentLabel, nextButton
         )
     }
 
@@ -205,28 +212,19 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.height.equalTo(Metric.titleHeight)
         }
 
-        placeLabel.snp.makeConstraints {
+        informationStackView.snp.makeConstraints {
             $0.top.equalTo(nameLabel.snp.bottom).offset(Metric.informationTopOffset)
             $0.leading.equalTo(nameLabel.snp.leading)
+            informationTrailingToButtonConstraint = $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8).constraint
+            informationTrailingToSuperviewConstraint = $0.trailing.lessThanOrEqualToSuperview().inset(Metric.horizontalInset).constraint
             $0.height.equalTo(Metric.informationHeight)
         }
 
         informationDotLabel.snp.makeConstraints {
-            $0.centerY.equalTo(placeLabel.snp.centerY)
-            $0.leading.equalTo(placeLabel.snp.trailing).offset(4)
             $0.width.equalTo(4)
-            $0.height.equalTo(Metric.informationHeight)
         }
 
-        meetingTimeLabel.snp.makeConstraints {
-            $0.centerY.equalTo(placeLabel.snp.centerY)
-            $0.leading.equalTo(informationDotLabel.snp.trailing).offset(4)
-            meetingTimeTrailingToButtonConstraint = $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8).constraint
-            meetingTimeTrailingToSuperviewConstraint = $0.trailing.lessThanOrEqualToSuperview().inset(Metric.horizontalInset).constraint
-            $0.height.equalTo(Metric.informationHeight)
-        }
-
-        meetingTimeTrailingToSuperviewConstraint?.deactivate()
+        informationTrailingToSuperviewConstraint?.deactivate()
 
         updateContentLabelTrailingConstraint(isNextButtonHidden: false)
 
@@ -411,11 +409,11 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         updateContentLabelTrailingConstraint(isNextButtonHidden: isHidden)
 
         if isHidden {
-            meetingTimeTrailingToButtonConstraint?.deactivate()
-            meetingTimeTrailingToSuperviewConstraint?.activate()
+            informationTrailingToButtonConstraint?.deactivate()
+            informationTrailingToSuperviewConstraint?.activate()
         } else {
-            meetingTimeTrailingToSuperviewConstraint?.deactivate()
-            meetingTimeTrailingToButtonConstraint?.activate()
+            informationTrailingToSuperviewConstraint?.deactivate()
+            informationTrailingToButtonConstraint?.activate()
         }
     }
 

@@ -130,7 +130,7 @@ final class NearbyDateTimePickerView: BaseView {
     }
 
     private func clampSelectionToFutureIfNeeded() {
-        guard selectedDate < Date() else { return }
+        guard calendar.compare(selectedDate, to: Date(), toGranularity: .minute) == .orderedAscending else { return }
 
         updateSelection(from: Self.nextSelectableDate())
         pickerView.reloadAllComponents()

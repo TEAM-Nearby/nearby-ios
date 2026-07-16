@@ -52,6 +52,15 @@ extension MatchingCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
 
+    func showPrevious() {
+        if let notificationCoordinator = parentCoordinator as? NotificationCoordinator {
+            notificationCoordinator.showMatchingTab()
+            return
+        }
+
+        navigationController.popViewController(animated: true)
+    }
+
     func showAlarm() {
         let viewController = diContainer.makeAlarmViewController()
         viewController.hidesBottomBarWhenPushed = true

@@ -12,7 +12,7 @@ struct AlarmRequestItem: Identifiable {
     // MARK: - Properties
 
     let id: Int
-    let notificationId: Int
+    let notificationId: Int?
     let applicationId: Int
     let tab: AlarmTab
     let displayType: AlarmRequestDisplayType
@@ -32,7 +32,7 @@ struct AlarmRequestItem: Identifiable {
     // MARK: - Initializer
 
     init(dto: CompanionRequestDTO, tab: AlarmTab) {
-        id = dto.notificationId
+        id = dto.notificationId ?? dto.applicationId
         notificationId = dto.notificationId
         applicationId = dto.applicationId
         self.tab = tab
@@ -43,9 +43,9 @@ struct AlarmRequestItem: Identifiable {
         nickname = dto.host.nickname
         profileImageURL = dto.host.profileImageUrl.flatMap(URL.init(string:))
 
-        placeName = dto.placeName
-        meetingAt = dto.meetingAt
-        dateText = dto.meetingAt.toDate()?.alarmMeetingDisplayText ?? dto.meetingAt
+        placeName = dto.placeName ?? "장소 미정"
+        meetingAt = dto.meetingAt ?? ""
+        dateText = dto.meetingAt?.toDate()?.alarmMeetingDisplayText ?? "시간 미정"
 
         matchId = dto.matchId
         actionType = dto.actionType

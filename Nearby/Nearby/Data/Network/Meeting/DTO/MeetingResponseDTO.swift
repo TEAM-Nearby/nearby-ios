@@ -12,14 +12,15 @@ struct MeetingListResponseDTO: Decodable {
 }
 
 struct MeetingResponseDTO: Decodable {
-    let meetingId: Int
+    let meetingId: Int?
     let matchId: Int
     let companion: Companion
     let placeName: String
     let meetingAt: String?
     let meetingTimeType: PostType
     let isCheckedIn: Bool
-    let meetingStatus: MeetingStatus
+    let meetingStatus: MeetingStatus?
+    let progressStatus: MeetingProgressStatus
     
     struct Companion: Decodable {
         let userId: Int

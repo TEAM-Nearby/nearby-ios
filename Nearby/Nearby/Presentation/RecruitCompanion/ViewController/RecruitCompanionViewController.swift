@@ -40,6 +40,7 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
 
     override func setAddTarget() {
         addKeyboardDismissGesture()
+        observeKeyboardNotifications()
 
         rootView.backButtonAction = { [weak self] in
             self?.viewModel.action(.backButtonDidTap)
@@ -129,5 +130,53 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default))
         present(alert, animated: true)
+    }
+
+    private func observeKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillChangeFrame(_:)),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide(_:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    @objc
+    private func keyboardWillChangeFrame(_ notification: Notification) {
+        rootView.updateKeyboardInset(
+            keyboardFrame: notification.keyboardFrame,
+            animationDuration: notification.keyboardAnimationDuration,
+            animationOptions: notification.keyboardAnimationOptions
+        )
+    }
+
+    @objc
+    private func keyboardWillHide(_ notification: Notification) {
+        rootView.updateKeyboardInset(
+            keyboardFrame: nil,
+            animationDuration: notification.keyboardAnimationDuration,
+            animationOptions: notification.keyboardAnimationOptions
+        )
+    }
+}
+
+private extension Notification {
+    var keyboardFrame: CGRect? {
+        userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+    }
+
+    var keyboardAnimationDuration: TimeInterval {
+        userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval ?? 0.25
+    }
+
+    var keyboardAnimationOptions: UIView.AnimationOptions {
+        let curve = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int ?? 0
+        return UIView.AnimationOptions(rawValue: UInt(curve << 16))
     }
 }

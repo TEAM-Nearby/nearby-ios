@@ -79,7 +79,7 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
         viewModel.output.showBack
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                self?.coordinator?.showPrevious()
             }
             .store(in: &cancellables)
 

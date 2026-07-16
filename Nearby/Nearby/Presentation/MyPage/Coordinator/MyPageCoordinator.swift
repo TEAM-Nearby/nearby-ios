@@ -116,7 +116,7 @@ private extension MyPageCoordinator {
                 guard let self else { return }
                 navigationController.popToRootViewController(animated: false)
                 onFindCompanionDidTap?()
-            }
+        }
 
         navigationController.pushViewController(writtenPostViewController, animated: true)
     }

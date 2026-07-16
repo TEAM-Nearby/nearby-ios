@@ -24,7 +24,7 @@ final class NearbyDateTimePickerView: BaseView {
     private let calendar = Calendar.current
     private let months = Array(1...12)
     private let hours = Array(0...23)
-    private let minutes = stride(from: 0, through: 50, by: 10).map { $0 }
+    private let minutes = stride(from: 0, through: 55, by: 5).map { $0 }
     
     private var selectedMonth: Int
     private var selectedDay: Int
@@ -58,7 +58,7 @@ final class NearbyDateTimePickerView: BaseView {
         selectedMonth = components.month ?? 1
         selectedDay = components.day ?? 1
         selectedHour = components.hour ?? 0
-        selectedMinute = ((components.minute ?? 0) / 10) * 10
+        selectedMinute = ((components.minute ?? 0) / 5) * 5
 
         super.init(frame: .zero)
 

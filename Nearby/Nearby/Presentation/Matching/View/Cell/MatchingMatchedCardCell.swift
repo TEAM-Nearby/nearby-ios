@@ -16,7 +16,6 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     // MARK: - Properties
 
     var onNextButtonDidTap: (() -> Void)?
-    private let descriptionLimit = 29
 
     private enum Metric {
         static let horizontalInset: CGFloat = 20
@@ -124,6 +123,8 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         contentLabel.do {
             $0.setFont(.b3M14, textColor: .grey30)
             $0.numberOfLines = 1
+            $0.lineBreakMode = .byTruncatingTail
+            $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
 
         nextButton.do {
@@ -271,9 +272,9 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
             $0.leading.equalTo(profileContainerView.snp.leading)
 
             if isNextButtonHidden {
-                $0.trailing.lessThanOrEqualToSuperview().inset(Metric.horizontalInset)
+                $0.trailing.equalToSuperview().inset(Metric.horizontalInset)
             } else {
-                $0.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-8)
+                $0.trailing.equalTo(nextButton.snp.leading).offset(-8)
             }
 
             $0.height.equalTo(Metric.contentHeight)
@@ -374,17 +375,33 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
 
         updateHeader(content: content, displayMode: displayMode)
         informationLabel.setFont(.b3M14, text: makeInformationText(content: content), textColor: .grey80)
-        contentLabel.setFont(
-            .b3M14,
-            text: content.description.truncated(limit: descriptionLimit),
-            textColor: displayMode.descriptionColor
-        )
+        configureContentLabel(text: content.description, textColor: displayMode.descriptionColor)
         updateProfileTopConstraint()
     }
 
     func setNextButtonHidden(_ isHidden: Bool) {
         nextButton.isHidden = isHidden
         updateContentLabelTrailingConstraint(isNextButtonHidden: isHidden)
+    }
+
+    private func configureContentLabel(text: String, textColor: UIColor) {
+        let nearbyFont = NearbyFont.b3M14
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.minimumLineHeight = nearbyFont.property.lineHeight
+        paragraphStyle.maximumLineHeight = nearbyFont.property.lineHeight
+        paragraphStyle.lineBreakMode = .byTruncatingTail
+
+        let baselineOffset = (nearbyFont.property.lineHeight - nearbyFont.font.lineHeight) / 4
+
+        contentLabel.attributedText = NSAttributedString(
+            string: text,
+            attributes: [
+                .font: nearbyFont.font,
+                .paragraphStyle: paragraphStyle,
+                .baselineOffset: baselineOffset,
+                .foregroundColor: textColor
+            ]
+        )
     }
 
     // MARK: - Action

@@ -8,6 +8,14 @@
 import Foundation
 
 extension Date {
+    var apiDateString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter.string(from: self)
+    }
+
     func toFormattedString(_ format: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = format
@@ -39,6 +47,14 @@ extension Date {
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.dateFormat = "yyyy년 M월 d일 예정"
 
+        return formatter.string(from: self)
+    }
+
+    var utcAPIDateTimeString: String {
+        let formatter = DateFormatter.cached(
+            format: "yyyy-MM-dd'T'HH:mm:ss",
+            timeZone: TimeZone(secondsFromGMT: 0)
+        )
         return formatter.string(from: self)
     }
 }

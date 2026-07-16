@@ -43,6 +43,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         let people: String
         let buttonTitle: String
         let avatarImages: [UIImage?]
+        let chatDescription: String
     }
 
     // MARK: - Properties
@@ -52,6 +53,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
     let applicationId: Int
     private(set) var openChatURLString: String = ""
     private var matchId: Int?
+    private var matchStatus: MatchStatus?
     private let repository: ApplicantCompanionRepository
     private var cancellables = Set<AnyCancellable>()
 
@@ -74,7 +76,10 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
             case .matched:
                 output.step.send(.chat)
             case .chat:
-                guard let matchId else { return }
+                guard let matchId,
+                      matchStatus != .completed,
+                      matchStatus != .canceled
+                else { return }
                 output.showScheduleDetail.send(matchId)
             }
 
@@ -100,6 +105,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
 
                 openChatURLString = result.openChatUrl ?? ""
                 matchId = result.matchId
+                matchStatus = MatchStatus(rawValue: result.matchStatus)
 
                 let data = DisplayData(
                     hostProfileImageUrl: result.host.profileImageUrl,
@@ -108,7 +114,8 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                     date: result.meetingAt?.toDate()?.meetingDisplayText ?? "",
                     people: "\(result.participantCount)/\(result.maxParticipants)명",
                     buttonTitle: "확인했어요",
-                    avatarImages: [UIImage?](repeating: nil, count: result.participantCount)
+                    avatarImages: [UIImage?](repeating: nil, count: result.participantCount),
+                    chatDescription: "\(result.host.nickname) 님이 만남 약속을 위한 오픈채팅방을 열어뒀어요. 입장해서 인사를 나눠보세요!"
                 )
                 output.displayData.send(data)
             } catch {

@@ -54,7 +54,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     init(displayData: MatchingScheduleDetailDisplayData, repository: MatchedCompanionListRepository) {
         self.displayData = displayData
         self.repository = repository
-        self.selectedDate = displayData.scheduledAt?.apiDate ?? Date()
+        self.selectedDate = displayData.scheduledAt?.toDate() ?? Date()
         self.matchId = nil
     }
 
@@ -149,7 +149,12 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     }
 
     private func makeRequestDTO() -> ConfirmCompanionScheduleRequestDTO {
-        return ConfirmCompanionScheduleRequestDTO(scheduledAt: selectedDate.apiDateString)
+        let normalizedDate = Calendar.current.date(
+            bySetting: .second,
+            value: 0,
+            of: selectedDate
+        ) ?? selectedDate
+        return ConfirmCompanionScheduleRequestDTO(scheduledAt: normalizedDate.apiDateString)
     }
     
     private func fetchDisplayData() {
@@ -170,7 +175,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
                 ) ?? scheduleResponse.toCardItem(type: currentUserRole)
 
                 displayData = scheduleResponse.toDisplayData(type: currentUserRole, cardItem: cardItem)
-                selectedDate = displayData.scheduledAt?.apiDate ?? Date()
+                selectedDate = displayData.scheduledAt?.toDate() ?? Date()
                 output.displayData.send(makeDisplayData())
             } catch {
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
@@ -179,27 +184,11 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     }
 }
 
-private extension String {
-    var apiDate: Date? {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        return formatter.date(from: self)
-    }
-}
-
 private extension Date {
     var displayDateString: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "yyyy-MM-dd  HH:mm"
-        return formatter.string(from: self)
-    }
-
-    var apiDateString: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return formatter.string(from: self)
     }
 }

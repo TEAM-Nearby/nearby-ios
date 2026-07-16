@@ -220,6 +220,15 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
     }
 
+    func resetToInitialState() {
+        isSpecificBottomSheetPresented = false
+        companionView.setCategoryChipsHidden(false)
+        setTabBarHidden(false)
+        setBottomSheetHidden(false)
+        bottomSheetViewController.setState(content: .nearbyCompanionList, level: .compact, animated: false)
+        bottomSheetViewController.setContentViewController(nearbySheetViewController)
+    }
+
     private func initializeBottomSheetState() {
         bottomSheetViewController.setState(content: .nearbyCompanionList, animated: false)
         bottomSheetViewController.setContentViewController(nearbySheetViewController)

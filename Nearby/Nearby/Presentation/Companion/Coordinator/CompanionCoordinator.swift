@@ -40,6 +40,11 @@ final class CompanionCoordinator {
     }
 
     func showPrevious() {
+        if let notificationCoordinator = parentCoordinator as? NotificationCoordinator {
+            notificationCoordinator.showCompanionTab()
+            return
+        }
+
         navigationController.popViewController(animated: true)
     }
 
@@ -71,8 +76,8 @@ final class CompanionCoordinator {
         let coordinator = diContainer.makeNotificationCoordinator(
             navigationController: navigationController
         )
-        coordinator.parentCoordinator = parentCoordinator
-        parentCoordinator?.addChildCoordinator(coordinator)
+        coordinator.parentCoordinator = self
+        addChildCoordinator(coordinator)
         return coordinator
     }
 

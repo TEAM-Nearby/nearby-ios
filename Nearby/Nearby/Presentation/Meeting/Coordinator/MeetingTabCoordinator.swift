@@ -38,10 +38,19 @@ extension MeetingTabCoordinator: Coordinator {
         parentCoordinator?.removeChildCoordinator(self)
     }
     
+    private func makeChildNotificationCoordinator() -> NotificationCoordinator {
+        let notificationCoordinator = diContainer.makeNotificationCoordinator(navigationController: navigationController)
+        notificationCoordinator.parentCoordinator = self
+        addChildCoordinator(notificationCoordinator)
+        return notificationCoordinator
+    }
+    
     func showMeetingProgress(for item: MeetingItem) {
+        guard let meetingId = item.meetingId else { return }
+
         let viewController = diContainer.makeMeetingProgressViewController(
             coordinator: self,
-            meetingId: item.id
+            meetingId: meetingId
         )
         navigationController.pushViewController(viewController, animated: true)
     }
@@ -104,10 +113,19 @@ extension MeetingTabCoordinator: Coordinator {
         notificationCoordinator.start()
     }
     
-    private func makeChildNotificationCoordinator() -> NotificationCoordinator {
-        let notificationCoordinator = diContainer.makeNotificationCoordinator(navigationController: navigationController)
-        notificationCoordinator.parentCoordinator = self
-        addChildCoordinator(notificationCoordinator)
-        return notificationCoordinator
+    // MARK: - Alert
+
+    func showCheckInSuccessAlert() {
+        presentAlert(title: "만남이 인증되었습니다.")
+    }
+
+    func showErrorAlert(message: String) {
+        presentAlert(message: message)
+    }
+
+    private func presentAlert(title: String? = nil, message: String? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        navigationController.present(alert, animated: true)
     }
 }

@@ -81,6 +81,7 @@ final class MatchingViewModel: BaseViewModelType {
                 AppLogger.data("매칭된 동행 목록 조회를 시작합니다.")
                 let response = try await repository.fetchMatches()
                 let items = response.matches.map { $0.toMatchedCardItem() }
+                    .filter { !eventCenter.completedMatchIds.contains($0.matchId) }
                 AppLogger.data("매칭된 동행 목록 \(items.count)개를 조회했습니다.")
                 output.items.send(items)
             } catch {

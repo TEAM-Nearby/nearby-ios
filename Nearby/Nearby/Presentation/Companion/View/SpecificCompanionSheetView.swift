@@ -93,7 +93,7 @@ final class SpecificCompanionSheetView: BaseView {
         }
         
         closeButton.snp.makeConstraints {
-            $0.centerY.equalTo(titleLabel)
+            $0.top.equalTo(titleLabel)
             $0.trailing.equalToSuperview().inset(14)
             $0.size.equalTo(28)
         }
@@ -145,11 +145,7 @@ final class SpecificCompanionSheetView: BaseView {
     }
 
     func updateNickname(_ nickname: String) {
-        titleLabel.setFont(
-            .h3Sb20,
-            text: "\(nickname)님 주변에서 동행을 구하고 있어요",
-            textColor: .grey80
-        )
+        titleLabel.setFont(.h3Sb20, text: "\(nickname)님 주변에서 동행을 구하고 있어요", textColor: .grey80)
         setNeedsLayout()
     }
     

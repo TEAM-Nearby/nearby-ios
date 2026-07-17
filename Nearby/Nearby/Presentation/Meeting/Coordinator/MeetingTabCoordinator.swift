@@ -111,7 +111,7 @@ extension MeetingTabCoordinator: Coordinator {
     
     func showNotification() {
         let notificationCoordinator = makeChildNotificationCoordinator()
-        notificationCoordinator.start()
+        notificationCoordinator.showAlarm()
     }
     
     // MARK: - Alert

@@ -11,6 +11,7 @@ import UIKit
 final class AppDIContainer {
     private lazy var tokenStorage: TokenStorage = KeychainTokenStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
+    private lazy var meetingEventCenter = MeetingEventCenter()
 
     var hasStoredSession: Bool {
         guard let accessToken = tokenStorage.accessToken, let refreshToken = tokenStorage.refreshToken else {

@@ -11,6 +11,7 @@ import UIKit
 final class AppDIContainer {
     private lazy var tokenStorage: TokenStorage = KeychainTokenStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
+    private lazy var meetingEventCenter = MeetingEventCenter()
 
     var hasStoredSession: Bool {
         guard let accessToken = tokenStorage.accessToken, let refreshToken = tokenStorage.refreshToken else {
@@ -219,7 +220,7 @@ final class AppDIContainer {
     }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
-        MeetingTabViewModel(repository: makeMeetingRepository())
+        MeetingTabViewModel(repository: makeMeetingRepository(), eventCenter: meetingEventCenter)
     }
     
     func makeMeetingProgressViewModel(meetingId: Int, matchId: Int) -> MeetingProgressViewModel {
@@ -233,7 +234,7 @@ final class AppDIContainer {
     }
     
     func makeMatchingViewModel() -> MatchingViewModel {
-        MatchingViewModel(repository: makeMatchedCompanionListRepository())
+        MatchingViewModel(repository: makeMatchedCompanionListRepository(), eventCenter: meetingEventCenter)
     }
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
@@ -257,7 +258,7 @@ final class AppDIContainer {
     }
     
     func makeHostReviewListViewModel(meetingId: Int) -> HostReviewListViewModel {
-        HostReviewListViewModel(meetingId: meetingId, repository: makeReviewRepository())
+        HostReviewListViewModel(meetingId: meetingId, repository: makeReviewRepository(), eventCenter: meetingEventCenter)
     }
     
     func makeReportPostViewModel() -> ReportPostViewModel {
@@ -265,7 +266,7 @@ final class AppDIContainer {
     }
     
     func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool) -> ReviewPostViewModel {
-        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast, repository: makeReviewRepository()
+        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast, repository: makeReviewRepository(), eventCenter: meetingEventCenter
         )
     }
     

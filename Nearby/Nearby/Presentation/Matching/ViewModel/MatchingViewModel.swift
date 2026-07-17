@@ -9,70 +9,74 @@ import Combine
 import Foundation
 
 final class MatchingViewModel: BaseViewModelType {
-
+    
     // MARK: - Input
-
+    
     enum Input {
         case viewDidLoad
         case cardDidTap(Int)
         case alarmButtonDidTap
         case findCompanionButtonDidTap
     }
-
+    
     // MARK: - Output
-
+    
     struct Output {
         let items = CurrentValueSubject<[MatchingMatchedCardItem], Never>([])
         let showScheduleDetail = PassthroughSubject<Int, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
         let showCompanionTab = PassthroughSubject<Void, Never>()
     }
-
+    
     // MARK: - Properties
-
+    
     let output = Output()
-
+    
     private let repository: MatchedCompanionListRepository
-
+    private let eventCenter: MeetingEventCenter
+    private var cancellables = Set<AnyCancellable>()
+    
     var items: [MatchingMatchedCardItem] {
         return output.items.value
     }
-
+    
     // MARK: - Initializer
-
-    init(repository: MatchedCompanionListRepository) {
+    
+    init(repository: MatchedCompanionListRepository, eventCenter: MeetingEventCenter) {
         self.repository = repository
+        self.eventCenter = eventCenter
+        bindMeetingEvents()
     }
-
+    
     // MARK: - Action
-
+    
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
             fetchMatches()
-
+            
         case .cardDidTap(let index):
             guard items.indices.contains(index) else { return }
             output.showScheduleDetail.send(items[index].matchId)
-
+            
         case .alarmButtonDidTap:
             output.showAlarm.send(())
-
+            
         case .findCompanionButtonDidTap:
             output.showCompanionTab.send(())
         }
     }
-
+    
     // MARK: - Methods
-
+    
     func item(at index: Int) -> MatchingMatchedCardItem {
         return items[index]
     }
-
+    
     private func fetchMatches() {
         Task { @MainActor [weak self] in
             guard let self else { return }
-
+            
             do {
                 AppLogger.data("매칭된 동행 목록 조회를 시작합니다.")
                 let response = try await repository.fetchMatches()
@@ -84,6 +88,16 @@ final class MatchingViewModel: BaseViewModelType {
                 output.items.send([])
             }
         }
+    }
+    
+    private func bindMeetingEvents() {
+        eventCenter.meetingCompleted
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] matchId in
+                guard let self else { return }
+                output.items.send(items.filter { $0.matchId != matchId })
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -130,7 +144,7 @@ private extension String {
         guard let date = isoDate else { return self }
         let elapsedTime = abs(date.timeIntervalSinceNow)
         let minute = Int(elapsedTime / 60)
-
+        
         if minute < 1 {
             return "방금 전 올림"
         }
@@ -138,33 +152,33 @@ private extension String {
         if minute < 60 {
             return "\(minute)분 전 올림"
         }
-
+        
         let hour = minute / 60
         if hour < 24 {
             return "\(hour)시간 전 올림"
         }
-
+        
         let day = hour / 24
         return "\(day)일 전 올림"
     }
-
+    
     var meetingTimeTitle: String {
         guard let date = isoDate else { return self }
         return date.timeDisplayText
     }
-
+    
     var isoDate: Date? {
         let isoFormatter = ISO8601DateFormatter()
         isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let date = isoFormatter.date(from: self) {
             return date
         }
-
+        
         isoFormatter.formatOptions = [.withInternetDateTime]
         if let date = isoFormatter.date(from: self) {
             return date
         }
-
+        
         let localFormatter = DateFormatter()
         localFormatter.locale = Locale(identifier: "en_US_POSIX")
         localFormatter.timeZone = .nearbyAPITimeZone
@@ -175,14 +189,14 @@ private extension String {
             "yyyy-MM-dd'T'HH:mm:ss",
             "yyyy-MM-dd'T'HH:mm"
         ]
-
+        
         for dateFormat in dateFormats {
             localFormatter.dateFormat = dateFormat
             if let date = localFormatter.date(from: self) {
                 return date
             }
         }
-
+        
         return nil
     }
 }

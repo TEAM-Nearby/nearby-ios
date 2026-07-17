@@ -69,6 +69,11 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             return isFormValid && !isSubmitting
         }
 
+        var shouldShowOpenChatURLError: Bool {
+            return !openChatURL.trimmed.isEmpty
+                && !isValidOpenChatURL(openChatURL)
+        }
+
         var isFormValid: Bool {
             let hasMeetingAt = meetingTimeType != .scheduled || meetingAt != nil
             let hasPlace = selectedPlaceID != nil

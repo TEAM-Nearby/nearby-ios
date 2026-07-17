@@ -46,7 +46,7 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
                     people: info.people,
                     information: info.information,
                     location: info.location,
-                    avatarImages: info.avatarImages
+                    avatarImageUrls: info.avatarImageUrls
                 )
             }
             .store(in: &cancellables)

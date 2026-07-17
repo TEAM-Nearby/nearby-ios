@@ -80,6 +80,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
 
         actionButton.isHidden = false
         actionButton.isUserInteractionEnabled = true
+        actionButton.isEnabled = true
 
         contentView.alpha = 1.0
     }
@@ -95,6 +96,7 @@ final class AlarmRequestTableViewCell: UITableViewCell {
         configureActionButton(with: item.displayType)
         configureIcon(with: item.displayType, isRead: item.isRead)
         configureAppearance(with: item.displayType, isRead: item.isRead)
+        actionButton.isEnabled = item.isActionEnabled
     }
 
     // MARK: - Action
@@ -148,6 +150,7 @@ private extension AlarmRequestTableViewCell {
         actionButton.do {
             $0.titleLabel?.font = NearbyFont.b2M16.font
             $0.setTitleColor(.grey80, for: .normal)
+            $0.setTitleColor(.grey30, for: .disabled)
             $0.layer.cornerRadius = 14
             $0.clipsToBounds = true
         }

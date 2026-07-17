@@ -9,4 +9,11 @@ import Combine
 
 final class MeetingEventCenter {
     let meetingCompleted = PassthroughSubject<Int, Never>()
+
+    private(set) var completedMatchIds = Set<Int>()
+
+    func notifyCompleted(matchId: Int) {
+        completedMatchIds.insert(matchId)
+        meetingCompleted.send(matchId)
+    }
 }

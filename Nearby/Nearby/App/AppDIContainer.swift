@@ -258,7 +258,12 @@ final class AppDIContainer {
     }
     
     func makeHostReviewListViewModel(meetingId: Int) -> HostReviewListViewModel {
-        HostReviewListViewModel(meetingId: meetingId, repository: makeReviewRepository(), eventCenter: meetingEventCenter)
+        HostReviewListViewModel(
+            meetingId: meetingId,
+            repository: makeReviewRepository(),
+            myPageRepository: makeMyPageRepository(),
+            eventCenter: meetingEventCenter
+        )
     }
     
     func makeReportPostViewModel() -> ReportPostViewModel {

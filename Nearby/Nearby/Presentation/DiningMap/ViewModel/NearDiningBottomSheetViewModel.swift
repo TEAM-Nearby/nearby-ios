@@ -84,6 +84,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
         guard let index = restaurants.firstIndex(where: { $0.placeId == placeId }) else { return }
         restaurants[index].isBookmarked = isFavorite
         output.restaurants.send(restaurants)
+        updateMapMarkers(from: restaurants)
     }
 }
 

@@ -75,7 +75,7 @@ extension CompanionMapMarkerData {
         )
     }
 
-    init?(diningItem: NearDiningCellItem) {
+    init?(diningItem: NearDiningCellItem, style: MapMarkerStyle? = nil) {
         guard
             let placeId = diningItem.placeId,
             let latitude = diningItem.latitude,
@@ -89,7 +89,7 @@ extension CompanionMapMarkerData {
             written: "",
             place: diningItem.name,
             date: "",
-            style: .restaurant
+            style: style ?? (diningItem.isBookmarked ? .savedRestaurant : .restaurant)
         )
     }
 }

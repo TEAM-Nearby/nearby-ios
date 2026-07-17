@@ -78,8 +78,8 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
                 guard let self else { return }
                 if let item {
                     coordinator?.showReview(type: .participant, item: item)
-                } else {
-                    coordinator?.showHostReviewList(meetingId: viewModel.meetingId)
+                } else if let meetingId = viewModel.meetingId {
+                    coordinator?.showHostReviewList(meetingId: meetingId)
                 }
             }
             .store(in: &cancellables)

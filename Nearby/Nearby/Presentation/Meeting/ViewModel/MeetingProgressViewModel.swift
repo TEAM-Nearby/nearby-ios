@@ -48,10 +48,11 @@ final class MeetingProgressViewModel: BaseViewModelType {
     // MARK: - Properties
     
     let output = Output()
-    
-    let meetingId: Int
+
+    let meetingId: Int?
     private(set) var userRole: NearbyUserType = .participant
     private(set) var canMoveToComplete: Bool = false
+    private let item: MeetingItem
     private let matchId: Int
     private let repository: MeetingRepository
     private let matchingRepository: MatchedCompanionListRepository
@@ -77,14 +78,14 @@ final class MeetingProgressViewModel: BaseViewModelType {
     // MARK: - Initializer
     
     init(
-        meetingId: Int,
-        matchId: Int,
+        item: MeetingItem,
         repository: MeetingRepository,
         matchingRepository: MatchedCompanionListRepository,
         reviewRepository: ReviewRepository
     ) {
-        self.meetingId = meetingId
-        self.matchId = matchId
+        self.item = item
+        self.meetingId = item.meetingId
+        self.matchId = item.matchId
         self.repository = repository
         self.matchingRepository = matchingRepository
         self.reviewRepository = reviewRepository
@@ -128,6 +129,10 @@ final class MeetingProgressViewModel: BaseViewModelType {
     // MARK: - Methods
     
     private func fetchDetail() {
+        guard let meetingId else {
+            configureUnconfirmedMeeting()
+            return
+        }
         Task {
             do {
                 async let meetingDetailTask = repository.fetchMeetingDetail(meetingId: meetingId)
@@ -178,7 +183,24 @@ final class MeetingProgressViewModel: BaseViewModelType {
         }
     }
     
+    /// 일정 미확정(meetingId 없음) 만남: 리스트 데이터로 화면을 구성하고 인증 대기 상태로 표시
+    private func configureUnconfirmedMeeting() {
+        meetingDate = item.meetingDate
+        postType = item.postType
+        output.displayData.send(
+            DisplayData(
+                profileImageUrl: item.profileImageUrl,
+                name: item.name,
+                gender: item.gender,
+                information: item.information
+            )
+        )
+        output.step.send(.match)
+        updateVerifyButtonState()
+    }
+
     private func checkIn(latitude: Double, longitude: Double) {
+        guard let meetingId else { return }
         Task {
             do {
                 let DTO = try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
@@ -195,6 +217,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     }
     
     private func fetchReviewTargets() {
+        guard let meetingId else { return }
         Task {
             do {
                 let DTO = try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
@@ -228,6 +251,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     }
 
     private func refreshCompanionVerification() {
+        guard let meetingId else { return }
         Task {
             guard let DTO = try? await reviewRepository.fetchReviewTargets(meetingId: meetingId) else { return }
             userRole = DTO.currentUserRole

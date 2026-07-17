@@ -46,12 +46,9 @@ extension MeetingTabCoordinator: Coordinator {
     }
     
     func showMeetingProgress(for item: MeetingItem) {
-        guard let meetingId = item.meetingId else { return }
-
         let viewController = diContainer.makeMeetingProgressViewController(
             coordinator: self,
-            meetingId: meetingId,
-            matchId: item.matchId
+            item: item
         )
         navigationController.pushViewController(viewController, animated: true)
     }

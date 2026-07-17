@@ -49,10 +49,13 @@ final class ReviewPostViewModel: BaseViewModelType {
     private(set) var secondSelectedTags = Set<Int>()
 
     let output = Output()
+    
     private let reviewItem: ReviewItem
     private let type: NearbyUserType
     private let isLastReview: Bool
     private let repository: ReviewRepository
+    private let eventCenter: MeetingEventCenter
+    
     private var rating: Int = 0
     private var isSubmitting = false
     private var hasSubmittedReview = false
@@ -67,11 +70,12 @@ final class ReviewPostViewModel: BaseViewModelType {
 
     // MARK: - Initializer
 
-    init(reviewItem: ReviewItem, type: NearbyUserType, isLastReview: Bool, repository: ReviewRepository) {
+    init(reviewItem: ReviewItem, type: NearbyUserType, isLastReview: Bool, repository: ReviewRepository, eventCenter: MeetingEventCenter) {
         self.reviewItem = reviewItem
         self.type = type
         self.isLastReview = isLastReview
         self.repository = repository
+        self.eventCenter = eventCenter
     }
     
     // MARK: - Action
@@ -155,8 +159,8 @@ final class ReviewPostViewModel: BaseViewModelType {
                 }
 
                 if isFinishButton {
-                    _ = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
-                    output.companionCompleted.send(())
+                    let response = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                    handleCompleteSuccess(response)
                 } else {
                     output.reviewSaved.send(())
                 }
@@ -172,12 +176,17 @@ final class ReviewPostViewModel: BaseViewModelType {
         Task {
             defer { isSubmitting = false }
             do {
-                _ = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
-                output.companionCompleted.send(())
+                let response = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                handleCompleteSuccess(response)
             } catch {
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)
             }
         }
+    }
+    
+    private func handleCompleteSuccess(_ response: ReviewCompleteDTO) {
+        eventCenter.meetingCompleted.send(response.matchId)
+        output.companionCompleted.send(())
     }
 }

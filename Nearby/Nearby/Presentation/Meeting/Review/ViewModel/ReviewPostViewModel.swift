@@ -35,6 +35,7 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
     
     struct DisplayData {
+        let profileImageUrl: String?
         let name: String
         let information: String
         let buttonTitle: String
@@ -85,6 +86,7 @@ final class ReviewPostViewModel: BaseViewModelType {
         case .viewDidLoad:
             output.displayData.send(
                 DisplayData(
+                    profileImageUrl: reviewItem.profileImageUrl,
                     name: reviewItem.name,
                     information: reviewItem.information,
                     buttonTitle: isFinishButton ? "동행 마치기" : "후기 저장하기"
@@ -186,7 +188,7 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
     
     private func handleCompleteSuccess(_ response: ReviewCompleteDTO) {
-        eventCenter.meetingCompleted.send(response.matchId)
+        eventCenter.notifyCompleted(matchId: response.matchId)
         output.companionCompleted.send(())
     }
 }

@@ -50,6 +50,10 @@ final class CompanionProfileView: BaseView {
     let bottomButton = NearbyButton(style: .primary, title: "완료")
     
     private(set) var keywordButtons: [NearbyChipButton] = []
+    private var introductionTextViewHeightConstraint: Constraint?
+    private var introductionTextViewMinimumHeight: CGFloat {
+        return 56
+    }
     
     // MARK: - Custom Methods
     
@@ -144,6 +148,10 @@ final class CompanionProfileView: BaseView {
         
         introductionTitleLabel.do {
             $0.setFont(.b2Sb16, text: "나를 소개해주세요", textColor: .grey80)
+        }
+
+        introductionTextView.do {
+            $0.textView.isScrollEnabled = false
         }
         
         travelStyleTitleLabel.do {
@@ -282,7 +290,7 @@ final class CompanionProfileView: BaseView {
         introductionTextView.snp.makeConstraints {
             $0.top.equalTo(introductionTitleLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(56)
+            introductionTextViewHeightConstraint = $0.height.equalTo(introductionTextViewMinimumHeight).constraint
         }
         
         travelStyleTitleLabel.snp.makeConstraints {
@@ -317,6 +325,19 @@ final class CompanionProfileView: BaseView {
     
     func updateIntroductionPlaceholder(isHidden: Bool) {
         introductionTextView.updatePlaceholder(isHidden: isHidden)
+    }
+
+    func updateIntroductionTextViewHeight() {
+        let textView = introductionTextView.textView
+        let fittingSize = CGSize(width: textView.bounds.width, height: .greatestFiniteMagnitude)
+        let textHeight = textView.sizeThatFits(fittingSize).height
+        let containerHeight = max(introductionTextViewMinimumHeight, ceil(textHeight) + 32)
+
+        introductionTextViewHeightConstraint?.update(offset: containerHeight)
+
+        UIView.performWithoutAnimation {
+            layoutIfNeeded()
+        }
     }
     // TODO: - 서버 연결 후 isHidden 값 받아오는 방식 수정할 예정
     

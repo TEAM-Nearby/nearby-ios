@@ -148,6 +148,7 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     @objc
     private func introductionClearButtonDidTap() {
         companionProfileView.clearIntroductionText()
+        companionProfileView.updateIntroductionTextViewHeight()
         viewModel.action(.introductionDidChange(""))
     }
     
@@ -206,6 +207,7 @@ extension CompanionProfileViewController: UITextViewDelegate {
         let text = textView.text ?? ""
         
         companionProfileView.updateIntroductionPlaceholder(isHidden: !text.isEmpty)
+        companionProfileView.updateIntroductionTextViewHeight()
         viewModel.action(.introductionDidChange(text))
     }
 }

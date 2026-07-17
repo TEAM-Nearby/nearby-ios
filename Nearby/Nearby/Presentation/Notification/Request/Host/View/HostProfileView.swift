@@ -20,7 +20,6 @@ final class HostProfileView: BaseView {
 
     private var communicationChipButtons = [NearbyChipButton]()
     private var punctualityChipButtons = [NearbyChipButton]()
-    private var reviewCardHeightConstraint: Constraint?
     private var communicationSectionTopConstraint: Constraint?
     private var punctualitySectionBottomConstraint: Constraint?
     private var emptyReviewBottomConstraint: Constraint?
@@ -382,7 +381,6 @@ private extension HostProfileView {
         reviewCardView.snp.makeConstraints {
             $0.top.equalTo(introductionCardView.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            reviewCardHeightConstraint = $0.height.equalTo(311).constraint
             $0.bottom.equalToSuperview().inset(24)
         }
 
@@ -429,7 +427,7 @@ private extension HostProfileView {
         punctualitySectionView.snp.makeConstraints {
             $0.top.equalTo(communicationSectionView.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            punctualitySectionBottomConstraint = $0.bottom.lessThanOrEqualToSuperview().inset(16).constraint
+            punctualitySectionBottomConstraint = $0.bottom.equalToSuperview().inset(16).constraint
         }
 
         punctualityTitleLabel.snp.makeConstraints {
@@ -556,7 +554,6 @@ private extension HostProfileView {
         punctualitySectionView.isHidden = isEmpty
 
         if isEmpty {
-            reviewCardHeightConstraint?.deactivate()
             communicationSectionTopConstraint?.deactivate()
             punctualitySectionBottomConstraint?.deactivate()
             emptyReviewBottomConstraint?.activate()
@@ -564,7 +561,6 @@ private extension HostProfileView {
             emptyReviewBottomConstraint?.deactivate()
             communicationSectionTopConstraint?.activate()
             punctualitySectionBottomConstraint?.activate()
-            reviewCardHeightConstraint?.activate()
         }
     }
 

@@ -6,11 +6,11 @@
 <br/>
 
 # <img width="40" height="40" alt="NearBy logo" src="https://github.com/user-attachments/assets/133144c4-120a-4450-901f-4abb112bca12" align="center" /> NearBy
-> 프로젝트 기간: 2026.06.30 ~ 2026.07.18
+> 따로, 또 함께하는 여행
 
-실시간 위치 기반으로 가까운 여행자를 연결해, 혼자 여행하는 순간에도 부담 없이 함께할 수 있도록 돕는 iOS 애플리케이션입니다.
+**가까운 여행자와 부담없이 한 끼를 함께할 수 있도록 연결하는, 혼자 여행자를 위한 실시간 식사 동행 서비스**
 
-실시간 위치 기반 지도를 통해 가까운 동행글을 확인하고, 원하는 장소와 시간에 맞춰 여행 동행을 모집하거나 참여할 수 있습니다.
+실시간 위치 기반으로 가까운 여행자를 연결해, 혼자 여행하는 순간에도 부담 없이 함께할 수 있도록 돕는 iOS 애플리케이션입니다. 실시간 위치 기반 지도를 통해 가까운 동행글을 확인하고, 원하는 장소와 시간에 맞춰 여행 동행을 모집하거나 참여할 수 있습니다.
 
 <br>
 
@@ -30,8 +30,8 @@
 
 | [김수민](https://github.com/gleamminn) | [신서연](https://github.com/hemssy) | [최주희](https://github.com/dearosmar) | [장지인](https://github.com/jiinjang) |
 | :---: | :---: | :---: | :---: |
-| <img width="960" height="1494" alt="image" src="https://github.com/user-attachments/assets/c9c7301c-f254-4844-8e1f-ba4d12bd0da8" /> | <img width="960" height="1494" alt="image" src="https://github.com/user-attachments/assets/8703cf14-148d-44a1-ae02-3d358578166f" /> | <img width="960" height="1494" alt="image" src="https://github.com/user-attachments/assets/a0d119f8-7e7c-42db-b269-b070c4d61d39" /> | <img width="960" height="1494" alt="image" src="https://github.com/user-attachments/assets/d22049c9-ff6f-4712-9853-0668318d14cf" /> |
-| `iOS Lead`<br/>`동행찾기 · 혼밥지도` | `iOS Developer`<br/>`로그인 · 마이페이지 · 상대방프로필` | `iOS Developer`<br/>`알림 · 신청 · 만남` | `iOS Developer`<br/>`동행글 작성 · 매칭` |
+| <img width="1152" height="1793" alt="image" src="https://github.com/user-attachments/assets/c9c7301c-f254-4844-8e1f-ba4d12bd0da8" /> | <img width="960" height="1494" alt="image" src="https://github.com/user-attachments/assets/8703cf14-148d-44a1-ae02-3d358578166f" /> | <img width="960" height="1494" alt="image" src="https://github.com/user-attachments/assets/a0d119f8-7e7c-42db-b269-b070c4d61d39" /> | <img width="960" height="1494" alt="image" src="https://github.com/user-attachments/assets/d22049c9-ff6f-4712-9853-0668318d14cf" /> |
+| `iOS Lead`<br/>`동행찾기 · 혼밥지도` | `iOS Developer`<br/>`로그인 · 마이페이지` | `iOS Developer`<br/>`알림 · 신청 · 만남` | `iOS Developer`<br/>`동행글 작성 · 매칭` |
 
 <br>
 

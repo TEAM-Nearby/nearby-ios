@@ -412,7 +412,7 @@ private extension MyPageView {
         removeAllArrangedSubviews(from: mannerFirstLineStackView)
         removeAllArrangedSubviews(from: mannerSecondLineStackView)
 
-        keywords.enumerated().forEach { index, keyword in
+        keywords.prefix(4).enumerated().forEach { index, keyword in
             let chip = makeMannerChip(title: keyword)
 
             if index < 2 {

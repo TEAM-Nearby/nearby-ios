@@ -29,6 +29,16 @@ struct AlarmRequestItem: Identifiable {
     let actionType: CompanionRequestActionType
     var isRead: Bool
 
+    var isActionEnabled: Bool {
+        guard isRead else { return true }
+        switch actionType {
+        case .acceptRequest, .confirmSchedule:
+            return true
+        case .viewResult, .viewRejection, .none:
+            return false
+        }
+    }
+
     // MARK: - Initializer
 
     init(dto: CompanionRequestDTO, tab: AlarmTab) {

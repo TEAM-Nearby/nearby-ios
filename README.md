@@ -1,9 +1,13 @@
-# Nearby
-> 따로, 또 함께하는 여행
+<p align="center">
+  <img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/9597a91f-0573-4b35-b700-d511b343e290" />
+</p>
 
-**가까운 여행자와 부담없이 한 끼를 함께할 수 있도록 연결하는, 혼자 여행자를 위한 실시간 식사 동행 서비스**
 
-<img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/9597a91f-0573-4b35-b700-d511b343e290" />
+<br/>
+
+# <img width="40" height="40" alt="NearBy logo" src="https://github.com/user-attachments/assets/133144c4-120a-4450-901f-4abb112bca12" align="center" /> NearBy
+> 프로젝트 기간: 2026.06.30 ~ 2026.07.18
+
 실시간 위치 기반으로 가까운 여행자를 연결해, 혼자 여행하는 순간에도 부담 없이 함께할 수 있도록 돕는 iOS 애플리케이션입니다.
 
 실시간 위치 기반 지도를 통해 가까운 동행글을 확인하고, 원하는 장소와 시간에 맞춰 여행 동행을 모집하거나 참여할 수 있습니다.

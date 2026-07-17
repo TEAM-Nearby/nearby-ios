@@ -23,6 +23,7 @@ final class ReportPostViewModel: BaseViewModelType {
     struct Output {
         let reloadReasons = PassthroughSubject<[Int], Never>()
         let isReportButtonEnabled = CurrentValueSubject<Bool, Never>(false)
+        let isDetailInputEnabled = CurrentValueSubject<Bool, Never>(false)
         let submitSuccess = PassthroughSubject<Void, Never>()
     }
     
@@ -53,6 +54,10 @@ final class ReportPostViewModel: BaseViewModelType {
         case .reasonDidTap(let index):
             let changed = toggleReason(index)
             output.reloadReasons.send(changed)
+            if !isEtcSelected {
+                detailText = ""
+            }
+            output.isDetailInputEnabled.send(isEtcSelected)
             updateReportState()
             
         case .detailTextChanged(let text):

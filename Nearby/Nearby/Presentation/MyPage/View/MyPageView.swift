@@ -270,13 +270,13 @@ final class MyPageView: BaseView {
         firstDividerView.snp.makeConstraints {
             $0.width.equalTo(1)
             $0.top.bottom.equalTo(statsStackView)
-            $0.leading.equalTo(statsStackView.snp.leading).offset(101)
+            $0.centerX.equalTo(mealStatView.snp.trailing)
         }
 
         secondDividerView.snp.makeConstraints {
             $0.width.equalTo(1)
             $0.top.bottom.equalTo(statsStackView)
-            $0.leading.equalTo(statsStackView.snp.leading).offset(202)
+            $0.centerX.equalTo(cityStatView.snp.trailing)
         }
 
         mannerScoreCardView.snp.makeConstraints {

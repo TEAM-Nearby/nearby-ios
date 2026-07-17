@@ -24,6 +24,7 @@ final class RecruitCompanionBottomView: BaseView {
     )
     private let kakaoLinkTitleLabel = UILabel()
     private let kakaoLinkTextView = NearbyTextView(placeholder: "오픈채팅방 링크(URL)를 입력해주세요")
+    private let kakaoLinkErrorLabel = UILabel()
     private let completeButton = NearbyButton(style: .primary, title: "작성 완료하기")
     private let placeSearchResultTableView = UITableView()
 
@@ -82,6 +83,11 @@ final class RecruitCompanionBottomView: BaseView {
             $0.verticallyCentersSingleLineText = true
         }
 
+        kakaoLinkErrorLabel.do {
+            $0.setFont(.b3R14, text: "오픈채팅방 링크(URL)만 입력해 주세요", textColor: .highlightRed)
+            $0.isHidden = true
+        }
+
         placeSearchResultTableView.do {
             $0.backgroundColor = .white
             $0.separatorStyle = .singleLine
@@ -97,7 +103,7 @@ final class RecruitCompanionBottomView: BaseView {
         addSubviews(
             meetingPlaceTitleLabel, meetingPlaceTextView,
             descriptionTitleLabel, descriptionTextView,
-            kakaoLinkTitleLabel, kakaoLinkTextView,
+            kakaoLinkTitleLabel, kakaoLinkTextView, kakaoLinkErrorLabel,
             completeButton, placeSearchResultTableView
         )
     }
@@ -142,8 +148,13 @@ final class RecruitCompanionBottomView: BaseView {
             $0.height.equalTo(56)
         }
 
+        kakaoLinkErrorLabel.snp.makeConstraints {
+            $0.top.equalTo(kakaoLinkTextView.snp.bottom).offset(8)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+
         completeButton.snp.makeConstraints {
-            $0.top.equalTo(kakaoLinkTextView.snp.bottom).offset(28)
+            $0.top.equalTo(kakaoLinkErrorLabel.snp.bottom).offset(20)
             $0.bottom.equalToSuperview().inset(21)
             $0.height.equalTo(56)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -179,6 +190,7 @@ final class RecruitCompanionBottomView: BaseView {
             meetingPlaceTextView.textView.text = state.placeQuery
         }
         meetingPlaceTextView.updatePlaceholder(isHidden: !state.placeQuery.isEmpty)
+        kakaoLinkErrorLabel.isHidden = !state.shouldShowOpenChatURLError
         completeButton.setEnabled(state.isCompleteButtonEnabled)
     }
 

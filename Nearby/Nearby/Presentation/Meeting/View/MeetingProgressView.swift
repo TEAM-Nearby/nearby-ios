@@ -249,7 +249,8 @@ final class MeetingProgressView: BaseView {
     }
     
     func updateVerifyButtonState(_ state: MeetingProgressViewModel.VerifyButtonState) {
-        verifyButton.isEnabled = state.isEnabled
+        verifyButton.isEnabled = state.isTouchEnabled
+        verifyButton.setStyleEnabled(state.isEnabled)
         verifyButton.setTitle(state.title, for: .normal)
         descriptionLabel.isHidden = state.isDescriptionHidden
     }

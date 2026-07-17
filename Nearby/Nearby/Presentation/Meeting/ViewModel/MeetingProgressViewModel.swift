@@ -40,6 +40,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     
     struct VerifyButtonState {
         let isEnabled: Bool
+        let isTouchEnabled: Bool
         let isDescriptionHidden: Bool
         let title: String
     }
@@ -58,6 +59,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private var restaurantCoordinate: (latitude: Double, longitude: Double)?
     private var meetingDate: Date?
     private var postType: PostType = .scheduled
+    private var hasVerifiedCompanion = true
     private var cancellables = Set<AnyCancellable>()
     
     private var currentStep: MeetingStep {
@@ -108,6 +110,11 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     longitude: restaurantCoordinate.longitude
                 )
             case .completion:
+                guard hasVerifiedCompanion else {
+                    output.showVerificationWaitingToast.send(())
+                    refreshCompanionVerification()
+                    return
+                }
                 fetchReviewTargets()
             case .match:
                 return
@@ -158,8 +165,11 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     initialStep = isWithinVerifiableWindow ? .verification : .match
                 }
                 output.step.send(initialStep)
-                
+
                 updateVerifyButtonState()
+                if initialStep == .completion {
+                    refreshCompanionVerification()
+                }
                 startTimer()
             } catch {
                 AppLogger.error(error)
@@ -175,6 +185,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 canMoveToComplete = DTO.canMoveToComplete
                 output.step.send(.completion)
                 updateVerifyButtonState()
+                refreshCompanionVerification()
                 output.checkInSucceeded.send(())
             } catch {
                 AppLogger.error(error)
@@ -192,13 +203,13 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 switch DTO.currentUserRole {
                 case .host:
                     guard !DTO.reviewTargets.isEmpty else {
-                        output.showVerificationWaitingToast.send(())
+                        showVerificationWaiting()
                         return
                     }
                     output.showReviewList.send(nil)
                 case .participant:
                     guard let target = DTO.reviewTargets.first else {
-                        output.showVerificationWaitingToast.send(())
+                        showVerificationWaiting()
                         return
                     }
                     output.showReviewList.send(ReviewItem(target: target, meetingId: meetingId))
@@ -210,10 +221,26 @@ final class MeetingProgressViewModel: BaseViewModelType {
         }
     }
 
+    private func showVerificationWaiting() {
+        hasVerifiedCompanion = false
+        updateVerifyButtonState()
+        output.showVerificationWaitingToast.send(())
+    }
+
+    private func refreshCompanionVerification() {
+        Task {
+            guard let DTO = try? await reviewRepository.fetchReviewTargets(meetingId: meetingId) else { return }
+            userRole = DTO.currentUserRole
+            hasVerifiedCompanion = !DTO.reviewTargets.isEmpty
+            updateVerifyButtonState()
+        }
+    }
+
     private func updateVerifyButtonState() {
         output.verifyButtonState.send(
             VerifyButtonState(
-                isEnabled: isVerifiable || currentStep == .completion,
+                isEnabled: isVerifiable || (currentStep == .completion && hasVerifiedCompanion),
+                isTouchEnabled: isVerifiable || currentStep == .completion,
                 isDescriptionHidden: isVerifiable || currentStep == .completion,
                 title: currentStep == .completion ? "다음" : "만남 인증하기"
             )
@@ -231,6 +258,10 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     output.step.send(newStep)
                 }
                 updateVerifyButtonState()
+
+                if currentStep == .completion && !hasVerifiedCompanion {
+                    refreshCompanionVerification()
+                }
             }
             .store(in: &cancellables)
     }

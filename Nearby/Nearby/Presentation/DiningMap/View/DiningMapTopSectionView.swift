@@ -15,6 +15,7 @@ final class DiningMapTopSectionView: BaseView {
     // MARK: - Properties
 
     var onAlarmButtonDidTap: (() -> Void)?
+    private var showsAlarmPoint = false
     
     // MARK: - UI Components
     
@@ -83,6 +84,12 @@ final class DiningMapTopSectionView: BaseView {
     override func setAddTarget() {
         navigationBar.rightFirstButtonAction = { [weak self] in
             self?.onAlarmButtonDidTap?()
+        }
+
+        navigationBar.logoAction = { [weak self] in
+            guard let self else { return }
+            showsAlarmPoint.toggle()
+            navigationBar.updateRightItems([showsAlarmPoint ? .alarmPointRed : .alarmPoint])
         }
     }
 }

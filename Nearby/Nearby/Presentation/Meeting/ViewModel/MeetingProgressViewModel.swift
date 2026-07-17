@@ -26,6 +26,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let verifyButtonState = PassthroughSubject<VerifyButtonState, Never>()
         let showReport = PassthroughSubject<Void, Never>()
         let showReviewList = PassthroughSubject<ReviewItem?, Never>()
+        let showVerificationWaitingToast = PassthroughSubject<Void, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
         let checkInSucceeded = PassthroughSubject<Void, Never>()
     }
@@ -190,10 +191,14 @@ final class MeetingProgressViewModel: BaseViewModelType {
 
                 switch DTO.currentUserRole {
                 case .host:
+                    guard !DTO.reviewTargets.isEmpty else {
+                        output.showVerificationWaitingToast.send(())
+                        return
+                    }
                     output.showReviewList.send(nil)
                 case .participant:
                     guard let target = DTO.reviewTargets.first else {
-                        output.errorMessage.send("아직 후기를 남길 수 있는 동행자가 없어요")
+                        output.showVerificationWaitingToast.send(())
                         return
                     }
                     output.showReviewList.send(ReviewItem(target: target, meetingId: meetingId))

@@ -91,6 +91,13 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             }
             .store(in: &cancellables)
 
+        viewModel.output.showVerificationWaitingToast
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.meetingProgressView.showVerificationWaitingToast()
+            }
+            .store(in: &cancellables)
+
         viewModel.output.errorMessage
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message in

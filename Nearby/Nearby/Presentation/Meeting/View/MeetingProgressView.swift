@@ -253,6 +253,10 @@ final class MeetingProgressView: BaseView {
         verifyButton.setTitle(state.title, for: .normal)
         descriptionLabel.isHidden = state.isDescriptionHidden
     }
+
+    func showVerificationWaitingToast() {
+        showToast(title: "다른 동행자의 만남 인증을 기다려주세요", above: verifyButton)
+    }
     
     // MARK: - Action
 

@@ -249,9 +249,14 @@ final class MeetingProgressView: BaseView {
     }
     
     func updateVerifyButtonState(_ state: MeetingProgressViewModel.VerifyButtonState) {
-        verifyButton.isEnabled = state.isEnabled
+        verifyButton.isEnabled = state.isTouchEnabled
+        verifyButton.setStyleEnabled(state.isEnabled)
         verifyButton.setTitle(state.title, for: .normal)
         descriptionLabel.isHidden = state.isDescriptionHidden
+    }
+
+    func showVerificationWaitingToast() {
+        showToast(title: "다른 동행자의 만남 인증을 기다려주세요", above: verifyButton)
     }
     
     // MARK: - Action

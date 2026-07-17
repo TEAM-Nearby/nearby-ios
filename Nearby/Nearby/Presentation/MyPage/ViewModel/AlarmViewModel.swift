@@ -83,6 +83,7 @@ final class AlarmViewModel: BaseViewModelType {
             updateSelectedTab(.received)
 
         case .actionButtonDidTap(let item):
+            guard item.isActionEnabled else { return }
             markNotificationAsReadAndHandleAction(item)
         }
     }

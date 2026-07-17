@@ -354,7 +354,8 @@ final class ReviewPostView: BaseView {
         return layout
     }
     
-    func configure(name: String, information: String, buttonTitle: String) {
+    func configure(profileImageUrl: String?, name: String, information: String, buttonTitle: String) {
+        profileImageView.configure(imageUrl: profileImageUrl)
         profileTitleLabel.text = "\(name) 님과의 여행이\n끝났어요."
         informationLabel.text = information
         reviewSubtitleLabel.text = "\(name) 님에게 좋았던 점을 남겨보세요."

@@ -34,7 +34,7 @@ final class HostReviewListViewModel: BaseViewModelType {
         let people: String
         let information: String
         let location: String
-        let avatarImages: [UIImage?]
+        let avatarImageUrls: [String?]
     }
     
     // MARK: - Properties
@@ -43,11 +43,12 @@ final class HostReviewListViewModel: BaseViewModelType {
 
     private let meetingId: Int
     private let repository: ReviewRepository
+    private let myPageRepository: MyPageRepository
     private let eventCenter: MeetingEventCenter
-    
+
     private var cancellables = Set<AnyCancellable>()
     private var isCompleting = false
-    
+
     var items: [ReviewItem] { output.items.value }
 
     private var remainingItems: [ReviewItem] {
@@ -56,9 +57,10 @@ final class HostReviewListViewModel: BaseViewModelType {
 
     // MARK: - Initializer
 
-    init(meetingId: Int, repository: ReviewRepository, eventCenter: MeetingEventCenter) {
+    init(meetingId: Int, repository: ReviewRepository, myPageRepository: MyPageRepository, eventCenter: MeetingEventCenter) {
         self.meetingId = meetingId
         self.repository = repository
+        self.myPageRepository = myPageRepository
         self.eventCenter = eventCenter
     }
 
@@ -89,8 +91,10 @@ final class HostReviewListViewModel: BaseViewModelType {
     private func fetchReviewTargets() {
         Task {
             do {
+                async let myPage = myPageRepository.fetchMyPage()
                 let DTO = try await repository.fetchReviewTargets(meetingId: meetingId)
                 let targets = DTO.reviewTargets
+                let myProfileImageUrl = (try? await myPage)?.profileImageUrl
 
                 if let first = targets.first {
                     let people = targets.count == 1
@@ -101,7 +105,7 @@ final class HostReviewListViewModel: BaseViewModelType {
                             people: people,
                             information: first.meetingDisplayDate,
                             location: first.cityName,
-                            avatarImages: [UIImage?](repeating: .imgProfileDefault, count: targets.count)
+                            avatarImageUrls: [myProfileImageUrl] + targets.map(\.profileImageUrl)
                         )
                     )
                 }
@@ -122,7 +126,7 @@ final class HostReviewListViewModel: BaseViewModelType {
             defer { isCompleting = false }
             do {
                 let response = try await repository.completeMeeting(meetingId: meetingId)
-                eventCenter.meetingCompleted.send(response.matchId)
+                eventCenter.notifyCompleted(matchId: response.matchId)
                 output.showCompletion.send(())
             } catch {
                 AppLogger.error(error)

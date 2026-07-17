@@ -62,6 +62,7 @@ final class MeetingTabViewModel: BaseViewModelType {
             do {
                 let meetings = try await repository.fetchMeetingList()
                 let items = meetings.map(makeMeetingItem)
+                    .filter { !eventCenter.completedMatchIds.contains($0.matchId) }
                 output.items.send(items)
             } catch {
                 AppLogger.error(error)

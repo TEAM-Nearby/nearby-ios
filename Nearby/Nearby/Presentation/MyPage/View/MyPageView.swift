@@ -50,8 +50,7 @@ final class MyPageView: BaseView {
     private let mannerTitleLabel = UILabel()
     private let starRatingView = StarRatingView()
     private let mannerChipContainerView = UIView()
-    private let mannerFirstLineStackView = UIStackView()
-    private let mannerSecondLineStackView = UIStackView()
+    private let mannerKeywordStackView = UIStackView()
 
     private let menuCardView = UIView()
 
@@ -160,10 +159,10 @@ final class MyPageView: BaseView {
             $0.setRating(0)
         }
 
-        [mannerFirstLineStackView, mannerSecondLineStackView].forEach {
-            $0.axis = .horizontal
-            $0.alignment = .center
-            $0.distribution = .equalSpacing
+        mannerKeywordStackView.do {
+            $0.axis = .vertical
+            $0.alignment = .leading
+            $0.distribution = .fill
             $0.spacing = 4
         }
 
@@ -203,7 +202,7 @@ final class MyPageView: BaseView {
             mannerTitleLabel, starRatingView, mannerChipContainerView
         )
 
-        mannerChipContainerView.addSubviews(mannerFirstLineStackView, mannerSecondLineStackView)
+        mannerChipContainerView.addSubview(mannerKeywordStackView)
 
         menuCardView.addSubviews(writtenPostRowView, sentRequestRowView, receivedRequestRowView)
     }
@@ -305,20 +304,12 @@ final class MyPageView: BaseView {
 
         mannerChipContainerView.snp.makeConstraints {
             $0.top.equalTo(starRatingView.snp.bottom).offset(20)
-            $0.leading.equalToSuperview().offset(20)
-            $0.trailing.lessThanOrEqualToSuperview().inset(20)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(24)
         }
 
-        mannerFirstLineStackView.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
-            $0.height.equalTo(36)
-        }
-
-        mannerSecondLineStackView.snp.makeConstraints {
-            $0.top.equalTo(mannerFirstLineStackView.snp.bottom).offset(4)
-            $0.leading.bottom.equalToSuperview()
-            $0.height.equalTo(36)
+        mannerKeywordStackView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
 
         menuCardView.snp.makeConstraints {
@@ -409,23 +400,26 @@ private extension MyPageView {
     }
     
     func configureMannerKeywords(_ keywords: [String]) {
-        removeAllArrangedSubviews(from: mannerFirstLineStackView)
-        removeAllArrangedSubviews(from: mannerSecondLineStackView)
+        removeAllArrangedSubviews(from: mannerKeywordStackView)
 
-        keywords.enumerated().forEach { index, keyword in
-            let chip = makeMannerChip(title: keyword)
+        let keywordRows = stride(from: 0, to: keywords.count, by: 2)
 
-            if index < 2 {
-                mannerFirstLineStackView.addArrangedSubview(chip)
-            } else {
-                mannerSecondLineStackView.addArrangedSubview(chip)
+        keywordRows.forEach { startIndex in
+            let rowStackView = makeMannerKeywordRowStackView()
+
+            let endIndex = min(startIndex + 2, keywords.count)
+
+            for index in startIndex..<endIndex {
+                let chip = makeMannerChip(title: keywords[index])
+                rowStackView.addArrangedSubview(chip)
             }
+
+            mannerKeywordStackView.addArrangedSubview(rowStackView)
         }
 
         let hasMannerKeywords = !keywords.isEmpty
 
         mannerChipContainerView.isHidden = !hasMannerKeywords
-        mannerSecondLineStackView.isHidden = keywords.count <= 2
 
         updateMannerScoreLayout(hasKeywords: hasMannerKeywords)
     }
@@ -445,15 +439,13 @@ private extension MyPageView {
         if hasKeywords {
             mannerChipContainerView.snp.remakeConstraints {
                 $0.top.equalTo(starRatingView.snp.bottom).offset(20)
-                $0.leading.equalToSuperview().offset(20)
-                $0.trailing.lessThanOrEqualToSuperview().inset(20)
+                $0.horizontalEdges.equalToSuperview().inset(20)
                 $0.bottom.equalToSuperview().inset(24)
             }
         } else {
             mannerChipContainerView.snp.remakeConstraints {
                 $0.top.equalTo(starRatingView.snp.bottom)
-                $0.leading.equalToSuperview().offset(20)
-                $0.trailing.lessThanOrEqualToSuperview().inset(20)
+                $0.horizontalEdges.equalToSuperview().inset(20)
                 $0.height.equalTo(0)
             }
         }
@@ -529,6 +521,21 @@ private extension MyPageView {
 
         setNeedsLayout()
         layoutIfNeeded()
+    }
+    
+    func makeMannerKeywordRowStackView() -> UIStackView {
+        let stackView = UIStackView()
+
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.spacing = 4
+
+        stackView.snp.makeConstraints {
+            $0.height.equalTo(36)
+        }
+
+        return stackView
     }
 }
 

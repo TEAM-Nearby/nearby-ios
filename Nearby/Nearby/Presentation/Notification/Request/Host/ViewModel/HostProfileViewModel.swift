@@ -34,6 +34,7 @@ final class HostProfileViewModel: BaseViewModelType {
         let gender: String
         let personalityKeywords: [String]
         let mannerScore: Int
+        let hasReviews: Bool
         let introduction: String
         let communicationKeywords: [String]
         let punctualityKeywords: [String]
@@ -137,15 +138,22 @@ private extension HostProfileViewModel {
 
 private extension ProfileResponseDTO {
     var displayData: HostProfileViewModel.DisplayData {
-        HostProfileViewModel.DisplayData(
+        let mappedMannerKeywords = mannerKeywords.compactMap(MannerKeyword.init(rawValue:))
+
+        return HostProfileViewModel.DisplayData(
             profileImageURL: profileImageUrl.flatMap(URL.init(string:)),
             nickname: nickname,
             gender: gender == "FEMALE" ? "여성" : "남성",
             personalityKeywords: TravelStyleKeyword.titles(for: keywords),
             mannerScore: Int(mannerScore.rounded()),
+            hasReviews: reviewCount > 0,
             introduction: intro ?? "",
-            communicationKeywords: [],
-            punctualityKeywords: []
+            communicationKeywords: mappedMannerKeywords
+                .filter { $0.category == .communication }
+                .map(\.title),
+            punctualityKeywords: mappedMannerKeywords
+                .filter { $0.category == .punctuality }
+                .map(\.title)
         )
     }
 }

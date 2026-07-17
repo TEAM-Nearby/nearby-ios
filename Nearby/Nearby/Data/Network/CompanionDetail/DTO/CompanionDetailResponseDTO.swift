@@ -34,6 +34,7 @@ struct CompanionHostProfileSummaryDTO: Decodable {
     let profileImageUrl: String?
     let intro: String?
     let mannerScore: Double
+    let mannerKeywords: [String]
     let phoneVerifiedAt: String?
     let keywords: [String]
 }

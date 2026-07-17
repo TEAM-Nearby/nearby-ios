@@ -15,6 +15,15 @@ enum MannerKeyword: String {
     case notifyDelayInAdvance = "NOTIFY_DELAY_IN_ADVANCE"
     case arrivesEarly = "ARRIVES_EARLY"
 
+    var category: Category {
+        switch self {
+        case .fastResponse, .goodManners, .goodConversation, .goodTalker, .informative:
+            return .communication
+        case .punctual, .notifyDelayInAdvance, .arrivesEarly:
+            return .punctuality
+        }
+    }
+
     var title: String {
         switch self {
         case .fastResponse:
@@ -47,5 +56,10 @@ enum MannerKeyword: String {
         serverKeys.map { serverKey in
             MannerKeyword(rawValue: serverKey)?.title ?? serverKey
         }
+    }
+
+    enum Category {
+        case communication
+        case punctuality
     }
 }

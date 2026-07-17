@@ -50,7 +50,8 @@ extension MeetingTabCoordinator: Coordinator {
 
         let viewController = diContainer.makeMeetingProgressViewController(
             coordinator: self,
-            meetingId: meetingId
+            meetingId: meetingId,
+            matchId: item.matchId
         )
         navigationController.pushViewController(viewController, animated: true)
     }

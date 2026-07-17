@@ -28,15 +28,18 @@ final class MeetingTabViewModel: BaseViewModelType {
     let output = Output()
     
     private let repository: MeetingRepository
+    private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
     
     var items: [MeetingItem] { output.items.value }
     
     // MARK: - Initializer
 
-    init(repository: MeetingRepository) {
+    init(repository: MeetingRepository, eventCenter: MeetingEventCenter) {
         self.repository = repository
+        self.eventCenter = eventCenter
         startTimer()
+        bindMeetingEvents()
     }
     
     // MARK: - Action
@@ -95,5 +98,15 @@ final class MeetingTabViewModel: BaseViewModelType {
             postType: DTO.meetingTimeType,
             isCheckedIn: DTO.isCheckedIn
         )
+    }
+    
+    private func bindMeetingEvents() {
+        eventCenter.meetingCompleted
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] matchId in
+                guard let self else { return }
+                output.items.send(items.filter { $0.matchId != matchId })
+            }
+            .store(in: &cancellables)
     }
 }

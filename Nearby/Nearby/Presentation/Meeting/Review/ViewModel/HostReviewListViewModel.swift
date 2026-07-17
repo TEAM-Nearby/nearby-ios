@@ -43,6 +43,8 @@ final class HostReviewListViewModel: BaseViewModelType {
 
     private let meetingId: Int
     private let repository: ReviewRepository
+    private let eventCenter: MeetingEventCenter
+    
     private var cancellables = Set<AnyCancellable>()
     private var isCompleting = false
     
@@ -54,9 +56,10 @@ final class HostReviewListViewModel: BaseViewModelType {
 
     // MARK: - Initializer
 
-    init(meetingId: Int, repository: ReviewRepository) {
+    init(meetingId: Int, repository: ReviewRepository, eventCenter: MeetingEventCenter) {
         self.meetingId = meetingId
         self.repository = repository
+        self.eventCenter = eventCenter
     }
 
     // MARK: - Action
@@ -118,7 +121,8 @@ final class HostReviewListViewModel: BaseViewModelType {
         Task {
             defer { isCompleting = false }
             do {
-                _ = try await repository.completeMeeting(meetingId: meetingId)
+                let response = try await repository.completeMeeting(meetingId: meetingId)
+                eventCenter.meetingCompleted.send(response.matchId)
                 output.showCompletion.send(())
             } catch {
                 AppLogger.error(error)

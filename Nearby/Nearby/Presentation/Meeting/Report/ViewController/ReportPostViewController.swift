@@ -67,6 +67,13 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
                 self?.reportPostView.updateReportButton(isEnabled: isEnabled)
             }
             .store(in: &cancellables)
+
+        viewModel.output.isDetailInputEnabled
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEnabled in
+                self?.reportPostView.updateDetailInput(isEnabled: isEnabled)
+            }
+            .store(in: &cancellables)
         
         viewModel.output.submitSuccess
             .receive(on: DispatchQueue.main)

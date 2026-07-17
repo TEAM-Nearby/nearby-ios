@@ -220,7 +220,7 @@ final class AppDIContainer {
     }
     
     func makeMeetingViewModel() -> MeetingTabViewModel {
-        MeetingTabViewModel(repository: makeMeetingRepository())
+        MeetingTabViewModel(repository: makeMeetingRepository(), eventCenter: meetingEventCenter)
     }
     
     func makeMeetingProgressViewModel(meetingId: Int) -> MeetingProgressViewModel {
@@ -232,7 +232,7 @@ final class AppDIContainer {
     }
     
     func makeMatchingViewModel() -> MatchingViewModel {
-        MatchingViewModel(repository: makeMatchedCompanionListRepository())
+        MatchingViewModel(repository: makeMatchedCompanionListRepository(), eventCenter: meetingEventCenter)
     }
     
     func makeRecruitCompanionViewModel() -> RecruitCompanionViewModel {
@@ -256,7 +256,7 @@ final class AppDIContainer {
     }
     
     func makeHostReviewListViewModel(meetingId: Int) -> HostReviewListViewModel {
-        HostReviewListViewModel(meetingId: meetingId, repository: makeReviewRepository())
+        HostReviewListViewModel(meetingId: meetingId, repository: makeReviewRepository(), eventCenter: meetingEventCenter)
     }
     
     func makeReportPostViewModel() -> ReportPostViewModel {
@@ -264,7 +264,7 @@ final class AppDIContainer {
     }
     
     func makeReviewPostViewModel(reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool) -> ReviewPostViewModel {
-        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast, repository: makeReviewRepository()
+        ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast, repository: makeReviewRepository(), eventCenter: meetingEventCenter
         )
     }
     

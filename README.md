@@ -141,3 +141,8 @@ Nearby
         └── ViewModel
 
 ```
+
+## ☄️ Trouble Shooting
+문제 해결 과정은 아래 Notion 페이지에 정리되어 있습니다.
+
+[트러블슈팅 노션 페이지](https://app.notion.com/p/Trouble-Shooting-3a0291c2123d805d8062d6985fef6887?source=copy_link)

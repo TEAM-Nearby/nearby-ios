@@ -20,6 +20,10 @@ final class HostProfileView: BaseView {
 
     private var communicationChipButtons = [NearbyChipButton]()
     private var punctualityChipButtons = [NearbyChipButton]()
+    private var reviewCardHeightConstraint: Constraint?
+    private var communicationSectionTopConstraint: Constraint?
+    private var punctualitySectionBottomConstraint: Constraint?
+    private var emptyReviewBottomConstraint: Constraint?
 
     // MARK: - UI Components
 
@@ -51,6 +55,7 @@ final class HostProfileView: BaseView {
 
     private let reviewCardView = UIView()
     private let reviewTitleLabel = UILabel()
+    private let emptyReviewLabel = UILabel()
 
     private let communicationSectionView = UIView()
     private let communicationTitleLabel = UILabel()
@@ -150,6 +155,12 @@ final class HostProfileView: BaseView {
             $0.numberOfLines = 1
         }
 
+        emptyReviewLabel.do {
+            $0.setFont(.b2M16, text: "동행을 통해 후기를 받아보세요!", textColor: .grey40)
+            $0.textAlignment = .center
+            $0.isHidden = true
+        }
+
         communicationTitleLabel.do {
             $0.setFont(.b2M16, text: "배려 · 소통", textColor: .grey80)
             $0.numberOfLines = 1
@@ -189,7 +200,7 @@ final class HostProfileView: BaseView {
 
         introductionCardView.addSubviews(introductionTitleLabel, introductionLabel)
 
-        reviewCardView.addSubviews(reviewTitleLabel, communicationSectionView, punctualitySectionView)
+        reviewCardView.addSubviews(reviewTitleLabel, emptyReviewLabel, communicationSectionView, punctualitySectionView)
 
         communicationSectionView.addSubviews(communicationTitleLabel, communicationChipContainerView)
 
@@ -247,6 +258,8 @@ final class HostProfileView: BaseView {
         configureCommunicationChips(displayData.communicationKeywords)
 
         configurePunctualityChips(displayData.punctualityKeywords)
+
+        updateReviewState(isEmpty: !displayData.hasReviews)
     }
 
     func configureProfileImage(with url: URL?) {
@@ -369,7 +382,7 @@ private extension HostProfileView {
         reviewCardView.snp.makeConstraints {
             $0.top.equalTo(introductionCardView.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(311)
+            reviewCardHeightConstraint = $0.height.equalTo(311).constraint
             $0.bottom.equalToSuperview().inset(24)
         }
 
@@ -378,8 +391,16 @@ private extension HostProfileView {
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
+        emptyReviewLabel.snp.makeConstraints {
+            $0.top.equalTo(reviewTitleLabel.snp.bottom).offset(26)
+            $0.centerX.equalToSuperview()
+            emptyReviewBottomConstraint = $0.bottom.equalToSuperview().inset(30).constraint
+        }
+
+        emptyReviewBottomConstraint?.deactivate()
+
         communicationSectionView.snp.makeConstraints {
-            $0.top.equalTo(reviewTitleLabel.snp.bottom).offset(16)
+            communicationSectionTopConstraint = $0.top.equalTo(reviewTitleLabel.snp.bottom).offset(16).constraint
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
@@ -408,7 +429,7 @@ private extension HostProfileView {
         punctualitySectionView.snp.makeConstraints {
             $0.top.equalTo(communicationSectionView.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.bottom.lessThanOrEqualToSuperview().inset(16)
+            punctualitySectionBottomConstraint = $0.bottom.lessThanOrEqualToSuperview().inset(16).constraint
         }
 
         punctualityTitleLabel.snp.makeConstraints {
@@ -526,6 +547,24 @@ private extension HostProfileView {
             } else {
                 punctualitySecondLineStackView.addArrangedSubview(chipButton)
             }
+        }
+    }
+
+    func updateReviewState(isEmpty: Bool) {
+        emptyReviewLabel.isHidden = !isEmpty
+        communicationSectionView.isHidden = isEmpty
+        punctualitySectionView.isHidden = isEmpty
+
+        if isEmpty {
+            reviewCardHeightConstraint?.deactivate()
+            communicationSectionTopConstraint?.deactivate()
+            punctualitySectionBottomConstraint?.deactivate()
+            emptyReviewBottomConstraint?.activate()
+        } else {
+            emptyReviewBottomConstraint?.deactivate()
+            communicationSectionTopConstraint?.activate()
+            punctualitySectionBottomConstraint?.activate()
+            reviewCardHeightConstraint?.activate()
         }
     }
 

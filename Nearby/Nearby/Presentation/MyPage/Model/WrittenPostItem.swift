@@ -91,7 +91,7 @@ private extension WrittenPostItem {
     static func parseScheduledDate(_ value: String) -> Date? {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.timeZone = .nearbyAPITimeZone
 
         for format in ["yyyy-MM-dd'T'HH:mm:ss.SSSSSS", "yyyy-MM-dd'T'HH:mm:ss"] {
             formatter.dateFormat = format

@@ -11,7 +11,7 @@ extension Date {
     var apiDateString: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.timeZone = .nearbyAPITimeZone
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return formatter.string(from: self)
     }
@@ -50,11 +50,12 @@ extension Date {
         return formatter.string(from: self)
     }
 
-    var utcAPIDateTimeString: String {
-        let formatter = DateFormatter.cached(
-            format: "yyyy-MM-dd'T'HH:mm:ss",
-            timeZone: TimeZone(secondsFromGMT: 0)
-        )
-        return formatter.string(from: self)
+}
+
+extension TimeZone {
+    static var nearbyAPITimeZone: TimeZone {
+        // TODO: 스프린트 국제 시간 적용 시 아래 UTC 설정으로 복구
+        // TimeZone(secondsFromGMT: 0)!
+        TimeZone(identifier: "Asia/Seoul")!
     }
 }

@@ -180,6 +180,19 @@ private extension AlarmViewModel {
     }
 
     func handleAction(for item: AlarmRequestItem) {
+        switch item.displayType {
+        case .sentRejected:
+            output.showCompanionRequestDecline.send(())
+            return
+
+        case .sentAccepted:
+            output.showCompanionRequestAccept.send(item.applicationId)
+            return
+
+        default:
+            break
+        }
+
         switch item.actionType {
         case .confirmSchedule:
             handleConfirmSchedule(item)

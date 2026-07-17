@@ -323,7 +323,9 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             ),
             meetingTimeType: draft.meetingTimeType == .scheduled ? .scheduled : .now,
             meetingAt: draft.meetingTimeType == .scheduled
-                ? draft.meetingAt?.utcAPIDateTimeString
+                // TODO: 스프린트 국제 시간 적용 시 UTC 직렬화로 복구
+                // ? draft.meetingAt?.utcAPIDateTimeString
+                ? draft.meetingAt?.apiDateString
                 : nil,
             maxParticipants: draft.maxParticipants,
             styleKeywords: RecruitCompanionStyleKeyword.allCases.filter {

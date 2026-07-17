@@ -72,14 +72,6 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             }
             .store(in: &cancellables)
         
-        viewModel.output.requestLocation
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                // TODO: - MVP 테스트용 고정 좌표
-                self?.viewModel.action(.locationDidUpdate(latitude: 41.389458, longitude: 2.168289))
-            }
-            .store(in: &cancellables)
-        
         viewModel.output.showReviewList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in

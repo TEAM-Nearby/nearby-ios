@@ -93,7 +93,7 @@ private extension CompanionDTO {
 
         let localFormatter = DateFormatter()
         localFormatter.locale = Locale(identifier: "en_US_POSIX")
-        localFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        localFormatter.timeZone = .nearbyAPITimeZone
 
         let dateFormats = [
             "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",

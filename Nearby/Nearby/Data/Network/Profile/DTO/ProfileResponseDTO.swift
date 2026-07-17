@@ -12,6 +12,7 @@ struct ProfileResponseDTO: Decodable {
     let profileImageUrl: String?
     let intro: String?
     let mannerScore: Double
+    let mannerKeywords: [String]
     let reviewCount: Int
     let status: String
     let phoneVerifiedAt: String?

@@ -16,8 +16,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
         case viewDidLoad
         case verifyButtonDidTap
         case reportButtonDidTap
-        case locationDidUpdate(latitude: Double, longitude: Double)
-        case locationDidFail
     }
     
     // MARK: - Output
@@ -29,7 +27,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let showReport = PassthroughSubject<Void, Never>()
         let showReviewList = PassthroughSubject<ReviewItem?, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
-        let requestLocation = PassthroughSubject<Void, Never>()
         let checkInSucceeded = PassthroughSubject<Void, Never>()
     }
     
@@ -53,8 +50,11 @@ final class MeetingProgressViewModel: BaseViewModelType {
     let meetingId: Int
     private(set) var userRole: NearbyUserType = .participant
     private(set) var canMoveToComplete: Bool = false
+    private let matchId: Int
     private let repository: MeetingRepository
+    private let matchingRepository: MatchedCompanionListRepository
     private let reviewRepository: ReviewRepository
+    private var restaurantCoordinate: (latitude: Double, longitude: Double)?
     private var meetingDate: Date?
     private var postType: PostType = .scheduled
     private var cancellables = Set<AnyCancellable>()
@@ -73,9 +73,17 @@ final class MeetingProgressViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(meetingId: Int, repository: MeetingRepository, reviewRepository: ReviewRepository) {
+    init(
+        meetingId: Int,
+        matchId: Int,
+        repository: MeetingRepository,
+        matchingRepository: MatchedCompanionListRepository,
+        reviewRepository: ReviewRepository
+    ) {
         self.meetingId = meetingId
+        self.matchId = matchId
         self.repository = repository
+        self.matchingRepository = matchingRepository
         self.reviewRepository = reviewRepository
     }
     
@@ -90,7 +98,14 @@ final class MeetingProgressViewModel: BaseViewModelType {
             switch currentStep {
             case .verification:
                 guard isVerifiable else { return }
-                output.requestLocation.send(())
+                guard let restaurantCoordinate else {
+                    output.errorMessage.send("식당 위치를 확인할 수 없어요.")
+                    return
+                }
+                checkIn(
+                    latitude: restaurantCoordinate.latitude,
+                    longitude: restaurantCoordinate.longitude
+                )
             case .completion:
                 fetchReviewTargets()
             case .match:
@@ -99,12 +114,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
             
         case .reportButtonDidTap:
             output.showReport.send(())
-        
-        case .locationDidUpdate(let latitude, let longitude):
-            checkIn(latitude: latitude, longitude: longitude)
-            
-        case .locationDidFail:
-            output.errorMessage.send("위치를 확인할 수 없어요. 위치 권한을 확인해 주세요.")
         }
     }
     
@@ -113,7 +122,18 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private func fetchDetail() {
         Task {
             do {
-                let DTO = try await repository.fetchMeetingDetail(meetingId: meetingId)
+                async let meetingDetailTask = repository.fetchMeetingDetail(meetingId: meetingId)
+                async let scheduleTask = try? matchingRepository.fetchMatchMySchedule(matchId: matchId)
+
+                let DTO = try await meetingDetailTask
+                let scheduleResponse = await scheduleTask
+
+                if let place = scheduleResponse?.schedule?.place {
+                    restaurantCoordinate = (
+                        latitude: place.latitude,
+                        longitude: place.longitude
+                    )
+                }
                 
                 userRole = DTO.currentUserRole
                 meetingDate = DTO.meetingAt?.toDate()

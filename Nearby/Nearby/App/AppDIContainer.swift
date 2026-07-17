@@ -223,10 +223,12 @@ final class AppDIContainer {
         MeetingTabViewModel(repository: makeMeetingRepository(), eventCenter: meetingEventCenter)
     }
     
-    func makeMeetingProgressViewModel(meetingId: Int) -> MeetingProgressViewModel {
+    func makeMeetingProgressViewModel(meetingId: Int, matchId: Int) -> MeetingProgressViewModel {
         MeetingProgressViewModel(
             meetingId: meetingId,
+            matchId: matchId,
             repository: makeMeetingRepository(),
+            matchingRepository: makeMatchedCompanionListRepository(),
             reviewRepository: makeReviewRepository()
         )
     }
@@ -434,9 +436,9 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, meetingId: Int) -> UIViewController {
+    func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, meetingId: Int, matchId: Int) -> UIViewController {
         let viewController = MeetingProgressViewController(
-            viewModel: makeMeetingProgressViewModel(meetingId: meetingId)
+            viewModel: makeMeetingProgressViewModel(meetingId: meetingId, matchId: matchId)
         )
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true

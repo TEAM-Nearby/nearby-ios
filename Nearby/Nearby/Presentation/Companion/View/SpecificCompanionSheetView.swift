@@ -56,9 +56,7 @@ final class SpecificCompanionSheetView: BaseView {
         titleLabel.do {
             $0.setFont(.h3Sb20, text: "내 주변에서 동행을 구하고 있어요", textColor: .grey80)
             $0.numberOfLines = 2
-            $0.lineBreakMode = .byWordWrapping
             $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-            $0.setContentCompressionResistancePriority(.required, for: .vertical)
         }
         
         closeButton.do {
@@ -91,12 +89,13 @@ final class SpecificCompanionSheetView: BaseView {
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(14)
             $0.leading.equalToSuperview().inset(20)
-            $0.trailing.equalTo(closeButton.snp.leading).offset(-8)
+            $0.trailing.equalTo(closeButton.snp.leading).offset(-12)
         }
         
         closeButton.snp.makeConstraints {
             $0.top.equalTo(titleLabel)
             $0.trailing.equalToSuperview().inset(14)
+            $0.size.equalTo(28)
         }
         
         placeImageView.snp.makeConstraints {

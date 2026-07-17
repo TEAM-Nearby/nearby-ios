@@ -23,6 +23,8 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     private let diningInfoSheetViewController: DiningInfoSheetViewController
     private var isSaveDiningSheetPresented = false
     private var isBottomSheetInitialized = false
+    private var nearDiningMarkers: [CompanionMapMarkerData] = []
+    private var savedDiningMarkers: [CompanionMapMarkerData] = []
     private lazy var mapController = CompanionMapController(mapView: diningMapView.mapView, configuration: viewModel.output.mapConfiguration)
     private var bottomSheetHostView: UIView { tabBarController?.view ?? view }
     private var bottomSheetParentViewController: UIViewController { tabBarController ?? self }
@@ -108,7 +110,11 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         }
         
         nearDiningSheetViewController.onMapMarkersChanged = { [weak self] markers in
-            self?.mapController.updateDiningMarkers(markers)
+            guard let self else { return }
+            nearDiningMarkers = markers
+            if !isSaveDiningSheetPresented {
+                mapController.updateDiningMarkers(markers)
+            }
         }
         
         mapController.onCompanionMarkerTap = { [weak self] placeId in
@@ -125,6 +131,14 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
                 placeId: placeId,
                 isFavorite: isFavorite
             )
+        }
+
+        saveDiningSheetViewController.onMapMarkersChanged = { [weak self] markers in
+            guard let self else { return }
+            savedDiningMarkers = markers
+            if isSaveDiningSheetPresented {
+                mapController.updateDiningMarkers(markers)
+            }
         }
         
         diningInfoSheetViewController.onClose = { [weak self] in
@@ -168,19 +182,13 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
                 self?.diningMapView.bookmarkButton.isSelected = isSelected
             }
             .store(in: &cancellables)
-
-        viewModel.output.nickname
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] nickname in
-                self?.nearDiningSheetViewController.updateNickname(nickname)
-            }
-            .store(in: &cancellables)
     }
 
     // MARK: - Methods
     
     private func showSaveDiningSheet(animated: Bool = true) {
         isSaveDiningSheetPresented = true
+        mapController.updateDiningMarkers(savedDiningMarkers)
         saveDiningSheetViewController.refresh()
         setTabBarHidden(true, animated: animated)
         bottomSheetViewController.setState(content: .savedRestaurantList, animated: animated)
@@ -189,6 +197,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
 
     private func showNearDiningSheet(animated: Bool = true) {
         isSaveDiningSheetPresented = false
+        mapController.updateDiningMarkers(nearDiningMarkers)
         setTabBarHidden(false, animated: animated)
         bottomSheetViewController.setState(content: .diningMapList, animated: animated)
         bottomSheetViewController.setContentViewController(nearDiningSheetViewController)

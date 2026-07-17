@@ -139,6 +139,7 @@ private extension CompanionDetailResponseDTO {
             postType: postType,
             isApplicationEnabled: status == "RECRUITING"
                 && applyStatus == "NOT_APPLIED"
+                && participantCount < maxParticipants
                 && hostUserId != currentUserId,
             tags: TravelStyleKeyword.titles(for: hostProfileSummary.keywords),
             hostName: hostProfileSummary.nickname,

@@ -15,6 +15,7 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
     
     var onRestaurantSelected: ((NearDiningCellItem) -> Void)?
     var onFavoriteUpdate: ((Int, Bool) -> Void)?
+    var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
 
     private let initialLoadingTracker = InitialLoadingTracker()
     private let saveDiningBottomSheetView = SaveDiningBottomSheetView(diningCategories: DiningCategory.allCases)
@@ -74,6 +75,13 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
             .receive(on: DispatchQueue.main)
             .sink { [weak self] favorite in
                 self?.onFavoriteUpdate?(favorite.placeId, favorite.isFavorite)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.mapMarkers
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] markers in
+                self?.onMapMarkersChanged?(markers)
             }
             .store(in: &cancellables)
 

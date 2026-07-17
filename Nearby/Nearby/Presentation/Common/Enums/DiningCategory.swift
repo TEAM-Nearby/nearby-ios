@@ -52,7 +52,7 @@ enum DiningCategory: CaseIterable, Hashable {
         case .cafe: "CAFE"
         case .bar: "PUB"
         case .dessert: "CAFE"
-        case .paella: "OTHER"
+        case .paella: "RESTAURANT"
         }
     }
 }

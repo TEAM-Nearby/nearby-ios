@@ -183,7 +183,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
         }
     }
     
-    /// 일정 미확정(meetingId 없음) 만남: 리스트 데이터로 화면을 구성하고 인증 대기 상태로 표시
     private func configureUnconfirmedMeeting() {
         meetingDate = item.meetingDate
         postType = item.postType

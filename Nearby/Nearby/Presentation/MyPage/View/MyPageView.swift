@@ -33,7 +33,7 @@ final class MyPageView: BaseView {
     private let nicknameLabel = UILabel()
     private let genderLabel = UILabel()
     private let verificationChip = NearbyChipButton(style: .badgeVerification, title: "본인인증 완료", horizontalInset: 22)
-    
+    private let personalityVerticalGuide = UILayoutGuide()
     private let personalityChipContainerView = UIView()
     private let personalityFirstLineStackView = UIStackView()
     private let personalitySecondLineStackView = UIStackView()
@@ -188,6 +188,8 @@ final class MyPageView: BaseView {
             personalityChipContainerView, statsStackView,
             firstDividerView, secondDividerView
         )
+        
+        boardingPassImageView.addLayoutGuide(personalityVerticalGuide)
 
         nameStackView.addArrangedSubviews(nicknameLabel, genderLabel)
 
@@ -243,9 +245,14 @@ final class MyPageView: BaseView {
             $0.centerX.equalToSuperview()
             $0.height.equalTo(36)
         }
+        
+        personalityVerticalGuide.snp.makeConstraints {
+            $0.top.equalTo(verificationChip.snp.bottom)
+            $0.bottom.equalTo(statsStackView.snp.top)
+            $0.horizontalEdges.equalToSuperview()
+        }
 
         personalityChipContainerView.snp.makeConstraints {
-            $0.top.equalTo(verificationChip.snp.bottom).offset(32)
             $0.centerX.equalToSuperview()
             $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
         }
@@ -262,11 +269,11 @@ final class MyPageView: BaseView {
         }
 
         statsStackView.snp.makeConstraints {
-            $0.top.equalTo(personalityChipContainerView.snp.bottom).offset(24)
             $0.horizontalEdges.equalToSuperview().inset(25)
             $0.height.equalTo(79)
+            $0.bottom.equalToSuperview().inset(20)
         }
-
+        
         firstDividerView.snp.makeConstraints {
             $0.width.equalTo(1)
             $0.top.bottom.equalTo(statsStackView)
@@ -508,7 +515,20 @@ private extension MyPageView {
             }
         }
 
+        personalityChipContainerView.snp.remakeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
+
+            if hasSecondLine {
+                $0.top.equalTo(verificationChip.snp.bottom).offset(32)
+                $0.bottom.lessThanOrEqualTo(statsStackView.snp.top).offset(-24)
+            } else {
+                $0.centerY.equalTo(personalityVerticalGuide.snp.centerY)
+            }
+        }
+
         setNeedsLayout()
+        layoutIfNeeded()
     }
 }
 

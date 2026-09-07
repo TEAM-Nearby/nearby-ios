@@ -1,0 +1,3 @@
+#include "Debug.secret.xcconfig"
+
+APP_ENV = development

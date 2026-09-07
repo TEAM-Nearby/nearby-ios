@@ -60,7 +60,7 @@ struct WrittenPostItem {
 
 extension WrittenPostItem {
     init(response: MyCompanionPostDTO) {
-        let scheduledDate = response.scheduledAt.flatMap(Self.parseScheduledDate)
+        let scheduledDate = response.scheduledAt.flatMap { Self.parseScheduledDate($0) }
         let serverImageURLs = [response.hostProfileImageUrl]
             + response.members.map(\.profileImageUrl)
         let missingImageCount = max(
@@ -77,7 +77,7 @@ extension WrittenPostItem {
             latitude: response.place.latitude,
             longitude: response.place.longitude,
             placeID: response.place.googlePlaceId,
-            meetingDateText: scheduledDate.map(Self.meetingDateText) ?? "시간 미정",
+            meetingDateText: scheduledDate.map { Self.meetingDateText($0) } ?? "시간 미정",
             currentPeopleCount: response.currentParticipants,
             maximumPeopleCount: response.maxParticipants,
             participantImageURLs: participantImageURLs,

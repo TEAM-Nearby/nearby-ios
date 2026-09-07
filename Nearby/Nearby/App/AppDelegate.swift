@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             KakaoSDK.initSDK(appKey: kakaoAPIKey)
         } catch {
             AppLogger.error(error)
-            fatalError("Kakao App key is missing. Set KAKAO_APP_KEY before initializing KakaoSDK.")
+            fatalError("Kakao App key is missing. Set KAKAO_API_KEY before initializing KakaoSDK.")
         }
         
         return true

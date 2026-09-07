@@ -60,7 +60,7 @@ final class MatchingManageScheduleDetailView: BaseView {
         }
 
         dateAndTimeImageView.do {
-            $0.image = .calenderIcon.withRenderingMode(.alwaysTemplate)
+            $0.image = .calendarIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .grey30
             $0.contentMode = .scaleAspectFit
             $0.isUserInteractionEnabled = false

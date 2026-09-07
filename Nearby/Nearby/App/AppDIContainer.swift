@@ -289,8 +289,8 @@ final class AppDIContainer {
         )
     }
     
-    func makeHostRequestRecieveViewModel(applicationId: Int) -> HostRequestRecieveViewModel {
-        HostRequestRecieveViewModel(
+    func makeHostRequestReceiveViewModel(applicationId: Int) -> HostRequestReceiveViewModel {
+        HostRequestReceiveViewModel(
             applicationId: applicationId,
             repository: makeHostCompanionRepository()
         )
@@ -536,9 +536,9 @@ final class AppDIContainer {
         return viewController
     }
     
-    func makeHostRequestRecieveViewController(coordinator: NotificationCoordinator, applicationId: Int) -> HostRequestRecieveViewController {
-        let viewController = HostRequestRecieveViewController(
-            viewModel: makeHostRequestRecieveViewModel(applicationId: applicationId)
+    func makeHostRequestReceiveViewController(coordinator: NotificationCoordinator, applicationId: Int) -> HostRequestReceiveViewController {
+        let viewController = HostRequestReceiveViewController(
+            viewModel: makeHostRequestReceiveViewModel(applicationId: applicationId)
         )
         viewController.coordinator = coordinator
         viewController.hidesBottomBarWhenPushed = true

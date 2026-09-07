@@ -23,6 +23,7 @@ final class AppCoordinator {
     init(window: UIWindow, diContainer: AppDIContainer) {
         self.window = window
         self.diContainer = diContainer
+
         NotificationCenter.default.publisher(for: .authenticationExpired)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -38,7 +39,6 @@ final class AppCoordinator {
 // MARK: - Coordinator
 
 extension AppCoordinator: Coordinator {
-    
     func start() {
         showSplash()
     }
@@ -51,7 +51,6 @@ extension AppCoordinator: Coordinator {
 // MARK: - Methods
 
 private extension AppCoordinator {
-    
     func handleLaunchFlow() {
         if diContainer.hasStoredSession {
             showMainTab()
@@ -93,7 +92,6 @@ private extension AppCoordinator {
         )
         
         navigationController.setNavigationBarHidden(true, animated: false)
-        
         setRootViewController(navigationController, animated: true)
     }
     
@@ -131,7 +129,6 @@ private extension AppCoordinator {
         let mainTabCoordinator = diContainer.makeMainTabCoordinator()
         
         mainTabCoordinator.parentCoordinator = self
-        
         mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in guard let self else { return }
             
             if let mainTabCoordinator {
@@ -142,9 +139,7 @@ private extension AppCoordinator {
         }
         
         addChildCoordinator(mainTabCoordinator)
-        
         mainTabCoordinator.start()
-        
         setRootViewController(mainTabCoordinator.rootViewController, animated: true)
     }
     
@@ -155,14 +150,8 @@ private extension AppCoordinator {
             return
         }
         
-        UIView.transition(
-            with: window,
-            duration: 0.3,
-            options: [.transitionCrossDissolve, .allowAnimatedContent],
-            animations: {
-                self.window.rootViewController = viewController
-            }
-        )
+        UIView.transition(with: window, duration: 0.3, options: [.transitionCrossDissolve, .allowAnimatedContent],
+                          animations: { self.window.rootViewController = viewController })
         
         window.makeKeyAndVisible()
     }

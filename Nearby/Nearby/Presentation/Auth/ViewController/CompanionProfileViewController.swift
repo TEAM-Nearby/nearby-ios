@@ -72,31 +72,31 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
         viewModel.output.nicknameDidFail = { [weak self] message in
             guard let self else { return }
             
-            self.showAlert(title: "닉네임을 확인해주세요", message: message)
+            showAlert(title: "닉네임을 확인해주세요", message: message)
         }
         
         viewModel.output.keywordSelectionDidFail = { [weak self] message in
             guard let self else { return }
             
-            self.showAlert(title: "여행 스타일을 확인해주세요", message: message)
+            showAlert(title: "여행 스타일을 확인해주세요", message: message)
         }
         
         viewModel.output.onboardingDidFail = { [weak self] message in
             guard let self else { return }
             
-            self.showAlert(title: "프로필 등록 실패", message: message)
+            showAlert(title: "프로필 등록 실패", message: message)
         }
         
         viewModel.output.onboardingDidComplete = { [weak self] in
             guard let self else { return }
             
-            self.onProfileCompleted?()
+            onProfileCompleted?()
         }
         
         viewModel.output.isLoading = { [weak self] isLoading in
             guard let self else { return }
             
-            self.companionProfileView.bottomButton.isEnabled = !isLoading
+            companionProfileView.bottomButton.isEnabled = !isLoading
         }
     }
     

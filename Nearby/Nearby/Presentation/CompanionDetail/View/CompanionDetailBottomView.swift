@@ -95,7 +95,7 @@ final class CompanionDetailBottomView: BaseView {
         }
         
         dateIconImageView.do {
-            $0.image = .calenderIcon.withRenderingMode(.alwaysTemplate)
+            $0.image = .calendarIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .grey80
         }
         

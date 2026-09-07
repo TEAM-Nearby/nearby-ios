@@ -64,7 +64,7 @@ extension NotificationCoordinator: Coordinator {
                 showCompanionRequestDecline()
 
             case .receivedPending:
-                showHostRequestRecieve(applicationId: requestItem.applicationId)
+                showHostRequestReceive(applicationId: requestItem.applicationId)
             default:
                 break
             }
@@ -99,8 +99,8 @@ extension NotificationCoordinator {
 }
 
 extension NotificationCoordinator {
-    func showHostRequestRecieve(applicationId: Int) {
-        let viewController = diContainer.makeHostRequestRecieveViewController(coordinator: self, applicationId: applicationId)
+    func showHostRequestReceive(applicationId: Int) {
+        let viewController = diContainer.makeHostRequestReceiveViewController(coordinator: self, applicationId: applicationId)
 
         viewController.hidesBottomBarWhenPushed = true
 

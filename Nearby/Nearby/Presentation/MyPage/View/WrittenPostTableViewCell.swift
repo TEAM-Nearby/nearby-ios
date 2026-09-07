@@ -170,7 +170,7 @@ private extension WrittenPostTableViewCell {
         }
 
         dateIconImageView.do {
-            $0.image = .calenderIcon.withRenderingMode(.alwaysTemplate)
+            $0.image = .calendarIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .grey80
             $0.contentMode = .scaleAspectFit
         }

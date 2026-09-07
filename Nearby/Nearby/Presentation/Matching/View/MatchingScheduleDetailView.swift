@@ -62,7 +62,7 @@ final class MatchingScheduleDetailView: BaseView {
         }
         
         placeImageView.do {
-            $0.image = .loaction.withRenderingMode(.alwaysTemplate)
+            $0.image = .location.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
         }
         
@@ -85,7 +85,7 @@ final class MatchingScheduleDetailView: BaseView {
         }
         
         dateAndTimeImageView.do {
-            $0.image = .smallCalenderIcon.withRenderingMode(.alwaysTemplate)
+            $0.image = .smallCalendarIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .btnPrimaryBg
         }
         

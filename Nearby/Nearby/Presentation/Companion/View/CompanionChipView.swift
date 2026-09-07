@@ -111,7 +111,7 @@ final class CompanionChipView: BaseView {
         }
         
         dateIconImageView.do {
-            $0.image = .smallCalenderIcon.withRenderingMode(.alwaysTemplate)
+            $0.image = .smallCalendarIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .primary50
         }
         

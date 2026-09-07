@@ -105,7 +105,7 @@ final class HostRequestAllowView: BaseView {
         }
         
         calendarImageView.do {
-            $0.image = .calenderIcon
+            $0.image = .calendarIcon
         }
         
         dateLabel.do {

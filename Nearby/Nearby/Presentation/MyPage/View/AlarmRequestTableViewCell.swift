@@ -252,11 +252,11 @@ private extension AlarmRequestTableViewCell {
             statusIconHeightConstraint?.update(offset: 24)
 
             if isRead {
-                statusIconImageView.image = UIImage(resource: .calenderFillPurple).withRenderingMode(.alwaysTemplate)
+                statusIconImageView.image = UIImage(resource: .calendarFillPurple).withRenderingMode(.alwaysTemplate)
 
                 statusIconImageView.tintColor = .grey50
             } else {
-                statusIconImageView.image = .calenderFillPurple
+                statusIconImageView.image = .calendarFillPurple
                 statusIconImageView.tintColor = nil
             }
 

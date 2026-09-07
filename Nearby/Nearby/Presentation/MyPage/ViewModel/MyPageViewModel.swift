@@ -97,7 +97,7 @@ private extension MyPageViewModel {
                 )
 
                 await MainActor.run {
-                    output.myPageData?(displayModel)
+                    self.output.myPageData?(displayModel)
                 }
             } catch {
                 guard !Task.isCancelled else {
@@ -114,7 +114,7 @@ private extension MyPageViewModel {
                 }
 
                 await MainActor.run {
-                    output.errorMessage?(message)
+                    self.output.errorMessage?(message)
                 }
             }
         }

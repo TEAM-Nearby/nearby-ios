@@ -1,5 +1,5 @@
 //
-//  HostRequestRecieveViewController.swift
+//  HostRequestReceiveViewController.swift
 //  Nearby
 //
 //  Created by h2e on 7/7/26.
@@ -8,11 +8,11 @@
 import Combine
 import UIKit
 
-final class HostRequestRecieveViewController: BaseViewController<HostRequestRecieveViewModel> {
+final class HostRequestReceiveViewController: BaseViewController<HostRequestReceiveViewModel> {
     
     // MARK: - UI Component
 
-    private let hostRequestRecieveView = HostRequestRecieveView()
+    private let hostRequestReceiveView = HostRequestReceiveView()
     
     // MARK: - Property
 
@@ -21,12 +21,12 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
     // MARK: - Life Cycles
 
     override func loadView() {
-        view = hostRequestRecieveView
+        view = hostRequestReceiveView
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        hostRequestRecieveView.restartAnimation()
+        hostRequestReceiveView.restartAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,19 +37,19 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
     // MARK: - Custom Methods
 
     override func setAddTarget() {
-        hostRequestRecieveView.onBackButtonDidTap = { [weak self] in
+        hostRequestReceiveView.onBackButtonDidTap = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
         
-        hostRequestRecieveView.onNextButtonDidTap = { [weak self] in
+        hostRequestReceiveView.onNextButtonDidTap = { [weak self] in
             self?.viewModel.action(.nextButtonDidTap)
         }
         
-        hostRequestRecieveView.onAllowButtonDidTap = { [weak self] in
+        hostRequestReceiveView.onAllowButtonDidTap = { [weak self] in
             self?.viewModel.action(.allowButtonDidTap)
         }
         
-        hostRequestRecieveView.onRejectButtonDidTap = { [weak self] in
+        hostRequestReceiveView.onRejectButtonDidTap = { [weak self] in
             self?.viewModel.action(.rejectButtonDidTap)
         }
     }
@@ -58,7 +58,7 @@ final class HostRequestRecieveViewController: BaseViewController<HostRequestReci
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] data in
-                self?.hostRequestRecieveView.configure(with: data)
+                self?.hostRequestReceiveView.configure(with: data)
             }
             .store(in: &cancellables)
         

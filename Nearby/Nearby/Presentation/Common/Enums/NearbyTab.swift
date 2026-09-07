@@ -49,15 +49,15 @@ enum NearbyTabItem: Int, CaseIterable {
     var selectedImage: UIImage {
         switch self {
         case .companion:
-            return .findChoosedIcon.withRenderingMode(.alwaysOriginal)
+            return .findSelectedIcon.withRenderingMode(.alwaysOriginal)
         case .diningMap:
-            return .mapChoosedIcon.withRenderingMode(.alwaysOriginal)
+            return .mapSelectedIcon.withRenderingMode(.alwaysOriginal)
         case .matching:
-            return .matchingChoosedIcon.withRenderingMode(.alwaysOriginal)
+            return .matchingSelectedIcon.withRenderingMode(.alwaysOriginal)
         case .meeting:
-            return .meetChoosedIcon.withRenderingMode(.alwaysOriginal)
+            return .meetSelectedIcon.withRenderingMode(.alwaysOriginal)
         case .myPage:
-            return .mypageChoosedIcon.withRenderingMode(.alwaysOriginal)
+            return .mypageSelectedIcon.withRenderingMode(.alwaysOriginal)
         }
     }
     

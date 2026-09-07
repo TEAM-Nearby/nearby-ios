@@ -1,5 +1,5 @@
 //
-//  HostRequestRecieveViewModel.swift
+//  HostRequestReceiveViewModel.swift
 //  Nearby
 //
 //  Created by h2e on 7/7/26.
@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-final class HostRequestRecieveViewModel: BaseViewModelType {
+final class HostRequestReceiveViewModel: BaseViewModelType {
 
     // MARK: - Input
 

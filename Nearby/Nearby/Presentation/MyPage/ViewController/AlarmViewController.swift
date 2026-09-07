@@ -126,7 +126,7 @@ private extension AlarmViewController {
         viewModel.output.showHostRequestReceive
             .receive(on: DispatchQueue.main)
             .sink { [weak self] applicationId in
-                self?.coordinator?.showHostRequestRecieve(applicationId: applicationId)
+                self?.coordinator?.showHostRequestReceive(applicationId: applicationId)
             }
             .store(in: &cancellables)
 

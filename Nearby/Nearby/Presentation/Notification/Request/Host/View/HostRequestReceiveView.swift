@@ -1,5 +1,5 @@
 //
-//  HostRequestRecieveView.swift
+//  HostRequestReceiveView.swift
 //  Nearby
 //
 //  Created by h2e on 7/7/26.
@@ -11,7 +11,7 @@ import Lottie
 import SnapKit
 import Then
 
-final class HostRequestRecieveView: BaseView {
+final class HostRequestReceiveView: BaseView {
     
     // MARK: - Properties
     
@@ -156,7 +156,7 @@ final class HostRequestRecieveView: BaseView {
         }
         
         calendarImageView.do {
-            $0.image = .calenderIcon
+            $0.image = .calendarIcon
         }
         
         dateLabel.do {
@@ -285,7 +285,7 @@ final class HostRequestRecieveView: BaseView {
     
     // MARK: - Methods
     
-    func configure(with output: HostRequestRecieveViewModel.DisplayData) {
+    func configure(with output: HostRequestReceiveViewModel.DisplayData) {
         nameLabel.text = output.name
         profileImageView.configure(imageUrl: output.profileImageUrl)
         genderLabel.text = output.gender

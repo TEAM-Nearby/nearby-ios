@@ -73,7 +73,7 @@ final class DiningInfoSheetView: BaseView {
         
         bookmarkButton.do {
             $0.setImage(.bookmarkMini.withRenderingMode(.alwaysOriginal), for: .normal)
-            $0.setImage(.bookmarkChoosedMini.withRenderingMode(.alwaysOriginal), for: .selected)
+            $0.setImage(.bookmarkSelectedMini.withRenderingMode(.alwaysOriginal), for: .selected)
         }
         
         closeButton.do {

@@ -111,7 +111,7 @@ final class CompanionRequestAcceptView: BaseView {
         }
         
         calendarImageView.do {
-            $0.image = .calenderIcon
+            $0.image = .calendarIcon
         }
         
         dateLabel.do {

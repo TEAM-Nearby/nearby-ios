@@ -170,8 +170,7 @@ final class HostProfileView: BaseView {
             $0.numberOfLines = 1
         }
 
-        [communicationFirstLineStackView, communicationSecondLineStackView,
-        punctualityFirstLineStackView, punctualitySecondLineStackView].forEach {
+        [communicationFirstLineStackView, communicationSecondLineStackView, punctualityFirstLineStackView, punctualitySecondLineStackView].forEach {
             configureReviewStackView($0)
         }
     }

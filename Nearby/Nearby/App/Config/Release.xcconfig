@@ -1,0 +1,3 @@
+#include "Release.secret.xcconfig"
+
+APP_ENV = production

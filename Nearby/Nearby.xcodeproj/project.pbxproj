@@ -20,13 +20,11 @@
 		943A529E30054E1A00EC2A7E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 943A529D30054E1A00EC2A7E /* Lottie */; };
 		943A52A130054E2E00EC2A7E /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 943A52A030054E2E00EC2A7E /* GooglePlaces */; };
 		943A52A330054E2E00EC2A7E /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 943A52A230054E2E00EC2A7E /* GooglePlacesSwift */; };
-		D4CDA64F30036AE900FB3101 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D4CDA64E30036AE900FB3101 /* Config.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		771209D52FF423C700D688FD /* Nearby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nearby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		77C74AF12FF6EEF200604CBC /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
-		D4CDA64E30036AE900FB3101 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -83,7 +81,6 @@
 				77C74AF12FF6EEF200604CBC /* .swiftlint.yml */,
 				771209D72FF423C700D688FD /* Nearby */,
 				771209D62FF423C700D688FD /* Products */,
-				D4CDA64E30036AE900FB3101 /* Config.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -183,7 +180,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */,
-				D4CDA64F30036AE900FB3101 /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,7 +219,8 @@
 /* Begin XCBuildConfiguration section */
 		771209E92FF423C900D688FD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
+			baseConfigurationReferenceAnchor = 771209D72FF423C700D688FD /* Nearby */;
+			baseConfigurationReferenceRelativePath = App/Config/Debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -263,7 +260,8 @@
 		};
 		771209EA2FF423C900D688FD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
+			baseConfigurationReferenceAnchor = 771209D72FF423C700D688FD /* Nearby */;
+			baseConfigurationReferenceRelativePath = App/Config/Release.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -304,7 +302,8 @@
 		};
 		771209EB2FF423C900D688FD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
+			baseConfigurationReferenceAnchor = 771209D72FF423C700D688FD /* Nearby */;
+			baseConfigurationReferenceRelativePath = App/Config/Debug.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -368,7 +367,8 @@
 		};
 		771209EC2FF423C900D688FD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D4CDA64E30036AE900FB3101 /* Config.xcconfig */;
+			baseConfigurationReferenceAnchor = 771209D72FF423C700D688FD /* Nearby */;
+			baseConfigurationReferenceRelativePath = App/Config/Release.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

@@ -56,6 +56,6 @@ extension TimeZone {
     static var nearbyAPITimeZone: TimeZone {
         // TODO: 스프린트 국제 시간 적용 시 아래 UTC 설정으로 복구
         // TimeZone(secondsFromGMT: 0)!
-        TimeZone(identifier: "Asia/Seoul")!
+        TimeZone(identifier: "Asia/Seoul") ?? current
     }
 }

@@ -74,7 +74,7 @@ final class WrittenPostViewModel: BaseViewModelType {
                 writtenPostItems = response.posts.map(WrittenPostItem.init(response:))
                 
                 await MainActor.run {
-                    output.writtenPostItems?(writtenPostItems)
+                    self.output.writtenPostItems?(self.writtenPostItems)
                 }
             } catch {
                 guard !Task.isCancelled else { return }
@@ -82,7 +82,7 @@ final class WrittenPostViewModel: BaseViewModelType {
                 let message = (error as? LocalizedError)?.errorDescription ?? "내가 작성한 모집글을 불러오지 못했습니다."
                 
                 await MainActor.run {
-                    output.errorMessage?(message)
+                    self.output.errorMessage?(message)
                 }
             }
         }

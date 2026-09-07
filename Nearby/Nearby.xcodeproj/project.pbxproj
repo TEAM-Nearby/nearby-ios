@@ -16,7 +16,6 @@
 		7712132B2FF43A5B00D688FD /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132A2FF43A5B00D688FD /* KakaoSDKShare */; };
 		7712132D2FF43A5B00D688FD /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132C2FF43A5B00D688FD /* KakaoSDKUser */; };
 		771213302FF43B3700D688FD /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132F2FF43B3700D688FD /* GoogleMaps */; };
-		77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 77C74AF12FF6EEF200604CBC /* .swiftlint.yml */; };
 		943A529E30054E1A00EC2A7E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 943A529D30054E1A00EC2A7E /* Lottie */; };
 		943A52A130054E2E00EC2A7E /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 943A52A030054E2E00EC2A7E /* GooglePlaces */; };
 		943A52A330054E2E00EC2A7E /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 943A52A230054E2E00EC2A7E /* GooglePlacesSwift */; };
@@ -102,7 +101,7 @@
 				771209D12FF423C700D688FD /* Sources */,
 				771209D22FF423C700D688FD /* Frameworks */,
 				771209D32FF423C700D688FD /* Resources */,
-				77C746032FF6D85C00604CBC /* ShellScript */,
+				77C746032FF6D85C00604CBC /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -179,14 +178,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				77C74AF22FF6EEF200604CBC /* .swiftlint.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		77C746032FF6D85C00604CBC /* ShellScript */ = {
+		77C746032FF6D85C00604CBC /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -196,6 +194,7 @@
 			);
 			inputPaths = (
 			);
+			name = SwiftLint;
 			outputFileListPaths = (
 			);
 			outputPaths = (

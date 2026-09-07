@@ -80,11 +80,5 @@ fastlane/test_output
 ### Code Injection ###
 iOSInjectionProject/
 
-# Configuration Files
-*.xcconfig
-Config.xcconfig
-**/Config.xcconfig
-**/Debug.xcconfig
-**/Release.xcconfig
-Config.swift
-**/SharedConfig.swift
+# Configuration Secrets
+**/*.secret.xcconfig

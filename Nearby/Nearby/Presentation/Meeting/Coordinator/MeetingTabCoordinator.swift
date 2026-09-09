@@ -30,7 +30,7 @@ final class MeetingTabCoordinator {
 
 extension MeetingTabCoordinator: Coordinator {
     func start() {
-        let viewController = diContainer.makeMeetingViewController(coordinator: self)
+        let viewController = diContainer.meeting.makeMeetingViewController(coordinator: self)
         navigationController.setViewControllers([viewController], animated: false)
     }
     
@@ -46,7 +46,7 @@ extension MeetingTabCoordinator: Coordinator {
     }
     
     func showMeetingProgress(for item: MeetingItem) {
-        let viewController = diContainer.makeMeetingProgressViewController(
+        let viewController = diContainer.meeting.makeMeetingProgressViewController(
             coordinator: self,
             item: item
         )
@@ -54,7 +54,7 @@ extension MeetingTabCoordinator: Coordinator {
     }
     
     func showReview(type: NearbyUserType, item: ReviewItem) {
-        let viewController = diContainer.makeReviewViewController(
+        let viewController = diContainer.meeting.makeReviewViewController(
             coordinator: self, type: type, reviewItem: item
         )
         viewController.hidesBottomBarWhenPushed = true
@@ -62,12 +62,12 @@ extension MeetingTabCoordinator: Coordinator {
     }
     
     func showHostReviewList(meetingId: Int) {
-        let viewController = diContainer.makeHostReviewListViewController(coordinator: self, meetingId: meetingId)
+        let viewController = diContainer.meeting.makeHostReviewListViewController(coordinator: self, meetingId: meetingId)
         navigationController.pushViewController(viewController, animated: true)
     }
     
     func showReviewPost(for item: ReviewItem, type: NearbyUserType, isLast: Bool, onSaved: (() -> Void)?) {
-        let viewController = diContainer.makeReviewPostViewController(
+        let viewController = diContainer.meeting.makeReviewPostViewController(
             coordinator: self, reviewItem: item, type: type, isLast: isLast, onSaved: onSaved
         )
         navigationController.pushViewController(viewController, animated: true)
@@ -75,12 +75,12 @@ extension MeetingTabCoordinator: Coordinator {
     
     func showReportPost() {
         reportReturnViewController = navigationController.topViewController
-        let viewController = diContainer.makeReportPostViewController(coordinator: self)
+        let viewController = diContainer.meeting.makeReportPostViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
     }
     
     func showReportComplete() {
-        let viewController = diContainer.makeReportCompletionViewController(coordinator: self)
+        let viewController = diContainer.meeting.makeReportCompletionViewController(coordinator: self)
         viewController.navigationItem.hidesBackButton = true
         navigationController.pushViewController(viewController, animated: true)
     }

@@ -73,8 +73,8 @@ private extension AppCoordinator {
     func showLogin() {
         childCoordinators.removeAll()
         
-        let loginViewController = diContainer.makeLoginViewController()
-        
+        let loginViewController = diContainer.auth.makeLoginViewController()
+
         loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in guard let self else { return }
             
             switch onboardingStatus {
@@ -100,7 +100,7 @@ private extension AppCoordinator {
             return
         }
         
-        let viewController = diContainer.makePhoneVerificationViewController()
+        let viewController = diContainer.auth.makePhoneVerificationViewController()
         
         viewController.onVerificationCompleted = { [weak self] in
             self?.showProfileSetting()
@@ -114,7 +114,7 @@ private extension AppCoordinator {
             return
         }
         
-        let viewController = diContainer.makeCompanionProfileViewController()
+        let viewController = diContainer.auth.makeCompanionProfileViewController()
         
         viewController.onProfileCompleted = { [weak self] in
             self?.showMainTab()

@@ -29,7 +29,7 @@ final class RecruitCompanionDIContainer {
 
     // MARK: - Factory Method
 
-    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator? = nil) -> UIViewController {
+    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator) -> UIViewController {
         let viewModel = RecruitCompanionViewModel(repository: recruitCompanionRepository, searchCoordinate: (latitude: 41.3879706, longitude: 2.1671360))
         let viewController = RecruitCompanionViewController(viewModel: viewModel)
         viewController.coordinator = coordinator

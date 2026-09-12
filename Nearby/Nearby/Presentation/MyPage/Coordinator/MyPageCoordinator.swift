@@ -34,7 +34,7 @@ final class MyPageCoordinator {
 
 extension MyPageCoordinator: Coordinator {
     func start() {
-        let myPageViewController = appDIContainer.makeMyPageViewController()
+        let myPageViewController = appDIContainer.myPage.makeMyPageViewController()
 
         myPageViewController.onAlarmButtonDidTap = { [weak self] in
             self?.showAlarm()
@@ -70,7 +70,7 @@ private extension MyPageCoordinator {
 
     func showAlarm(initialTab: AlarmTab = .sent) {
         let notificationCoordinator = makeChildNotificationCoordinator()
-        let alarmViewController = appDIContainer.makeAlarmViewController(initialTab: initialTab)
+        let alarmViewController = appDIContainer.myPage.makeAlarmViewController(initialTab: initialTab)
         
         alarmViewController.coordinator = notificationCoordinator
 
@@ -89,7 +89,7 @@ private extension MyPageCoordinator {
     }
 
     func showSetting() {
-        let settingViewController = appDIContainer.makeSettingViewController()
+        let settingViewController = appDIContainer.myPage.makeSettingViewController()
 
         settingViewController.hidesBottomBarWhenPushed = true
 
@@ -105,7 +105,7 @@ private extension MyPageCoordinator {
     }
 
     func showWrittenPost() {
-        let writtenPostViewController = appDIContainer.makeWrittenPostViewController()
+        let writtenPostViewController = appDIContainer.myPage.makeWrittenPostViewController()
 
         writtenPostViewController.hidesBottomBarWhenPushed = true
         writtenPostViewController.onBackButtonDidTap = { [weak self] in

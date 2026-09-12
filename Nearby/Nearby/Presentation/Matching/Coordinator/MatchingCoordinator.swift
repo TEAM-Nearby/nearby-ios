@@ -28,7 +28,7 @@ final class MatchingCoordinator {
 
 extension MatchingCoordinator: Coordinator {
     func start() {
-        let viewController = diContainer.makeMatchingViewController(coordinator: self)
+        let viewController = diContainer.matching.makeMatchingViewController(coordinator: self)
         navigationController.setViewControllers([viewController], animated: false)
     }
 
@@ -37,7 +37,7 @@ extension MatchingCoordinator: Coordinator {
     }
 
     func showScheduleDetail(matchId: Int) {
-        let viewController = diContainer.makeMatchingScheduleDetailViewController(
+        let viewController = diContainer.matching.makeScheduleDetailViewController(
             coordinator: self,
             matchId: matchId
         )
@@ -45,7 +45,7 @@ extension MatchingCoordinator: Coordinator {
     }
 
     func showManageScheduleDetail(displayData: MatchingScheduleDetailDisplayData) {
-        let viewController = diContainer.makeMatchingManageScheduleDetailViewController(
+        let viewController = diContainer.matching.makeManageScheduleDetailViewController(
             coordinator: self,
             displayData: displayData
         )

@@ -35,7 +35,7 @@ final class CompanionCoordinator {
     }
     
     private func showRecruitCompanion() {
-        let viewController = diContainer.makeRecruitCompanionViewController(coordinator: self)
+        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController(coordinator: self)
         navigationController.pushViewController(viewController, animated: true)
     }
 
@@ -55,7 +55,7 @@ final class CompanionCoordinator {
     }
 
     private func showHostProfile(profileId: Int) {
-        let viewController = diContainer.makeHostProfileViewController(profileId: profileId)
+        let viewController = diContainer.notification.makeHostProfileViewController(profileId: profileId)
         navigationController.pushViewController(viewController, animated: true)
     }
 
@@ -77,12 +77,9 @@ final class CompanionCoordinator {
     }
 
     func showCompanionDetail(state: CompanionDetailState) {
-        let viewModel = diContainer.makeCompanionDetailViewModel(state: state)
-        viewModel.route = { [weak self] route in
+        let viewController = diContainer.companionDetail.makeCompanionDetailViewController(state: state) { [weak self] route in
             self?.handle(route)
         }
-
-        let viewController = diContainer.makeCompanionDetailViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
 }
@@ -91,15 +88,10 @@ final class CompanionCoordinator {
 
 extension CompanionCoordinator: Coordinator {
     func start() {
-        let viewModel = diContainer.makeCompanionViewModel()
-        viewModel.route = { [weak self] route in
-            self?.handle(route)
-        }
-        
-        let companionViewController = diContainer.makeCompanionViewController(viewModel: viewModel)
-        companionViewController.onAlarmButtonDidTap = { [weak self] in
-            self?.showAlarm()
-        }
+        let companionViewController = diContainer.companion.makeCompanionViewController(
+            onRoute: { [weak self] route in self?.handle(route) },
+            onAlarmButtonDidTap: { [weak self] in self?.showAlarm() }
+        )
         navigationController.setViewControllers([companionViewController], animated: false)
     }
     

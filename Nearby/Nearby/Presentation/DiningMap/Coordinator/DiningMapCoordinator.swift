@@ -38,7 +38,7 @@ final class DiningMapCoordinator {
 
 extension DiningMapCoordinator: Coordinator {
     func start() {
-        let viewController = diContainer.makeDiningMapViewController()
+        let viewController = diContainer.diningMap.makeDiningMapViewController()
         viewController.onAlarmButtonDidTap = { [weak self] in
             self?.showAlarm()
         }

@@ -11,10 +11,10 @@ import UIKit
 import KakaoSDKShare
 
 final class MatchingScheduleDetailViewController: BaseViewController<MatchingScheduleDetailViewModel> {
-    
+
     // MARK: - Properties
 
-    weak var coordinator: MatchingCoordinator?
+    var onRoute: ((MatchingRoute) -> Void)?
     private let rootView = MatchingScheduleDetailView()
     private let kakaoShareTemplateId: Int = 135215
     private var currentDisplayData: MatchingScheduleDetailDisplayData?
@@ -70,21 +70,21 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         viewModel.output.showBack
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showPrevious()
+                self?.onRoute?(.previous)
             }
             .store(in: &cancellables)
         
         viewModel.output.showAlarm
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showAlarm()
+                self?.onRoute?(.alarm)
             }
             .store(in: &cancellables)
         
         viewModel.output.showEdit
             .receive(on: DispatchQueue.main)
             .sink { [weak self] displayData in
-                self?.coordinator?.showManageScheduleDetail(displayData: displayData)
+                self?.onRoute?(.manageSchedule(displayData))
             }
             .store(in: &cancellables)
         

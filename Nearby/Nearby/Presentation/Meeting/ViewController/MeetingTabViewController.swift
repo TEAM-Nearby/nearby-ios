@@ -16,7 +16,7 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
     
     // MARK: - Property
     
-    weak var coordinator: MeetingTabCoordinator?
+    var onRoute: ((MeetingRoute) -> Void)?
     private let initialLoadingTracker = InitialLoadingTracker()
 
     // MARK: - Life Cycles
@@ -41,10 +41,10 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
     
     override func setAddTarget() {
         meetingTabView.onNotificationButtonDidTap = { [weak self] in
-            self?.coordinator?.showNotification()
+            self?.onRoute?(.notification)
         }
         meetingTabView.onSearchButtonDidTap = { [weak self] in
-            self?.coordinator?.showCompanionTab()
+            self?.onRoute?(.companionTab)
         }
     }
     
@@ -103,11 +103,11 @@ extension MeetingTabViewController: UICollectionViewDataSource {
         cell.configure(with: item)
         
         cell.onNextButtonDidTap = { [weak self] in
-            self?.coordinator?.showMeetingProgress(for: item)
+            self?.onRoute?(.progress(item))
         }
 
         cell.onVerifyButtonDidTap = { [weak self] in
-            self?.coordinator?.showMeetingProgress(for: item)
+            self?.onRoute?(.progress(item))
         }
         return cell
     }

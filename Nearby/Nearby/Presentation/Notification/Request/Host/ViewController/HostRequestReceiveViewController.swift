@@ -9,14 +9,14 @@ import Combine
 import UIKit
 
 final class HostRequestReceiveViewController: BaseViewController<HostRequestReceiveViewModel> {
-    
+
     // MARK: - UI Component
 
     private let hostRequestReceiveView = HostRequestReceiveView()
     
     // MARK: - Property
 
-    weak var coordinator: NotificationCoordinator?
+    var onRoute: ((NotificationRoute) -> Void)?
 
     // MARK: - Life Cycles
 
@@ -38,7 +38,7 @@ final class HostRequestReceiveViewController: BaseViewController<HostRequestRece
 
     override func setAddTarget() {
         hostRequestReceiveView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onRoute?(.previous)
         }
         
         hostRequestReceiveView.onNextButtonDidTap = { [weak self] in
@@ -66,10 +66,7 @@ final class HostRequestReceiveViewController: BaseViewController<HostRequestRece
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self else { return }
-                coordinator?.showHostRequestDecline(
-                    applicantName: viewModel.applicantNickname,
-                    applicationId: viewModel.applicationId
-                )
+                onRoute?(.hostRequestDecline(applicantName: viewModel.applicantNickname, applicationId: viewModel.applicationId))
             }
             .store(in: &cancellables)
 
@@ -77,22 +74,14 @@ final class HostRequestReceiveViewController: BaseViewController<HostRequestRece
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self else { return }
-                coordinator?.showHostRequestAllow(
-                    applicantName: viewModel.applicantNickname,
-                    applicantProfileImageUrl: viewModel.applicantProfileImageUrl,
-                    locationName: viewModel.placeName,
-                    meetingAt: viewModel.meetingAt,
-                    matchId: viewModel.matchId,
-                    postType: viewModel.meetingTimeType,
-                    openChatUrl: viewModel.openChatUrl
-                )
+                onRoute?(.hostRequestAllow(applicantName: viewModel.applicantNickname, applicantProfileImageUrl: viewModel.applicantProfileImageUrl, locationName: viewModel.placeName, meetingAt: viewModel.meetingAt, matchId: viewModel.matchId, postType: viewModel.meetingTimeType, openChatUrl: viewModel.openChatUrl))
             }
             .store(in: &cancellables)
         
         viewModel.output.showApplicantProfile
             .receive(on: DispatchQueue.main)
             .sink { [weak self] profileId in
-                self?.coordinator?.showHostProfile(profileId: profileId)
+                self?.onRoute?(.applicantProfile(profileId))
             }
             .store(in: &cancellables)
         

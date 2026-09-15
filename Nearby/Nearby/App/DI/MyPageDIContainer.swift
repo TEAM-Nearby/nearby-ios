@@ -35,8 +35,10 @@ final class MyPageDIContainer {
         MyPageViewController(viewModel: MyPageViewModel(repository: myPageRepository))
     }
 
-    func makeAlarmViewController(initialTab: AlarmTab = .sent) -> AlarmViewController {
-        AlarmViewController(viewModel: AlarmViewModel(initialTab: initialTab, repository: requestRepository))
+    func makeAlarmViewController(initialTab: AlarmTab = .sent, onRoute: @escaping (AlarmViewController.Route) -> Void) -> AlarmViewController {
+        let viewController = AlarmViewController(viewModel: AlarmViewModel(initialTab: initialTab, repository: requestRepository))
+        viewController.onRoute = onRoute
+        return viewController
     }
 
     func makeSettingViewController() -> SettingViewController {

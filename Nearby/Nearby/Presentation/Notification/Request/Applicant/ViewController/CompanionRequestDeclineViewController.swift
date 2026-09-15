@@ -9,14 +9,14 @@ import Combine
 import UIKit
 
 final class CompanionRequestDeclineViewController: BaseViewController<CompanionRequestDeclineViewModel> {
-    
+
     // MARK: - UI Component
     
     private let companionRequestDeclineView = CompanionRequestDeclineView()
     
     // MARK: - Property
     
-    weak var coordinator: NotificationCoordinator?
+    var onRoute: ((NotificationRoute) -> Void)?
     
     // MARK: - Life Cycles
     
@@ -44,7 +44,7 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
     
     override func setAddTarget() {
         companionRequestDeclineView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onRoute?(.previous)
         }
         companionRequestDeclineView.onWriteButtonDidTap = { [weak self] in
             self?.viewModel.action(.writeButtonDidTap)
@@ -65,14 +65,14 @@ final class CompanionRequestDeclineViewController: BaseViewController<CompanionR
         viewModel.output.showWriteCompanionHost
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showRecruitCompanion()
+                self?.onRoute?(.recruitCompanion)
             }
             .store(in: &cancellables)
 
         viewModel.output.showCompanionList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showCompanionTab()
+                self?.onRoute?(.companionTab)
             }
             .store(in: &cancellables)
 

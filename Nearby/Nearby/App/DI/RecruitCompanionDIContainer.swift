@@ -29,10 +29,10 @@ final class RecruitCompanionDIContainer {
 
     // MARK: - Factory Method
 
-    func makeRecruitCompanionViewController(coordinator: CompanionCoordinator) -> UIViewController {
+    func makeRecruitCompanionViewController(onRoute: @escaping (RecruitCompanionRoute) -> Void) -> UIViewController {
         let viewModel = RecruitCompanionViewModel(repository: recruitCompanionRepository, searchCoordinate: (latitude: 41.3879706, longitude: 2.1671360))
         let viewController = RecruitCompanionViewController(viewModel: viewModel)
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }

@@ -12,6 +12,6 @@ enum NotificationRoute {
     case scheduleDetail(Int)
     case manageSchedule(Int)
     case hostRequestDecline(applicantName: String, applicationId: Int)
-    case hostRequestAllow(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String)
+    case hostRequestAllow(applicantName: String, applicantProfileImageURL: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatURL: String)
     case applicantProfile(Int)
 }

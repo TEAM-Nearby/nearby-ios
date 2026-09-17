@@ -12,9 +12,9 @@ protocol ReviewService {
 }
 
 final class DefaultReviewService {
-    private let networkProvider: NetworkProvider
+    private let networkProvider: any NetworkProviding
 
-    init(networkProvider: NetworkProvider) {
+    init(networkProvider: any NetworkProviding) {
         self.networkProvider = networkProvider
     }
 }

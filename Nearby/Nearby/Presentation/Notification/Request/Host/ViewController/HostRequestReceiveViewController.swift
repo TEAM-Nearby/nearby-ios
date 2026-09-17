@@ -74,7 +74,7 @@ final class HostRequestReceiveViewController: BaseViewController<HostRequestRece
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self else { return }
-                onRoute?(.hostRequestAllow(applicantName: viewModel.applicantNickname, applicantProfileImageURL: viewModel.applicantProfileImageUrl, locationName: viewModel.placeName, meetingAt: viewModel.meetingAt, matchId: viewModel.matchId, postType: viewModel.meetingTimeType, openChatURL: viewModel.openChatUrl))
+                onRoute?(.hostRequestAllow(applicantName: viewModel.applicantNickname, applicantProfileImageURL: viewModel.applicantProfileImageURL, locationName: viewModel.placeName, meetingAt: viewModel.meetingAt, matchId: viewModel.matchId, postType: viewModel.meetingTimeType, openChatURL: viewModel.openChatURL))
             }
             .store(in: &cancellables)
         

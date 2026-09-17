@@ -17,10 +17,6 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
     // MARK: - Property
     
     var onRoute: ((MeetingRoute) -> Void)?
-
-    func reviewDidSave(_ item: ReviewItem) {
-        viewModel.action(.reviewSaved(item))
-    }
     
     // MARK: - Life Cycle
     
@@ -29,6 +25,10 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
     }
     
     // MARK: - Custom Methods
+
+    func reviewDidSave(_ item: ReviewItem) {
+        viewModel.action(.reviewSaved(item))
+    }
     
     override func setAddTarget() {
         hostReviewListView.onBackButtonDidTap = { [weak self] in

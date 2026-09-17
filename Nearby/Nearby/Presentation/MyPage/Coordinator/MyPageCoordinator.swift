@@ -70,20 +70,17 @@ private extension MyPageCoordinator {
 
     func showAlarm(initialTab: AlarmTab = .sent) {
         let notificationCoordinator = makeChildNotificationCoordinator()
-        let alarmViewController = appDIContainer.myPage.makeAlarmViewController(initialTab: initialTab)
-        
-        alarmViewController.coordinator = notificationCoordinator
-
-        alarmViewController.hidesBottomBarWhenPushed = true
-
-        alarmViewController.onBackButtonDidTap = { [weak self, weak notificationCoordinator] in
+        let alarmViewController = appDIContainer.myPage.makeAlarmViewController(initialTab: initialTab) { [weak self, weak notificationCoordinator] route in
             guard let self else { return }
-            navigationController.popViewController(animated: true)
-
-            if let notificationCoordinator {
-                removeChildCoordinator(notificationCoordinator)
+            if case .previous = route {
+                navigationController.popViewController(animated: true)
+                if let notificationCoordinator { removeChildCoordinator(notificationCoordinator) }
+            } else if let notificationCoordinator {
+                notificationCoordinator.handle(route)
             }
         }
+
+        alarmViewController.hidesBottomBarWhenPushed = true
 
         navigationController.pushViewController(alarmViewController, animated: true)
     }

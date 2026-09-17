@@ -16,7 +16,7 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
     
     // MARK: - Property
     
-    weak var coordinator: NotificationCoordinator?
+    var onRoute: ((NotificationRoute) -> Void)?
 
     // MARK: - Life Cycles
 
@@ -38,7 +38,7 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
 
     override func setAddTarget() {
         companionRequestSentView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onRoute?(.previous)
         }
         companionRequestSentView.onSearchButtonDidTap = { [weak self] in
             self?.viewModel.action(.searchButtonDidTap)
@@ -56,7 +56,7 @@ final class CompanionRequestSentViewController: BaseViewController<CompanionRequ
         viewModel.output.showCompanionList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showCompanionTab()
+                self?.onRoute?(.companionTab)
             }
             .store(in: &cancellables)
 

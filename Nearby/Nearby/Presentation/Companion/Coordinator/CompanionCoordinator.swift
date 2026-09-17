@@ -35,7 +35,11 @@ final class CompanionCoordinator {
     }
     
     private func showRecruitCompanion() {
-        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController(coordinator: self)
+        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController { [weak self] route in
+            switch route {
+            case .previous: self?.showPrevious()
+            }
+        }
         navigationController.pushViewController(viewController, animated: true)
     }
 
@@ -55,7 +59,10 @@ final class CompanionCoordinator {
     }
 
     private func showHostProfile(profileId: Int) {
-        let viewController = diContainer.notification.makeHostProfileViewController(profileId: profileId)
+        let viewController = diContainer.notification.makeHostProfileViewController(profileId: profileId) { [weak self] route in
+            guard case .previous = route else { return }
+            self?.navigationController.popViewController(animated: true)
+        }
         navigationController.pushViewController(viewController, animated: true)
     }
 

@@ -12,7 +12,7 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
 
     // MARK: - Properties
 
-    weak var coordinator: MatchingCoordinator?
+    var onRoute: ((MatchingRoute) -> Void)?
     private let initialLoadingTracker = InitialLoadingTracker()
     private let matchedCardView = MatchedCardCollectionView()
 
@@ -67,21 +67,21 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
         viewModel.output.showScheduleDetail
             .receive(on: DispatchQueue.main)
             .sink { [weak self] matchId in
-                self?.coordinator?.showScheduleDetail(matchId: matchId)
+                self?.onRoute?(.scheduleDetail(matchId))
             }
             .store(in: &cancellables)
 
         viewModel.output.showAlarm
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showAlarm()
+                self?.onRoute?(.alarm)
             }
             .store(in: &cancellables)
 
         viewModel.output.showCompanionTab
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showCompanionTab()
+                self?.onRoute?(.companionTab)
             }
             .store(in: &cancellables)
     }

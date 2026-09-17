@@ -9,14 +9,14 @@ import Combine
 import UIKit
 
 final class HostRequestAllowViewController: BaseViewController<HostRequestAllowViewModel> {
-    
+
     // MARK: - UI Component
     
     private let hostRequestAllowView = HostRequestAllowView()
     
     // MARK: - Property
     
-    weak var coordinator: NotificationCoordinator?
+    var onRoute: ((NotificationRoute) -> Void)?
     
     // MARK: - Life Cycles
     
@@ -63,14 +63,14 @@ final class HostRequestAllowViewController: BaseViewController<HostRequestAllowV
         viewModel.output.showScheduleDetail
             .receive(on: DispatchQueue.main)
             .sink { [weak self] matchId in
-                self?.coordinator?.showMatchingScheduleDetail(matchId: matchId)
+                self?.onRoute?(.scheduleDetail(matchId))
             }
             .store(in: &cancellables)
 
         viewModel.output.showScheduleConfirm
             .receive(on: DispatchQueue.main)
             .sink { [weak self] matchId in
-                self?.coordinator?.showMatchingManageDetail(matchId: matchId)
+                self?.onRoute?(.manageSchedule(matchId))
             }
             .store(in: &cancellables)
         

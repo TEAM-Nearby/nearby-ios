@@ -37,56 +37,47 @@ final class MeetingDIContainer {
 
     // MARK: - Factory Methods
 
-    func makeMeetingViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+    func makeMeetingViewController(onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
         let viewController = MeetingTabViewController(viewModel: MeetingTabViewModel(repository: meetingRepository, eventCenter: eventCenter))
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         return viewController
     }
 
-    func makeMeetingProgressViewController(coordinator: MeetingTabCoordinator, item: MeetingItem) -> UIViewController {
+    func makeMeetingProgressViewController(item: MeetingItem, onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
         let viewModel = MeetingProgressViewModel(item: item, repository: meetingRepository, matchingRepository: matchingRepository, reviewRepository: reviewRepository)
         let viewController = MeetingProgressViewController(viewModel: viewModel)
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeReviewViewController(coordinator: MeetingTabCoordinator, type: NearbyUserType, reviewItem: ReviewItem) -> UIViewController {
-        switch type {
-        case .host:
-            return makeHostReviewListViewController(coordinator: coordinator, meetingId: reviewItem.meetingId)
-        case .participant:
-            return makeReviewPostViewController(coordinator: coordinator, reviewItem: reviewItem, type: type, isLast: false, onSaved: nil)
-        }
-    }
-
-    func makeHostReviewListViewController(coordinator: MeetingTabCoordinator, meetingId: Int) -> UIViewController {
+    func makeHostReviewListViewController(meetingId: Int, onRoute: @escaping (MeetingRoute) -> Void) -> HostReviewListViewController {
         let viewModel = HostReviewListViewModel(meetingId: meetingId, repository: reviewRepository, myPageRepository: myPageRepository, eventCenter: eventCenter)
         let viewController = HostReviewListViewController(viewModel: viewModel)
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeReviewPostViewController(coordinator: MeetingTabCoordinator, reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool, onSaved: (() -> Void)?) -> UIViewController {
+    func makeReviewPostViewController(reviewItem: ReviewItem, type: NearbyUserType, isLast: Bool, onSaved: (() -> Void)?, onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
         let viewModel = ReviewPostViewModel(reviewItem: reviewItem, type: type, isLastReview: isLast, repository: reviewRepository, eventCenter: eventCenter)
         let viewController = ReviewPostViewController(viewModel: viewModel)
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.onReviewSaved = onSaved
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeReportPostViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+    func makeReportPostViewController(onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
         let viewController = ReportPostViewController(viewModel: ReportPostViewModel())
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeReportCompletionViewController(coordinator: MeetingTabCoordinator) -> UIViewController {
+    func makeReportCompletionViewController(onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
         let viewController = ReportCompletionViewController(viewModel: EmptyViewModel())
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }

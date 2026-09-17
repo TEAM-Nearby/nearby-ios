@@ -9,14 +9,14 @@ import Combine
 import UIKit
 
 final class MeetingProgressViewController: BaseViewController<MeetingProgressViewModel> {
-    
+
     // MARK: - UI Component
     
     private let meetingProgressView = MeetingProgressView()
     
     // MARK: - Property
     
-    weak var coordinator: MeetingTabCoordinator?
+    var onRoute: ((MeetingRoute) -> Void)?
     
     // MARK: - Life Cycles
     
@@ -33,7 +33,7 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
     
     override func setAddTarget() {
         meetingProgressView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onRoute?(.previous)
         }
         meetingProgressView.onReportButtonDidTap = { [weak self] in
             self?.viewModel.action(.reportButtonDidTap)
@@ -68,7 +68,7 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
         viewModel.output.showReport
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showReportPost()
+                self?.onRoute?(.report)
             }
             .store(in: &cancellables)
         
@@ -77,9 +77,9 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             .sink { [weak self] item in
                 guard let self else { return }
                 if let item {
-                    coordinator?.showReview(type: .participant, item: item)
+                    onRoute?(.participantReview(item))
                 } else if let meetingId = viewModel.meetingId {
-                    coordinator?.showHostReviewList(meetingId: meetingId)
+                    onRoute?(.hostReviewList(meetingId))
                 }
             }
             .store(in: &cancellables)
@@ -87,7 +87,7 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
         viewModel.output.checkInSucceeded
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showCheckInSuccessAlert()
+                self?.onRoute?(.checkInSuccess)
             }
             .store(in: &cancellables)
 
@@ -101,7 +101,7 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
         viewModel.output.errorMessage
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message in
-                self?.coordinator?.showErrorAlert(message: message)
+                self?.onRoute?(.error(message))
             }
             .store(in: &cancellables)
         

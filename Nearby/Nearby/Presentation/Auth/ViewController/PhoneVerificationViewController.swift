@@ -23,11 +23,6 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
         view = phoneVerificationView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        bindViewModel()
-    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -51,7 +46,7 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
         phoneVerificationView.verificationTextField.addTarget(self, action: #selector(verificationTextFieldDidChange), for: .editingChanged)
     }
 
-    private func bindViewModel() {
+    override func bindState() {
         viewModel.output.isVerificationMode = { [weak self] isVerificationMode in
             self?.phoneVerificationView.updateVerificationMode(isVerificationMode)
         }

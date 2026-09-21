@@ -48,45 +48,39 @@ extension MatchingScheduleDetailResponseModel {
     }
 }
 
-extension MatchedCompanionPreviewResponseDTO {
-    func toCardItem(
-        type: NearbyUserType,
-        matchStatus: String,
-        fallbackPlaceName: String
-    ) -> MatchingMatchedCardItem {
-        let placeName = companionPost.placeName.isEmpty ? fallbackPlaceName : companionPost.placeName
-        let meetingTime = companionPost.meetingAt?.matchingDetailTimeTitle ?? companionPost.meetingTimeType.displayTitle
+extension MatchedCompanionPreview {
+    func toCardItem(type: NearbyUserType, matchStatus: String, fallbackPlaceName: String) -> MatchingMatchedCardItem {
+        let placeName = companionPost.placeName.isEmpty
+            ? fallbackPlaceName
+            : companionPost.placeName
+        let meetingTime = companionPost.meetingAt?.matchingDetailTimeTitle
+            ?? companionPost.meetingTimeType.displayTitle
 
         return MatchingMatchedCardItem(
-            matchId: Int(matchId),
+            matchId: Int(matchID),
             content: MatchingMatchedCardContentModel(
-                profileImageUrl: host.hostProfileImageUrl,
-                profileImageUrls: [host.hostProfileImageUrl] + members.map(\.profileImageUrl),
-                name: host.hostName,
-                participantCount: members.count + 1,
-                gender: "",
-                uploadedTime: "",
-                place: placeName,
-                meetingTime: meetingTime,
+                profileImageUrl: host.hostProfileImageURL, profileImageUrls: [host.hostProfileImageURL] + members.map(\.profileImageURL),
+                name: host.hostName, participantCount: members.count + 1, gender: "",
+                uploadedTime: "", place: placeName, meetingTime: meetingTime,
                 description: companionPost.content
             ),
-            matchStatus: matchStatus,
-            type: type
+            matchStatus: matchStatus, type: type
         )
     }
 }
 
-extension MatchMyScheduleResponseDTO {
+extension MatchedCompanionScheduleDetail {
     func toCardItem(type: NearbyUserType) -> MatchingMatchedCardItem {
         MatchingMatchedCardItem(
-            matchId: Int(matchId),
+            matchId: Int(matchID),
             content: MatchingMatchedCardContentModel(
                 name: userNickname ?? "",
                 participantCount: 1,
                 gender: "",
                 uploadedTime: "",
                 place: schedule?.place.name ?? "",
-                meetingTime: schedule?.scheduledAt.matchingDetailTimeTitle ?? meetingTimeType.displayTitle,
+                meetingTime: schedule?.scheduledAt.matchingDetailTimeTitle
+                    ?? meetingTimeType.displayTitle,
                 description: ""
             ),
             matchStatus: matchStatus.rawValue,
@@ -94,23 +88,27 @@ extension MatchMyScheduleResponseDTO {
         )
     }
 
-    func toDisplayData(type: NearbyUserType, cardItem: MatchingMatchedCardItem) -> MatchingScheduleDetailDisplayData {
+    func toDisplayData(
+        type: NearbyUserType,
+        cardItem: MatchingMatchedCardItem
+    ) -> MatchingScheduleDetailDisplayData {
         return MatchingScheduleDetailDisplayData(
             cardItem: cardItem,
             placeName: schedule?.place.name ?? "",
             placeAddress: schedule?.place.address ?? "",
-            googlePlaceId: schedule?.place.googlePlaceId,
+            googlePlaceId: schedule?.place.googlePlaceID,
             latitude: schedule?.place.latitude ?? 0,
             longitude: schedule?.place.longitude ?? 0,
             scheduledAt: schedule?.scheduledAt,
-            scheduledAtText: schedule?.scheduledAt.matchingDetailDateTimeTitle ?? meetingTimeType.displayTitle,
-            openChatUrl: openChatUrl ?? "",
+            scheduledAtText: schedule?.scheduledAt.matchingDetailDateTimeTitle
+                ?? meetingTimeType.displayTitle,
+            openChatUrl: openChatURL ?? "",
             type: type
         )
     }
 }
 
-private extension MeetingTimeType {
+private extension MatchedCompanionTimeType {
     var displayTitle: String {
         switch self {
         case .now:
@@ -119,6 +117,17 @@ private extension MeetingTimeType {
             return ""
         case .undecided:
             return "시간 미정"
+        }
+    }
+}
+
+extension MatchedCompanionUserRole {
+    var nearbyUserType: NearbyUserType {
+        switch self {
+        case .host:
+            return .host
+        case .participant:
+            return .participant
         }
     }
 }

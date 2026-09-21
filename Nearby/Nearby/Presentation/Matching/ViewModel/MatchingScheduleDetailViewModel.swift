@@ -37,12 +37,17 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
     private let matchId: Int
     private let repository: MatchedCompanionListRepository
     private var currentDisplayData: MatchingScheduleDetailDisplayData?
+    private var fetchTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
     init(matchId: Int, repository: MatchedCompanionListRepository) {
         self.matchId = matchId
         self.repository = repository
+    }
+
+    deinit {
+        fetchTask?.cancel()
     }
 
     // MARK: - Action
@@ -67,10 +72,11 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
         }
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     private func fetchMatchMySchedule() {
-        Task { @MainActor [weak self] in
+        fetchTask?.cancel()
+        fetchTask = Task { @MainActor [weak self] in
             guard let self else { return }
 
             do {
@@ -79,7 +85,8 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
 
                 let scheduleResponse = try await scheduleResponseTask
                 let previewResponse = try? await previewResponseTask
-                let currentUserRole = scheduleResponse.currentUserRole
+                guard !Task.isCancelled else { return }
+                let currentUserRole = scheduleResponse.currentUserRole.nearbyUserType
                 let cardItem = previewResponse?.toCardItem(
                     type: currentUserRole,
                     matchStatus: scheduleResponse.matchStatus.rawValue,
@@ -91,7 +98,10 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
                 )
                 currentDisplayData = displayData
                 output.displayData.send(displayData)
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
             }
         }

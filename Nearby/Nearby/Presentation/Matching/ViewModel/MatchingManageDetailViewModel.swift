@@ -48,10 +48,15 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     private let repository: MatchedCompanionListRepository
     private let matchId: Int?
     private var selectedDate = Date()
+    private var fetchTask: Task<Void, Never>?
+    private var confirmTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
-    init(displayData: MatchingScheduleDetailDisplayData, repository: MatchedCompanionListRepository) {
+    init(
+        displayData: MatchingScheduleDetailDisplayData,
+        repository: MatchedCompanionListRepository
+    ) {
         self.displayData = displayData
         self.repository = repository
         self.selectedDate = displayData.scheduledAt?.toDate() ?? Date()
@@ -93,6 +98,11 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         self.repository = repository
     }
 
+    deinit {
+        fetchTask?.cancel()
+        confirmTask?.cancel()
+    }
+
     // MARK: - Action
 
     func action(_ trigger: Input) {
@@ -119,7 +129,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         }
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     private func makeDisplayData() -> DisplayData {
         return DisplayData(
@@ -134,31 +144,37 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     }
 
     private func confirmSchedule() {
-        let request = makeRequestDTO()
+        let scheduledAt = makeScheduledAt()
 
-        Task { @MainActor [weak self] in
+        confirmTask?.cancel()
+        confirmTask = Task { @MainActor [weak self] in
             guard let self else { return }
 
             do {
-                _ = try await repository.confirmSchedule(matchId: displayData.cardItem.matchId, request: request)
+                try await repository.confirmSchedule(matchId: displayData.cardItem.matchId, scheduledAt: scheduledAt)
+                guard !Task.isCancelled else { return }
                 output.showBack.send(())
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "동행 일정 확정에 실패했습니다.")
             }
         }
     }
 
-    private func makeRequestDTO() -> ConfirmCompanionScheduleRequestDTO {
+    private func makeScheduledAt() -> String {
         let normalizedDate = Calendar.current.date(
             bySetting: .second,
             value: 0,
             of: selectedDate
         ) ?? selectedDate
-        return ConfirmCompanionScheduleRequestDTO(scheduledAt: normalizedDate.apiDateString)
+        return normalizedDate.apiDateString
     }
     
     private func fetchDisplayData() {
-        Task { @MainActor [weak self] in
+        fetchTask?.cancel()
+        fetchTask = Task { @MainActor [weak self] in
             guard let self, let matchId else { return }
 
             do {
@@ -167,7 +183,8 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
                 let scheduleResponse = try await scheduleResponseTask
                 let previewResponse = try? await previewResponseTask
-                let currentUserRole = scheduleResponse.currentUserRole
+                guard !Task.isCancelled else { return }
+                let currentUserRole = scheduleResponse.currentUserRole.nearbyUserType
                 let cardItem = previewResponse?.toCardItem(
                     type: currentUserRole,
                     matchStatus: scheduleResponse.matchStatus.rawValue,
@@ -177,7 +194,10 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
                 displayData = scheduleResponse.toDisplayData(type: currentUserRole, cardItem: cardItem)
                 selectedDate = displayData.scheduledAt?.toDate() ?? Date()
                 output.displayData.send(makeDisplayData())
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
             }
         }

@@ -50,8 +50,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
     let output = Output()
 
     let meetingId: Int?
-    private(set) var userRole: NearbyUserType = .participant
-    private(set) var canMoveToComplete: Bool = false
     private let item: MeetingItem
     private let matchId: Int
     private let repository: MeetingRepository
@@ -148,7 +146,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     )
                 }
                 
-                userRole = DTO.currentUserRole
                 meetingDate = DTO.meetingAt?.toDate()
                 postType = DTO.meetingTimeType
 
@@ -202,8 +199,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         guard let meetingId else { return }
         Task {
             do {
-                let DTO = try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
-                canMoveToComplete = DTO.canMoveToComplete
+                _ = try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
                 output.step.send(.completion)
                 updateVerifyButtonState()
                 refreshCompanionVerification()
@@ -220,8 +216,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
         Task {
             do {
                 let DTO = try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
-                userRole = DTO.currentUserRole
-
                 switch DTO.currentUserRole {
                 case .host:
                     guard !DTO.reviewTargets.isEmpty else {
@@ -253,7 +247,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
         guard let meetingId else { return }
         Task {
             guard let DTO = try? await reviewRepository.fetchReviewTargets(meetingId: meetingId) else { return }
-            userRole = DTO.currentUserRole
             hasVerifiedCompanion = !DTO.reviewTargets.isEmpty
             updateVerifyButtonState()
         }

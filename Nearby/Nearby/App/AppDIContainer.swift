@@ -573,8 +573,7 @@ final class AppDIContainer {
     
     func makePhoneVerificationViewController() -> PhoneVerificationViewController {
 
-        let repository = makeAuthRepository()
-        let viewModel = PhoneVerificationViewModel(authRepository: repository)
+        let viewModel = makePhoneVerificationViewModel()
 
         return PhoneVerificationViewController(viewModel: viewModel)
     }

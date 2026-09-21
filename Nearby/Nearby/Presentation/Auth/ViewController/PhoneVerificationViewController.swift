@@ -24,7 +24,6 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
         view = phoneVerificationView
     }
 
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 

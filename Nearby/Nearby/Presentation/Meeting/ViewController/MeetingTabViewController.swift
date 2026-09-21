@@ -71,6 +71,13 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
                 }
             }
             .store(in: &cancellables)
+
+        viewModel.output.errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.coordinator?.showErrorAlert(message: message)
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Method

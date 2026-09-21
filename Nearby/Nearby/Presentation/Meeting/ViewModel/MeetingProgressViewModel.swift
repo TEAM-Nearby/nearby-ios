@@ -21,9 +21,9 @@ final class MeetingProgressViewModel: BaseViewModelType {
     // MARK: - Output
     
     struct Output {
-        let displayData = PassthroughSubject<DisplayData, Never>()
+        let displayData = PassthroughSubject<MeetingProgressDisplayData, Never>()
         let step = CurrentValueSubject<MeetingStep, Never>(.match)
-        let verifyButtonState = PassthroughSubject<VerifyButtonState, Never>()
+        let verifyButtonState = PassthroughSubject<MeetingVerifyButtonState, Never>()
         let showReport = PassthroughSubject<Void, Never>()
         let showReview = PassthroughSubject<ReviewRoute, Never>()
         let showVerificationWaitingToast = PassthroughSubject<Void, Never>()
@@ -34,20 +34,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
     enum ReviewRoute {
         case hostReviewList(meetingId: Int)
         case participantReview(ReviewItem)
-    }
-    
-    struct DisplayData {
-        let profileImageUrl: String?
-        let name: String
-        let gender: String
-        let information: String
-    }
-    
-    struct VerifyButtonState {
-        let isEnabled: Bool
-        let isTouchEnabled: Bool
-        let isDescriptionHidden: Bool
-        let title: String
     }
     
     // MARK: - Properties
@@ -154,7 +140,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 meetingDate = DTO.meetingAt?.toDate()
                 postType = DTO.meetingTimeType
 
-                let data = DisplayData(
+                let data = MeetingProgressDisplayData(
                     profileImageUrl: DTO.hostProfileImageUrl,
                     name: DTO.hostNickname,
                     gender: DTO.hostGender.genderDisplayText,
@@ -184,7 +170,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         meetingDate = item.meetingDate
         postType = item.postType
         output.displayData.send(
-            DisplayData(
+            MeetingProgressDisplayData(
                 profileImageUrl: item.profileImageUrl,
                 name: item.name,
                 gender: item.gender,
@@ -254,7 +240,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
 
     private func updateVerifyButtonState() {
         output.verifyButtonState.send(
-            VerifyButtonState(
+            MeetingVerifyButtonState(
                 isEnabled: isVerifiable || (currentStep == .completion && hasVerifiedCompanion),
                 isTouchEnabled: isVerifiable || currentStep == .completion,
                 isDescriptionHidden: isVerifiable || currentStep == .completion,

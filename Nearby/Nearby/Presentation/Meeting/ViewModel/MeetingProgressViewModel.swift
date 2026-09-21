@@ -25,10 +25,15 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let step = CurrentValueSubject<MeetingStep, Never>(.match)
         let verifyButtonState = PassthroughSubject<VerifyButtonState, Never>()
         let showReport = PassthroughSubject<Void, Never>()
-        let showReviewList = PassthroughSubject<ReviewItem?, Never>()
+        let showReview = PassthroughSubject<ReviewRoute, Never>()
         let showVerificationWaitingToast = PassthroughSubject<Void, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
         let checkInSucceeded = PassthroughSubject<Void, Never>()
+    }
+    
+    enum ReviewRoute {
+        case hostReviewList(meetingId: Int)
+        case participantReview(ReviewItem)
     }
     
     struct DisplayData {
@@ -49,7 +54,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     
     let output = Output()
 
-    let meetingId: Int?
+    private let meetingId: Int?
     private let item: MeetingItem
     private let matchId: Int
     private let repository: MeetingRepository
@@ -217,13 +222,13 @@ final class MeetingProgressViewModel: BaseViewModelType {
                         showVerificationWaiting()
                         return
                     }
-                    output.showReviewList.send(nil)
+                    output.showReview.send(.hostReviewList(meetingId: meetingId))
                 case .participant:
                     guard let target = DTO.reviewTargets.first else {
                         showVerificationWaiting()
                         return
                     }
-                    output.showReviewList.send(ReviewItem(target: target, meetingId: meetingId))
+                    output.showReview.send(.participantReview(ReviewItem(target: target, meetingId: meetingId)))
                 }
             } catch {
                 AppLogger.error(error)

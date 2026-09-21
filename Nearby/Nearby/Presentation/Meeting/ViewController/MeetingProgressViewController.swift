@@ -72,14 +72,14 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             }
             .store(in: &cancellables)
         
-        viewModel.output.showReviewList
+        viewModel.output.showReview
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
-                guard let self else { return }
-                if let item {
-                    coordinator?.showReview(type: .participant, item: item)
-                } else if let meetingId = viewModel.meetingId {
-                    coordinator?.showHostReviewList(meetingId: meetingId)
+            .sink { [weak self] route in
+                switch route {
+                case .hostReviewList(let meetingId):
+                    self?.coordinator?.showHostReviewList(meetingId: meetingId)
+                case .participantReview(let item):
+                    self?.coordinator?.showReview(type: .participant, item: item)
                 }
             }
             .store(in: &cancellables)

@@ -16,7 +16,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     
     var onAlarmButtonDidTap: (() -> Void)?
     private var isBottomSheetInitialized = false
-    private var currentBottomSheetState = BottomSheetState(content: .nearbyCompanionList)
+    private var renderedViewState: CompanionViewModel.ViewState?
     private var categoryItems: [CategoryItem] { viewModel.output.categoryItems }
     
     // MARK: - UI Components
@@ -54,7 +54,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         super.viewDidLoad()
         
         mapController.onMarkerTap = { [weak self] placeId in
-            self?.showSpecificBottomSheet(for: placeId)
+            self?.viewModel.action(.markerDidSelect(placeId))
         }
         
         mapController.onLocationUpdate = { [weak self] coordinate in
@@ -72,16 +72,17 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
               view.bounds.height > 0 else { return }
         
         isBottomSheetInitialized = true
-        initializeBottomSheetState()
+        renderBottomSheet(viewModel.output.viewState.value.bottomSheet, animated: false)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setRecruitCompanionButtonLayout()
-        setTabBarHidden(currentBottomSheetState.content == .specificRestaurantCompanionList)
+        let bottomSheet = viewModel.output.viewState.value.bottomSheet
+        setTabBarHidden(bottomSheet.content == .specificRestaurantCompanionList)
         mapController.start()
         setBottomSheetHidden(false)
-        companionView.updateMapControls(for: currentBottomSheetState)
+        companionView.updateMapControls(for: bottomSheet)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
@@ -93,8 +94,9 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        companionView.updateMapControls(for: currentBottomSheetState)
-        updateBottomSheetLayer(for: currentBottomSheetState)
+        let bottomSheet = viewModel.output.viewState.value.bottomSheet
+        companionView.updateMapControls(for: bottomSheet)
+        updateBottomSheetLayer(for: bottomSheet)
     }
     
     // MARK: - Custom Methods
@@ -117,19 +119,20 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
     
     override func bindState() {
-        viewModel.output.nickname
+        viewModel.output.viewState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] nickname in
-                self?.nearbySheetViewController.updateNickname(nickname)
-                self?.specificSheetViewController.updateNickname(nickname)
+            .sink { [weak self] state in
+                self?.render(state)
             }
             .store(in: &cancellables)
         
-        viewModel.output.categoryState
-            .dropFirst()
+        viewModel.output.event
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
-                self?.applyCategoryState(state)
+            .sink { [weak self] event in
+                switch event {
+                case .moveToCurrentLocation:
+                    self?.mapController.moveToCurrentLocation()
+                }
             }
             .store(in: &cancellables)
     }
@@ -175,7 +178,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         bottomSheetViewController.onStateChange = { [weak self] _, state in
             guard let self else { return }
             
-            currentBottomSheetState = state
+            viewModel.action(.bottomSheetDidChange(state))
             updateBottomSheetLayer(for: state)
             companionView.updateMapControls(for: state)
         }
@@ -188,7 +191,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
         nearbySheetViewController.onMapMarkersChanged = { [weak self] markers in
             guard let self else { return }
-            let shouldShowMarkers = viewModel.output.categoryState.value.shouldShowCompanionMarkers
+            let shouldShowMarkers = viewModel.output.viewState.value.category.shouldShowCompanionMarkers
             mapController.updateCompanionMarkers(shouldShowMarkers ? markers : [])
         }
         nearbySheetViewController.onTitleMultilineChanged = { [weak self] isMultiline in
@@ -196,7 +199,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
         
         specificSheetViewController.onClose = { [weak self] in
-            self?.showNearbyBottomSheet()
+            self?.viewModel.action(.specificSheetDidClose)
         }
         specificSheetViewController.onCompanionSelected = { [weak self] item in
             self?.showCompanionDetail(for: item)
@@ -213,31 +216,36 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
     }
     
-    private func initializeBottomSheetState() {
-        showBottomSheet(.nearbyCompanionList, animated: false)
+    private func render(_ state: CompanionViewModel.ViewState) {
+        let previousState = renderedViewState
+
+        if previousState?.nickname != state.nickname, let nickname = state.nickname {
+            nearbySheetViewController.updateNickname(nickname)
+            specificSheetViewController.updateNickname(nickname)
+        }
+
+        if previousState?.category != state.category {
+            applyCategoryState(state.category)
+        }
+
+        if previousState?.selectedPlaceId != state.selectedPlaceId, let placeId = state.selectedPlaceId {
+            specificSheetViewController.updateCompanions(nearbySheetViewController.specificCompanions(for: placeId))
+        }
+
+        if previousState?.bottomSheet != state.bottomSheet, isBottomSheetInitialized {
+            renderBottomSheet(state.bottomSheet)
+        }
+
+        renderedViewState = state
     }
     
-    private func showNearbyBottomSheet(animated: Bool = true) {
-        showBottomSheet(.nearbyCompanionList, animated: animated)
-    }
-    
-    private func showEmptyBottomSheet(animated: Bool = true) {
-        showBottomSheet(.nearbyCompanionEmpty, animated: animated)
-    }
-    
-    private func showSpecificBottomSheet(for placeId: Int, animated: Bool = true) {
-        specificSheetViewController.updateCompanions(nearbySheetViewController.specificCompanions(for: placeId))
-        showBottomSheet(.specificRestaurantCompanionList, animated: animated)
-    }
-    
-    private func showBottomSheet(_ content: BottomSheetContent, level: BottomSheetLevel? = nil, animated: Bool) {
-        let isSpecific = content == .specificRestaurantCompanionList
-        currentBottomSheetState = BottomSheetState(content: content, level: level)
+    private func renderBottomSheet(_ state: BottomSheetState, animated: Bool = true) {
+        let isSpecific = state.content == .specificRestaurantCompanionList
         companionView.setCategoryChipsHidden(isSpecific)
         setTabBarHidden(isSpecific, animated: animated)
-        bottomSheetViewController.setState(content: content, level: level, animated: animated)
+        bottomSheetViewController.setState(state, animated: animated)
         
-        switch content {
+        switch state.content {
         case .nearbyCompanionList:
             bottomSheetViewController.setContentViewController(nearbySheetViewController)
         case .nearbyCompanionEmpty:
@@ -261,10 +269,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         switch state.content {
         case .companions(let category):
             nearbySheetViewController.updatePlaceCategory(category)
-            showNearbyBottomSheet()
         case .empty:
             mapController.updateCompanionMarkers([])
-            showEmptyBottomSheet()
         }
     }
     
@@ -322,14 +328,14 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     
     func resetToInitialState() {
         setBottomSheetHidden(false)
-        showBottomSheet(.nearbyCompanionList, level: .compact, animated: false)
+        viewModel.action(.reset)
     }
     
     // MARK: - Actions
     
     @objc
     private func currentLocationButtonDidTap() {
-        mapController.moveToCurrentLocation()
+        viewModel.action(.currentLocationButtonDidTap)
     }
     
     @objc
@@ -349,7 +355,7 @@ extension CompanionViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(NearbyChipCollectionViewCell.self, for: indexPath)
         let item = categoryItems[indexPath.item]
         
-        let isSelected = viewModel.output.categoryState.value.selectedIndex == indexPath.item
+        let isSelected = viewModel.output.viewState.value.category.selectedIndex == indexPath.item
         cell.configure(style: isSelected ? .companionCategorySelected : .companionCategoryUnselected,
                        title: item.title, icon: item.icon, iconColor: item.iconColor)
         

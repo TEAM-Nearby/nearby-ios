@@ -81,7 +81,7 @@ extension CompanionHost {
 }
 
 extension CompanionPlace {
-    enum Category {
+    enum Category: Equatable {
         case restaurant
         case cafe
         case pub

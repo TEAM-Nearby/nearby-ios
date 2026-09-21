@@ -13,7 +13,14 @@ final class CompanionViewModel: BaseViewModelType {
 
     // MARK: - State
 
-    struct CategoryState {
+    struct ViewState: Equatable {
+        var nickname: String?
+        var category: CategoryState
+        var bottomSheet: BottomSheetState
+        var selectedPlaceId: Int?
+    }
+
+    struct CategoryState: Equatable {
         let selectedIndex: Int?
         let previousIndex: Int?
         let content: CategoryContent
@@ -24,9 +31,18 @@ final class CompanionViewModel: BaseViewModelType {
         }
     }
 
-    enum CategoryContent {
+    enum CategoryContent: Equatable {
         case companions(CompanionPlace.Category)
         case empty
+
+        var shouldShowCompanions: Bool {
+            if case .companions = self { return true }
+            return false
+        }
+    }
+
+    enum ViewEvent {
+        case moveToCurrentLocation
     }
 
     // MARK: - Route
@@ -41,6 +57,11 @@ final class CompanionViewModel: BaseViewModelType {
     enum Input {
         case viewDidLoad
         case categoryDidSelect(Int)
+        case markerDidSelect(Int)
+        case bottomSheetDidChange(BottomSheetState)
+        case specificSheetDidClose
+        case currentLocationButtonDidTap
+        case reset
         case recruitCompanionButtonDidTap
         case companionDidSelect(CompanionDetailState)
     }
@@ -50,10 +71,11 @@ final class CompanionViewModel: BaseViewModelType {
     struct Output {
         let categoryItems: [CategoryItem]
         let mapConfiguration: CompanionMapConfiguration
-        let nickname = PassthroughSubject<String, Never>()
-        let categoryState = CurrentValueSubject<CategoryState, Never>(
-            CategoryState(selectedIndex: 0, previousIndex: nil, content: .companions(.restaurant))
+        let viewState = CurrentValueSubject<ViewState, Never>(
+            ViewState(nickname: nil, category: CategoryState(selectedIndex: 0, previousIndex: nil, content: .companions(.restaurant)),
+                      bottomSheet: BottomSheetState(content: .nearbyCompanionList), selectedPlaceId: nil)
         )
+        let event = PassthroughSubject<ViewEvent, Never>()
     }
 
     // MARK: - Properties
@@ -91,12 +113,22 @@ final class CompanionViewModel: BaseViewModelType {
         switch trigger {
         case .viewDidLoad:
             if let initialNickname {
-                output.nickname.send(initialNickname)
+                updateNickname(initialNickname)
             } else {
                 fetchNickname()
             }
         case .categoryDidSelect(let index):
             updateCategory(at: index)
+        case .markerDidSelect(let placeId):
+            updateSelectedPlace(placeId)
+        case .bottomSheetDidChange(let bottomSheet):
+            updateBottomSheet(bottomSheet)
+        case .specificSheetDidClose:
+            updateBottomSheet(BottomSheetState(content: .nearbyCompanionList), selectedPlaceId: nil)
+        case .currentLocationButtonDidTap:
+            output.event.send(.moveToCurrentLocation)
+        case .reset:
+            updateBottomSheet(BottomSheetState(content: .nearbyCompanionList, level: .compact), selectedPlaceId: nil)
         case .recruitCompanionButtonDidTap:
             route?(.recruitCompanion)
         case .companionDidSelect(let state):
@@ -109,13 +141,47 @@ final class CompanionViewModel: BaseViewModelType {
     private func updateCategory(at index: Int) {
         guard output.categoryItems.indices.contains(index) else { return }
 
-        let previousIndex = output.categoryState.value.selectedIndex
+        var viewState = output.viewState.value
+        let previousIndex = viewState.category.selectedIndex
         let selectedIndex = previousIndex == index ? nil : index
         let category = output.categoryItems[index]
-        let content: CategoryContent = selectedIndex == nil || category.isRestaurant
-                                    ? .companions(.restaurant) : .empty
+        let content: CategoryContent = selectedIndex == nil || category.isRestaurant ? .companions(.restaurant) : .empty
+        let bottomSheetContent: BottomSheetContent = content.shouldShowCompanions ? .nearbyCompanionList : .nearbyCompanionEmpty
 
-        output.categoryState.send(CategoryState(selectedIndex: selectedIndex, previousIndex: previousIndex, content: content))
+        viewState.category = CategoryState(selectedIndex: selectedIndex, previousIndex: previousIndex, content: content)
+        viewState.bottomSheet = BottomSheetState(content: bottomSheetContent)
+        viewState.selectedPlaceId = nil
+        output.viewState.send(viewState)
+    }
+
+    private func updateNickname(_ nickname: String) {
+        var viewState = output.viewState.value
+        viewState.nickname = nickname
+        output.viewState.send(viewState)
+    }
+
+    private func updateSelectedPlace(_ placeId: Int) {
+        var viewState = output.viewState.value
+        viewState.selectedPlaceId = placeId
+        viewState.bottomSheet = BottomSheetState(content: .specificRestaurantCompanionList)
+        output.viewState.send(viewState)
+    }
+
+    private func updateBottomSheet(_ bottomSheet: BottomSheetState) {
+        var viewState = output.viewState.value
+        guard viewState.bottomSheet != bottomSheet else { return }
+
+        viewState.bottomSheet = bottomSheet
+        output.viewState.send(viewState)
+    }
+
+    private func updateBottomSheet(_ bottomSheet: BottomSheetState, selectedPlaceId: Int?) {
+        var viewState = output.viewState.value
+        guard viewState.bottomSheet != bottomSheet || viewState.selectedPlaceId != selectedPlaceId else { return }
+
+        viewState.bottomSheet = bottomSheet
+        viewState.selectedPlaceId = selectedPlaceId
+        output.viewState.send(viewState)
     }
 
     private func fetchNickname() {
@@ -126,7 +192,7 @@ final class CompanionViewModel: BaseViewModelType {
             do {
                 let response = try await myPageRepository.fetchMyPage()
                 guard !Task.isCancelled else { return }
-                output.nickname.send(response.nickname)
+                updateNickname(response.nickname)
             } catch {
                 guard !Task.isCancelled else { return }
                 AppLogger.error(error)

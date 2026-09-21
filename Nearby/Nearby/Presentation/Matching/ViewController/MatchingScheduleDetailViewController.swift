@@ -114,7 +114,6 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
             "name": displayData.cardItem.content.name
         ]
 
-        // TODO: - 서버 응답 값으로 displayData 구성
         guard ShareApi.isKakaoTalkSharingAvailable() else {
             if let url = ShareApi.shared.makeCustomUrl(templateId: .init(kakaoShareTemplateId), templateArgs: templateArgs) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)

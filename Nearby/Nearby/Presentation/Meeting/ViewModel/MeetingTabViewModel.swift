@@ -13,7 +13,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     // MARK: - Input
     
     enum Input {
-        case viewDidLoad
+        case viewWillAppear
     }
     
     // MARK: - Output
@@ -46,7 +46,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     func action(_ trigger: Input) {
         switch trigger {
-        case .viewDidLoad:
+        case .viewWillAppear:
             fetchMeetings()
         }
     }

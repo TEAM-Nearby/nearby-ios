@@ -41,6 +41,7 @@ extension MeetingTabCoordinator: Coordinator {
     private func makeChildNotificationCoordinator() -> NotificationCoordinator {
         let notificationCoordinator = diContainer.makeNotificationCoordinator(navigationController: navigationController)
         notificationCoordinator.parentCoordinator = self
+        childCoordinators.removeAll { $0 is NotificationCoordinator }
         addChildCoordinator(notificationCoordinator)
         return notificationCoordinator
     }

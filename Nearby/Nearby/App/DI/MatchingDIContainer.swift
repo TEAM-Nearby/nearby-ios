@@ -43,15 +43,6 @@ final class MatchingDIContainer {
         return viewController
     }
 
-    func makeManageScheduleDetailViewController(displayData: MatchingScheduleDetailDisplayData, onRoute: @escaping (MatchingRoute) -> Void
-    ) -> UIViewController {
-        let viewModel = MatchingManageDetailViewModel(displayData: displayData, repository: matchingRepository)
-        let viewController = MatchingManageDetailViewController(viewModel: viewModel)
-        viewController.onRoute = onRoute
-        viewController.hidesBottomBarWhenPushed = true
-        return viewController
-    }
-
     func makeManageScheduleDetailViewController(matchId: Int, onRoute: @escaping (MatchingRoute) -> Void
     ) -> UIViewController {
         let viewModel = MatchingManageDetailViewModel(matchId: matchId, repository: matchingRepository)

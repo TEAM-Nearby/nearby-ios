@@ -82,6 +82,19 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
             }
             .store(in: &cancellables)
 
+        viewModel.output.errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.showErrorAlert(message: message)
+            }
+            .store(in: &cancellables)
+
         viewModel.action(.viewDidLoad)
+    }
+
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "요청 실패", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
     }
 }

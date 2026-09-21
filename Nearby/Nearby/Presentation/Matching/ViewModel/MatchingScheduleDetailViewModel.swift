@@ -26,8 +26,9 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<MatchingScheduleDetailDisplayData, Never>()
         let showBack = PassthroughSubject<Void, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
-        let showEdit = PassthroughSubject<MatchingScheduleDetailDisplayData, Never>()
-        let showShare = PassthroughSubject<Void, Never>()
+        let showEdit = PassthroughSubject<Int, Never>()
+        let showShare = PassthroughSubject<MatchingScheduleDetailDisplayData, Never>()
+        let errorMessage = PassthroughSubject<String, Never>()
     }
 
     // MARK: - Properties
@@ -64,11 +65,11 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
             output.showAlarm.send(())
 
         case .editButtonDidTap:
-            guard let displayData = currentDisplayData else { return }
-            output.showEdit.send(displayData)
+            output.showEdit.send(matchId)
 
         case .shareButtonDidTap:
-            output.showShare.send(())
+            guard let displayData = currentDisplayData else { return }
+            output.showShare.send(displayData)
         }
     }
 
@@ -96,8 +97,9 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
             } catch is CancellationError {
                 return
             } catch {
-                guard !Task.isCancelled else { return }
+                guard let self, !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
+                output.errorMessage.send("매칭 상세 정보를 불러오지 못했어요.")
             }
         }
     }

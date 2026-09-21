@@ -27,6 +27,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         let dateButtonTitle = PassthroughSubject<String, Never>()
         let showBack = PassthroughSubject<Void, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
+        let errorMessage = PassthroughSubject<String, Never>()
     }
 
     struct DisplayData {
@@ -46,40 +47,13 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     private var displayData: MatchingScheduleDetailDisplayData
     private let repository: MatchedCompanionListRepository
-    private let matchId: Int?
+    private let matchId: Int
     private var selectedDate = Date()
     private var fetchTask: Task<Void, Never>?
     private var confirmTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
-    init(
-        displayData: MatchingScheduleDetailDisplayData,
-        repository: MatchedCompanionListRepository
-    ) {
-        self.displayData = displayData
-        self.repository = repository
-        self.selectedDate = displayData.scheduledAt?.toDate() ?? Date()
-        self.matchId = nil
-    }
-
-    init(item: MatchingMatchedCardItem, repository: MatchedCompanionListRepository) {
-        self.displayData = MatchingScheduleDetailDisplayData(
-            cardItem: item,
-            placeName: item.content.place,
-            placeAddress: "",
-            googlePlaceId: nil,
-            latitude: 0,
-            longitude: 0,
-            scheduledAt: nil,
-            scheduledAtText: item.content.meetingTime,
-            openChatUrl: "",
-            type: item.type
-        )
-        self.matchId = nil
-        self.repository = repository
-    }
-    
     init(matchId: Int, repository: MatchedCompanionListRepository) {
         self.matchId = matchId
         self.displayData = MatchingScheduleDetailDisplayData(
@@ -108,11 +82,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            if matchId != nil {
-                fetchDisplayData()
-            } else {
-                output.displayData.send(makeDisplayData())
-            }
+            fetchDisplayData()
 
         case .backButtonDidTap:
             output.showBack.send(())
@@ -157,8 +127,9 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
             } catch is CancellationError {
                 return
             } catch {
-                guard !Task.isCancelled else { return }
+                guard let self, !Task.isCancelled else { return }
                 AppLogger.error(error, message: "동행 일정 확정에 실패했습니다.")
+                output.errorMessage.send("일정을 확정하지 못했어요.")
             }
         }
     }
@@ -173,7 +144,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     }
     
     private func fetchDisplayData() {
-        guard let matchID = matchId else { return }
+        let matchID = matchId
 
         fetchTask?.cancel()
         let repository = repository
@@ -195,8 +166,9 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
             } catch is CancellationError {
                 return
             } catch {
-                guard !Task.isCancelled else { return }
+                guard let self, !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
+                output.errorMessage.send("매칭 상세 정보를 불러오지 못했어요.")
             }
         }
     }

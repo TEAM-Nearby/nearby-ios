@@ -17,7 +17,6 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
     var onRoute: ((MatchingRoute) -> Void)?
     private let rootView = MatchingScheduleDetailView()
     private let kakaoShareTemplateId: Int = 135215
-    private var currentDisplayData: MatchingScheduleDetailDisplayData?
     
     // MARK: - Initializer
     
@@ -62,7 +61,6 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] displayData in
-                self?.currentDisplayData = displayData
                 self?.rootView.configure(displayData: displayData)
             }
             .store(in: &cancellables)
@@ -83,18 +81,30 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         
         viewModel.output.showEdit
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] displayData in
-                self?.onRoute?(.manageSchedule(displayData))
+            .sink { [weak self] matchId in
+                self?.onRoute?(.manageSchedule(matchId))
             }
             .store(in: &cancellables)
         
         viewModel.output.showShare
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let displayData = self?.currentDisplayData else { return }
+            .sink { [weak self] displayData in
                 self?.share(displayData: displayData)
             }
             .store(in: &cancellables)
+
+        viewModel.output.errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.showErrorAlert(message: message)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "매칭 상세 조회 실패", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
     }
     
     private func share(displayData: MatchingScheduleDetailDisplayData) {

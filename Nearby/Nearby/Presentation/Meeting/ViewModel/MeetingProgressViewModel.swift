@@ -60,7 +60,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private var restaurantCoordinate: (latitude: Double, longitude: Double)?
     private var meetingDate: Date?
     private var postType: PostType = .scheduled
-    private var hasVerifiedCompanion = true
+    private var hasVerifiedCompanion = false
     private var cancellables = Set<AnyCancellable>()
     
     private var currentStep: MeetingStep {

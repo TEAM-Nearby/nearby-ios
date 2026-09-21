@@ -17,6 +17,7 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     // MARK: - Property
 
     var onProfileCompleted: (() -> Void)?
+    var onBackButtonDidTap: (() -> Void)?
     
     // MARK: - Life Cycle
     
@@ -30,7 +31,7 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
         addKeyboardDismissGesture()
 
         companionProfileView.navigationBar.leftButtonAction = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onBackButtonDidTap?()
         }
         companionProfileView.profileImageButton.addTarget(
             self, action: #selector(profileImageButtonDidTap), for: .touchUpInside

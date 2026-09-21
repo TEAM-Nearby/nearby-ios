@@ -16,7 +16,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
     
     // MARK: - Properties
     
-    weak var coordinator: MeetingTabCoordinator?
+    var onRoute: ((MeetingRoute) -> Void)?
     var onReviewSaved: (() -> Void)?
     
     // MARK: - Life Cycles
@@ -42,7 +42,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
     
     override func setAddTarget() {
         reviewPostView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onRoute?(.previous)
         }
         reviewPostView.onRatingChanged = { [weak self] rating in
             self?.viewModel.action(.ratingChanged(rating))
@@ -92,7 +92,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         viewModel.output.showReport
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showReportPost()
+                self?.onRoute?(.report)
             }
             .store(in: &cancellables)
         
@@ -100,14 +100,14 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.onReviewSaved?()
-                self?.navigationController?.popViewController(animated: true)
+                self?.onRoute?(.previous)
             }
             .store(in: &cancellables)
 
         viewModel.output.companionCompleted
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.finishCompanionReview()
+                self?.onRoute?(.reviewCompletion)
             }
             .store(in: &cancellables)
 

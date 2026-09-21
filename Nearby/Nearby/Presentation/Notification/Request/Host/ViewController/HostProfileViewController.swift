@@ -10,6 +10,8 @@ import UIKit
 
 final class HostProfileViewController: BaseViewController<HostProfileViewModel> {
 
+    var onRoute: ((NotificationRoute) -> Void)?
+
     // MARK: - UI Component
 
     private let hostProfileView = HostProfileView()
@@ -70,7 +72,7 @@ final class HostProfileViewController: BaseViewController<HostProfileViewModel> 
         viewModel.output.backButtonDidTap
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                self?.onRoute?(.previous)
             }
             .store(in: &cancellables)
 

@@ -101,6 +101,11 @@ private extension AppCoordinator {
         }
         
         let viewController = diContainer.auth.makePhoneVerificationViewController()
+
+        viewController.onBackButtonDidTap = { [weak self] in
+            guard let navigationController = self?.window.rootViewController as? UINavigationController else { return }
+            navigationController.popViewController(animated: true)
+        }
         
         viewController.onVerificationCompleted = { [weak self] in
             self?.showProfileSetting()
@@ -115,6 +120,11 @@ private extension AppCoordinator {
         }
         
         let viewController = diContainer.auth.makeCompanionProfileViewController()
+
+        viewController.onBackButtonDidTap = { [weak self] in
+            guard let navigationController = self?.window.rootViewController as? UINavigationController else { return }
+            navigationController.popViewController(animated: true)
+        }
         
         viewController.onProfileCompleted = { [weak self] in
             self?.showMainTab()

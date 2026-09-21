@@ -23,29 +23,29 @@ final class MatchingDIContainer {
 
     // MARK: - Factory Methods
 
-    func makeMatchingViewController(coordinator: MatchingCoordinator) -> UIViewController {
+    func makeMatchingViewController(onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
         let viewController = MatchingViewController(viewModel: MatchingViewModel(repository: matchingRepository, eventCenter: eventCenter))
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         return viewController
     }
 
-    func makeScheduleDetailViewController(coordinator: MatchingCoordinator, matchId: Int) -> UIViewController {
+    func makeScheduleDetailViewController(matchId: Int, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
         let viewController = MatchingScheduleDetailViewController(viewModel: MatchingScheduleDetailViewModel(matchId: matchId, repository: matchingRepository))
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeManageScheduleDetailViewController(coordinator: MatchingCoordinator, displayData: MatchingScheduleDetailDisplayData) -> UIViewController {
+    func makeManageScheduleDetailViewController(displayData: MatchingScheduleDetailDisplayData, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
         let viewController = MatchingManageDetailViewController(displayData: displayData, repository: matchingRepository)
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeManageScheduleDetailViewController(coordinator: MatchingCoordinator, matchId: Int) -> UIViewController {
+    func makeManageScheduleDetailViewController(matchId: Int, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
         let viewController = MatchingManageDetailViewController(matchId: matchId, repository: matchingRepository)
-        viewController.coordinator = coordinator
+        viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }

@@ -9,14 +9,14 @@ import Combine
 import UIKit
 
 final class HostReviewListViewController: BaseViewController<HostReviewListViewModel> {
-    
+
     // MARK: - UI Component
     
     private let hostReviewListView = HostReviewListView()
     
     // MARK: - Property
     
-    weak var coordinator: MeetingTabCoordinator?
+    var onRoute: ((MeetingRoute) -> Void)?
     
     // MARK: - Life Cycle
     
@@ -25,13 +25,17 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
     }
     
     // MARK: - Custom Methods
+
+    func reviewDidSave(_ item: ReviewItem) {
+        viewModel.action(.reviewSaved(item))
+    }
     
     override func setAddTarget() {
         hostReviewListView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onRoute?(.previous)
         }
         hostReviewListView.onNotificationButtonDidTap = { [weak self] in
-            self?.coordinator?.showNotification()
+            self?.onRoute?(.notification)
         }
         hostReviewListView.onCompletionButtonDidTap = { [weak self] in
             self?.viewModel.action(.completionButtonDidTap)
@@ -63,16 +67,14 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
         viewModel.output.showReviewWrite
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item, isLast in
-                self?.coordinator?.showReviewPost(for: item, type: .host, isLast: isLast) { [weak self] in
-                    self?.viewModel.action(.reviewSaved(item))
-                }
+                self?.onRoute?(.hostReview(item, isLast))
             }
             .store(in: &cancellables)
         
         viewModel.output.showCompletion
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.finishCompanionReview()
+                self?.onRoute?(.reviewCompletion)
             }
             .store(in: &cancellables)
 

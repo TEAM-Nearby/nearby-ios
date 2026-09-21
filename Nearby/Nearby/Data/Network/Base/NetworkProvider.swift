@@ -23,7 +23,7 @@ private enum AuthErrorCode {
     static let invalidAuthorization: Set<String> = [invalidToken, invalidRefreshToken, missingRefreshToken]
 }
 
-final class NetworkProvider {
+final class NetworkProvider: NetworkProviding {
     private struct RefreshOperation {
         let id: UUID
         let task: Task<Void, Error>
@@ -33,26 +33,26 @@ final class NetworkProvider {
     private let tokenStorage: TokenStorage
     private let refreshLock = NSLock()
     private var refreshOperation: RefreshOperation?
-    
+
     init(session: Session = .default, tokenStorage: TokenStorage) {
         self.session = session
         self.tokenStorage = tokenStorage
     }
-    
+
     func request<T: Decodable>(_ target: BaseTargetType, responseType: T.Type) async throws -> T {
         let response: BaseResponseDTO<T> = try await requestBaseResponse(
             target,
             responseType: responseType,
             canRefreshToken: true
         )
-        
+
         guard let data = response.data else {
             throw NetworkError.decoding
         }
-        
+
         return data
     }
-    
+
     func requestEmpty(_ target: BaseTargetType) async throws {
         _ = try await requestBaseResponse(
             target,
@@ -69,19 +69,19 @@ private extension NetworkProvider {
         let dataResponse = await session.request(urlRequest)
             .serializingData()
             .response
-        
+
         if let error = dataResponse.error {
             throw mapAFError(error)
         }
-        
+
         guard let statusCode = dataResponse.response?.statusCode else {
             throw NetworkError.unknown
         }
-        
+
         guard let data = dataResponse.data else {
             throw NetworkError.decoding
         }
-        
+
         if (200..<300).contains(statusCode) {
             do {
                 return try JSONDecoder().decode(BaseResponseDTO<T>.self, from: data)
@@ -90,7 +90,7 @@ private extension NetworkProvider {
                 throw NetworkError.decoding
             }
         }
-        
+
         let error = decodeErrorResponse(data: data, fallbackStatusCode: statusCode)
 
         if canRefreshToken, target.requiresAuth, shouldRefreshToken(for: error) {
@@ -107,15 +107,15 @@ private extension NetworkProvider {
         }
         throw error
     }
-    
+
     func makeURL(path: String) throws -> URL {
         guard let url = URL(string: path, relativeTo: try AppConfig.baseURL()) else {
             throw NetworkError.invalidURL
         }
-        
+
         return url
     }
-    
+
     func makeURLRequest(target: BaseTargetType) throws -> URLRequest {
         let url = try makeURL(path: target.path)
         var request = URLRequest(url: url)
@@ -123,38 +123,38 @@ private extension NetworkProvider {
         request.headers = target.makeHeaders(
             accessToken: target.requiresAuth ? tokenStorage.accessToken : nil
         )
-        
+
         if let queryParameters = target.queryParameters {
             request = try URLEncoding.queryString.encode(request, with: queryParameters)
         }
-        
+
         if let bodyParameters = target.bodyParameters {
             request = try JSONEncoding.default.encode(request, with: bodyParameters)
         }
-        
+
         return request
     }
-    
+
     func mapAFError(_ error: AFError) -> NetworkError {
         if let urlError = error.underlyingError as? URLError, urlError.code == .timedOut {
             return .timeout
         }
-        
+
         if error.localizedDescription.lowercased().contains("timed out") {
             return .timeout
         }
-        
+
         if error.isSessionTaskError {
             return .networkFail
         }
-        
+
         if error.isResponseSerializationError {
             return .decoding
         }
-        
+
         return .unknown
     }
-    
+
     func decodeErrorResponse(data: Data, fallbackStatusCode: Int) -> NetworkError {
         do {
             let response = try JSONDecoder().decode(BaseResponseDTO<EmptyResponse>.self, from: data)

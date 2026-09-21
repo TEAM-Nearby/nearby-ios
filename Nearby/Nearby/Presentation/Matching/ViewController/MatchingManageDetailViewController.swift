@@ -12,7 +12,7 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
 
     // MARK: - Properties
 
-    weak var coordinator: MatchingCoordinator?
+    var onRoute: ((MatchingRoute) -> Void)?
     private let rootView = MatchingManageScheduleDetailView()
 
     // MARK: - Initializer
@@ -79,14 +79,14 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
         viewModel.output.showBack
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showPrevious()
+                self?.onRoute?(.previous)
             }
             .store(in: &cancellables)
 
         viewModel.output.showAlarm
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showAlarm()
+                self?.onRoute?(.alarm)
             }
             .store(in: &cancellables)
 

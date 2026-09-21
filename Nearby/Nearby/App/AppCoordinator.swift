@@ -102,6 +102,10 @@ private extension AppCoordinator {
         
         let viewController = diContainer.makePhoneVerificationViewController()
         
+        viewController.onBackButtonDidTap = { [weak navigationController] in
+            navigationController?.popViewController(animated: true)
+        }
+        
         viewController.onVerificationCompleted = { [weak self] in
             self?.showProfileSetting()
         }

@@ -11,6 +11,24 @@ import CoreLocation
 
 final class CompanionViewModel: BaseViewModelType {
 
+    // MARK: - State
+
+    struct CategoryState {
+        let selectedIndex: Int?
+        let previousIndex: Int?
+        let content: CategoryContent
+
+        var shouldShowCompanionMarkers: Bool {
+            if case .companions = content { return true }
+            return false
+        }
+    }
+
+    enum CategoryContent {
+        case companions(CompanionPlace.Category)
+        case empty
+    }
+
     // MARK: - Route
 
     enum Route {
@@ -22,6 +40,7 @@ final class CompanionViewModel: BaseViewModelType {
 
     enum Input {
         case viewDidLoad
+        case categoryDidSelect(Int)
         case recruitCompanionButtonDidTap
         case companionDidSelect(CompanionDetailState)
     }
@@ -32,6 +51,9 @@ final class CompanionViewModel: BaseViewModelType {
         let categoryItems: [CategoryItem]
         let mapConfiguration: CompanionMapConfiguration
         let nickname = PassthroughSubject<String, Never>()
+        let categoryState = CurrentValueSubject<CategoryState, Never>(
+            CategoryState(selectedIndex: 0, previousIndex: nil, content: .companions(.restaurant))
+        )
     }
 
     // MARK: - Properties
@@ -40,16 +62,19 @@ final class CompanionViewModel: BaseViewModelType {
     var output: Output
 
     private let myPageRepository: MyPageRepository
+    private let initialNickname: String?
     private var nicknameTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
     init(
         myPageRepository: MyPageRepository,
+        initialNickname: String? = nil,
         categoryItems: [CategoryItem] = CategoryItem.categoryItems,
         mapConfiguration: CompanionMapConfiguration = .mock
     ) {
         self.myPageRepository = myPageRepository
+        self.initialNickname = initialNickname
         self.output = Output(
             categoryItems: categoryItems,
             mapConfiguration: mapConfiguration
@@ -65,7 +90,13 @@ final class CompanionViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            fetchNickname()
+            if let initialNickname {
+                output.nickname.send(initialNickname)
+            } else {
+                fetchNickname()
+            }
+        case .categoryDidSelect(let index):
+            updateCategory(at: index)
         case .recruitCompanionButtonDidTap:
             route?(.recruitCompanion)
         case .companionDidSelect(let state):
@@ -73,7 +104,19 @@ final class CompanionViewModel: BaseViewModelType {
         }
     }
 
-    // MARK: - Private Method
+    // MARK: - Private Methods
+
+    private func updateCategory(at index: Int) {
+        guard output.categoryItems.indices.contains(index) else { return }
+
+        let previousIndex = output.categoryState.value.selectedIndex
+        let selectedIndex = previousIndex == index ? nil : index
+        let category = output.categoryItems[index]
+        let content: CategoryContent = selectedIndex == nil || category.isRestaurant
+                                    ? .companions(.restaurant) : .empty
+
+        output.categoryState.send(CategoryState(selectedIndex: selectedIndex, previousIndex: previousIndex, content: content))
+    }
 
     private func fetchNickname() {
         nicknameTask?.cancel()

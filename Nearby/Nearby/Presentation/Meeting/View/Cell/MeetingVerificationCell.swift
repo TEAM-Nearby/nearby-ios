@@ -49,6 +49,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        profileView.cancelImageLoad()
         onNextButtonDidTap = nil
         onVerifyButtonDidTap = nil
     }

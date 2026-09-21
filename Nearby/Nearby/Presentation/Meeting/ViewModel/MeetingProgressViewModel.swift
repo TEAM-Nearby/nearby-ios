@@ -149,23 +149,18 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 meetingDate = DTO.meetingAt?.toDate()
                 postType = DTO.meetingTimeType
 
-                let information = [DTO.placeName, meetingDate?.timeDisplayText]
-                    .compactMap { $0 }
-                    .joined(separator: " · ")
                 let data = DisplayData(
                     profileImageUrl: DTO.hostProfileImageUrl,
                     name: DTO.hostNickname,
                     gender: DTO.hostGender.genderDisplayText,
-                    information: information
+                    information: MeetingItem.makeInformation(placeName: DTO.placeName, meetingDate: meetingDate)
                 )
                 output.displayData.send(data)
                 
-                let initialStep: MeetingStep
-                if DTO.currentUserCheckedIn {
-                    initialStep = .completion
-                } else {
-                    initialStep = isWithinVerifiableWindow ? .verification : .match
-                }
+                let initialStep = MeetingStep(
+                    isCheckedIn: DTO.currentUserCheckedIn,
+                    isWithinVerifiableWindow: isWithinVerifiableWindow
+                )
                 output.step.send(initialStep)
 
                 updateVerifyButtonState()
@@ -269,7 +264,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
             .sink { [weak self] _ in
                 guard let self else { return }
                 
-                let newStep: MeetingStep = isWithinVerifiableWindow ? .verification : .match
+                let newStep = MeetingStep(isCheckedIn: false, isWithinVerifiableWindow: isWithinVerifiableWindow)
                 if currentStep != .completion && currentStep != newStep {
                     output.step.send(newStep)
                 }

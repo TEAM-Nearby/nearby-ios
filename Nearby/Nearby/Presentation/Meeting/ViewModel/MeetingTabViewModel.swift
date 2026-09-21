@@ -83,10 +83,6 @@ final class MeetingTabViewModel: BaseViewModelType {
 
     private func makeMeetingItem(from DTO: MeetingResponseDTO) -> MeetingItem {
         let meetingDate = DTO.meetingAt?.toDate()
-        let information = [DTO.placeName, meetingDate?.timeDisplayText]
-            .compactMap { $0 }
-            .joined(separator: " · ")
-
         return MeetingItem(
             id: DTO.meetingId ?? DTO.matchId,
             meetingId: DTO.meetingId,
@@ -94,7 +90,7 @@ final class MeetingTabViewModel: BaseViewModelType {
             name: DTO.companion.nickname,
             gender: DTO.companion.gender.genderDisplayText,
             profileImageUrl: DTO.companion.profileImageUrl,
-            information: information,
+            information: MeetingItem.makeInformation(placeName: DTO.placeName, meetingDate: meetingDate),
             meetingDate: meetingDate,
             postType: DTO.meetingTimeType,
             isCheckedIn: DTO.isCheckedIn

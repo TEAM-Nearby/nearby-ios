@@ -12,6 +12,14 @@ enum MeetingStep: Int, CaseIterable {
     case verification = 2
     case completion = 3
     
+    init(isCheckedIn: Bool, isWithinVerifiableWindow: Bool) {
+        if isCheckedIn {
+            self = .completion
+        } else {
+            self = isWithinVerifiableWindow ? .verification : .match
+        }
+    }
+    
     var stepTitle: String {
         "\(rawValue)/3"
     }

@@ -116,6 +116,10 @@ private extension AppCoordinator {
         
         let viewController = diContainer.makeCompanionProfileViewController()
         
+        viewController.onBackButtonDidTap = { [weak navigationController] in
+            navigationController?.popViewController(animated: true)
+        }
+        
         viewController.onProfileCompleted = { [weak self] in
             self?.showMainTab()
         }

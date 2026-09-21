@@ -12,7 +12,7 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
 
     // MARK: - Properties
 
-    weak var coordinator: CompanionCoordinator?
+    var onRoute: ((RecruitCompanionRoute) -> Void)?
 
     private let rootView = RecruitCompanionView()
 
@@ -105,14 +105,14 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
         viewModel.output.completeButtonDidTap
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                self?.onRoute?(.previous)
             }
             .store(in: &cancellables)
 
         viewModel.output.showBack
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showPrevious()
+                self?.onRoute?(.previous)
             }
             .store(in: &cancellables)
 

@@ -16,7 +16,7 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
     
     // MARK: - Property
     
-    weak var coordinator: NotificationCoordinator?
+    var onRoute: ((NotificationRoute) -> Void)?
 
     // MARK: - Life Cycles
 
@@ -35,7 +35,7 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
         addKeyboardDismissGesture()
 
         hostRequestDeclineView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onRoute?(.previous)
         }
         
         hostRequestDeclineView.onRejectButtonDidTap = { [weak self] in
@@ -55,7 +55,7 @@ final class HostRequestDeclineViewController: BaseViewController<HostRequestDecl
         viewModel.output.showDeclineComplete
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showCompanionTab()
+                self?.onRoute?(.companionTab)
             }
             .store(in: &cancellables)
         

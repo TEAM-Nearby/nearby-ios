@@ -23,13 +23,13 @@ final class DefaultAuthService {
 
     // MARK: - Properties
 
-    private let networkProvider: NetworkProvider
+    private let networkProvider: any NetworkProviding
     private let session: Session
 
     // MARK: - Initializer
 
     init(
-        networkProvider: NetworkProvider,
+        networkProvider: any NetworkProviding,
         session: Session = .default
     ) {
         self.networkProvider = networkProvider

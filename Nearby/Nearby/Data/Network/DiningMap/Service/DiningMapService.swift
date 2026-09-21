@@ -16,11 +16,11 @@ final class DefaultDiningMapService {
     
     // MARK: - Property
     
-    private let networkProvider: NetworkProvider
+    private let networkProvider: any NetworkProviding
     
     // MARK: - Initializer
     
-    init(networkProvider: NetworkProvider) {
+    init(networkProvider: any NetworkProviding) {
         self.networkProvider = networkProvider
     }
 }

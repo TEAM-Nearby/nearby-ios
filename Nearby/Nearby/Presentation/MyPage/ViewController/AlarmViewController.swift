@@ -10,12 +10,17 @@ import UIKit
 
 final class AlarmViewController: BaseViewController<AlarmViewModel> {
 
+    enum Route {
+        case previous
+        case companionRequestAccept(Int)
+        case companionRequestDecline
+        case hostRequestReceive(Int)
+        case schedule(Int)
+    }
+
     // MARK: - Properties
 
-    var onBackButtonDidTap: (() -> Void)?
-    var onRequestActionDidTap: ((AlarmRequestItem) -> Void)?
-
-    weak var coordinator: NotificationCoordinator?
+    var onRoute: ((Route) -> Void)?
 
     private var items = [AlarmRequestItem]()
     private var hasAppearedOnce = false
@@ -105,35 +110,35 @@ private extension AlarmViewController {
         viewModel.output.backButtonDidTap
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.onBackButtonDidTap?()
+                self?.onRoute?(.previous)
             }
             .store(in: &cancellables)
 
         viewModel.output.showCompanionRequestAccept
             .receive(on: DispatchQueue.main)
             .sink { [weak self] applicationId in
-                self?.coordinator?.showCompanionRequestAccept(applicationId: applicationId)
+                self?.onRoute?(.companionRequestAccept(applicationId))
             }
             .store(in: &cancellables)
 
         viewModel.output.showCompanionRequestDecline
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showCompanionRequestDecline()
+                self?.onRoute?(.companionRequestDecline)
             }
             .store(in: &cancellables)
 
         viewModel.output.showHostRequestReceive
             .receive(on: DispatchQueue.main)
             .sink { [weak self] applicationId in
-                self?.coordinator?.showHostRequestReceive(applicationId: applicationId)
+                self?.onRoute?(.hostRequestReceive(applicationId))
             }
             .store(in: &cancellables)
 
         viewModel.output.showSchedule
             .receive(on: DispatchQueue.main)
             .sink { [weak self] matchId in
-                self?.coordinator?.showMatchingScheduleDetail(matchId: matchId)
+                self?.onRoute?(.schedule(matchId))
             }
             .store(in: &cancellables)
     }

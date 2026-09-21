@@ -33,7 +33,6 @@
 				Presentation/Notification/View/.gitkeep,
 				Presentation/Notification/ViewController/.gitkeep,
 				Presentation/Notification/ViewModel/.gitkeep,
-				Presentation/RecruitCompanion/Coordinator/.gitkeep,
 				Resource/Info.plist,
 			);
 			target = 771209D42FF423C700D688FD /* Nearby */;

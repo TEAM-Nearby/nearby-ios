@@ -73,8 +73,8 @@ private extension AppCoordinator {
     func showLogin() {
         childCoordinators.removeAll()
         
-        let loginViewController = diContainer.makeLoginViewController()
-        
+        let loginViewController = diContainer.auth.makeLoginViewController()
+
         loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in guard let self else { return }
             
             switch onboardingStatus {
@@ -100,7 +100,12 @@ private extension AppCoordinator {
             return
         }
         
-        let viewController = diContainer.makePhoneVerificationViewController()
+        let viewController = diContainer.auth.makePhoneVerificationViewController()
+
+        viewController.onBackButtonDidTap = { [weak self] in
+            guard let navigationController = self?.window.rootViewController as? UINavigationController else { return }
+            navigationController.popViewController(animated: true)
+        }
         
         viewController.onBackButtonDidTap = { [weak navigationController] in
             navigationController?.popViewController(animated: true)
@@ -118,7 +123,12 @@ private extension AppCoordinator {
             return
         }
         
-        let viewController = diContainer.makeCompanionProfileViewController()
+        let viewController = diContainer.auth.makeCompanionProfileViewController()
+
+        viewController.onBackButtonDidTap = { [weak self] in
+            guard let navigationController = self?.window.rootViewController as? UINavigationController else { return }
+            navigationController.popViewController(animated: true)
+        }
         
         viewController.onBackButtonDidTap = { [weak navigationController] in
             navigationController?.popViewController(animated: true)

@@ -6,8 +6,8 @@
 //
 
 protocol CompanionDetailRepository {
-    func fetchDetail(postId: Int) async throws -> CompanionDetailResponseDTO
-    func apply(postId: Int) async throws -> CompanionApplyResponseDTO
+    func fetchDetail(postId: Int) async throws -> CompanionDetail
+    func apply(postId: Int) async throws
 }
 
 final class DefaultCompanionDetailRepository {
@@ -26,11 +26,12 @@ final class DefaultCompanionDetailRepository {
 // MARK: - CompanionDetailRepository
 
 extension DefaultCompanionDetailRepository: CompanionDetailRepository {
-    func fetchDetail(postId: Int) async throws -> CompanionDetailResponseDTO {
-        try await service.fetchDetail(postId: postId)
+    func fetchDetail(postId: Int) async throws -> CompanionDetail {
+        let response = try await service.fetchDetail(postId: postId)
+        return CompanionDetailMapper.map(response)
     }
 
-    func apply(postId: Int) async throws -> CompanionApplyResponseDTO {
-        try await service.apply(postId: postId)
+    func apply(postId: Int) async throws {
+        _ = try await service.apply(postId: postId)
     }
 }

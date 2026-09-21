@@ -372,7 +372,7 @@ extension CompanionViewController: UICollectionViewDelegateFlowLayout {
         shouldShowCompanionMarkers = isDeselecting || item.isRestaurant
 
         if shouldShowCompanionMarkers {
-            nearbySheet?.updatePlaceCategory("RESTAURANT")
+            nearbySheet?.updatePlaceCategory(.restaurant)
             showNearbyBottomSheet()
         } else {
             mapController.updateCompanionMarkers([])

@@ -72,10 +72,10 @@ final class CompanionViewModel: BaseViewModelType {
             route?(.companionDetail(state))
         }
     }
-}
 
-private extension CompanionViewModel {
-    func fetchNickname() {
+    // MARK: - Private Method
+
+    private func fetchNickname() {
         nicknameTask?.cancel()
         nicknameTask = Task { [weak self] in
             guard let self else { return }

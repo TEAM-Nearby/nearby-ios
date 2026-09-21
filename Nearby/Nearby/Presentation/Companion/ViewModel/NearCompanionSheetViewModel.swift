@@ -10,11 +10,20 @@ import CoreLocation
 
 final class NearCompanionSheetViewModel: BaseViewModelType {
 
+    // MARK: - State
+
+    enum ViewState {
+        case idle
+        case loading
+        case loaded(items: [NearCompanionCellItem], markers: [CompanionMapMarkerData], summaryText: String)
+        case failed(Error)
+    }
+
     // MARK: - Input
 
     enum Input {
         case locationDidUpdate(CLLocationCoordinate2D)
-        case placeCategoryDidSelect(String)
+        case placeCategoryDidSelect(CompanionPlace.Category)
         case sortOptionDidTap(SortOption)
         case companionDidSelect(Int)
     }
@@ -24,11 +33,8 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
     struct Output {
         let sortOptions: [SortOption]
         let selectedSortOption = CurrentValueSubject<SortOption, Never>(.latest)
-        let companions = CurrentValueSubject<[NearCompanionCellItem], Never>([])
-        let mapMarkers = CurrentValueSubject<[CompanionMapMarkerData], Never>([])
-        let summaryText = PassthroughSubject<String, Never>()
+        let viewState = CurrentValueSubject<ViewState, Never>(.idle)
         let selectedCompanion = PassthroughSubject<NearCompanionCellItem, Never>()
-        let error = PassthroughSubject<Error, Never>()
     }
 
     // MARK: - Properties
@@ -36,14 +42,15 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
     let output = Output(sortOptions: SortOption.allCases)
 
     var nearCompanionCount: Int {
-        output.companions.value.count
+        companions.count
     }
 
     private let repository: CompanionRepository
     private var currentCoordinate: CLLocationCoordinate2D?
-    private var placeCategory = "RESTAURANT"
+    private var placeCategory: CompanionPlace.Category = .restaurant
     private var fetchTask: Task<Void, Never>?
-    private var postsByPlaceId: [Int: [CompanionDTO]] = [:]
+    private var postsByPlaceId: [Int: [CompanionPost]] = [:]
+    private var companions: [NearCompanionCellItem] = []
 
     // MARK: - Initializer
 
@@ -72,53 +79,56 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
             fetchPosts()
 
         case .companionDidSelect(let index):
-            guard output.companions.value.indices.contains(index) else { return }
+            guard companions.indices.contains(index) else { return }
             output.selectedCompanion.send(companion(at: index))
         }
     }
-    
-    // MARK: - Method
+
+    // MARK: - Custom Methods
 
     func companion(at index: Int) -> NearCompanionCellItem {
-        output.companions.value[index]
+        companions[index]
     }
 
     @MainActor
     func specificCompanions(for placeId: Int) -> [SpecificCompanionCellItem] {
-        (postsByPlaceId[placeId] ?? []).map(SpecificCompanionCellItem.init(dto:))
+        (postsByPlaceId[placeId] ?? []).map(SpecificCompanionCellItem.init(post:))
     }
-}
 
-private extension NearCompanionSheetViewModel {
-    func fetchPosts() {
+    // MARK: - Private Method
+
+    private func fetchPosts() {
         guard let currentCoordinate else { return }
 
         fetchTask?.cancel()
         let sort = output.selectedSortOption.value
+        output.viewState.send(.loading)
 
         fetchTask = Task { [weak self] in
             guard let self else { return }
 
             do {
-                let response = try await repository.fetchList(
-                    query: CompanionListQuery(latitude: currentCoordinate.latitude, longitude: currentCoordinate.longitude,
-                                              radiusMeters: 1_000, placeCategory: placeCategory, sort: sort.serverKey)
-                )
+                let criteria = CompanionSearchCriteria(latitude: currentCoordinate.latitude,
+                                                       longitude: currentCoordinate.longitude,
+                                                       radiusMeters: 1_000, placeCategory: placeCategory,
+                                                       sort: sort.companionSort)
+                let response = try await repository.fetchList(criteria: criteria)
                 guard !Task.isCancelled else { return }
 
                 postsByPlaceId = Dictionary(grouping: response.posts, by: { $0.place.placeId })
                 let latestPostsByPlace = postsByPlaceId.values.compactMap { posts in
-                    posts.max { $0.createdAt < $1.createdAt }
+                    posts.max { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
                 }
 
-                output.companions.send(response.posts.map(NearCompanionCellItem.init(dto:)))
-                output.mapMarkers.send(latestPostsByPlace.map(CompanionMapMarkerData.init(dto:)))
-                output.summaryText.send(response.summaryText)
+                companions = response.posts.map(NearCompanionCellItem.init(post:))
+                output.viewState.send(.loaded(items: companions,
+                                              markers: latestPostsByPlace.map(CompanionMapMarkerData.init(post:)),
+                                              summaryText: response.summaryText))
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
-                output.error.send(error)
+                output.viewState.send(.failed(error))
             }
         }
     }

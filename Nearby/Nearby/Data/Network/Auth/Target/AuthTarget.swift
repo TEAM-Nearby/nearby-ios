@@ -22,7 +22,7 @@ extension AuthTarget: BaseTargetType {
     var path: String {
         switch self {
         case .kakaoLogin:
-            return "/api/kakao/login"
+            return "/api/login/kakao"
 
         case .refresh:
             return "/api/auth/refresh"

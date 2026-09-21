@@ -80,21 +80,21 @@ final class MatchingViewModel: BaseViewModelType {
     
     private func fetchMatches() {
         fetchTask?.cancel()
-        fetchTask = Task { @MainActor [weak self] in
-            guard let self else { return }
-            
+        let repository = repository
+        let eventCenter = eventCenter
+        fetchTask = Task { @MainActor [weak self, repository, eventCenter] in
             do {
                 AppLogger.data("매칭된 동행 목록 조회를 시작합니다.")
                 let matches = try await repository.fetchMatches()
-                guard !Task.isCancelled else { return }
+                guard let self, !Task.isCancelled else { return }
                 let items = matches.map { $0.toMatchedCardItem() }
-                    .filter { !self.eventCenter.completedMatchIds.contains($0.matchId) }
+                    .filter { !eventCenter.completedMatchIds.contains($0.matchId) }
                 AppLogger.data("매칭된 동행 목록 \(items.count)개를 조회했습니다.")
                 output.items.send(items)
             } catch is CancellationError {
                 return
             } catch {
-                guard !Task.isCancelled else { return }
+                guard let self, !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭된 동행 목록 조회에 실패했습니다.")
                 output.items.send([])
             }

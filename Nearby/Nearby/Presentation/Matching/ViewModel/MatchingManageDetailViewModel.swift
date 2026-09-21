@@ -145,14 +145,14 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     private func confirmSchedule() {
         let scheduledAt = makeScheduledAt()
+        let matchID = displayData.cardItem.matchId
+        let repository = repository
 
         confirmTask?.cancel()
-        confirmTask = Task { @MainActor [weak self] in
-            guard let self else { return }
-
+        confirmTask = Task { @MainActor [weak self, repository] in
             do {
-                try await repository.confirmSchedule(matchId: displayData.cardItem.matchId, scheduledAt: scheduledAt)
-                guard !Task.isCancelled else { return }
+                try await repository.confirmSchedule(matchId: matchID, scheduledAt: scheduledAt)
+                guard let self, !Task.isCancelled else { return }
                 output.showBack.send(())
             } catch is CancellationError {
                 return
@@ -173,25 +173,23 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     }
     
     private func fetchDisplayData() {
+        guard let matchID = matchId else { return }
+
         fetchTask?.cancel()
-        fetchTask = Task { @MainActor [weak self] in
-            guard let self, let matchId else { return }
+        let repository = repository
+        fetchTask = Task { @MainActor [weak self, repository] in
 
             do {
-                async let scheduleResponseTask = repository.fetchMatchMySchedule(matchId: matchId)
-                async let previewResponseTask = repository.fetchMatchPreview(matchId: matchId)
+                async let scheduleResponseTask = repository.fetchMatchMySchedule(matchId: matchID)
+                async let previewResponseTask = repository.fetchMatchPreview(matchId: matchID)
 
                 let scheduleResponse = try await scheduleResponseTask
                 let previewResponse = try? await previewResponseTask
-                guard !Task.isCancelled else { return }
-                let currentUserRole = scheduleResponse.currentUserRole.nearbyUserType
-                let cardItem = previewResponse?.toCardItem(
-                    type: currentUserRole,
-                    matchStatus: scheduleResponse.matchStatus.rawValue,
-                    fallbackPlaceName: scheduleResponse.schedule?.place.name ?? ""
-                ) ?? scheduleResponse.toCardItem(type: currentUserRole)
-
-                displayData = scheduleResponse.toDisplayData(type: currentUserRole, cardItem: cardItem)
+                guard let self, !Task.isCancelled else { return }
+                displayData = makeScheduleDisplayData(
+                    scheduleDetail: scheduleResponse,
+                    preview: previewResponse
+                )
                 selectedDate = displayData.scheduledAt?.toDate() ?? Date()
                 output.displayData.send(makeDisplayData())
             } catch is CancellationError {
@@ -200,6 +198,123 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
                 guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
             }
+        }
+    }
+}
+
+private extension MatchingManageDetailViewModel {
+    func makeScheduleDisplayData(
+        scheduleDetail: MatchedCompanionScheduleDetail,
+        preview: MatchedCompanionPreview?
+    ) -> MatchingScheduleDetailDisplayData {
+        let userType = makeUserType(scheduleDetail.currentUserRole)
+        let cardItem = makeCardItem(
+            scheduleDetail: scheduleDetail,
+            preview: preview,
+            userType: userType
+        )
+
+        return MatchingScheduleDetailDisplayData(
+            cardItem: cardItem,
+            placeName: scheduleDetail.schedule?.place.name ?? "",
+            placeAddress: scheduleDetail.schedule?.place.address ?? "",
+            googlePlaceId: scheduleDetail.schedule?.place.googlePlaceID,
+            latitude: scheduleDetail.schedule?.place.latitude ?? 0,
+            longitude: scheduleDetail.schedule?.place.longitude ?? 0,
+            scheduledAt: scheduleDetail.schedule?.scheduledAt,
+            scheduledAtText: makeDateTimeText(
+                scheduleDetail.schedule?.scheduledAt,
+                fallback: scheduleDetail.meetingTimeType
+            ),
+            openChatUrl: scheduleDetail.openChatURL ?? "",
+            type: userType
+        )
+    }
+
+    func makeCardItem(
+        scheduleDetail: MatchedCompanionScheduleDetail,
+        preview: MatchedCompanionPreview?,
+        userType: NearbyUserType
+    ) -> MatchingMatchedCardItem {
+        guard let preview else {
+            return MatchingMatchedCardItem(
+                matchId: scheduleDetail.matchID,
+                content: MatchingMatchedCardContentModel(
+                    name: scheduleDetail.userNickname ?? "",
+                    participantCount: 1,
+                    gender: "",
+                    uploadedTime: "",
+                    place: scheduleDetail.schedule?.place.name ?? "",
+                    meetingTime: makeTimeText(
+                        scheduleDetail.schedule?.scheduledAt,
+                        fallback: scheduleDetail.meetingTimeType
+                    ),
+                    description: ""
+                ),
+                matchStatus: scheduleDetail.matchStatus.rawValue,
+                type: userType
+            )
+        }
+
+        let placeName = preview.companionPost.placeName.isEmpty
+            ? scheduleDetail.schedule?.place.name ?? ""
+            : preview.companionPost.placeName
+
+        return MatchingMatchedCardItem(
+            matchId: preview.matchID,
+            content: MatchingMatchedCardContentModel(
+                profileImageUrl: preview.host.hostProfileImageURL,
+                profileImageUrls: [preview.host.hostProfileImageURL]
+                    + preview.members.map(\.profileImageURL),
+                name: preview.host.hostName,
+                participantCount: preview.members.count + 1,
+                gender: "",
+                uploadedTime: "",
+                place: placeName,
+                meetingTime: makeTimeText(
+                    preview.companionPost.meetingAt,
+                    fallback: preview.companionPost.meetingTimeType
+                ),
+                description: preview.companionPost.content
+            ),
+            matchStatus: scheduleDetail.matchStatus.rawValue,
+            type: userType
+        )
+    }
+
+    func makeUserType(_ role: MatchedCompanionUserRole) -> NearbyUserType {
+        switch role {
+        case .host:
+            return .host
+        case .participant:
+            return .participant
+        }
+    }
+
+    func makeTimeText(
+        _ scheduledAt: String?,
+        fallback timeType: MatchedCompanionTimeType
+    ) -> String {
+        guard let scheduledAt else { return makeTimeTypeTitle(timeType) }
+        return scheduledAt.toDate()?.timeDisplayText ?? scheduledAt
+    }
+
+    func makeDateTimeText(
+        _ scheduledAt: String?,
+        fallback timeType: MatchedCompanionTimeType
+    ) -> String {
+        guard let scheduledAt else { return makeTimeTypeTitle(timeType) }
+        return scheduledAt.toDate()?.meetingDisplayText ?? scheduledAt
+    }
+
+    func makeTimeTypeTitle(_ timeType: MatchedCompanionTimeType) -> String {
+        switch timeType {
+        case .now:
+            return "지금 바로"
+        case .scheduled:
+            return ""
+        case .undecided:
+            return "시간 미정"
         }
     }
 }

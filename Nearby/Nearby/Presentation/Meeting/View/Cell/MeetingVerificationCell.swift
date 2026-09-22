@@ -76,16 +76,12 @@ final class MeetingVerificationCell: UICollectionViewCell {
         }
         
         verifyTitleLabel.do {
-            $0.text = "만남을 인증해주세요"
-            $0.textColor = .grey80
-            $0.font = NearbyFont.b2M16.font
+            $0.setFont(.b2M16, text: "만남을 인증해주세요", textColor: .grey80)
             $0.textAlignment = .left
         }
         
         verifySubtitleLabel.do {
-            $0.text = "동행자와 만나면 위치 인증으로 동행을 시작하세요"
-            $0.textColor = .grey40
-            $0.font = NearbyFont.b3M14.font
+            $0.setFont(.b3M14, text: "동행자와 만나면 위치 인증으로 동행을 시작하세요", textColor: .grey40)
             $0.numberOfLines = 0
             $0.textAlignment = .left
         }

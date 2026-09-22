@@ -42,7 +42,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
     
     override func setAddTarget() {
         reviewPostView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.coordinator?.pop()
         }
         reviewPostView.onRatingChanged = { [weak self] rating in
             self?.viewModel.action(.ratingChanged(rating))
@@ -100,7 +100,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.onReviewSaved?()
-                self?.navigationController?.popViewController(animated: true)
+                self?.coordinator?.pop()
             }
             .store(in: &cancellables)
 

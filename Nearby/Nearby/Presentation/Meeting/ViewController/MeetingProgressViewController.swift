@@ -33,7 +33,7 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
     
     override func setAddTarget() {
         meetingProgressView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.coordinator?.pop()
         }
         meetingProgressView.onReportButtonDidTap = { [weak self] in
             self?.viewModel.action(.reportButtonDidTap)

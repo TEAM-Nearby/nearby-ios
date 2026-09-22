@@ -28,7 +28,7 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
     
     override func setAddTarget() {
         hostReviewListView.onBackButtonDidTap = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.coordinator?.pop()
         }
         hostReviewListView.onNotificationButtonDidTap = { [weak self] in
             self?.coordinator?.showNotification()

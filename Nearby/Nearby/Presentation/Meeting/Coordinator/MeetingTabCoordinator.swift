@@ -93,7 +93,7 @@ extension MeetingTabCoordinator: Coordinator {
         }
     }
     
-    func popReportPost() {
+    func pop() {
         navigationController.popViewController(animated: true)
     }
     

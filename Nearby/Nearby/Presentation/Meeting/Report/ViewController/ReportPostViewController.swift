@@ -40,7 +40,7 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
         addKeyboardDismissGesture()
 
         reportPostView.onBackButtonDidTap = { [weak self] in
-            self?.coordinator?.popReportPost()
+            self?.coordinator?.pop()
         }
         
         reportPostView.onTextChanged = { [weak self] text in

@@ -7,15 +7,17 @@
 
 import Foundation
 
-final class MockCompanionDetailRepository: CompanionDetailRepository {
+final class MockCompanionDetailRepository {}
+
+extension MockCompanionDetailRepository: CompanionDetailRepository {
     func fetchDetail(postId: Int) async throws -> CompanionDetail {
         try Task.checkCancellation()
 
         return CompanionDetail(
-            postId: postId,
-            hostUserId: 1_000 + postId,
-            hostProfileId: 2_000 + postId,
-            googlePlaceId: "mock-google-place-\(postId)",
+            postID: postId,
+            hostUserID: 1_000 + postId,
+            hostProfileID: 2_000 + postId,
+            googlePlaceID: "mock-google-place-\(postId)",
             meetingAt: Date().addingTimeInterval(7_200),
             maxParticipants: 4,
             content: "서버 연동 전 테스트!!!!!!!!",
@@ -24,8 +26,8 @@ final class MockCompanionDetailRepository: CompanionDetailRepository {
             expiresAt: Date().addingTimeInterval(3_600),
             participantCount: 2,
             participants: [
-                CompanionParticipant(userId: 10, profileImageURL: nil),
-                CompanionParticipant(userId: 11, profileImageURL: nil)
+                CompanionParticipant(userID: 10, profileImageURL: nil),
+                CompanionParticipant(userID: 11, profileImageURL: nil)
             ],
             hasNotApplied: true,
             hostProfile: CompanionHostProfile(

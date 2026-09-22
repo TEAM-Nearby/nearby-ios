@@ -20,6 +20,7 @@ extension OpenChatSendable {
     }
     
     func sendChatLinkPopup() {
+        guard !openChatURLString.isEmpty else { return }
         openChatOutput.showChatLinkPopup.send(openChatURLString)
     }
 }

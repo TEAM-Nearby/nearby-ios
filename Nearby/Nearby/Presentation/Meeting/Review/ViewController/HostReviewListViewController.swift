@@ -78,12 +78,10 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
             }
             .store(in: &cancellables)
 
-        viewModel.output.errorMessage
+        viewModel.output.errorAlert
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] message in
-                let alert = UIAlertController(title: "후기 대상을 불러오지 못했어요", message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "확인", style: .default))
-                self?.present(alert, animated: true)
+            .sink { [weak self] alert in
+                self?.presentErrorAlert(title: alert.title, message: alert.message)
             }
             .store(in: &cancellables)
 

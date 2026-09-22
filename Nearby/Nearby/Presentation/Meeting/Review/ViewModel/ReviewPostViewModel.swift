@@ -31,7 +31,7 @@ final class ReviewPostViewModel: BaseViewModelType {
         let showReport = PassthroughSubject<Void, Never>()
         let reviewSaved = PassthroughSubject<Void, Never>()
         let companionCompleted = PassthroughSubject<Void, Never>()
-        let errorMessage = PassthroughSubject<String, Never>()
+        let errorAlert = PassthroughSubject<ReviewErrorAlert, Never>()
     }
     
     struct DisplayData {
@@ -173,7 +173,8 @@ final class ReviewPostViewModel: BaseViewModelType {
                 }
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
+                let message = error.localizedDescription
+                output.errorAlert.send(hasSubmittedReview ? .completeMeeting(message) : .createReview(message))
             }
         }
     }
@@ -187,7 +188,7 @@ final class ReviewPostViewModel: BaseViewModelType {
                 handleCompleteSuccess(response)
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
+                output.errorAlert.send(.completeMeeting(error.localizedDescription))
             }
         }
     }

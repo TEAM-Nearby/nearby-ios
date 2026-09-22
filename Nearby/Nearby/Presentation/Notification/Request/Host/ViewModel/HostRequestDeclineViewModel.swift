@@ -40,7 +40,6 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
     private let applicationId: Int
     private let repository: HostCompanionRepository
     private var isRequesting = false
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
 

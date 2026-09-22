@@ -37,7 +37,6 @@ final class CompanionRequestSentViewModel: BaseViewModelType {
     let output = Output()
 
     private let hostName: String
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
 

@@ -55,7 +55,6 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
     private var matchId: Int?
     private var matchStatus: MatchStatus?
     private let repository: ApplicantCompanionRepository
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
 

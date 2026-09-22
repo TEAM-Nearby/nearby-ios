@@ -58,7 +58,6 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
     private var isRequesting = false
     private var hasLoadedDetail = false
     private var hasAllowed = false
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
 

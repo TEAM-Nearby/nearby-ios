@@ -136,7 +136,7 @@ final class CompanionViewModel: BaseViewModelType {
         }
     }
 
-    // MARK: - Private Methods
+    // MARK: - Methods
 
     private func updateCategory(at index: Int) {
         guard output.categoryItems.indices.contains(index) else { return }

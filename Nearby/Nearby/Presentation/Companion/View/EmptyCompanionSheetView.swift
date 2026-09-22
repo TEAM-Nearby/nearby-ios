@@ -52,7 +52,9 @@ final class EmptyCompanionSheetView: BaseView {
             $0.size.equalTo(300)
         }
     }
-
+    
+    // MARK: - Method
+    
     func restartAnimation() {
         animationView.stop()
         animationView.currentProgress = 0

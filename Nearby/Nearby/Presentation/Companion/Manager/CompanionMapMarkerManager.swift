@@ -10,6 +10,9 @@ import GoogleMaps
 import UIKit
 
 final class CompanionMapMarkerManager {
+
+    // MARK: - Properties
+
     private struct Content {
         let nickname: String
         let written: String
@@ -17,15 +20,13 @@ final class CompanionMapMarkerManager {
         let date: String
         let style: MapMarkerStyle
     }
-    
+
     private struct Entry {
         let marker: GMSMarker
         let content: Content
         let placeId: Int?
     }
-    
-    // MARK: - Properties
-    
+
     private weak var mapView: GMSMapView?
     private var currentLocationMarkers: [GMSMarker] = []
     private var currentLocationDirectionMarker: GMSMarker?
@@ -34,15 +35,15 @@ final class CompanionMapMarkerManager {
     private let configuration: CompanionMapConfiguration
 
     // MARK: - Initializer
-    
+
     init(mapView: GMSMapView, configuration: CompanionMapConfiguration) {
         self.mapView = mapView
         self.configuration = configuration
         self.level = CompanionMarkerLevel(zoom: mapView.camera.zoom, configuration: configuration)
     }
-    
-    // MARK: - Private Methods
-    
+
+    // MARK: - Methods
+
     private func applyAppearance(to marker: GMSMarker, content: Content, level: CompanionMarkerLevel) {
         marker.tracksViewChanges = true
 
@@ -77,7 +78,7 @@ final class CompanionMapMarkerManager {
             marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
         }
     }
-    
+
     private func makeCurrentLocationMarkerView(image: UIImage, frame: CGRect) -> UIView {
         let markerView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         let imageView = UIImageView(image: image)
@@ -96,14 +97,14 @@ final class CompanionMapMarkerManager {
         marker.map = mapView
         return marker
     }
-    
+
     private func makeImageMarker(image: UIImage, size: CGFloat) -> UIView {
         let imageView = UIImageView(image: image)
         imageView.frame = CGRect(x: 0, y: 0, width: size, height: size)
         imageView.contentMode = .scaleAspectFit
         return imageView
     }
-    
+
     private func stopTrackingViewChanges(for marker: GMSMarker) {
         DispatchQueue.main.async {
             marker.tracksViewChanges = false
@@ -129,8 +130,6 @@ final class CompanionMapMarkerManager {
             .forEach(addMarker)
     }
 
-    // MARK: - Public Methods
-
     func updateCurrentLocation(to coordinate: CLLocationCoordinate2D) {
         if !currentLocationMarkers.isEmpty {
             currentLocationMarkers.forEach { $0.position = coordinate }
@@ -155,21 +154,21 @@ final class CompanionMapMarkerManager {
     func replaceDiningMarkers(with items: [CompanionMapMarkerData]) {
         replaceMarkers(with: items, group: .dining)
     }
-    
+
     func updateLevel(for zoom: Float) {
         let newLevel = CompanionMarkerLevel(zoom: zoom, configuration: configuration)
         guard newLevel != level else { return }
-        
+
         level = newLevel
         entries
             .filter { $0.content.style.group == .companion }
             .forEach { applyAppearance(to: $0.marker, content: $0.content, level: newLevel) }
     }
-    
+
     func placeId(for marker: GMSMarker) -> Int? {
         entries.first { $0.marker === marker }?.placeId
     }
-    
+
     func updateHeading(_ heading: CLHeading) {
         guard heading.headingAccuracy >= 0 else { return }
 

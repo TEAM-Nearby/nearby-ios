@@ -35,7 +35,7 @@ final class CompanionBottomSheetController {
         bind()
     }
     
-    // MARK: - Private Methods
+    // MARK: - Methods
     
     private func bind() {
         bottomSheetViewController.onStateChange = { [weak self] _, state in
@@ -72,8 +72,6 @@ final class CompanionBottomSheetController {
             self?.bottomSheetViewController.setHeightAdjustment(adjustment, for: content)
         }
     }
-    
-    // MARK: - Public Methods
     
     func attach(to parentViewController: UIViewController, in hostView: UIView, centerOverlayView: UIView, trailingOverlayView: UIView) {
         parentViewController.addChild(bottomSheetViewController)

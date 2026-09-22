@@ -9,22 +9,22 @@ import Combine
 import UIKit
 
 final class SpecificCompanionSheetViewController: BaseViewController<SpecificCompanionSheetViewModel> {
-    
+
     // MARK: - Properties
-    
+
     private let specificCompanionSheetView = SpecificCompanionSheetView()
     var onClose: (() -> Void)?
     var onCompanionSelected: ((SpecificCompanionCellItem) -> Void)?
     var onTitleMultilineChanged: ((Bool) -> Void)?
-    
+
     // MARK: - Life Cycle
-    
+
     override func loadView() {
         view = specificCompanionSheetView
     }
-    
+
     // MARK: - Custom Methods
-    
+
     override func setDelegate() {
         specificCompanionSheetView.collectionView.dataSource = self
         specificCompanionSheetView.collectionView.delegate = self
@@ -39,7 +39,7 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
             self?.onTitleMultilineChanged?(isMultiline)
         }
     }
-    
+
     override func bindState() {
         viewModel.output.companions
             .receive(on: DispatchQueue.main)
@@ -49,12 +49,7 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
             .store(in: &cancellables)
     }
 
-    // MARK: - Action
-
-    @objc
-    private func closeButtonDidTap() {
-        onClose?()
-    }
+    // MARK: - Methods
 
     func updateCompanions(_ companions: [SpecificCompanionCellItem]) {
         specificCompanionSheetView.configurePlace(with: companions.first)
@@ -63,6 +58,13 @@ final class SpecificCompanionSheetViewController: BaseViewController<SpecificCom
 
     func updateNickname(_ nickname: String) {
         specificCompanionSheetView.updateNickname(nickname)
+    }
+
+    // MARK: - Action
+
+    @objc
+    private func closeButtonDidTap() {
+        onClose?()
     }
 }
 
@@ -80,7 +82,7 @@ extension SpecificCompanionSheetViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.companionCount
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(SpecificCompanionCell.self, for: indexPath)
         cell.configure(with: viewModel.companion(at: indexPath.item))

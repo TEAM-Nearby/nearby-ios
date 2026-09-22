@@ -91,10 +91,10 @@ final class CompanionDetailViewModel: BaseViewModelType {
             route?(.hostProfile(profileId: hostProfileId))
         }
     }
-}
 
-private extension CompanionDetailViewModel {
-    func fetchDetail() {
+    // MARK: - Methods
+
+    private func fetchDetail() {
         guard let postId = state.postId else { return }
 
         fetchTask?.cancel()
@@ -116,7 +116,7 @@ private extension CompanionDetailViewModel {
         }
     }
 
-    func applyCompanion() {
+    private func applyCompanion() {
         guard state.isApplicationEnabled, let postId = state.postId, applyTask == nil else { return }
 
         output.isApplying.send(true)

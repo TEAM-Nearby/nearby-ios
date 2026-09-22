@@ -38,7 +38,7 @@ final class CompanionMapController: NSObject {
         }
     }
     
-    // MARK: - Pirvate Methods
+    // MARK: - Methods
     
     private func moveCamera(to coordinate: CLLocationCoordinate2D) {
         let target = cameraTarget(for: coordinate, zoom: configuration.initialZoom, verticalOffset: cameraVerticalOffset)
@@ -75,8 +75,6 @@ final class CompanionMapController: NSObject {
             break
         }
     }
-    
-    // MARK: - Public Methods
 
     func start() {
         requestLocation()

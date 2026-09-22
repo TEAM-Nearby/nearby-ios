@@ -20,7 +20,19 @@ final class CompanionDIContainer {
 
     // MARK: - Repository
 
+#if DEBUG
+    private lazy var companionRepository: CompanionRepository = MockCompanionRepository()
+#else
     private lazy var companionRepository: CompanionRepository = DefaultCompanionRepository(service: companionService)
+#endif
+
+    private var initialNickname: String? {
+#if DEBUG
+        "수민"
+#else
+        nil
+#endif
+    }
 
     // MARK: - Initializer
 
@@ -32,7 +44,7 @@ final class CompanionDIContainer {
     // MARK: - Factory Method
 
     func makeCompanionViewController(onRoute: @escaping (CompanionViewModel.Route) -> Void, onAlarmButtonDidTap: @escaping () -> Void) -> CompanionViewController {
-        let viewModel = CompanionViewModel(myPageRepository: myPageRepository)
+        let viewModel = CompanionViewModel(myPageRepository: myPageRepository, initialNickname: initialNickname)
         viewModel.route = onRoute
         let viewController = CompanionViewController(viewModel: viewModel, nearbySheetViewController: NearCompanionSheetViewController(viewModel: NearCompanionSheetViewModel(repository: companionRepository)), specificSheetViewController: SpecificCompanionSheetViewController(viewModel: SpecificCompanionSheetViewModel()), emptySheetViewController: EmptyCompanionSheetViewController())
         viewController.onAlarmButtonDidTap = onAlarmButtonDidTap

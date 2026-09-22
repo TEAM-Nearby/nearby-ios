@@ -117,7 +117,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
             }
         }
         
-        mapController.onCompanionMarkerTap = { [weak self] placeId in
+        mapController.onMarkerTap = { [weak self] placeId in
             guard let item = self?.nearDiningSheetViewController.restaurant(placeId: placeId) else { return }
             self?.showDiningInfoSheet(for: item)
         }

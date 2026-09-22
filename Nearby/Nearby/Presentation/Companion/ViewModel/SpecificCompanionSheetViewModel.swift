@@ -36,7 +36,9 @@ final class SpecificCompanionSheetViewModel: BaseViewModelType {
     // MARK: - Action
     
     func action(_ trigger: Input) {}
-    
+
+    // MARK: - Public Methods
+
     func companion(at index: Int) -> SpecificCompanionCellItem {
         output.companions.value[index]
     }

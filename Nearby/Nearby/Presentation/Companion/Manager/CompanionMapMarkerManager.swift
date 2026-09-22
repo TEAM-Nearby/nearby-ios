@@ -37,7 +37,7 @@ final class CompanionMapMarkerManager {
     private let configuration: CompanionMapConfiguration
 
     var hasCompanionMarkers: Bool {
-        !entries.isEmpty
+        entries.contains { $0.content.style == .companion }
     }
     
     // MARK: - Initializer
@@ -197,10 +197,6 @@ final class CompanionMapMarkerManager {
         entries.forEach { applyAppearance(to: $0.marker, content: $0.content, level: newLevel) }
     }
     
-    func containsCompanionMarker(_ marker: GMSMarker) -> Bool {
-        entries.contains { $0.marker === marker }
-    }
-
     func placeId(for marker: GMSMarker) -> Int? {
         entries.first { $0.marker === marker }?.placeId
     }

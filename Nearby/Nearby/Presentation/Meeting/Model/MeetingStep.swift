@@ -21,7 +21,7 @@ enum MeetingStep: Int, CaseIterable {
     }
     
     var stepTitle: String {
-        "\(rawValue)/3"
+        "\(rawValue)/\(Self.allCases.count)"
     }
     
     var stepDescription: String {

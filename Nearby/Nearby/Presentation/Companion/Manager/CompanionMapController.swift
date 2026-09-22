@@ -76,7 +76,21 @@ final class CompanionMapController: NSObject {
         }
     }
 
+    private func updateCurrentLocation(to coordinate: CLLocationCoordinate2D) {
+        if let currentCoordinate,
+           currentCoordinate.latitude == coordinate.latitude,
+           currentCoordinate.longitude == coordinate.longitude { return }
+
+        currentCoordinate = coordinate
+        onLocationUpdate?(coordinate)
+        markerManager.updateCurrentLocation(to: coordinate)
+        moveCamera(to: coordinate)
+    }
+
     func start() {
+        if let referenceCoordinate = configuration.referenceCoordinate {
+            updateCurrentLocation(to: referenceCoordinate)
+        }
         requestLocation()
     }
 
@@ -126,10 +140,7 @@ extension CompanionMapController: CLLocationManagerDelegate {
         guard let location = locations.last else { return }
         let displayedCoordinate = configuration.referenceCoordinate ?? location.coordinate
 
-        currentCoordinate = displayedCoordinate
-        onLocationUpdate?(displayedCoordinate)
-        markerManager.updateCurrentLocation(to: displayedCoordinate)
-        moveCamera(to: displayedCoordinate)
+        updateCurrentLocation(to: displayedCoordinate)
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

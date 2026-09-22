@@ -56,6 +56,8 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
     private(set) var openChatURL: String = ""
     private let repository: HostCompanionRepository
     private var isRequesting = false
+    private var hasLoadedDetail = false
+    private var hasAllowed = false
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
@@ -73,9 +75,15 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
             fetchDetail()
 
         case .rejectButtonDidTap:
+            guard hasLoadedDetail, !hasAllowed else { return }
             output.showHostRejectView.send(())
             
         case .allowButtonDidTap:
+            guard hasLoadedDetail else { return }
+            guard !hasAllowed else {
+                output.showHostAllowView.send(())
+                return
+            }
             allowApplication()
             
         case .nextButtonDidTap:
@@ -108,6 +116,7 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
                 meetingAt = DTO.meetingAt
                 meetingTimeType = DTO.meetingTimeType
                 openChatURL = DTO.openChatUrl ?? ""
+                hasLoadedDetail = true
                 output.displayData.send(data)
             } catch {
                 AppLogger.error(error)
@@ -124,6 +133,7 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
             do {
                 let response = try await repository.allowApplication(applicationId: applicationId)
                 matchId = response.matchId
+                hasAllowed = true
                 output.showHostAllowView.send(())
             } catch {
                 AppLogger.error(error)

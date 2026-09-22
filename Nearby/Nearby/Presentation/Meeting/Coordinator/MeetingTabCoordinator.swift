@@ -118,8 +118,8 @@ extension MeetingTabCoordinator: Coordinator {
         presentAlert(title: "만남이 인증되었습니다.")
     }
 
-    func showErrorAlert(message: String) {
-        presentAlert(message: message)
+    func showErrorAlert(title: String? = nil, message: String) {
+        presentAlert(title: title, message: message)
     }
 
     private func presentAlert(title: String? = nil, message: String? = nil) {

@@ -69,6 +69,11 @@ final class ReviewPostViewModel: BaseViewModelType {
         rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
     }
 
+    private var hasPartialContent: Bool {
+        let hasAnyContent = rating > 0 || !firstSelectedTags.isEmpty || !secondSelectedTags.isEmpty
+        return hasAnyContent && !hasReviewContent
+    }
+
     // MARK: - Initializer
 
     init(reviewItem: ReviewItem, type: NearbyUserType, isLastReview: Bool, repository: ReviewRepository, eventCenter: MeetingEventCenter) {
@@ -140,7 +145,7 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
     
     private func updateCompletionState() {
-        output.isCompletionEnabled.send(isFinishButton ? true : hasReviewContent)
+        output.isCompletionEnabled.send(isFinishButton ? !hasPartialContent : hasReviewContent)
     }
 
     private func submitReview() {

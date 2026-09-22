@@ -46,13 +46,14 @@ enum DiningCategory: CaseIterable, Hashable {
         }
     }
 
-    var serverKey: String {
+    var diningPlaceCategory: DiningPlace.Category {
         switch self {
-        case .restaurant: "RESTAURANT"
-        case .cafe: "CAFE"
-        case .bar: "PUB"
-        case .dessert: "CAFE"
-        case .paella: "RESTAURANT"
+        case .restaurant, .paella:
+            return .restaurant
+        case .cafe, .dessert:
+            return .cafe
+        case .bar:
+            return .pub
         }
     }
 }

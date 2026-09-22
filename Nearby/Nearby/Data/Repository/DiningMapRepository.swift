@@ -6,10 +6,10 @@
 //
 
 protocol DiningMapRepository {
-    func fetchPlaces(query: DiningListQuery) async throws -> DiningListResponseDTO
-    func fetchPlaceDetail(query: DiningDetailQuery) async throws -> DiningDetailResponseDTO
-    func fetchFavorites(query: DiningFavoritesQuery) async throws -> DiningFavoritesResponseDTO
-    func updateFavorite(placeId: Int, isFavorite: Bool) async throws -> DiningFavoriteResponseDTO
+    func fetchPlaces(criteria: DiningPlaceSearchCriteria) async throws -> [DiningPlace]
+    func fetchPlaceDetail(criteria: DiningPlaceDetailCriteria) async throws -> DiningPlace
+    func fetchFavorites(criteria: DiningFavoritesCriteria) async throws -> DiningFavoriteList
+    func updateFavorite(placeId: Int, isFavorite: Bool) async throws -> Bool
 }
 
 final class DefaultDiningMapRepository: DiningMapRepository {
@@ -19,19 +19,23 @@ final class DefaultDiningMapRepository: DiningMapRepository {
         self.service = service
     }
 
-    func fetchPlaces(query: DiningListQuery) async throws -> DiningListResponseDTO {
-        try await service.fetchPlaces(query: query)
+    func fetchPlaces(criteria: DiningPlaceSearchCriteria) async throws -> [DiningPlace] {
+        let response = try await service.fetchPlaces(query: DiningMapMapper.map(criteria))
+        return response.places.map(DiningMapMapper.map)
     }
 
-    func fetchPlaceDetail(query: DiningDetailQuery) async throws -> DiningDetailResponseDTO {
-        try await service.fetchPlaceDetail(query: query)
+    func fetchPlaceDetail(criteria: DiningPlaceDetailCriteria) async throws -> DiningPlace {
+        let response = try await service.fetchPlaceDetail(query: DiningMapMapper.map(criteria))
+        return DiningMapMapper.map(response)
     }
 
-    func fetchFavorites(query: DiningFavoritesQuery) async throws -> DiningFavoritesResponseDTO {
-        try await service.fetchFavorites(query: query)
+    func fetchFavorites(criteria: DiningFavoritesCriteria) async throws -> DiningFavoriteList {
+        let response = try await service.fetchFavorites(query: DiningMapMapper.map(criteria))
+        return DiningFavoriteList(totalCount: response.totalCount, places: response.favorites.map(DiningMapMapper.map))
     }
 
-    func updateFavorite(placeId: Int, isFavorite: Bool) async throws -> DiningFavoriteResponseDTO {
-        try await service.updateFavorite(placeId: placeId, isFavorite: isFavorite)
+    func updateFavorite(placeId: Int, isFavorite: Bool) async throws -> Bool {
+        let response = try await service.updateFavorite(placeId: placeId, isFavorite: isFavorite)
+        return response.isFavorite
     }
 }

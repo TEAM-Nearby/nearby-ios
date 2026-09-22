@@ -84,6 +84,10 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
         viewModel.restaurant(placeId: placeId)
     }
 
+    func currentMapMarkers() -> [CompanionMapMarkerData] {
+        viewModel.mapMarkers
+    }
+
     func updateFavorite(placeId: Int, isFavorite: Bool) {
         viewModel.updateFavorite(placeId: placeId, isFavorite: isFavorite)
     }

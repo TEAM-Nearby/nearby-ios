@@ -47,6 +47,9 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     private var favoriteTasks: [Int: Task<Void, Never>] = [:]
 
     var restaurantCount: Int { restaurants.count }
+    var mapMarkers: [CompanionMapMarkerData] {
+        restaurants.compactMap { CompanionMapMarkerData(diningItem: $0) }
+    }
 
     // MARK: - Initializer
     
@@ -151,7 +154,6 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     }
 
     private func publishRestaurants() {
-        let markers = restaurants.compactMap { CompanionMapMarkerData(diningItem: $0) }
-        output.viewState.send(.loaded(items: restaurants, markers: markers))
+        output.viewState.send(.loaded(items: restaurants, markers: mapMarkers))
     }
 }

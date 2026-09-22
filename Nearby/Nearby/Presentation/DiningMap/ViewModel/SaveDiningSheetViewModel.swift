@@ -71,6 +71,9 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     private var favoriteTasks: [Int: Task<Void, Never>] = [:]
     
     var restaurantCount: Int { restaurants.count }
+    var mapMarkers: [CompanionMapMarkerData] {
+        restaurants.compactMap { CompanionMapMarkerData(diningItem: $0, style: .savedRestaurant) }
+    }
     
     // MARK: - Initializer
     
@@ -210,9 +213,6 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     }
 
     private func publishRestaurants() {
-        let markers = restaurants.compactMap {
-            CompanionMapMarkerData(diningItem: $0, style: .savedRestaurant)
-        }
-        output.viewState.send(.loaded(items: restaurants, totalCount: totalCount, markers: markers))
+        output.viewState.send(.loaded(items: restaurants, totalCount: totalCount, markers: mapMarkers))
     }
 }

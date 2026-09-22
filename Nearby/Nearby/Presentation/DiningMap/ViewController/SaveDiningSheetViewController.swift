@@ -94,6 +94,10 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
         viewModel.action(.refresh)
     }
 
+    func currentMapMarkers() -> [CompanionMapMarkerData] {
+        viewModel.mapMarkers
+    }
+
     func updateFavorite(placeId: Int, isFavorite: Bool) {
         viewModel.updateFavorite(placeId: placeId, isFavorite: isFavorite)
     }

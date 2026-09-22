@@ -141,7 +141,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 postType = DTO.meetingTimeType
 
                 let data = MeetingProgressDisplayData(
-                    profileImageUrl: DTO.hostProfileImageUrl,
+                    profileImageURL: DTO.hostProfileImageUrl,
                     name: DTO.hostNickname,
                     gender: DTO.hostGender.genderDisplayText,
                     information: MeetingItem.makeInformation(placeName: DTO.placeName, meetingDate: meetingDate)
@@ -171,7 +171,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         postType = item.postType
         output.displayData.send(
             MeetingProgressDisplayData(
-                profileImageUrl: item.profileImageUrl,
+                profileImageURL: item.profileImageUrl,
                 name: item.name,
                 gender: item.gender,
                 information: item.information

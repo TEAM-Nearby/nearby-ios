@@ -6,7 +6,7 @@
 //
 
 struct MeetingProgressDisplayData {
-    let profileImageUrl: String?
+    let profileImageURL: String?
     let name: String
     let gender: String
     let information: String

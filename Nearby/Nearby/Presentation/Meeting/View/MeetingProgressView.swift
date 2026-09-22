@@ -232,7 +232,7 @@ final class MeetingProgressView: BaseView {
     // MARK: - Methods
 
     func configure(with data: MeetingProgressDisplayData) {
-        if let urlString = data.profileImageUrl, let url = URL(string: urlString) {
+        if let urlString = data.profileImageURL, let url = URL(string: urlString) {
             imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
         } else {
             imageView.image = .imgProfileDefault

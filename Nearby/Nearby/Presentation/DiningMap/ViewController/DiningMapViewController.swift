@@ -9,10 +9,9 @@ import UIKit
 
 final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     
-    var onAlarmButtonDidTap: (() -> Void)?
-    
     // MARK: - Properties
     
+    var onAlarmButtonDidTap: (() -> Void)?
     private let diningMapView = DiningMapView()
     private let bottomSheetController: DiningMapBottomSheetController
     private lazy var mapController = CompanionMapController(mapView: diningMapView.mapView, configuration: viewModel.output.mapConfiguration)

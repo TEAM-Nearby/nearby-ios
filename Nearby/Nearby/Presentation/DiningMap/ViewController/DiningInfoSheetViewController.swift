@@ -22,6 +22,8 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
     override func loadView() {
         view = diningInfoSheetView
     }
+    
+    // MARK: - Custom Methods
 
     override func bindAction() {
         diningInfoSheetView.onCloseTap = { [weak self] in

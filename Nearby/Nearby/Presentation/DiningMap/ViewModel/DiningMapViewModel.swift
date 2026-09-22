@@ -15,7 +15,7 @@ final class DiningMapViewModel: BaseViewModelType {
     enum Input {
         case viewDidLoad
     }
-
+    
     // MARK: - Output
     
     struct Output {
@@ -23,24 +23,24 @@ final class DiningMapViewModel: BaseViewModelType {
         let nickname = PassthroughSubject<String, Never>()
     }
     
-    // MARK: - Property
-
+    // MARK: - Properties
+    
     let output: Output
-
+    
     private let myPageRepository: MyPageRepository
     private var nicknameTask: Task<Void, Never>?
-
+    
     // MARK: - Initializer
     
     init(myPageRepository: MyPageRepository, mapConfiguration: CompanionMapConfiguration = .diningMap) {
         self.myPageRepository = myPageRepository
         self.output = Output(mapConfiguration: mapConfiguration)
     }
-
+    
     deinit {
         nicknameTask?.cancel()
     }
-
+    
     // MARK: - Action
     
     func action(_ trigger: Input) {
@@ -49,14 +49,14 @@ final class DiningMapViewModel: BaseViewModelType {
             fetchNickname()
         }
     }
-}
-
-private extension DiningMapViewModel {
+    
+    // MARK: - Method
+    
     func fetchNickname() {
         nicknameTask?.cancel()
         nicknameTask = Task { [weak self] in
             guard let self else { return }
-
+            
             do {
                 let response = try await myPageRepository.fetchMyPage()
                 guard !Task.isCancelled else { return }

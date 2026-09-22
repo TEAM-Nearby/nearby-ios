@@ -83,20 +83,6 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     // MARK: - Methods
     
-    func restaurant(at index: Int) -> NearDiningCellItem {
-        restaurants[index]
-    }
-    
-    func restaurant(placeId: Int) -> NearDiningCellItem? {
-        restaurants.first { $0.placeId == placeId }
-    }
-    
-    func updateFavorite(placeId: Int, isFavorite: Bool) {
-        guard let index = restaurants.firstIndex(where: { $0.placeId == placeId }) else { return }
-        restaurants[index].isBookmarked = isFavorite
-        publishRestaurants()
-    }
-    
     private func fetchRestaurants() {
         guard let currentCoordinate else { return }
         
@@ -154,5 +140,19 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     private func publishRestaurants() {
         output.viewState.send(.loaded(items: restaurants, markers: mapMarkers))
+    }
+    
+    func restaurant(at index: Int) -> NearDiningCellItem {
+        restaurants[index]
+    }
+    
+    func restaurant(placeId: Int) -> NearDiningCellItem? {
+        restaurants.first { $0.placeId == placeId }
+    }
+    
+    func updateFavorite(placeId: Int, isFavorite: Bool) {
+        guard let index = restaurants.firstIndex(where: { $0.placeId == placeId }) else { return }
+        restaurants[index].isBookmarked = isFavorite
+        publishRestaurants()
     }
 }

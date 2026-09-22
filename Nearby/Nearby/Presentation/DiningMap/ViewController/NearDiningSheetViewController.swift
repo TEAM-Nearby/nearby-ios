@@ -108,10 +108,7 @@ extension NearDiningSheetViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(NearDiningCell.self, for: indexPath)
-        cell.configure(
-            with: viewModel.restaurant(at: indexPath.item),
-            isLast: indexPath.item == viewModel.restaurantCount - 1
-        )
+        cell.configure(with: viewModel.restaurant(at: indexPath.item), isLast: indexPath.item == viewModel.restaurantCount - 1)
         cell.onBookmarkTap = { [weak self] in
             self?.viewModel.action(.bookmarkDidTap(indexPath.item))
         }

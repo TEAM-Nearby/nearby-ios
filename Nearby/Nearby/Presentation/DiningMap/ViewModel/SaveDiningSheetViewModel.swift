@@ -111,19 +111,6 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     
     // MARK: - Methods
     
-    func restaurant(at index: Int) -> NearDiningCellItem {
-        restaurants[index]
-    }
-    
-    func restaurant(placeId: Int) -> NearDiningCellItem? {
-        restaurants.first { $0.placeId == placeId }
-    }
-    
-    func updateFavorite(placeId: Int, isFavorite: Bool) {
-        guard !isFavorite else { return }
-        removeRestaurant(placeId: placeId)
-    }
-    
     private func fetchFavorites() {
         guard let currentCoordinate else { return }
         
@@ -214,5 +201,18 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     
     private func publishRestaurants() {
         output.viewState.send(.loaded(items: restaurants, totalCount: totalCount, markers: mapMarkers))
+    }
+    
+    func restaurant(at index: Int) -> NearDiningCellItem {
+        restaurants[index]
+    }
+    
+    func restaurant(placeId: Int) -> NearDiningCellItem? {
+        restaurants.first { $0.placeId == placeId }
+    }
+    
+    func updateFavorite(placeId: Int, isFavorite: Bool) {
+        guard !isFavorite else { return }
+        removeRestaurant(placeId: placeId)
     }
 }

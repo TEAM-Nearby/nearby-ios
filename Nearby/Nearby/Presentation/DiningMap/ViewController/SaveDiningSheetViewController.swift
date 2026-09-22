@@ -24,6 +24,8 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
         view = saveDiningBottomSheetView
     }
     
+    // MARK: - Custom Methods
+    
     override func setDelegate() {
         saveDiningBottomSheetView.collectionView.dataSource = self
         saveDiningBottomSheetView.collectionView.delegate = self
@@ -114,10 +116,7 @@ extension SaveDiningSheetViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(SaveDiningCell.self, for: indexPath)
-        cell.configure(
-            with: viewModel.restaurant(at: indexPath.item),
-            isLast: indexPath.item == viewModel.restaurantCount - 1
-        )
+        cell.configure(with: viewModel.restaurant(at: indexPath.item), isLast: indexPath.item == viewModel.restaurantCount - 1)
         cell.onBookmarkTap = { [weak self] in
             self?.viewModel.action(.bookmarkDidTap(indexPath.item))
         }

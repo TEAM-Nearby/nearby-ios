@@ -48,19 +48,22 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
             }
             .store(in: &cancellables)
 
-        viewModel.output.restaurants
+        viewModel.output.viewState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] state in
                 guard let self else { return }
-                initialLoadingTracker.complete(in: self)
-                saveDiningBottomSheetView.collectionView.reloadData()
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.totalCount
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] count in
-                self?.saveDiningBottomSheetView.updateRestaurantCount(count)
+                switch state {
+                case .idle, .loading:
+                    break
+                case .loaded(_, let totalCount, let markers):
+                    initialLoadingTracker.complete(in: self)
+                    saveDiningBottomSheetView.updateRestaurantCount(totalCount)
+                    saveDiningBottomSheetView.collectionView.reloadData()
+                    onMapMarkersChanged?(markers)
+                case .failed(let error):
+                    initialLoadingTracker.complete(in: self)
+                    AppLogger.error(error)
+                }
             }
             .store(in: &cancellables)
 
@@ -78,22 +81,6 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
             }
             .store(in: &cancellables)
 
-        viewModel.output.mapMarkers
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] markers in
-                self?.onMapMarkersChanged?(markers)
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.error
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                if let self {
-                    initialLoadingTracker.complete(in: self)
-                }
-                AppLogger.error(error)
-            }
-            .store(in: &cancellables)
     }
 
     // MARK: - Methods
@@ -105,6 +92,10 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
 
     func refresh() {
         viewModel.action(.refresh)
+    }
+
+    func currentMapMarkers() -> [CompanionMapMarkerData] {
+        viewModel.mapMarkers
     }
 
     func updateFavorite(placeId: Int, isFavorite: Bool) {

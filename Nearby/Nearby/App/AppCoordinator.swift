@@ -107,6 +107,10 @@ private extension AppCoordinator {
             navigationController.popViewController(animated: true)
         }
         
+        viewController.onBackButtonDidTap = { [weak navigationController] in
+            navigationController?.popViewController(animated: true)
+        }
+        
         viewController.onVerificationCompleted = { [weak self] in
             self?.showProfileSetting()
         }
@@ -124,6 +128,10 @@ private extension AppCoordinator {
         viewController.onBackButtonDidTap = { [weak self] in
             guard let navigationController = self?.window.rootViewController as? UINavigationController else { return }
             navigationController.popViewController(animated: true)
+        }
+        
+        viewController.onBackButtonDidTap = { [weak navigationController] in
+            navigationController?.popViewController(animated: true)
         }
         
         viewController.onProfileCompleted = { [weak self] in

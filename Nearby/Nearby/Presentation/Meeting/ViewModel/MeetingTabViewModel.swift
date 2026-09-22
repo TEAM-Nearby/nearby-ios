@@ -32,6 +32,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
     private var timerCancellable: AnyCancellable?
+    private var fetchTask: Task<Void, Never>?
     
     var items: [MeetingItem] { output.items.value }
     
@@ -53,6 +54,7 @@ final class MeetingTabViewModel: BaseViewModelType {
             
         case .viewDidDisappear:
             timerCancellable = nil
+            fetchTask?.cancel()
         }
     }
     
@@ -63,13 +65,16 @@ final class MeetingTabViewModel: BaseViewModelType {
     }
     
     private func fetchMeetings() {
-        Task {
+        fetchTask?.cancel()
+        fetchTask = Task {
             do {
                 let meetings = try await repository.fetchMeetingList()
+                guard !Task.isCancelled else { return }
                 let items = meetings.map(makeMeetingItem)
                     .filter { !eventCenter.completedMatchIds.contains($0.matchId) }
                 output.items.send(items)
             } catch {
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)
             }

@@ -128,7 +128,7 @@ final class CompanionViewModel: BaseViewModelType {
         case .currentLocationButtonDidTap:
             output.event.send(.moveToCurrentLocation)
         case .reset:
-            updateBottomSheet(BottomSheetState(content: .nearbyCompanionList, level: .compact), selectedPlaceId: nil)
+            reset()
         case .recruitCompanionButtonDidTap:
             route?(.recruitCompanion)
         case .companionDidSelect(let state):
@@ -137,6 +137,14 @@ final class CompanionViewModel: BaseViewModelType {
     }
 
     // MARK: - Methods
+
+    private func reset() {
+        var viewState = output.viewState.value
+        viewState.category = CategoryState(selectedIndex: 0, previousIndex: viewState.category.selectedIndex, content: .companions(.restaurant))
+        viewState.bottomSheet = BottomSheetState(content: .nearbyCompanionList, level: .compact)
+        viewState.selectedPlaceId = nil
+        output.viewState.send(viewState)
+    }
 
     private func updateCategory(at index: Int) {
         guard output.categoryItems.indices.contains(index) else { return }

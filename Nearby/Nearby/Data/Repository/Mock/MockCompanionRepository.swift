@@ -7,7 +7,9 @@
 
 import Foundation
 
-final class MockCompanionRepository: CompanionRepository {
+final class MockCompanionRepository {}
+
+extension MockCompanionRepository: CompanionRepository {
     func fetchList(criteria: CompanionSearchCriteria) async throws -> CompanionList {
         try Task.checkCancellation()
 
@@ -15,19 +17,19 @@ final class MockCompanionRepository: CompanionRepository {
         let posts = [
             makePost(postId: 1, placeId: 101, placeName: "La Paradeta",
                      latitude: criteria.latitude + 0.001, longitude: criteria.longitude + 0.001,
-                     distanceMeters: 250,
+                     distanceMeters: 250, category: criteria.placeCategory,
                      hostName: "수민", content: "오늘 저녁 같이 해산물 먹어요!!!!\n제발 아무나!!!!!",
                      meetingTimeType: .scheduled, meetingAt: now.addingTimeInterval(7_200),
                      createdAt: now.addingTimeInterval(-600)),
             makePost(postId: 2, placeId: 101, placeName: "La Paradeta",
                      latitude: criteria.latitude + 0.001, longitude: criteria.longitude + 0.001,
-                     distanceMeters: 250,
+                     distanceMeters: 250, category: criteria.placeCategory,
                      hostName: "지인", content: "저랑 놀 사람~~~ 저 미국이에요\n미국으로 오세요",
                      meetingTimeType: .now, meetingAt: nil,
                      createdAt: now.addingTimeInterval(-1_800)),
             makePost(postId: 3, placeId: 102, placeName: "El Nacional",
                      latitude: criteria.latitude - 0.001, longitude: criteria.longitude - 0.001,
-                     distanceMeters: 100,
+                     distanceMeters: 100, category: criteria.placeCategory,
                      hostName: "서연", content: "안녕하세요 서여니입니다\n저 맛집 많이 알아요",
                      meetingTimeType: .undecided, meetingAt: nil,
                      createdAt: now.addingTimeInterval(-3_600))
@@ -49,17 +51,17 @@ final class MockCompanionRepository: CompanionRepository {
 
 private extension MockCompanionRepository {
     func makePost(postId: Int, placeId: Int, placeName: String, latitude: Double, longitude: Double,
-                  distanceMeters: Int,
+                  distanceMeters: Int, category: CompanionPlace.Category,
                   hostName: String, content: String, meetingTimeType: CompanionMeetingTimeType,
                   meetingAt: Date?, createdAt: Date) -> CompanionPost {
         CompanionPost(
-            postId: postId,
+            postID: postId,
             host: CompanionHost(nickname: hostName, gender: .female),
             place: CompanionPlace(
-                placeId: placeId,
-                googlePlaceId: "mock-google-place-\(placeId)",
+                placeID: placeId,
+                googlePlaceID: "mock-google-place-\(placeId)",
                 name: placeName,
-                category: .restaurant,
+                category: category,
                 latitude: latitude,
                 longitude: longitude,
                 distanceMeters: distanceMeters,
@@ -72,8 +74,8 @@ private extension MockCompanionRepository {
             meetingAtText: nil,
             participantCount: 2,
             participants: [
-                CompanionParticipant(userId: postId * 10, profileImageURL: nil),
-                CompanionParticipant(userId: postId * 10 + 1, profileImageURL: nil)
+                CompanionParticipant(userID: postId * 10, profileImageURL: nil),
+                CompanionParticipant(userID: postId * 10 + 1, profileImageURL: nil)
             ],
             participantSummaryText: "2/4명",
             createdAt: createdAt,

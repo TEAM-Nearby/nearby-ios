@@ -25,6 +25,7 @@ final class CompanionBottomSheetController {
     private let specificSheetViewController: SpecificCompanionSheetViewController
     private let emptySheetViewController: EmptyCompanionSheetViewController
     private var displayedContent: BottomSheetContent?
+    private var displayedState: BottomSheetState?
     
     // MARK: - Initializer
     
@@ -39,7 +40,10 @@ final class CompanionBottomSheetController {
     
     private func bind() {
         bottomSheetViewController.onStateChange = { [weak self] _, state in
-            self?.onStateChange?(state)
+            guard let self, let displayedState, displayedState != state else { return }
+
+            self.displayedState = state
+            onStateChange?(state)
         }
         
         nearbySheetViewController.onCompanionSelected = { [weak self] item in
@@ -86,6 +90,7 @@ final class CompanionBottomSheetController {
     }
     
     func render(_ state: BottomSheetState, animated: Bool = true) {
+        displayedState = state
         bottomSheetViewController.setState(state, animated: animated)
         guard displayedContent != state.content else { return }
         

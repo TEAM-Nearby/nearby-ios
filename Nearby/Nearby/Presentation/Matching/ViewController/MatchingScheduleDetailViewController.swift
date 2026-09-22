@@ -92,19 +92,6 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
                 self?.share(displayData: displayData)
             }
             .store(in: &cancellables)
-
-        viewModel.output.errorMessage
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] message in
-                self?.showErrorAlert(message: message)
-            }
-            .store(in: &cancellables)
-    }
-
-    private func showErrorAlert(message: String) {
-        let alert = UIAlertController(title: "매칭 상세 조회 실패", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
-        present(alert, animated: true)
     }
     
     private func share(displayData: MatchingScheduleDetailDisplayData) {

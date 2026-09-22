@@ -26,7 +26,6 @@ final class MatchingViewModel: BaseViewModelType {
         let showScheduleDetail = PassthroughSubject<Int, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
         let showCompanionTab = PassthroughSubject<Void, Never>()
-        let errorMessage = PassthroughSubject<String, Never>()
     }
     
     // MARK: - Properties
@@ -97,7 +96,7 @@ final class MatchingViewModel: BaseViewModelType {
             } catch {
                 guard let self, !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭된 동행 목록 조회에 실패했습니다.")
-                output.errorMessage.send("매칭된 동행 목록을 불러오지 못했어요.")
+                output.items.send([])
             }
         }
     }

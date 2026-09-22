@@ -27,7 +27,6 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         let dateButtonTitle = PassthroughSubject<String, Never>()
         let showBack = PassthroughSubject<Void, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
-        let errorMessage = PassthroughSubject<String, Never>()
     }
 
     struct DisplayData {
@@ -127,9 +126,8 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
             } catch is CancellationError {
                 return
             } catch {
-                guard let self, !Task.isCancelled else { return }
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "동행 일정 확정에 실패했습니다.")
-                output.errorMessage.send("일정을 확정하지 못했어요.")
             }
         }
     }
@@ -166,9 +164,8 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
             } catch is CancellationError {
                 return
             } catch {
-                guard let self, !Task.isCancelled else { return }
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
-                output.errorMessage.send("매칭 상세 정보를 불러오지 못했어요.")
             }
         }
     }

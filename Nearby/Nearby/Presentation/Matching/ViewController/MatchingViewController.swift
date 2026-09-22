@@ -84,21 +84,6 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
                 self?.onRoute?(.companionTab)
             }
             .store(in: &cancellables)
-
-        viewModel.output.errorMessage
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] message in
-                guard let self else { return }
-                initialLoadingTracker.complete(in: self)
-                showErrorAlert(message: message)
-            }
-            .store(in: &cancellables)
-    }
-
-    private func showErrorAlert(message: String) {
-        let alert = UIAlertController(title: "매칭 목록 조회 실패", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
-        present(alert, animated: true)
     }
 
     // MARK: - Action

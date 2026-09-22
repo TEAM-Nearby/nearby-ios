@@ -28,7 +28,6 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
         let showAlarm = PassthroughSubject<Void, Never>()
         let showEdit = PassthroughSubject<Int, Never>()
         let showShare = PassthroughSubject<MatchingScheduleDetailDisplayData, Never>()
-        let errorMessage = PassthroughSubject<String, Never>()
     }
 
     // MARK: - Properties
@@ -97,9 +96,8 @@ final class MatchingScheduleDetailViewModel: BaseViewModelType {
             } catch is CancellationError {
                 return
             } catch {
-                guard let self, !Task.isCancelled else { return }
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
-                output.errorMessage.send("매칭 상세 정보를 불러오지 못했어요.")
             }
         }
     }

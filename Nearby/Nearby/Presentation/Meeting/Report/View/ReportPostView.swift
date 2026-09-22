@@ -28,7 +28,6 @@ final class ReportPostView: BaseView {
     
     // MARK: - Properties
     
-    private var selectedReasons = Set<Int>()
     var onTextChanged: ((String) -> Void)?
     var onBackButtonDidTap: (() -> Void)?
     var onReportButtonDidTap: (() -> Void)?

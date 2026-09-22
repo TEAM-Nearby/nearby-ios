@@ -112,6 +112,5 @@ final class ReviewProfileView: BaseView {
     @objc
     private func nextButtonDidTap() {
         onNextButtonDidTap?()
-        // TODO: - Coordinator 연결
     }
 }

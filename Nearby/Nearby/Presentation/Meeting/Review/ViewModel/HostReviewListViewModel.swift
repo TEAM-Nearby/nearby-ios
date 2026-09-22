@@ -134,8 +134,4 @@ final class HostReviewListViewModel: BaseViewModelType {
             }
         }
     }
-    
-    func item(at index: Int) -> ReviewItem {
-        items[index]
-    }
 }

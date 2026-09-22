@@ -26,6 +26,46 @@ final class NotificationCoordinator {
     }
 }
 
+extension NotificationCoordinator {
+    func handle(_ route: AlarmViewController.Route) {
+        switch route {
+        case .previous:
+            navigationController.popViewController(animated: true)
+        case .companionRequestAccept(let applicationId):
+            showCompanionRequestAccept(applicationId: applicationId)
+        case .companionRequestDecline:
+            showCompanionRequestDecline()
+        case .hostRequestReceive(let applicationId):
+            showHostRequestReceive(applicationId: applicationId)
+        case .schedule(let matchId):
+            showMatchingScheduleDetail(matchId: matchId)
+        }
+    }
+}
+
+private extension NotificationCoordinator {
+    func handle(_ route: NotificationRoute) {
+        switch route {
+        case .previous:
+            navigationController.popViewController(animated: true)
+        case .companionTab:
+            showCompanionTab()
+        case .scheduleDetail(let matchId):
+            showMatchingScheduleDetail(matchId: matchId)
+        case .recruitCompanion:
+            showRecruitCompanion()
+        case .manageSchedule(let matchId):
+            showMatchingManageDetail(matchId: matchId)
+        case .hostRequestDecline(let applicantName, let applicationId):
+            showHostRequestDecline(applicantName: applicantName, applicationId: applicationId)
+        case let .hostRequestAllow(applicantName, imageURL, locationName, meetingAt, matchId, postType, openChatURL):
+            showHostRequestAllow(applicantName: applicantName, applicantProfileImageUrl: imageURL, locationName: locationName, meetingAt: meetingAt, matchId: matchId, postType: postType, openChatUrl: openChatURL)
+        case .applicantProfile(let profileId):
+            showHostProfile(profileId: profileId)
+        }
+    }
+}
+
 // MARK: - Coordinator
 
 extension NotificationCoordinator: Coordinator {
@@ -46,37 +86,17 @@ extension NotificationCoordinator: Coordinator {
     }
 
     private func makeAlarmViewController(initialTab: AlarmTab = .sent) -> AlarmViewController {
-        let alarmViewController = diContainer.myPage.makeAlarmViewController(
-            initialTab: initialTab
-        )
-        alarmViewController.coordinator = self
-
-        alarmViewController.onBackButtonDidTap = { [weak self] in
-            self?.navigationController.popViewController(animated: true)
+        diContainer.myPage.makeAlarmViewController(initialTab: initialTab) { [weak self] route in
+            self?.handle(route)
         }
-
-        alarmViewController.onRequestActionDidTap = { [weak self] requestItem in
-            guard let self else { return }
-            switch requestItem.displayType {
-            case .sentAccepted:
-                showCompanionRequestAccept(applicationId: requestItem.applicationId)
-            case .sentRejected:
-                showCompanionRequestDecline()
-
-            case .receivedPending:
-                showHostRequestReceive(applicationId: requestItem.applicationId)
-            default:
-                break
-            }
-        }
-
-        return alarmViewController
     }
 }
 
 extension NotificationCoordinator {
     func showCompanionRequestSent(hostName: String) {
-        let viewController = diContainer.notification.makeCompanionRequestSentViewController(coordinator: self, hostName: hostName)
+        let viewController = diContainer.notification.makeCompanionRequestSentViewController(hostName: hostName) { [weak self] route in
+            self?.handle(route)
+        }
 
         if let rootViewController = navigationController.viewControllers.first {
             navigationController.setViewControllers([rootViewController, viewController], animated: true)
@@ -86,13 +106,17 @@ extension NotificationCoordinator {
     }
 
     func showCompanionRequestAccept(applicationId: Int) {
-        let viewController = diContainer.notification.makeCompanionRequestAcceptViewController(coordinator: self, applicationId: applicationId)
+        let viewController = diContainer.notification.makeCompanionRequestAcceptViewController(applicationId: applicationId) { [weak self] route in
+            self?.handle(route)
+        }
         viewController.hidesBottomBarWhenPushed = true
         navigationController.pushViewController(viewController, animated: true)
     }
 
     func showCompanionRequestDecline() {
-        let viewController = diContainer.notification.makeCompanionRequestDeclineViewController(coordinator: self)
+        let viewController = diContainer.notification.makeCompanionRequestDeclineViewController { [weak self] route in
+            self?.handle(route)
+        }
         viewController.hidesBottomBarWhenPushed = true
         navigationController.pushViewController(viewController, animated: true)
     }
@@ -100,7 +124,9 @@ extension NotificationCoordinator {
 
 extension NotificationCoordinator {
     func showHostRequestReceive(applicationId: Int) {
-        let viewController = diContainer.notification.makeHostRequestReceiveViewController(coordinator: self, applicationId: applicationId)
+        let viewController = diContainer.notification.makeHostRequestReceiveViewController(applicationId: applicationId) { [weak self] route in
+            self?.handle(route)
+        }
 
         viewController.hidesBottomBarWhenPushed = true
 
@@ -113,21 +139,23 @@ extension NotificationCoordinator {
                               openChatUrl: String
     ) {
         let viewController = diContainer.notification.makeHostRequestAllowViewController(
-            coordinator: self,
             applicantName: applicantName,
             applicantProfileImageUrl: applicantProfileImageUrl,
             locationName: locationName,
             meetingAt: meetingAt,
             matchId: matchId,
             postType: postType,
-            openChatUrl: openChatUrl
+            openChatUrl: openChatUrl,
+            onRoute: { [weak self] route in self?.handle(route) }
         )
 
         navigationController.pushViewController(viewController, animated: true)
     }
 
     func showHostRequestDecline(applicantName: String, applicationId: Int) {
-        let viewController = diContainer.notification.makeHostRequestDeclineViewController(coordinator: self, applicantName: applicantName, applicationId: applicationId)
+        let viewController = diContainer.notification.makeHostRequestDeclineViewController(applicantName: applicantName, applicationId: applicationId) { [weak self] route in
+            self?.handle(route)
+        }
         navigationController.pushViewController(viewController, animated: true)
     }
 }
@@ -165,7 +193,11 @@ extension NotificationCoordinator {
         companionCoordinator.parentCoordinator = self
         addChildCoordinator(companionCoordinator)
 
-        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController(coordinator: companionCoordinator)
+        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController { [weak companionCoordinator] route in
+            switch route {
+            case .previous: companionCoordinator?.showPrevious()
+            }
+        }
         navigationController.pushViewController(viewController, animated: true)
     }
 }
@@ -173,11 +205,7 @@ extension NotificationCoordinator {
 extension NotificationCoordinator {
     func showMatchingScheduleDetail(matchId: Int) {
         let matchingCoordinator = makeChildMatchingCoordinator()
-        let viewController = diContainer.matching.makeScheduleDetailViewController(
-            coordinator: matchingCoordinator,
-            matchId: matchId
-        )
-        navigationController.pushViewController(viewController, animated: true)
+        matchingCoordinator.showScheduleDetail(matchId: matchId)
     }
 
     func showMatchingScheduleDetail(item: MatchingMatchedCardItem) {
@@ -186,11 +214,7 @@ extension NotificationCoordinator {
 
     func showMatchingManageDetail(matchId: Int) {
         let matchingCoordinator = makeChildMatchingCoordinator()
-        let viewController = diContainer.matching.makeManageScheduleDetailViewController(
-            coordinator: matchingCoordinator,
-            matchId: matchId
-        )
-        navigationController.pushViewController(viewController, animated: true)
+        matchingCoordinator.showManageScheduleDetail(matchId: matchId)
     }
 
     func showMatchingManageDetail(item: MatchingMatchedCardItem) {
@@ -198,7 +222,9 @@ extension NotificationCoordinator {
     }
     
     func showHostProfile(profileId: Int) {
-        let viewController = diContainer.notification.makeHostProfileViewController(profileId: profileId)
+        let viewController = diContainer.notification.makeHostProfileViewController(profileId: profileId) { [weak self] route in
+            self?.handle(route)
+        }
         viewController.hidesBottomBarWhenPushed = true
         navigationController.pushViewController(viewController, animated: true)
     }

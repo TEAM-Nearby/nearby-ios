@@ -9,14 +9,14 @@ import Combine
 import UIKit
 
 final class CompanionRequestAcceptViewController: BaseViewController<CompanionRequestAcceptViewModel> {
-    
+
     // MARK: - UI Component
     
     private let companionRequestAcceptView = CompanionRequestAcceptView()
     
     // MARK: - Property
     
-    weak var coordinator: NotificationCoordinator?
+    var onRoute: ((NotificationRoute) -> Void)?
     
     // MARK: - Life Cycles
     
@@ -56,7 +56,7 @@ final class CompanionRequestAcceptViewController: BaseViewController<CompanionRe
         viewModel.output.showScheduleDetail
             .receive(on: DispatchQueue.main)
             .sink { [weak self] matchId in
-                self?.coordinator?.showMatchingScheduleDetail(matchId: matchId)
+                self?.onRoute?(.scheduleDetail(matchId))
             }
             .store(in: &cancellables)
         

@@ -9,14 +9,14 @@ import Combine
 import UIKit
 
 final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
-    
+
     // MARK: - UI Component
     
     private let reportPostView = ReportPostView()
     
     // MARK: - Property
     
-    weak var coordinator: MeetingTabCoordinator?
+    var onRoute: ((MeetingRoute) -> Void)?
     
     // MARK: - Life Cycles
     
@@ -40,7 +40,7 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
         addKeyboardDismissGesture()
 
         reportPostView.onBackButtonDidTap = { [weak self] in
-            self?.coordinator?.pop()
+            self?.onRoute?(.previous)
         }
         
         reportPostView.onTextChanged = { [weak self] text in
@@ -78,7 +78,7 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
         viewModel.output.submitSuccess
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showReportComplete()
+                self?.onRoute?(.reportCompletion)
             }
             .store(in: &cancellables)
     }

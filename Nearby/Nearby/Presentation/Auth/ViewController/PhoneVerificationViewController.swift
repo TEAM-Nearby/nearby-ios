@@ -12,6 +12,7 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
     // MARK: - Property
     
     var onVerificationCompleted: (() -> Void)?
+    var onBackButtonDidTap: (() -> Void)?
     
     // MARK: - UI Component
 
@@ -63,7 +64,7 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
         }
         
         viewModel.output.shouldPopViewController = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.onBackButtonDidTap?()
         }
         
         viewModel.output.phoneVerificationDidFail = { [weak self] message in

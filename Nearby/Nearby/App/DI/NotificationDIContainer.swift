@@ -33,73 +33,52 @@ final class NotificationDIContainer {
 
     // MARK: - Factory Methods
 
-    func makeCompanionRequestSentViewController(coordinator: NotificationCoordinator, hostName: String) -> UIViewController {
+    func makeCompanionRequestSentViewController(hostName: String, onRoute: @escaping (NotificationRoute) -> Void) -> UIViewController {
         let viewController = CompanionRequestSentViewController(viewModel: CompanionRequestSentViewModel(hostName: hostName))
-        configure(viewController, coordinator: coordinator)
+        viewController.onRoute = onRoute
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeCompanionRequestDeclineViewController(coordinator: NotificationCoordinator) -> UIViewController {
+    func makeCompanionRequestDeclineViewController(onRoute: @escaping (NotificationRoute) -> Void) -> UIViewController {
         let viewController = CompanionRequestDeclineViewController(viewModel: CompanionRequestDeclineViewModel())
-        configure(viewController, coordinator: coordinator)
+        viewController.onRoute = onRoute
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeCompanionRequestAcceptViewController(coordinator: NotificationCoordinator, applicationId: Int) -> UIViewController {
+    func makeCompanionRequestAcceptViewController(applicationId: Int, onRoute: @escaping (NotificationRoute) -> Void) -> UIViewController {
         let viewController = CompanionRequestAcceptViewController(viewModel: CompanionRequestAcceptViewModel(applicationId: applicationId, repository: applicantRepository))
-        configure(viewController, coordinator: coordinator)
+        viewController.onRoute = onRoute
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeHostRequestReceiveViewController(coordinator: NotificationCoordinator, applicationId: Int) -> UIViewController {
+    func makeHostRequestReceiveViewController(applicationId: Int, onRoute: @escaping (NotificationRoute) -> Void) -> UIViewController {
         let viewController = HostRequestReceiveViewController(viewModel: HostRequestReceiveViewModel(applicationId: applicationId, repository: hostRepository))
-        configure(viewController, coordinator: coordinator)
+        viewController.onRoute = onRoute
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeHostRequestDeclineViewController(coordinator: NotificationCoordinator, applicantName: String, applicationId: Int) -> UIViewController {
+    func makeHostRequestDeclineViewController(applicantName: String, applicationId: Int, onRoute: @escaping (NotificationRoute) -> Void) -> UIViewController {
         let viewController = HostRequestDeclineViewController(viewModel: HostRequestDeclineViewModel(applicantName: applicantName, applicationId: applicationId, repository: hostRepository))
-        configure(viewController, coordinator: coordinator)
+        viewController.onRoute = onRoute
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeHostRequestAllowViewController(coordinator: NotificationCoordinator, applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String) -> UIViewController {
+    func makeHostRequestAllowViewController(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String, onRoute: @escaping (NotificationRoute) -> Void) -> UIViewController {
         let viewController = HostRequestAllowViewController(viewModel: HostRequestAllowViewModel(applicantProfileImageUrl: applicantProfileImageUrl, applicantName: applicantName, locationName: locationName, meetingAt: meetingAt, matchId: matchId, postType: postType, openChatUrl: openChatUrl))
-        configure(viewController, coordinator: coordinator)
+        viewController.onRoute = onRoute
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 
-    func makeHostProfileViewController(profileId: Int) -> HostProfileViewController {
-        HostProfileViewController(viewModel: HostProfileViewModel(profileId: profileId, repository: profileRepository))
+    func makeHostProfileViewController(profileId: Int, onRoute: @escaping (NotificationRoute) -> Void) -> HostProfileViewController {
+        let viewController = HostProfileViewController(viewModel: HostProfileViewModel(profileId: profileId, repository: profileRepository))
+        viewController.onRoute = onRoute
+        return viewController
     }
 
-    private func configure(_ viewController: CompanionRequestSentViewController, coordinator: NotificationCoordinator) {
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-    }
-
-    private func configure(_ viewController: CompanionRequestDeclineViewController, coordinator: NotificationCoordinator) {
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-    }
-
-    private func configure(_ viewController: CompanionRequestAcceptViewController, coordinator: NotificationCoordinator) {
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-    }
-
-    private func configure(_ viewController: HostRequestReceiveViewController, coordinator: NotificationCoordinator) {
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-    }
-
-    private func configure(_ viewController: HostRequestDeclineViewController, coordinator: NotificationCoordinator) {
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-    }
-
-    private func configure(_ viewController: HostRequestAllowViewController, coordinator: NotificationCoordinator) {
-        viewController.coordinator = coordinator
-        viewController.hidesBottomBarWhenPushed = true
-    }
 }

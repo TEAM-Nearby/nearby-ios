@@ -9,14 +9,14 @@ import Combine
 import UIKit
 
 final class ReportCompletionViewController: BaseViewController<EmptyViewModel> {
-    
+
     // MARK: - UI Component
     
     private let reportCompletionView = ReportCompletionView()
     
     // MARK: - Property
     
-    weak var coordinator: MeetingTabCoordinator?
+    var onRoute: ((MeetingRoute) -> Void)?
     
     // MARK: - Life Cycle
     
@@ -28,7 +28,7 @@ final class ReportCompletionViewController: BaseViewController<EmptyViewModel> {
     
     override func setAddTarget() {
         reportCompletionView.onConfirmButtonDidTap = { [weak self] in
-            self?.coordinator?.dismissReportFlow()
+            self?.onRoute?(.dismissReport)
         }
     }
 }

@@ -16,7 +16,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
     
     // MARK: - Properties
     
-    weak var coordinator: MeetingTabCoordinator?
+    var onRoute: ((MeetingRoute) -> Void)?
     var onReviewSaved: (() -> Void)?
     
     // MARK: - Life Cycles
@@ -42,7 +42,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
     
     override func setAddTarget() {
         reviewPostView.onBackButtonDidTap = { [weak self] in
-            self?.coordinator?.pop()
+            self?.onRoute?(.previous)
         }
         reviewPostView.onRatingChanged = { [weak self] rating in
             self?.viewModel.action(.ratingChanged(rating))
@@ -92,7 +92,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         viewModel.output.showReport
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.showReportPost()
+                self?.onRoute?(.report)
             }
             .store(in: &cancellables)
         
@@ -100,21 +100,23 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.onReviewSaved?()
-                self?.coordinator?.pop()
+                self?.onRoute?(.previous)
             }
             .store(in: &cancellables)
 
         viewModel.output.companionCompleted
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.coordinator?.finishCompanionReview()
+                self?.onRoute?(.reviewCompletion)
             }
             .store(in: &cancellables)
 
         viewModel.output.errorMessage
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message in
-                self?.coordinator?.showErrorAlert(title: "후기 등록에 실패했어요", message: message)
+                let alert = UIAlertController(title: "후기 등록에 실패했어요", message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "확인", style: .default))
+                self?.present(alert, animated: true)
             }
             .store(in: &cancellables)
 

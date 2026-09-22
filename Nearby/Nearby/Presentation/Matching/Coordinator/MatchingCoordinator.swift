@@ -28,7 +28,9 @@ final class MatchingCoordinator {
 
 extension MatchingCoordinator: Coordinator {
     func start() {
-        let viewController = diContainer.matching.makeMatchingViewController(coordinator: self)
+        let viewController = diContainer.matching.makeMatchingViewController { [weak self] route in
+            self?.handle(route)
+        }
         navigationController.setViewControllers([viewController], animated: false)
     }
 
@@ -37,18 +39,23 @@ extension MatchingCoordinator: Coordinator {
     }
 
     func showScheduleDetail(matchId: Int) {
-        let viewController = diContainer.matching.makeScheduleDetailViewController(
-            coordinator: self,
-            matchId: matchId
-        )
+        let viewController = diContainer.matching.makeScheduleDetailViewController(matchId: matchId) { [weak self] route in
+            self?.handle(route)
+        }
         navigationController.pushViewController(viewController, animated: true)
     }
 
     func showManageScheduleDetail(displayData: MatchingScheduleDetailDisplayData) {
-        let viewController = diContainer.matching.makeManageScheduleDetailViewController(
-            coordinator: self,
-            displayData: displayData
-        )
+        let viewController = diContainer.matching.makeManageScheduleDetailViewController(displayData: displayData) { [weak self] route in
+            self?.handle(route)
+        }
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showManageScheduleDetail(matchId: Int) {
+        let viewController = diContainer.matching.makeManageScheduleDetailViewController(matchId: matchId) { [weak self] route in
+            self?.handle(route)
+        }
         navigationController.pushViewController(viewController, animated: true)
     }
 
@@ -72,5 +79,22 @@ extension MatchingCoordinator: Coordinator {
 
     func showCompanionTab() {
         (parentCoordinator as? MainTabCoordinator)?.switchTab(to: .companion)
+    }
+}
+
+private extension MatchingCoordinator {
+    func handle(_ route: MatchingRoute) {
+        switch route {
+        case .scheduleDetail(let matchId):
+            showScheduleDetail(matchId: matchId)
+        case .alarm:
+            showAlarm()
+        case .companionTab:
+            showCompanionTab()
+        case .previous:
+            showPrevious()
+        case .manageSchedule(let displayData):
+            showManageScheduleDetail(displayData: displayData)
+        }
     }
 }

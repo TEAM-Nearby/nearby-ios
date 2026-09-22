@@ -49,7 +49,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private var restaurantCoordinate: (latitude: Double, longitude: Double)?
     private var meetingDate: Date?
     private var postType: PostType = .scheduled
-    private var hasVerifiedCompanion = false
+    private var hasVerifiedCompanion: Bool?
     private var cancellables = Set<AnyCancellable>()
     
     private var currentStep: MeetingStep {
@@ -100,7 +100,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     longitude: restaurantCoordinate.longitude
                 )
             case .completion:
-                guard hasVerifiedCompanion else {
+                guard hasVerifiedCompanion != false else {
                     output.showVerificationWaitingToast.send(())
                     refreshCompanionVerification()
                     return
@@ -241,7 +241,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private func updateVerifyButtonState() {
         output.verifyButtonState.send(
             MeetingVerifyButtonState(
-                isEnabled: isVerifiable || (currentStep == .completion && hasVerifiedCompanion),
+                isEnabled: isVerifiable || (currentStep == .completion && hasVerifiedCompanion == true),
                 isTouchEnabled: isVerifiable || currentStep == .completion,
                 isDescriptionHidden: isVerifiable || currentStep == .completion,
                 title: currentStep == .completion ? "다음" : "만남 인증하기"
@@ -261,7 +261,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 }
                 updateVerifyButtonState()
 
-                if currentStep == .completion && !hasVerifiedCompanion {
+                if currentStep == .completion && hasVerifiedCompanion != true {
                     refreshCompanionVerification()
                 }
             }

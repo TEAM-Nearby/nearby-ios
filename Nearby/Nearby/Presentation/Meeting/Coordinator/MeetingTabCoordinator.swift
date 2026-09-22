@@ -58,7 +58,6 @@ extension MeetingTabCoordinator: Coordinator {
         let viewController = diContainer.meeting.makeReviewViewController(
             coordinator: self, type: type, reviewItem: item
         )
-        viewController.hidesBottomBarWhenPushed = true
         navigationController.pushViewController(viewController, animated: true)
     }
     

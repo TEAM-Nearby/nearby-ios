@@ -266,7 +266,6 @@ final class HostRequestReceiveView: BaseView {
         }
         
         allowButton.snp.makeConstraints {
-            $0.width.equalTo(220)
             $0.height.equalTo(56)
             $0.bottom.equalTo(safeAreaLayoutGuide)
             $0.leading.equalTo(rejectButton.snp.trailing).offset(8)

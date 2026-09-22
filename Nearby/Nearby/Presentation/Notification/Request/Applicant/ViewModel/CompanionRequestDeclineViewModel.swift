@@ -37,7 +37,6 @@ final class CompanionRequestDeclineViewModel: BaseViewModelType {
     // MARK: - Properties
 
     let output = Output()
-    
 
     // MARK: - Action
 

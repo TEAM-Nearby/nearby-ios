@@ -14,14 +14,12 @@ final class DiningMapViewModel: BaseViewModelType {
     
     enum Input {
         case viewDidLoad
-        case bookmarkDidTap
     }
 
     // MARK: - Output
     
     struct Output {
         let mapConfiguration: CompanionMapConfiguration
-        let isBookmarkSelected = CurrentValueSubject<Bool, Never>(false)
         let nickname = PassthroughSubject<String, Never>()
     }
     
@@ -34,10 +32,7 @@ final class DiningMapViewModel: BaseViewModelType {
 
     // MARK: - Initializer
     
-    init(
-        myPageRepository: MyPageRepository,
-        mapConfiguration: CompanionMapConfiguration = .diningMap
-    ) {
+    init(myPageRepository: MyPageRepository, mapConfiguration: CompanionMapConfiguration = .diningMap) {
         self.myPageRepository = myPageRepository
         self.output = Output(mapConfiguration: mapConfiguration)
     }
@@ -52,8 +47,6 @@ final class DiningMapViewModel: BaseViewModelType {
         switch trigger {
         case .viewDidLoad:
             fetchNickname()
-        case .bookmarkDidTap:
-            output.isBookmarkSelected.send(!output.isBookmarkSelected.value)
         }
     }
 }

@@ -19,32 +19,39 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
         case bookmarkDidTap(Int)
     }
 
+    // MARK: - View State
+
+    enum ViewState {
+        case idle
+        case loading
+        case loaded(items: [NearDiningCellItem], markers: [CompanionMapMarkerData])
+        case failed(Error)
+    }
+
     // MARK: - Output
-    
+
     struct Output {
         let selectedCategory = CurrentValueSubject<DiningCategory, Never>(.restaurant)
-        let restaurants: CurrentValueSubject<[NearDiningCellItem], Never>
-        let mapMarkers = CurrentValueSubject<[CompanionMapMarkerData], Never>([])
+        let viewState = CurrentValueSubject<ViewState, Never>(.idle)
         let selectedRestaurant = PassthroughSubject<NearDiningCellItem, Never>()
-        let error = PassthroughSubject<Error, Never>()
     }
     
     // MARK: - Properties
 
-    let output: Output
+    let output = Output()
 
     private let repository: DiningMapRepository
+    private var restaurants: [NearDiningCellItem] = []
     private var currentCoordinate: CLLocationCoordinate2D?
     private var fetchTask: Task<Void, Never>?
     private var favoriteTasks: [Int: Task<Void, Never>] = [:]
 
-    var restaurantCount: Int { output.restaurants.value.count }
+    var restaurantCount: Int { restaurants.count }
 
     // MARK: - Initializer
     
     init(repository: DiningMapRepository) {
         self.repository = repository
-        output = Output(restaurants: CurrentValueSubject([]))
     }
 
     deinit {
@@ -63,6 +70,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
             output.selectedCategory.send(category)
             fetchRestaurants()
         case .restaurantDidSelect(let index):
+            guard restaurants.indices.contains(index) else { return }
             output.selectedRestaurant.send(restaurant(at: index))
         case .bookmarkDidTap(let index):
             updateFavorite(at: index)
@@ -72,68 +80,50 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     // MARK: - Methods
     
     func restaurant(at index: Int) -> NearDiningCellItem {
-        output.restaurants.value[index]
+        restaurants[index]
     }
 
     func restaurant(placeId: Int) -> NearDiningCellItem? {
-        output.restaurants.value.first { $0.placeId == placeId }
+        restaurants.first { $0.placeId == placeId }
     }
 
     func updateFavorite(placeId: Int, isFavorite: Bool) {
-        var restaurants = output.restaurants.value
         guard let index = restaurants.firstIndex(where: { $0.placeId == placeId }) else { return }
         restaurants[index].isBookmarked = isFavorite
-        output.restaurants.send(restaurants)
-        updateMapMarkers(from: restaurants)
+        publishRestaurants()
     }
-}
 
-private extension NearDiningBottomSheetViewModel {
-    func fetchRestaurants() {
+    private func fetchRestaurants() {
         guard let currentCoordinate else { return }
 
         fetchTask?.cancel()
         let category = output.selectedCategory.value
+        output.viewState.send(.loading)
 
         fetchTask = Task { [weak self] in
             guard let self else { return }
 
             do {
-                let response = try await repository.fetchPlaces(
-                    query: DiningListQuery(
+                let places = try await repository.fetchPlaces(
+                    criteria: DiningPlaceSearchCriteria(
                         latitude: currentCoordinate.latitude,
                         longitude: currentCoordinate.longitude,
-                        category: category.serverKey
+                        category: category.diningPlaceCategory
                     )
                 )
                 guard !Task.isCancelled else { return }
-                let restaurants = response.places.map(NearDiningCellItem.init(dto:))
-                output.restaurants.send(restaurants)
-                updateMapMarkers(from: restaurants)
+                restaurants = places.map(NearDiningCellItem.init(place:))
+                publishRestaurants()
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
-                output.error.send(error)
+                output.viewState.send(.failed(error))
             }
         }
     }
 
-    @MainActor
-    func updateMapMarkers(from restaurants: [NearDiningCellItem]) {
-        var markers: [CompanionMapMarkerData] = []
-
-        for restaurant in restaurants {
-            if let marker = CompanionMapMarkerData(diningItem: restaurant) {
-                markers.append(marker)
-            }
-        }
-
-        output.mapMarkers.send(markers)
-    }
-
-    func updateFavorite(at index: Int) {
-        let restaurants = output.restaurants.value
+    private func updateFavorite(at index: Int) {
         guard
             restaurants.indices.contains(index),
             let placeId = restaurants[index].placeId,
@@ -147,19 +137,21 @@ private extension NearDiningBottomSheetViewModel {
             defer { favoriteTasks[placeId] = nil }
 
             do {
-                let response = try await repository.updateFavorite(
-                    placeId: placeId,
-                    isFavorite: isFavorite
-                )
+                let updatedFavorite = try await repository.updateFavorite(placeId: placeId, isFavorite: isFavorite)
                 guard !Task.isCancelled else { return }
-                updateFavorite(placeId: placeId, isFavorite: response.isFavorite)
+                updateFavorite(placeId: placeId, isFavorite: updatedFavorite)
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
                 updateFavorite(placeId: placeId, isFavorite: !isFavorite)
-                output.error.send(error)
+                output.viewState.send(.failed(error))
             }
         }
+    }
+
+    private func publishRestaurants() {
+        let markers = restaurants.compactMap { CompanionMapMarkerData(diningItem: $0) }
+        output.viewState.send(.loaded(items: restaurants, markers: markers))
     }
 }

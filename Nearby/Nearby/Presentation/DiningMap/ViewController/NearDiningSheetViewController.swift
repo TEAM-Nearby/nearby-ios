@@ -46,12 +46,21 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
             }
             .store(in: &cancellables)
 
-        viewModel.output.restaurants
+        viewModel.output.viewState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] state in
                 guard let self else { return }
-                initialLoadingTracker.complete(in: self)
-                nearDiningBottomSheetView.collectionView.reloadData()
+                switch state {
+                case .idle, .loading:
+                    break
+                case .loaded(_, let markers):
+                    initialLoadingTracker.complete(in: self)
+                    nearDiningBottomSheetView.collectionView.reloadData()
+                    onMapMarkersChanged?(markers)
+                case .failed(let error):
+                    initialLoadingTracker.complete(in: self)
+                    AppLogger.error(error)
+                }
             }
             .store(in: &cancellables)
 
@@ -62,22 +71,6 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
             }
             .store(in: &cancellables)
 
-        viewModel.output.mapMarkers
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] markers in
-                self?.onMapMarkersChanged?(markers)
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.error
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                if let self {
-                    initialLoadingTracker.complete(in: self)
-                }
-                AppLogger.error(error)
-            }
-            .store(in: &cancellables)
     }
     
     // MARK: - Methods

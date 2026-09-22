@@ -34,13 +34,22 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
     }
 
     override func bindState() {
-        viewModel.output.restaurant
-            .compactMap { $0 }
+        viewModel.output.viewState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
+            .sink { [weak self] state in
                 guard let self else { return }
-                initialLoadingTracker.complete(in: self)
-                configureView(with: item)
+                switch state {
+                case .idle:
+                    break
+                case .loading(let item):
+                    configureView(with: item)
+                case .loaded(let item):
+                    initialLoadingTracker.complete(in: self)
+                    configureView(with: item)
+                case .failed(let error):
+                    initialLoadingTracker.complete(in: self)
+                    AppLogger.error(error)
+                }
             }
             .store(in: &cancellables)
 
@@ -51,22 +60,13 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
             }
             .store(in: &cancellables)
 
-        viewModel.output.error
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                if let self {
-                    initialLoadingTracker.complete(in: self)
-                }
-                AppLogger.error(error)
-            }
-            .store(in: &cancellables)
     }
     
     // MARK: - Methods
 
     private func configureView(with item: NearDiningCellItem) {
-        diningInfoSheetView.configure(with: item, description: item.description,
-                                      closingTime: item.closingTime, phoneNumber: item.phoneNumber, price: item.price)
+        diningInfoSheetView.configure(with: item, description: item.description, closingTime: item.closingTime,
+                                      phoneNumber: item.phoneNumber, price: item.price)
     }
 
     func configure(with item: NearDiningCellItem) {

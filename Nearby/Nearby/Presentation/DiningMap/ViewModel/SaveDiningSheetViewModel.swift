@@ -19,10 +19,10 @@ enum DiningFavoriteSortOption: CaseIterable {
         }
     }
 
-    var serverKey: String {
+    var diningFavoriteSort: DiningFavoriteSort {
         switch self {
-        case .latest: "LATEST"
-        case .oldest: "OLDEST"
+        case .latest: .latest
+        case .oldest: .oldest
         }
     }
 }
@@ -39,18 +39,24 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
         case restaurantDidSelect(Int)
         case bookmarkDidTap(Int)
     }
-    
+
+    // MARK: - View State
+
+    enum ViewState {
+        case idle
+        case loading
+        case loaded(items: [NearDiningCellItem], totalCount: Int, markers: [CompanionMapMarkerData])
+        case failed(Error)
+    }
+
     // MARK: - Output
     
     struct Output {
         let selectedCategory = CurrentValueSubject<DiningCategory, Never>(.restaurant)
         let selectedSort = CurrentValueSubject<DiningFavoriteSortOption, Never>(.latest)
-        let totalCount = CurrentValueSubject<Int, Never>(0)
-        let restaurants = CurrentValueSubject<[NearDiningCellItem], Never>([])
-        let mapMarkers = CurrentValueSubject<[CompanionMapMarkerData], Never>([])
+        let viewState = CurrentValueSubject<ViewState, Never>(.idle)
         let selectedRestaurant = PassthroughSubject<NearDiningCellItem, Never>()
         let favoriteDidUpdate = PassthroughSubject<(placeId: Int, isFavorite: Bool), Never>()
-        let error = PassthroughSubject<Error, Never>()
     }
     
     // MARK: - Properties
@@ -58,11 +64,13 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     let output = Output()
 
     private let repository: DiningMapRepository
+    private var restaurants: [NearDiningCellItem] = []
+    private var totalCount = 0
     private var currentCoordinate: CLLocationCoordinate2D?
     private var fetchTask: Task<Void, Never>?
     private var favoriteTasks: [Int: Task<Void, Never>] = [:]
     
-    var restaurantCount: Int { output.restaurants.value.count }
+    var restaurantCount: Int { restaurants.count }
     
     // MARK: - Initializer
     
@@ -75,17 +83,8 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
         favoriteTasks.values.forEach { $0.cancel() }
     }
     
-    // MARK: - Methods
-    
-    func restaurant(at index: Int) -> NearDiningCellItem {
-        output.restaurants.value[index]
-    }
+    // MARK: - Action
 
-    func updateFavorite(placeId: Int, isFavorite: Bool) {
-        guard !isFavorite else { return }
-        removeRestaurant(placeId: placeId)
-    }
-    
     func action(_ trigger: Input) {
         switch trigger {
         case .locationDidUpdate(let coordinate):
@@ -100,54 +99,59 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
             output.selectedSort.send(sort)
             fetchFavorites()
         case .restaurantDidSelect(let index):
-            guard output.restaurants.value.indices.contains(index) else { return }
+            guard restaurants.indices.contains(index) else { return }
             output.selectedRestaurant.send(restaurant(at: index))
         case .bookmarkDidTap(let index):
             removeFavorite(at: index)
         }
     }
-}
 
-private extension SaveDiningSheetViewModel {
-    func fetchFavorites() {
+    // MARK: - Methods
+
+    func restaurant(at index: Int) -> NearDiningCellItem {
+        restaurants[index]
+    }
+
+    func updateFavorite(placeId: Int, isFavorite: Bool) {
+        guard !isFavorite else { return }
+        removeRestaurant(placeId: placeId)
+    }
+
+    private func fetchFavorites() {
         guard let currentCoordinate else { return }
 
         fetchTask?.cancel()
         let category = output.selectedCategory.value
         let sort = output.selectedSort.value
+        output.viewState.send(.loading)
 
         fetchTask = Task { [weak self] in
             guard let self else { return }
 
             do {
-                let response = try await repository.fetchFavorites(
-                    query: DiningFavoritesQuery(
+                let favoriteList = try await repository.fetchFavorites(
+                    criteria: DiningFavoritesCriteria(
                         latitude: currentCoordinate.latitude,
                         longitude: currentCoordinate.longitude,
-                        category: category.serverKey,
-                        sort: sort.serverKey
+                        category: category.diningPlaceCategory,
+                        sort: sort.diningFavoriteSort
                     )
                 )
                 guard !Task.isCancelled else { return }
-                let restaurants = await favoriteRestaurants(
-                    from: response.favorites,
-                    coordinate: currentCoordinate
-                )
+                restaurants = await favoriteRestaurants(from: favoriteList.places, coordinate: currentCoordinate)
                 guard !Task.isCancelled else { return }
-                output.totalCount.send(response.totalCount)
-                output.restaurants.send(restaurants)
-                updateMapMarkers(from: restaurants)
+                totalCount = favoriteList.totalCount
+                publishRestaurants()
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
-                output.error.send(error)
+                output.viewState.send(.failed(error))
             }
         }
     }
 
-    func removeFavorite(at index: Int) {
-        let restaurants = output.restaurants.value
+    private func removeFavorite(at index: Int) {
         guard
             restaurants.indices.contains(index),
             let placeId = restaurants[index].placeId,
@@ -159,63 +163,56 @@ private extension SaveDiningSheetViewModel {
             defer { favoriteTasks[placeId] = nil }
 
             do {
-                let response = try await repository.updateFavorite(placeId: placeId, isFavorite: false)
+                let isFavorite = try await repository.updateFavorite(placeId: placeId, isFavorite: false)
                 guard !Task.isCancelled else { return }
                 removeRestaurant(placeId: placeId)
-                output.favoriteDidUpdate.send((placeId, response.isFavorite))
+                output.favoriteDidUpdate.send((placeId, isFavorite))
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
-                output.error.send(error)
+                output.viewState.send(.failed(error))
             }
         }
     }
 
-    func removeRestaurant(placeId: Int) {
-        var restaurants = output.restaurants.value
+    private func removeRestaurant(placeId: Int) {
         guard let index = restaurants.firstIndex(where: { $0.placeId == placeId }) else { return }
         restaurants.remove(at: index)
-        output.restaurants.send(restaurants)
-        updateMapMarkers(from: restaurants)
-        output.totalCount.send(max(0, output.totalCount.value - 1))
+        totalCount = max(0, totalCount - 1)
+        publishRestaurants()
     }
 
-    func favoriteRestaurants(
-        from favorites: [DiningFavoritePlaceDTO],
-        coordinate: CLLocationCoordinate2D
-    ) async -> [NearDiningCellItem] {
-        var restaurants = favorites.map(NearDiningCellItem.init(dto:))
+    private func favoriteRestaurants(from favorites: [DiningPlace], coordinate: CLLocationCoordinate2D) async -> [NearDiningCellItem] {
+        var items = favorites.map(NearDiningCellItem.init(place:))
 
-        await withTaskGroup(of: (Int, DiningDetailResponseDTO?).self) { group in
+        await withTaskGroup(of: (Int, DiningPlace?).self) { group in
             for (index, favorite) in favorites.enumerated() {
                 group.addTask { [repository] in
-                    let response = try? await repository.fetchPlaceDetail(
-                        query: DiningDetailQuery(
+                    let place = try? await repository.fetchPlaceDetail(
+                        criteria: DiningPlaceDetailCriteria(
                             placeId: favorite.placeId,
                             latitude: coordinate.latitude,
                             longitude: coordinate.longitude
                         )
                     )
-                    return (index, response)
+                    return (index, place)
                 }
             }
 
-            for await (index, response) in group {
-                guard let response else { continue }
-                restaurants[index] = NearDiningCellItem(dto: response)
+            for await (index, place) in group {
+                guard let place else { continue }
+                items[index] = NearDiningCellItem(place: place)
             }
         }
 
-        return restaurants
+        return items
     }
 
-    @MainActor
-    func updateMapMarkers(from restaurants: [NearDiningCellItem]) {
-        output.mapMarkers.send(
-            restaurants.compactMap {
-                CompanionMapMarkerData(diningItem: $0, style: .savedRestaurant)
-            }
-        )
+    private func publishRestaurants() {
+        let markers = restaurants.compactMap {
+            CompanionMapMarkerData(diningItem: $0, style: .savedRestaurant)
+        }
+        output.viewState.send(.loaded(items: restaurants, totalCount: totalCount, markers: markers))
     }
 }

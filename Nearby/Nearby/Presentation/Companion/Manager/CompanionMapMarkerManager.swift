@@ -95,12 +95,7 @@ final class CompanionMapMarkerManager {
         return markerView
     }
 
-    private func makeCurrentLocationMarker(
-        at coordinate: CLLocationCoordinate2D,
-        image: UIImage,
-        frame: CGRect,
-        zIndex: Int32
-    ) -> GMSMarker {
+    private func makeCurrentLocationMarker(at coordinate: CLLocationCoordinate2D, image: UIImage, frame: CGRect, zIndex: Int32) -> GMSMarker {
         let marker = GMSMarker(position: coordinate)
         marker.iconView = makeCurrentLocationMarkerView(image: image, frame: frame)
         marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
@@ -123,30 +118,18 @@ final class CompanionMapMarkerManager {
         }
     }
     
-    func updateCurrentLocation(to location: CLLocation) {
+    func updateCurrentLocation(to coordinate: CLLocationCoordinate2D) {
         if !currentLocationMarkers.isEmpty {
-            currentLocationMarkers.forEach { $0.position = location.coordinate }
+            currentLocationMarkers.forEach { $0.position = coordinate }
             return
         }
 
-        let backgroundMarker = makeCurrentLocationMarker(
-            at: location.coordinate,
-            image: .markerMyLocationBg,
-            frame: CGRect(x: 0, y: 0, width: 50, height: 50),
-            zIndex: 1_000
-        )
-        let directionMarker = makeCurrentLocationMarker(
-            at: location.coordinate,
-            image: .markerMyLocationArrow,
-            frame: CGRect(x: 13, y: 0, width: 24, height: 24),
-            zIndex: 1_001
-        )
-        let profileMarker = makeCurrentLocationMarker(
-            at: location.coordinate,
-            image: .markerMyLocationProfile,
-            frame: CGRect(x: 10, y: 10, width: 30, height: 30),
-            zIndex: 1_002
-        )
+        let backgroundMarker = makeCurrentLocationMarker(at: coordinate, image: .markerMyLocationBg,
+                                                         frame: CGRect(x: 0, y: 0, width: 50, height: 50), zIndex: 1_000)
+        let directionMarker = makeCurrentLocationMarker(at: coordinate, image: .markerMyLocationArrow,
+                                                        frame: CGRect(x: 13, y: 0, width: 24, height: 24), zIndex: 1_001)
+        let profileMarker = makeCurrentLocationMarker(at: coordinate, image: .markerMyLocationProfile,
+                                                      frame: CGRect(x: 10, y: 10, width: 30, height: 30), zIndex: 1_002)
 
         currentLocationMarkers = [backgroundMarker, directionMarker, profileMarker]
         currentLocationDirectionMarker = directionMarker

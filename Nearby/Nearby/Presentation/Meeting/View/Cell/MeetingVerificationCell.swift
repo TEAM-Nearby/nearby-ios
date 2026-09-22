@@ -15,8 +15,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
 
     // MARK: - Properties
 
-    var onVerifyButtonDidTap: (() -> Void)?
-    var onNextButtonDidTap: (() -> Void)?
+    var onMeetingProgressDidTap: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -50,8 +49,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         profileView.cancelImageLoad()
-        onNextButtonDidTap = nil
-        onVerifyButtonDidTap = nil
+        onMeetingProgressDidTap = nil
     }
 
     // MARK: - Methods
@@ -117,7 +115,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
 
     private func setAddTarget() {
         profileView.onNextButtonDidTap = { [weak self] in
-            self?.onNextButtonDidTap?()
+            self?.onMeetingProgressDidTap?()
         }
         verifyButton.addTarget(self, action: #selector(verifyButtonDidTap), for: .touchUpInside)
     }
@@ -135,6 +133,6 @@ final class MeetingVerificationCell: UICollectionViewCell {
 
     @objc
     private func verifyButtonDidTap() {
-        onVerifyButtonDidTap?()
+        onMeetingProgressDidTap?()
     }
 }

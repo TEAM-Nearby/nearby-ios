@@ -114,11 +114,7 @@ extension MeetingTabViewController: UICollectionViewDataSource {
         let item = viewModel.item(at: indexPath.item)
         cell.configure(with: item)
         
-        cell.onNextButtonDidTap = { [weak self] in
-            self?.coordinator?.showMeetingProgress(for: item)
-        }
-
-        cell.onVerifyButtonDidTap = { [weak self] in
+        cell.onMeetingProgressDidTap = { [weak self] in
             self?.coordinator?.showMeetingProgress(for: item)
         }
         return cell

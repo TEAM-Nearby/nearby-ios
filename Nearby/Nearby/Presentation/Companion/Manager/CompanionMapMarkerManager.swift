@@ -10,9 +10,6 @@ import GoogleMaps
 import UIKit
 
 final class CompanionMapMarkerManager {
-    
-    // MARK: - Properties
-    
     private struct Content {
         let nickname: String
         let written: String
@@ -27,7 +24,7 @@ final class CompanionMapMarkerManager {
         let placeId: Int?
     }
     
-    // MARK: - UI Components
+    // MARK: - Properties
     
     private weak var mapView: GMSMapView?
     private var currentLocationMarkers: [GMSMarker] = []
@@ -36,10 +33,6 @@ final class CompanionMapMarkerManager {
     private var level: CompanionMarkerLevel
     private let configuration: CompanionMapConfiguration
 
-    var hasCompanionMarkers: Bool {
-        entries.contains { $0.content.style == .companion }
-    }
-    
     // MARK: - Initializer
     
     init(mapView: GMSMapView, configuration: CompanionMapConfiguration) {
@@ -48,25 +41,26 @@ final class CompanionMapMarkerManager {
         self.level = CompanionMarkerLevel(zoom: mapView.camera.zoom, configuration: configuration)
     }
     
-    // MARK: - Methods
+    // MARK: - Private Methods
     
     private func applyAppearance(to marker: GMSMarker, content: Content, level: CompanionMarkerLevel) {
         marker.tracksViewChanges = true
 
-        if content.style == .restaurant {
+        switch content.style {
+        case .restaurant:
             marker.iconView = makeImageMarker(image: .icRestaurantMarker, size: configuration.mediumMarkerSize)
             marker.groundAnchor = CGPoint(x: 0.5, y: 1)
-            stopTrackingViewChanges(for: marker)
-            return
-        }
-
-        if content.style == .savedRestaurant {
+        case .savedRestaurant:
             marker.iconView = makeImageMarker(image: .icStarHonbop, size: configuration.mediumMarkerSize)
             marker.groundAnchor = CGPoint(x: 0.5, y: 1)
-            stopTrackingViewChanges(for: marker)
-            return
+        case .companion:
+            applyCompanionAppearance(to: marker, content: content, level: level)
         }
-        
+
+        stopTrackingViewChanges(for: marker)
+    }
+
+    private func applyCompanionAppearance(to marker: GMSMarker, content: Content, level: CompanionMarkerLevel) {
         switch level {
         case .large:
             let chipView = CompanionChipView()
@@ -82,8 +76,6 @@ final class CompanionMapMarkerManager {
             marker.iconView = makeImageMarker(image: .spot, size: configuration.smallMarkerSize)
             marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
         }
-        
-        stopTrackingViewChanges(for: marker)
     }
     
     private func makeCurrentLocationMarkerView(image: UIImage, frame: CGRect) -> UIView {
@@ -117,7 +109,28 @@ final class CompanionMapMarkerManager {
             marker.tracksViewChanges = false
         }
     }
-    
+
+    private func addMarker(_ item: CompanionMapMarkerData) {
+        let content = Content(nickname: item.nickname, written: item.written, place: item.place, date: item.date, style: item.style)
+        let marker = GMSMarker(position: item.coordinate)
+        applyAppearance(to: marker, content: content, level: level)
+        marker.map = mapView
+        entries.append(Entry(marker: marker, content: content, placeId: item.placeId))
+    }
+
+    private func replaceMarkers(with items: [CompanionMapMarkerData], group: MapMarkerGroup) {
+        entries
+            .filter { $0.content.style.group == group }
+            .forEach { $0.marker.map = nil }
+        entries.removeAll { $0.content.style.group == group }
+
+        items
+            .filter { $0.style.group == group }
+            .forEach(addMarker)
+    }
+
+    // MARK: - Public Methods
+
     func updateCurrentLocation(to coordinate: CLLocationCoordinate2D) {
         if !currentLocationMarkers.isEmpty {
             currentLocationMarkers.forEach { $0.position = coordinate }
@@ -134,42 +147,13 @@ final class CompanionMapMarkerManager {
         currentLocationMarkers = [backgroundMarker, directionMarker, profileMarker]
         currentLocationDirectionMarker = directionMarker
     }
-    
-    @discardableResult
-    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, placeId: Int? = nil, nickname: String,
-                            written: String, place: String, date: String, style: MapMarkerStyle = .companion) -> GMSMarker {
-        let content = Content(nickname: nickname, written: written, place: place, date: date, style: style)
-        let marker = GMSMarker(position: coordinate)
-        applyAppearance(to: marker, content: content, level: level)
-        marker.map = mapView
-        entries.append(Entry(marker: marker, content: content, placeId: placeId))
-        return marker
-    }
 
     func replaceCompanionMarkers(with items: [CompanionMapMarkerData]) {
-        entries
-            .filter { $0.content.style == .companion }
-            .forEach { $0.marker.map = nil }
-        entries.removeAll { $0.content.style == .companion }
-
-        items.forEach { item in
-            addCompanionMarker(at: item.coordinate, placeId: item.placeId,
-                               nickname: item.nickname, written: item.written,
-                               place: item.place, date: item.date, style: item.style)
-        }
+        replaceMarkers(with: items, group: .companion)
     }
 
     func replaceDiningMarkers(with items: [CompanionMapMarkerData]) {
-        entries
-            .filter { $0.content.style != .companion }
-            .forEach { $0.marker.map = nil }
-        entries.removeAll { $0.content.style != .companion }
-
-        items.forEach { item in
-            addCompanionMarker(at: item.coordinate, placeId: item.placeId,
-                               nickname: item.nickname, written: item.written,
-                               place: item.place, date: item.date, style: item.style)
-        }
+        replaceMarkers(with: items, group: .dining)
     }
     
     func updateLevel(for zoom: Float) {
@@ -177,7 +161,9 @@ final class CompanionMapMarkerManager {
         guard newLevel != level else { return }
         
         level = newLevel
-        entries.forEach { applyAppearance(to: $0.marker, content: $0.content, level: newLevel) }
+        entries
+            .filter { $0.content.style.group == .companion }
+            .forEach { applyAppearance(to: $0.marker, content: $0.content, level: newLevel) }
     }
     
     func placeId(for marker: GMSMarker) -> Int? {

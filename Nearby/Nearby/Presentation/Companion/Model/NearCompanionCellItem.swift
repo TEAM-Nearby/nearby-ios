@@ -31,7 +31,7 @@ extension NearCompanionCellItem {
             participantImageURLs: post.participantProfileImageURLs,
             statusText: post.participantSummaryText,
             detailState: CompanionDetailState(
-                postId: post.postId,
+                postId: post.postID,
                 postType: .scheduled,
                 isApplicationEnabled: false,
                 tags: [],
@@ -39,7 +39,7 @@ extension NearCompanionCellItem {
                 genderTitle: post.host.gender.title,
                 profileImageURL: post.participants.first?.profileImageURL.flatMap(URL.init(string:)),
                 placeName: post.place.name,
-                googlePlaceId: post.place.googlePlaceId,
+                googlePlaceId: post.place.googlePlaceID,
                 placeLatitude: post.place.latitude,
                 placeLongitude: post.place.longitude,
                 meetingTimeText: post.nearMeetingTimeTitle,

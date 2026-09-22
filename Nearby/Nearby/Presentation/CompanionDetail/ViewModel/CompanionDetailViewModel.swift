@@ -144,10 +144,10 @@ final class CompanionDetailViewModel: BaseViewModelType {
 private extension CompanionDetail {
     func detailState(preserving previousState: CompanionDetailState, currentUserId: Int?) -> CompanionDetailState {
         CompanionDetailState(
-            postId: postId,
-            hostProfileId: hostProfileId,
+            postId: postID,
+            hostProfileId: hostProfileID,
             postType: postType,
-            isApplicationEnabled: isRecruiting && hasNotApplied && participantCount < maxParticipants && hostUserId != currentUserId,
+            isApplicationEnabled: isRecruiting && hasNotApplied && participantCount < maxParticipants && hostUserID != currentUserId,
             tags: TravelStyleKeyword.titles(for: hostProfile.keywords),
             hostName: hostProfile.nickname,
             genderTitle: hostProfile.gender.title,
@@ -156,7 +156,7 @@ private extension CompanionDetail {
             mannerScoreText: String(format: "%.1f", hostProfile.mannerScore),
             isPhoneVerified: hostProfile.isPhoneVerified,
             placeName: previousState.placeName,
-            googlePlaceId: googlePlaceId,
+            googlePlaceId: googlePlaceID,
             placeLatitude: previousState.placeLatitude,
             placeLongitude: previousState.placeLongitude,
             meetingTimeText: detailMeetingTimeTitle ?? previousState.meetingTimeText,

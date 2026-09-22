@@ -104,7 +104,7 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
                 let response = try await repository.fetchList(criteria: criteria)
                 guard !Task.isCancelled else { return }
                 
-                postsByPlaceId = Dictionary(grouping: response.posts, by: { $0.place.placeId })
+                postsByPlaceId = Dictionary(grouping: response.posts, by: { $0.place.placeID })
                 let latestPostsByPlace = postsByPlaceId.values.compactMap { posts in
                     posts.max { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
                 }

@@ -58,7 +58,7 @@ struct CompanionMapMarkerData {
 
 extension CompanionMapMarkerData {
     init(post: CompanionPost) {
-        self.init(placeId: post.place.placeId, coordinate: CLLocationCoordinate2D(latitude: post.place.latitude, longitude: post.place.longitude),
+        self.init(placeId: post.place.placeID, coordinate: CLLocationCoordinate2D(latitude: post.place.latitude, longitude: post.place.longitude),
                   nickname: post.host.nickname, written: post.createdAgoDisplayText,
                   place: post.place.name, date: post.nearMeetingTimeTitle, style: .companion)
     }

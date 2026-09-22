@@ -29,7 +29,7 @@ extension CompanionSearchCriteria {
 }
 
 struct CompanionPost {
-    let postId: Int
+    let postID: Int
     let host: CompanionHost
     let place: CompanionPlace
     let contentPreview: String
@@ -49,8 +49,8 @@ struct CompanionHost {
 }
 
 struct CompanionPlace {
-    let placeId: Int
-    let googlePlaceId: String
+    let placeID: Int
+    let googlePlaceID: String
     let name: String
     let category: Category
     let latitude: Double
@@ -61,7 +61,7 @@ struct CompanionPlace {
 }
 
 struct CompanionParticipant {
-    let userId: Int
+    let userID: Int
     let profileImageURL: String?
 }
 

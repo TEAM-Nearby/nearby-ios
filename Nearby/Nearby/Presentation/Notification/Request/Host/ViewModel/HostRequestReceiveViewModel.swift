@@ -55,6 +55,7 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
     private(set) var applicantProfileId: Int?
     private(set) var openChatURL: String = ""
     private let repository: HostCompanionRepository
+    private var isRequesting = false
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
@@ -116,7 +117,10 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
     }
 
     private func allowApplication() {
+        guard !isRequesting else { return }
+        isRequesting = true
         Task {
+            defer { isRequesting = false }
             do {
                 let response = try await repository.allowApplication(applicationId: applicationId)
                 matchId = response.matchId

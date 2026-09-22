@@ -39,6 +39,7 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
     private let applicantName: String
     private let applicationId: Int
     private let repository: HostCompanionRepository
+    private var isRequesting = false
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
@@ -70,7 +71,10 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
     // MARK: - Method
     
     private func rejectApplication(reason: String) {
+        guard !isRequesting else { return }
+        isRequesting = true
         Task {
+            defer { isRequesting = false }
             do {
                 let rejectionReason = reason.isBlank ? nil : reason
                 try await repository.rejectApplication(applicationId: applicationId, reason: rejectionReason)

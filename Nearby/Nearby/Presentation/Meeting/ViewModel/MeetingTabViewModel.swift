@@ -14,6 +14,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     enum Input {
         case viewWillAppear
+        case viewDidDisappear
     }
     
     // MARK: - Output
@@ -30,6 +31,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     private let repository: MeetingRepository
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
+    private var timerCancellable: AnyCancellable?
     
     var items: [MeetingItem] { output.items.value }
     
@@ -38,7 +40,6 @@ final class MeetingTabViewModel: BaseViewModelType {
     init(repository: MeetingRepository, eventCenter: MeetingEventCenter) {
         self.repository = repository
         self.eventCenter = eventCenter
-        startTimer()
         bindMeetingEvents()
     }
     
@@ -48,6 +49,10 @@ final class MeetingTabViewModel: BaseViewModelType {
         switch trigger {
         case .viewWillAppear:
             fetchMeetings()
+            startTimer()
+            
+        case .viewDidDisappear:
+            timerCancellable = nil
         }
     }
     
@@ -72,13 +77,12 @@ final class MeetingTabViewModel: BaseViewModelType {
     }
     
     private func startTimer() {
-        Timer.publish(every: 60, on: .main, in: .common)
+        timerCancellable = Timer.publish(every: 60, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self else { return }
                 output.items.send(output.items.value)
             }
-            .store(in: &cancellables)
     }
 
     private func makeMeetingItem(from DTO: MeetingResponseDTO) -> MeetingItem {

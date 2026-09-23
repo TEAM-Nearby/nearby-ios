@@ -22,7 +22,7 @@ final class SelfSizingTableView: UITableView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
     
     override var intrinsicContentSize: CGSize {
         contentSize

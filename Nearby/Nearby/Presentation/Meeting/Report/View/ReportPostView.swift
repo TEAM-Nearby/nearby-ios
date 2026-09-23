@@ -122,10 +122,13 @@ final class ReportPostView: BaseView {
         reportButton.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
-            $0.bottom.lessThanOrEqualTo(safeAreaLayoutGuide)
-            $0.bottom.lessThanOrEqualTo(keyboardLayoutGuide.snp.top).offset(-16)
-            $0.bottom.equalTo(safeAreaLayoutGuide).priority(.low)
+            $0.bottom.equalTo(safeAreaLayoutGuide).priority(.high)
         }
+        
+        keyboardLayoutGuide.setConstraints(
+            [reportButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -16)],
+            activeWhenAwayFrom: .bottom
+        )
     }
     
     override func setAddTarget() {

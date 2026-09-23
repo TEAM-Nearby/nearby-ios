@@ -47,8 +47,11 @@ private extension MatchingScheduleDetailMapper {
             return MatchingMatchedCardItem(
                 matchId: scheduleDetail.matchID,
                 content: MatchingMatchedCardContentModel(
-                    name: scheduleDetail.userNickname ?? "", participantCount: 1, gender: "",
-                    uploadedTime: "", place: scheduleDetail.schedule?.place.name ?? "",
+                    name: scheduleDetail.userNickname ?? "",
+                    participantCount: 1,
+                    gender: "",
+                    uploadedTime: "",
+                    place: scheduleDetail.schedule?.place.name ?? "",
                     meetingTime: makeTimeText(
                         scheduleDetail.schedule?.scheduledAt,
                         fallback: scheduleDetail.meetingTimeType

@@ -8,7 +8,7 @@
 import UIKit
 
 final class MatchingDIContainer {
-    
+
     // MARK: - Dependencies
 
     private let matchingRepository: MatchedCompanionListRepository
@@ -23,19 +23,14 @@ final class MatchingDIContainer {
 
     // MARK: - Factory Methods
 
-    func makeMatchingViewController(onRoute: @escaping (MatchingRoute) -> Void
-    ) -> UIViewController {
-        let viewModel = MatchingViewModel(
-            repository: matchingRepository,
-            eventCenter: eventCenter
-        )
+    func makeMatchingViewController(onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
+        let viewModel = MatchingViewModel(repository: matchingRepository, eventCenter: eventCenter)
         let viewController = MatchingViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
         return viewController
     }
 
-    func makeScheduleDetailViewController(matchId: Int, onRoute: @escaping (MatchingRoute) -> Void
-    ) -> UIViewController {
+    func makeScheduleDetailViewController(matchId: Int, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
         let viewModel = MatchingScheduleDetailViewModel(matchId: matchId, repository: matchingRepository)
         let viewController = MatchingScheduleDetailViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
@@ -43,8 +38,7 @@ final class MatchingDIContainer {
         return viewController
     }
 
-    func makeManageScheduleDetailViewController(matchId: Int, onRoute: @escaping (MatchingRoute) -> Void
-    ) -> UIViewController {
+    func makeManageScheduleDetailViewController(matchId: Int, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
         let viewModel = MatchingManageDetailViewModel(matchId: matchId, repository: matchingRepository)
         let viewController = MatchingManageDetailViewController(viewModel: viewModel)
         viewController.onRoute = onRoute

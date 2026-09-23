@@ -74,7 +74,7 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
             fetchDetail()
 
         case .rejectButtonDidTap:
-            guard hasLoadedDetail, !hasAllowed else { return }
+            guard hasLoadedDetail, !hasAllowed, !isRequesting else { return }
             output.showHostRejectView.send(())
             
         case .allowButtonDidTap:

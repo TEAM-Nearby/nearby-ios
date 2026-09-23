@@ -14,7 +14,7 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     
     private let companionProfileView = CompanionProfileView()
     
-    // MARK: - Property
+    // MARK: - Properties
 
     var onProfileCompleted: (() -> Void)?
     var onBackButtonDidTap: (() -> Void)?

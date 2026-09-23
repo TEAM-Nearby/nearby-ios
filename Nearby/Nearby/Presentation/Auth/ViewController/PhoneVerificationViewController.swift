@@ -9,7 +9,7 @@ import UIKit
 
 final class PhoneVerificationViewController: BaseViewController<PhoneVerificationViewModel> {
 
-    // MARK: - Property
+    // MARK: - Properties
     
     var onVerificationCompleted: (() -> Void)?
     var onBackButtonDidTap: (() -> Void)?
@@ -22,12 +22,6 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
 
     override func loadView() {
         view = phoneVerificationView
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        bindViewModel()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -52,7 +46,7 @@ final class PhoneVerificationViewController: BaseViewController<PhoneVerificatio
         phoneVerificationView.verificationTextField.addTarget(self, action: #selector(verificationTextFieldDidChange), for: .editingChanged)
     }
 
-    private func bindViewModel() {
+    override func bindState() {
         viewModel.output.isVerificationMode = { [weak self] isVerificationMode in
             self?.phoneVerificationView.updateVerificationMode(isVerificationMode)
         }

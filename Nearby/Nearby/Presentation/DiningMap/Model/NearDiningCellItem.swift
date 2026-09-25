@@ -69,6 +69,8 @@ struct NearDiningCellItem {
         self.phoneNumber = phoneNumber
         self.price = price
     }
+    
+    // MARK: - Initializer
 
     init(place: DiningPlace) {
         self.init(
@@ -92,6 +94,8 @@ struct NearDiningCellItem {
             price: Self.priceRangeText(place.priceRange)
         )
     }
+    
+    // MARK: - Methods
 
     private static func categoryTitle(for category: DiningPlace.Category) -> String {
         switch category {
@@ -139,22 +143,14 @@ struct NearDiningCellItem {
         var result = priceRange.trimmingCharacters(in: .whitespacesAndNewlines)
 
         currencySymbols.forEach { code, symbol in
-            result = result.replacingOccurrences(
-                of: code,
-                with: symbol,
-                options: .caseInsensitive
-            )
+            result = result.replacingOccurrences(of: code, with: symbol, options: .caseInsensitive)
 
             while result.contains("\(symbol) ") {
                 result = result.replacingOccurrences(of: "\(symbol) ", with: symbol)
             }
         }
 
-        result = result.replacingOccurrences(
-            of: #"\s*([~\-–—])\s*"#,
-            with: "$1",
-            options: .regularExpression
-        )
+        result = result.replacingOccurrences(of: #"\s*([~\-–—])\s*"#, with: "$1", options: .regularExpression)
 
         if let symbol = currencySymbols.values.first(where: { result.hasPrefix($0) }) {
             let rangeWithoutLeadingSymbol = String(result.dropFirst(symbol.count))

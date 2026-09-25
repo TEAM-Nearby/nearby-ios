@@ -322,9 +322,7 @@ extension DiningInfoSheetView: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(DiningImageCell.self, for: indexPath)
-        let imageURL = restaurantImageURLs.indices.contains(indexPath.item)
-            ? restaurantImageURLs[indexPath.item]
-            : nil
+        let imageURL = restaurantImageURLs.indices.contains(indexPath.item) ? restaurantImageURLs[indexPath.item] : nil
         cell.configure(image: restaurantImages[indexPath.item], imageURL: imageURL)
         return cell
     }

@@ -13,24 +13,24 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
     
     // MARK: - Properties
     
-    var onRestaurantSelected: ((NearDiningCellItem) -> Void)?
-    var onFavoriteUpdate: ((Int, Bool) -> Void)?
-    var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
-
+    var onEvent: ((DiningMapSheetEvent) -> Void)?
+    
     private let initialLoadingTracker = InitialLoadingTracker()
     private let saveDiningBottomSheetView = SaveDiningBottomSheetView(diningCategories: DiningCategory.allCases)
-
+    
     // MARK: - Life Cycles
-
+    
     override func loadView() {
         view = saveDiningBottomSheetView
     }
-
+    
+    // MARK: - Custom Methods
+    
     override func setDelegate() {
         saveDiningBottomSheetView.collectionView.dataSource = self
         saveDiningBottomSheetView.collectionView.delegate = self
     }
-
+    
     override func bindAction() {
         saveDiningBottomSheetView.categoryDidTap = { [weak self] category in
             self?.viewModel.action(.categoryDidSelect(category))
@@ -39,7 +39,7 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
             self?.viewModel.action(.sortDidSelect(sort))
         }
     }
-
+    
     override func bindState() {
         viewModel.output.selectedCategory
             .receive(on: DispatchQueue.main)
@@ -47,7 +47,7 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
                 self?.saveDiningBottomSheetView.updateCategoryChipSelection(category)
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.viewState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
@@ -59,45 +59,49 @@ final class SaveDiningSheetViewController: BaseViewController<SaveDiningSheetVie
                     initialLoadingTracker.complete(in: self)
                     saveDiningBottomSheetView.updateRestaurantCount(totalCount)
                     saveDiningBottomSheetView.collectionView.reloadData()
-                    onMapMarkersChanged?(markers)
+                    onEvent?(.markersChanged(markers))
                 case .failed(let error):
                     initialLoadingTracker.complete(in: self)
                     AppLogger.error(error)
                 }
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.selectedRestaurant
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
-                self?.onRestaurantSelected?(item)
+                self?.onEvent?(.restaurantSelected(item))
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.favoriteDidUpdate
             .receive(on: DispatchQueue.main)
             .sink { [weak self] favorite in
-                self?.onFavoriteUpdate?(favorite.placeId, favorite.isFavorite)
+                self?.onEvent?(.favoriteUpdated(placeId: favorite.placeId, isFavorite: favorite.isFavorite))
             }
             .store(in: &cancellables)
-
+        
     }
-
+    
     // MARK: - Methods
-
+    
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
         initialLoadingTracker.begin(in: self)
         viewModel.action(.locationDidUpdate(coordinate))
     }
-
+    
     func refresh() {
         viewModel.action(.refresh)
     }
-
+    
+    func restaurant(placeId: Int) -> NearDiningCellItem? {
+        viewModel.restaurant(placeId: placeId)
+    }
+    
     func currentMapMarkers() -> [CompanionMapMarkerData] {
         viewModel.mapMarkers
     }
-
+    
     func updateFavorite(placeId: Int, isFavorite: Bool) {
         viewModel.updateFavorite(placeId: placeId, isFavorite: isFavorite)
     }
@@ -109,7 +113,7 @@ extension SaveDiningSheetViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.restaurantCount
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(SaveDiningCell.self, for: indexPath)
         cell.configure(with: viewModel.restaurant(at: indexPath.item), isLast: indexPath.item == viewModel.restaurantCount - 1)

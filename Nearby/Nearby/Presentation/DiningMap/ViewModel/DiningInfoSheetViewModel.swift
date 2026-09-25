@@ -11,14 +11,14 @@ import CoreLocation
 final class DiningInfoSheetViewModel: BaseViewModelType {
     
     // MARK: - Input
-
+    
     enum Input {
         case updateRestaurant(NearDiningCellItem)
         case bookmarkDidTap
     }
-
+    
     // MARK: - View State
-
+    
     enum ViewState {
         case idle
         case loading(NearDiningCellItem)
@@ -27,37 +27,37 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     }
     
     // MARK: - Output
-
+    
     struct Output {
         let viewState = CurrentValueSubject<ViewState, Never>(.idle)
         let favoriteDidUpdate = PassthroughSubject<(placeId: Int, isFavorite: Bool), Never>()
     }
     
     // MARK: - Properties
-
+    
     let output = Output()
-
+    
     private let repository: DiningMapRepository
     private let coordinate: CLLocationCoordinate2D
     private var restaurant: NearDiningCellItem?
     private var fetchTask: Task<Void, Never>?
     private var favoriteTask: Task<Void, Never>?
     private var favoriteOverride: Bool?
-
+    
     // MARK: - Initializer
-
+    
     init(repository: DiningMapRepository, coordinate: CLLocationCoordinate2D) {
         self.repository = repository
         self.coordinate = coordinate
     }
-
+    
     deinit {
         fetchTask?.cancel()
         favoriteTask?.cancel()
     }
     
     // MARK: - Action
-
+    
     func action(_ trigger: Input) {
         switch trigger {
         case .updateRestaurant(let item):
@@ -71,9 +71,9 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
             updateFavorite()
         }
     }
-
+    
     // MARK: - Methods
-
+    
     private func fetchDetail(placeId: Int?) {
         guard let placeId else {
             if let restaurant {
@@ -81,11 +81,11 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
             }
             return
         }
-
+        
         fetchTask?.cancel()
         fetchTask = Task { [weak self] in
             guard let self else { return }
-
+            
             do {
                 let place = try await repository.fetchPlaceDetail(
                     criteria: DiningPlaceDetailCriteria(
@@ -109,20 +109,20 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
             }
         }
     }
-
+    
     private func updateFavorite() {
         guard favoriteTask == nil, var item = restaurant, let placeId = item.placeId else { return }
-
+        
         let isFavorite = !item.isBookmarked
         favoriteOverride = isFavorite
         item.isBookmarked = isFavorite
         restaurant = item
         output.viewState.send(.loaded(item))
-
+        
         favoriteTask = Task { [weak self] in
             guard let self else { return }
             defer { favoriteTask = nil }
-
+            
             do {
                 let updatedFavorite = try await repository.updateFavorite(placeId: placeId, isFavorite: isFavorite)
                 guard !Task.isCancelled, var item = restaurant, item.placeId == placeId else { return }

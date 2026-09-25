@@ -13,8 +13,7 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     
     // MARK: - Properties
     
-    var onRestaurantSelected: ((NearDiningCellItem) -> Void)?
-    var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
+    var onEvent: ((DiningMapSheetEvent) -> Void)?
 
     private let initialLoadingTracker = InitialLoadingTracker()
     private let nearDiningBottomSheetView = NearDiningBottomSheetView(diningCategories: DiningCategory.allCases)
@@ -56,7 +55,7 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
                 case .loaded(_, let markers):
                     initialLoadingTracker.complete(in: self)
                     nearDiningBottomSheetView.collectionView.reloadData()
-                    onMapMarkersChanged?(markers)
+                    onEvent?(.markersChanged(markers))
                 case .failed(let error):
                     initialLoadingTracker.complete(in: self)
                     AppLogger.error(error)
@@ -67,7 +66,14 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
         viewModel.output.selectedRestaurant
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
-                self?.onRestaurantSelected?(item)
+                self?.onEvent?(.restaurantSelected(item))
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.favoriteDidUpdate
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] favorite in
+                self?.onEvent?(.favoriteUpdated(placeId: favorite.placeId, isFavorite: favorite.isFavorite))
             }
             .store(in: &cancellables)
 

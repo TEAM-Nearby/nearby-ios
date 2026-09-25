@@ -11,7 +11,6 @@ import SnapKit
 import Then
 
 final class NearDiningCell: UICollectionViewCell {
-
     override var isHighlighted: Bool {
         didSet {
             contentView.backgroundColor = isHighlighted ? .bgSurfacePurple : .white
@@ -196,8 +195,6 @@ final class NearDiningCell: UICollectionViewCell {
             $0.height.equalTo(0.5)
         }
     }
-    
-    // MARK: - Methods
 
     private func makeLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewFlowLayout()
@@ -246,14 +243,14 @@ extension NearDiningCell: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(DiningImageCell.self, for: indexPath)
-        let imageURL = restaurantImageURLs.indices.contains(indexPath.item)
-            ? restaurantImageURLs[indexPath.item]
-            : nil
+        let imageURL = restaurantImageURLs.indices.contains(indexPath.item) ? restaurantImageURLs[indexPath.item] : nil
         cell.configure(image: restaurantImages[indexPath.item], imageURL: imageURL)
         
         return cell
     }
 }
+
+// MARK: - UICollectionViewDelegate
 
 extension NearDiningCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

@@ -12,8 +12,7 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
     
     // MARK: - Properties
     
-    var onClose: (() -> Void)?
-    var onFavoriteUpdate: ((Int, Bool) -> Void)?
+    var onEvent: ((DiningMapSheetEvent) -> Void)?
 
     private let initialLoadingTracker = InitialLoadingTracker()
     private let diningInfoSheetView = DiningInfoSheetView()
@@ -23,10 +22,12 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
     override func loadView() {
         view = diningInfoSheetView
     }
+    
+    // MARK: - Custom Methods
 
     override func bindAction() {
         diningInfoSheetView.onCloseTap = { [weak self] in
-            self?.onClose?()
+            self?.onEvent?(.closeDetail)
         }
         diningInfoSheetView.onBookmarkTap = { [weak self] in
             self?.viewModel.action(.bookmarkDidTap)
@@ -56,7 +57,7 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
         viewModel.output.favoriteDidUpdate
             .receive(on: DispatchQueue.main)
             .sink { [weak self] favorite in
-                self?.onFavoriteUpdate?(favorite.placeId, favorite.isFavorite)
+                self?.onEvent?(.favoriteUpdated(placeId: favorite.placeId, isFavorite: favorite.isFavorite))
             }
             .store(in: &cancellables)
 

@@ -8,15 +8,18 @@
 import UIKit
 
 struct CategoryItem {
+
+    // MARK: - Properties
+
     let title: String
     let icon: UIImage
     let iconColor: UIColor
     let category: CompanionPlace.Category
-    
+
     var isRestaurant: Bool {
         category == .restaurant
     }
-    
+
     static let categoryItems: [CategoryItem] = [
         CategoryItem(title: "식당", icon: .icRestaurant, iconColor: .chipIcOrange, category: .restaurant),
         CategoryItem(title: "카페", icon: .icCafe, iconColor: .chipIcOrange, category: .cafe),

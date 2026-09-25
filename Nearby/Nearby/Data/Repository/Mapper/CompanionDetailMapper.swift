@@ -10,10 +10,10 @@ import Foundation
 enum CompanionDetailMapper {
     static func map(_ dto: CompanionDetailResponseDTO) -> CompanionDetail {
         CompanionDetail(
-            postId: dto.postId,
-            hostUserId: dto.hostUserId,
-            hostProfileId: dto.hostProfileId,
-            googlePlaceId: dto.googlePlaceId,
+            postID: dto.postId,
+            hostUserID: dto.hostUserId,
+            hostProfileID: dto.hostProfileId,
+            googlePlaceID: dto.googlePlaceId,
             meetingAt: CompanionDateParser.parse(dto.meetingAt),
             maxParticipants: dto.maxParticipants,
             content: dto.content,
@@ -22,7 +22,7 @@ enum CompanionDetailMapper {
             expiresAt: CompanionDateParser.parse(dto.expiresAt),
             participantCount: dto.participantCount,
             participants: dto.participants.map {
-                CompanionParticipant(userId: $0.userId, profileImageURL: $0.profileImageUrl)
+                CompanionParticipant(userID: $0.userId, profileImageURL: $0.profileImageUrl)
             },
             hasNotApplied: dto.applyStatus == "NOT_APPLIED",
             hostProfile: CompanionHostProfile(

@@ -46,7 +46,12 @@ final class CompanionDIContainer {
     func makeCompanionViewController(onRoute: @escaping (CompanionViewModel.Route) -> Void, onAlarmButtonDidTap: @escaping () -> Void) -> CompanionViewController {
         let viewModel = CompanionViewModel(myPageRepository: myPageRepository, initialNickname: initialNickname)
         viewModel.route = onRoute
-        let viewController = CompanionViewController(viewModel: viewModel, nearbySheetViewController: NearCompanionSheetViewController(viewModel: NearCompanionSheetViewModel(repository: companionRepository)), specificSheetViewController: SpecificCompanionSheetViewController(viewModel: SpecificCompanionSheetViewModel()), emptySheetViewController: EmptyCompanionSheetViewController())
+        let bottomSheetController = CompanionBottomSheetController(
+            nearbySheetViewController: NearCompanionSheetViewController(viewModel: NearCompanionSheetViewModel(repository: companionRepository)),
+            specificSheetViewController: SpecificCompanionSheetViewController(viewModel: SpecificCompanionSheetViewModel()),
+            emptySheetViewController: EmptyCompanionSheetViewController()
+        )
+        let viewController = CompanionViewController(viewModel: viewModel, bottomSheetController: bottomSheetController)
         viewController.onAlarmButtonDidTap = onAlarmButtonDidTap
         return viewController
     }

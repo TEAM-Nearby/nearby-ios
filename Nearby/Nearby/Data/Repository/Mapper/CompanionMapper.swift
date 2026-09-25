@@ -21,14 +21,14 @@ enum CompanionMapper {
 extension CompanionMapper {
     static func map(_ dto: CompanionDTO) -> CompanionPost {
         CompanionPost(
-            postId: dto.postId,
+            postID: dto.postId,
             host: CompanionHost(
                 nickname: dto.host.nickname,
                 gender: mapGender(dto.host.gender)
             ),
             place: CompanionPlace(
-                placeId: dto.place.placeId,
-                googlePlaceId: dto.place.googlePlaceId,
+                placeID: dto.place.placeId,
+                googlePlaceID: dto.place.googlePlaceId,
                 name: dto.place.name,
                 category: mapCategory(dto.place.category),
                 latitude: dto.place.latitude,
@@ -43,7 +43,7 @@ extension CompanionMapper {
             meetingAtText: dto.meetingAtText,
             participantCount: dto.participantCount,
             participants: dto.participants.map {
-                CompanionParticipant(userId: $0.userId, profileImageURL: $0.profileImageUrl)
+                CompanionParticipant(userID: $0.userId, profileImageURL: $0.profileImageUrl)
             },
             participantSummaryText: dto.participantSummaryText,
             createdAt: CompanionDateParser.parse(dto.createdAt),

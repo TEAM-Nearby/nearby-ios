@@ -8,23 +8,23 @@
 import UIKit
 
 final class CompanionCoordinator {
-    
+
     // MARK: - Properties
-    
+
     weak var parentCoordinator: Coordinator?
     var childCoordinators = [Coordinator]()
     private let navigationController: UINavigationController
     private let diContainer: AppDIContainer
-    
+
     // MARK: - Initializer
-    
+
     init(navigationController: UINavigationController, diContainer: AppDIContainer) {
         self.navigationController = navigationController
         self.diContainer = diContainer
     }
-    
+
     // MARK: - Methods
-    
+
     private func handle(_ route: CompanionViewModel.Route) {
         switch route {
         case .recruitCompanion:
@@ -33,7 +33,7 @@ final class CompanionCoordinator {
             showCompanionDetail(state: state)
         }
     }
-    
+
     private func showRecruitCompanion() {
         let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController { [weak self] route in
             switch route {
@@ -41,10 +41,6 @@ final class CompanionCoordinator {
             }
         }
         navigationController.pushViewController(viewController, animated: true)
-    }
-
-    func showPrevious() {
-        navigationController.popViewController(animated: true)
     }
 
     private func handle(_ route: CompanionDetailViewModel.Route) {
@@ -75,12 +71,14 @@ final class CompanionCoordinator {
     }
 
     private func makeNotificationCoordinator() -> NotificationCoordinator {
-        let coordinator = diContainer.makeNotificationCoordinator(
-            navigationController: navigationController
-        )
+        let coordinator = diContainer.makeNotificationCoordinator(navigationController: navigationController)
         coordinator.parentCoordinator = self
         addChildCoordinator(coordinator)
         return coordinator
+    }
+
+    func showPrevious() {
+        navigationController.popViewController(animated: true)
     }
 
     func showCompanionDetail(state: CompanionDetailState) {
@@ -101,7 +99,7 @@ extension CompanionCoordinator: Coordinator {
         )
         navigationController.setViewControllers([companionViewController], animated: false)
     }
-    
+
     func finish() {
         parentCoordinator?.removeChildCoordinator(self)
     }

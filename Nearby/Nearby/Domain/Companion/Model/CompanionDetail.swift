@@ -8,10 +8,10 @@
 import Foundation
 
 struct CompanionDetail {
-    let postId: Int
-    let hostUserId: Int
-    let hostProfileId: Int
-    let googlePlaceId: String
+    let postID: Int
+    let hostUserID: Int
+    let hostProfileID: Int
+    let googlePlaceID: String
     let meetingAt: Date?
     let maxParticipants: Int
     let content: String

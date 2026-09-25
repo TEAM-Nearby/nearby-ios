@@ -12,26 +12,20 @@ enum MapMarkerStyle {
     case companion
     case restaurant
     case savedRestaurant
+
+    var group: MapMarkerGroup {
+        switch self {
+        case .companion:
+            return .companion
+        case .restaurant, .savedRestaurant:
+            return .dining
+        }
+    }
 }
 
-struct CompanionMapMarkerItem {
-    let latitudeOffset: Double
-    let longitudeOffset: Double
-    let nickname: String
-    let written: String
-    let place: String
-    let date: String
-    let style: MapMarkerStyle
-
-    init(latitudeOffset: Double, longitudeOffset: Double, nickname: String, written: String, place: String, date: String, style: MapMarkerStyle = .companion) {
-        self.latitudeOffset = latitudeOffset
-        self.longitudeOffset = longitudeOffset
-        self.nickname = nickname
-        self.written = written
-        self.place = place
-        self.date = date
-        self.style = style
-    }
+enum MapMarkerGroup: Equatable {
+    case companion
+    case dining
 }
 
 struct CompanionMapMarkerData {
@@ -64,8 +58,7 @@ struct CompanionMapMarkerData {
 
 extension CompanionMapMarkerData {
     init(post: CompanionPost) {
-        self.init(placeId: post.place.placeId,
-                  coordinate: CLLocationCoordinate2D(latitude: post.place.latitude, longitude: post.place.longitude),
+        self.init(placeId: post.place.placeID, coordinate: CLLocationCoordinate2D(latitude: post.place.latitude, longitude: post.place.longitude),
                   nickname: post.host.nickname, written: post.createdAgoDisplayText,
                   place: post.place.name, date: post.nearMeetingTimeTitle, style: .companion)
     }
@@ -96,7 +89,6 @@ struct CompanionMapConfiguration {
     let largeMarkerMinimumZoom: Float
     let mediumMarkerSize: CGFloat
     let smallMarkerSize: CGFloat
-    let markerItems: [CompanionMapMarkerItem]
 
     init(
         referenceCoordinate: CLLocationCoordinate2D? = nil,
@@ -104,8 +96,7 @@ struct CompanionMapConfiguration {
         smallMarkerMaximumZoom: Float,
         largeMarkerMinimumZoom: Float,
         mediumMarkerSize: CGFloat,
-        smallMarkerSize: CGFloat,
-        markerItems: [CompanionMapMarkerItem]
+        smallMarkerSize: CGFloat
     ) {
         self.referenceCoordinate = referenceCoordinate
         self.initialZoom = initialZoom
@@ -113,6 +104,5 @@ struct CompanionMapConfiguration {
         self.largeMarkerMinimumZoom = largeMarkerMinimumZoom
         self.mediumMarkerSize = mediumMarkerSize
         self.smallMarkerSize = smallMarkerSize
-        self.markerItems = markerItems
     }
 }

@@ -79,7 +79,7 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
             .store(in: &cancellables)
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
         initialLoadingTracker.begin(in: self)

@@ -76,7 +76,6 @@ private extension CompanionMapConfiguration {
         smallMarkerMaximumZoom: -1,
         largeMarkerMinimumZoom: 100,
         mediumMarkerSize: 24,
-        smallMarkerSize: 10,
-        markerItems: []
+        smallMarkerSize: 10
     )
 }

@@ -51,37 +51,23 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
             }
             .store(in: &cancellables)
 
-        viewModel.output.companions
+        viewModel.output.viewState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] state in
                 guard let self else { return }
-                initialLoadingTracker.complete(in: self)
-                nearCompanionSheetView.collectionView.reloadData()
-            }
-            .store(in: &cancellables)
 
-        viewModel.output.summaryText
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] summaryText in
-                self?.onSummaryTextChanged?(summaryText)
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.mapMarkers
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] markers in
-                self?.onMapMarkersChanged?(markers)
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.error
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                if let self {
+                switch state {
+                case .idle, .loading:
+                    break
+                case .loaded(_, let markers, let summaryText):
                     initialLoadingTracker.complete(in: self)
+                    nearCompanionSheetView.collectionView.reloadData()
+                    onSummaryTextChanged?(summaryText)
+                    onMapMarkersChanged?(markers)
+                case .failed(let error):
+                    initialLoadingTracker.complete(in: self)
+                    AppLogger.error(error)
                 }
-                AppLogger.error(error)
             }
             .store(in: &cancellables)
 
@@ -93,7 +79,7 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
             .store(in: &cancellables)
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
         initialLoadingTracker.begin(in: self)
@@ -104,7 +90,7 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
         viewModel.specificCompanions(for: placeId)
     }
 
-    func updatePlaceCategory(_ category: String) {
+    func updatePlaceCategory(_ category: CompanionPlace.Category) {
         viewModel.action(.placeCategoryDidSelect(category))
     }
 

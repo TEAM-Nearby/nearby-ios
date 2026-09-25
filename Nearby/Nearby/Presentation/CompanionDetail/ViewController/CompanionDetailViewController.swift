@@ -59,18 +59,27 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
     }
     
     override func bindState() {
-        viewModel.output.displayState
+        viewModel.output.viewState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
+            .sink { [weak self] viewState in
                 guard let self else { return }
-                initialLoadingTracker.complete(in: self)
-                tags = state.tags
-                companionDetailView.configure(state: state)
-                companionDetailView.tagCollectionView.reloadData()
+
+                switch viewState {
+                case .idle:
+                    break
+                case .loading(let state):
+                    configure(state)
+                case .loaded(let state):
+                    initialLoadingTracker.complete(in: self)
+                    configure(state)
+                case .failed(let error):
+                    initialLoadingTracker.complete(in: self)
+                    AppLogger.error(error)
+                }
             }
             .store(in: &cancellables)
 
-        viewModel.output.error
+        viewModel.output.applyError
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 if let self {
@@ -90,6 +99,12 @@ final class CompanionDetailViewController: BaseViewController<CompanionDetailVie
         
         viewModel.action(.viewDidLoad)
         initialLoadingTracker.begin(in: self)
+    }
+
+    private func configure(_ state: CompanionDetailState) {
+        tags = state.tags
+        companionDetailView.configure(state: state)
+        companionDetailView.tagCollectionView.reloadData()
     }
 }
 

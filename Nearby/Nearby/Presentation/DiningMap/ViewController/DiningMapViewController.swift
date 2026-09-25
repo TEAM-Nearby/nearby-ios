@@ -77,7 +77,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         bottomSheetController.install(in: bottomSheetParentViewController, hostView: bottomSheetHostView,
                                       lowerOverlayView: diningMapView.currentLocationButton, upperOverlayView: diningMapView.bookmarkButton)
         
-        mapController.onCompanionMarkerTap = { [weak self] placeId in
+        mapController.onMarkerTap = { [weak self] placeId in
             self?.bottomSheetController.selectRestaurant(placeId: placeId)
         }
         

@@ -12,7 +12,7 @@ final class CompanionMapController: NSObject {
     
     // MARK: - Properties
     
-    var onCompanionMarkerTap: ((Int) -> Void)?
+    var onMarkerTap: ((Int) -> Void)?
     var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
 
     private let locationManager = CLLocationManager()
@@ -122,7 +122,7 @@ extension CompanionMapController: GMSMapViewDelegate {
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         guard let placeId = markerManager.placeId(for: marker) else { return false }
-        onCompanionMarkerTap?(placeId)
+        onMarkerTap?(placeId)
         return true
     }
 }

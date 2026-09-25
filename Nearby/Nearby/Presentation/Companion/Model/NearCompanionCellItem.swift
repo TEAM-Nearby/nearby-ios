@@ -20,44 +20,34 @@ struct NearCompanionCellItem {
 }
 
 extension NearCompanionCellItem {
-    init(dto: CompanionDTO) {
+    init(post: CompanionPost) {
         self.init(
             placeImage: nil,
-            placeImageURL: dto.place.imageSource == "DEFAULT"
-                ? nil
-                : URL(string: dto.place.imageUrl),
-            placeName: dto.place.name,
-            writtenTime: dto.createdAgoDisplayText,
-            content: dto.contentPreview,
-            schedule: dto.nearMeetingTimeTitle,
-            participantImageURLs: dto.participantProfileImageURLs,
-            statusText: dto.participantSummaryText,
+            placeImageURL: post.place.usesDefaultImage ? nil : post.place.imageURL,
+            placeName: post.place.name,
+            writtenTime: post.createdAgoDisplayText,
+            content: post.contentPreview,
+            schedule: post.nearMeetingTimeTitle,
+            participantImageURLs: post.participantProfileImageURLs,
+            statusText: post.participantSummaryText,
             detailState: CompanionDetailState(
-                postId: dto.postId,
+                postId: post.postId,
                 postType: .scheduled,
                 isApplicationEnabled: false,
                 tags: [],
-                hostName: dto.host.nickname,
-                genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
-                profileImageURL: dto.participants.first?.profileImageUrl.flatMap(URL.init(string:)),
-                placeName: dto.place.name,
-                googlePlaceId: dto.place.googlePlaceId,
-                placeLatitude: dto.place.latitude,
-                placeLongitude: dto.place.longitude,
-                meetingTimeText: dto.nearMeetingTimeTitle,
-                participantSummaryText: dto.participantSummaryText,
-                participantCount: dto.participantCount,
-                participantImageURLs: dto.participantProfileImageURLs,
-                content: dto.contentPreview
+                hostName: post.host.nickname,
+                genderTitle: post.host.gender.title,
+                profileImageURL: post.participants.first?.profileImageURL.flatMap(URL.init(string:)),
+                placeName: post.place.name,
+                googlePlaceId: post.place.googlePlaceId,
+                placeLatitude: post.place.latitude,
+                placeLongitude: post.place.longitude,
+                meetingTimeText: post.nearMeetingTimeTitle,
+                participantSummaryText: post.participantSummaryText,
+                participantCount: post.participantCount,
+                participantImageURLs: post.participantProfileImageURLs,
+                content: post.contentPreview
             )
         )
-    }
-}
-
-extension CompanionDTO {
-    var participantProfileImageURLs: [String?] {
-        let imageURLs = participants.map(\.profileImageUrl)
-        let missingCount = max(participantCount - imageURLs.count, 0)
-        return imageURLs + [String?](repeating: nil, count: missingCount)
     }
 }

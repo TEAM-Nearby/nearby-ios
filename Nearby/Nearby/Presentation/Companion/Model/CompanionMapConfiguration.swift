@@ -63,16 +63,11 @@ struct CompanionMapMarkerData {
 }
 
 extension CompanionMapMarkerData {
-    init(dto: CompanionDTO) {
-        self.init(
-            placeId: dto.place.placeId,
-            coordinate: CLLocationCoordinate2D(latitude: dto.place.latitude, longitude: dto.place.longitude),
-            nickname: dto.host.nickname,
-            written: dto.createdAgoDisplayText,
-            place: dto.place.name,
-            date: dto.nearMeetingTimeTitle,
-            style: .companion
-        )
+    init(post: CompanionPost) {
+        self.init(placeId: post.place.placeId,
+                  coordinate: CLLocationCoordinate2D(latitude: post.place.latitude, longitude: post.place.longitude),
+                  nickname: post.host.nickname, written: post.createdAgoDisplayText,
+                  place: post.place.name, date: post.nearMeetingTimeTitle, style: .companion)
     }
 
     init?(diningItem: NearDiningCellItem, style: MapMarkerStyle? = nil) {

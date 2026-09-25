@@ -24,57 +24,40 @@ struct SpecificCompanionCellItem {
 }
 
 extension SpecificCompanionCellItem {
-    init(dto: CompanionDTO) {
+    init(post: CompanionPost) {
+        let distanceTitle = post.place.distanceMeters < 1_000 ? "\(post.place.distanceMeters)m" : String(format: "%.1fkm", Double(post.place.distanceMeters) / 1_000)
+
         self.init(
-            placeImageURL: dto.place.imageSource == "DEFAULT" ? nil : URL(string: dto.place.imageUrl),
-            placeName: dto.place.name,
-            placeInfo: "\(dto.place.categoryTitle) · \(dto.place.distanceTitle)",
-            profileImageURL: dto.participants.first?.profileImageUrl,
-            hostName: dto.host.nickname,
-            genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
-            writtenTime: dto.createdAgoDisplayText,
-            content: dto.contentPreview,
-            meetingTime: dto.specificMeetingTimeTitle,
-            closedTime: dto.closingTimeTitle,
-            participantImageURLs: dto.participantProfileImageURLs,
-            statusText: dto.participantSummaryText,
+            placeImageURL: post.place.usesDefaultImage ? nil : post.place.imageURL,
+            placeName: post.place.name,
+            placeInfo: "\(post.place.category.title) · \(distanceTitle)",
+            profileImageURL: post.participants.first?.profileImageURL,
+            hostName: post.host.nickname,
+            genderTitle: post.host.gender.title,
+            writtenTime: post.createdAgoDisplayText,
+            content: post.contentPreview,
+            meetingTime: post.specificMeetingTimeTitle,
+            closedTime: post.closingTimeTitle,
+            participantImageURLs: post.participantProfileImageURLs,
+            statusText: post.participantSummaryText,
             detailState: CompanionDetailState(
-                postId: dto.postId,
-                postType: dto.meetingTimeType == "NOW" ? .immediate(expirationTime: "곧") : .scheduled,
+                postId: post.postId,
+                postType: post.meetingTimeType == .now ? .immediate(expirationTime: "곧") : .scheduled,
                 isApplicationEnabled: false,
                 tags: [],
-                hostName: dto.host.nickname,
-                genderTitle: dto.host.gender == "FEMALE" ? "여성" : "남성",
-                profileImageURL: dto.participants.first?.profileImageUrl.flatMap(URL.init(string:)),
-                placeName: dto.place.name,
-                googlePlaceId: dto.place.googlePlaceId,
-                placeLatitude: dto.place.latitude,
-                placeLongitude: dto.place.longitude,
-                meetingTimeText: dto.specificMeetingTimeTitle,
-                participantSummaryText: dto.participantSummaryText,
-                participantCount: dto.participantCount,
-                participantImageURLs: dto.participantProfileImageURLs,
-                content: dto.contentPreview
+                hostName: post.host.nickname,
+                genderTitle: post.host.gender.title,
+                profileImageURL: post.participants.first?.profileImageURL.flatMap(URL.init(string:)),
+                placeName: post.place.name,
+                googlePlaceId: post.place.googlePlaceId,
+                placeLatitude: post.place.latitude,
+                placeLongitude: post.place.longitude,
+                meetingTimeText: post.specificMeetingTimeTitle,
+                participantSummaryText: post.participantSummaryText,
+                participantCount: post.participantCount,
+                participantImageURLs: post.participantProfileImageURLs,
+                content: post.contentPreview
             )
         )
-    }
-}
-
-private extension CompanionPlaceDTO {
-    var categoryTitle: String {
-        switch category {
-        case "RESTAURANT": return "식당"
-        case "CAFE": return "카페"
-        case "PUB": return "펍"
-        case "MUSEUM": return "박물관"
-        case "PHOTO_SPOT": return "사진 명소"
-        default: return "기타"
-        }
-    }
-
-    var distanceTitle: String {
-        distanceMeters < 1_000
-            ? "\(distanceMeters)m"
-            : String(format: "%.1fkm", Double(distanceMeters) / 1_000)
     }
 }

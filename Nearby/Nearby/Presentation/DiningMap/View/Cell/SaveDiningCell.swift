@@ -98,8 +98,6 @@ final class SaveDiningCell: UICollectionViewCell {
         }
     }
     
-    // MARK: - Methods
-    
     private func setUI() {
         contentView.addSubviews(nameLabel, categoryLabel, distanceLabel, addressLabel, bookmarkButton, imageCollectionView, dividerView)
     }

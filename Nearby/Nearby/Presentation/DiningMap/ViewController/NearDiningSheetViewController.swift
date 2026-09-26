@@ -13,8 +13,7 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     
     // MARK: - Properties
     
-    var onRestaurantSelected: ((NearDiningCellItem) -> Void)?
-    var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
+    var onEvent: ((DiningMapSheetEvent) -> Void)?
 
     private let initialLoadingTracker = InitialLoadingTracker()
     private let nearDiningBottomSheetView = NearDiningBottomSheetView(diningCategories: DiningCategory.allCases)
@@ -46,38 +45,38 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
             }
             .store(in: &cancellables)
 
-        viewModel.output.restaurants
+        viewModel.output.viewState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] state in
                 guard let self else { return }
-                initialLoadingTracker.complete(in: self)
-                nearDiningBottomSheetView.collectionView.reloadData()
+                switch state {
+                case .idle, .loading:
+                    break
+                case .loaded(_, let markers):
+                    initialLoadingTracker.complete(in: self)
+                    nearDiningBottomSheetView.collectionView.reloadData()
+                    onEvent?(.markersChanged(markers))
+                case .failed(let error):
+                    initialLoadingTracker.complete(in: self)
+                    AppLogger.error(error)
+                }
             }
             .store(in: &cancellables)
 
         viewModel.output.selectedRestaurant
             .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
-                self?.onRestaurantSelected?(item)
+                self?.onEvent?(.restaurantSelected(item))
             }
             .store(in: &cancellables)
 
-        viewModel.output.mapMarkers
+        viewModel.output.favoriteDidUpdate
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] markers in
-                self?.onMapMarkersChanged?(markers)
+            .sink { [weak self] favorite in
+                self?.onEvent?(.favoriteUpdated(placeId: favorite.placeId, isFavorite: favorite.isFavorite))
             }
             .store(in: &cancellables)
 
-        viewModel.output.error
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                if let self {
-                    initialLoadingTracker.complete(in: self)
-                }
-                AppLogger.error(error)
-            }
-            .store(in: &cancellables)
     }
     
     // MARK: - Methods
@@ -89,6 +88,10 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
 
     func restaurant(placeId: Int) -> NearDiningCellItem? {
         viewModel.restaurant(placeId: placeId)
+    }
+
+    func currentMapMarkers() -> [CompanionMapMarkerData] {
+        viewModel.mapMarkers
     }
 
     func updateFavorite(placeId: Int, isFavorite: Bool) {

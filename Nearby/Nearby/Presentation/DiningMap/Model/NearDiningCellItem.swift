@@ -69,71 +69,69 @@ struct NearDiningCellItem {
         self.phoneNumber = phoneNumber
         self.price = price
     }
-}
+    
+    // MARK: - Initializer
 
-extension NearDiningCellItem {
-    init(dto: DiningFavoritePlaceDTO) {
+    init(place: DiningPlace) {
         self.init(
-            placeId: dto.placeId,
-            googlePlaceId: dto.googlePlaceId,
-            name: dto.name,
-            category: dto.category?.diningCategoryTitle ?? "식당",
-            businessStatus: dto.businessStatus.diningBusinessStatusTitle,
-            distance: dto.distanceMeters.diningDistanceText,
-            address: dto.address ?? "",
-            rating: dto.rating ?? 0,
-            reviewCount: dto.reviewCount ?? 0,
+            placeId: place.placeId,
+            googlePlaceId: place.googlePlaceId,
+            name: place.name,
+            category: Self.categoryTitle(for: place.category),
+            businessStatus: Self.businessStatusTitle(for: place.businessStatus),
+            distance: Self.distanceText(for: place.distanceMeters),
+            address: place.address ?? "",
+            rating: place.rating ?? 0,
+            reviewCount: place.reviewCount ?? 0,
             images: [nil],
-            imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
-            isBookmarked: dto.isFavorite
+            imageURLs: [place.imageURL],
+            isBookmarked: place.isFavorite,
+            latitude: place.latitude,
+            longitude: place.longitude,
+            description: place.editorialSummary ?? "",
+            closingTime: place.regularOpeningHours.first ?? "",
+            phoneNumber: place.phoneNumber ?? "",
+            price: Self.priceRangeText(place.priceRange)
         )
     }
+    
+    // MARK: - Methods
 
-    init(dto: DiningPlaceDTO) {
-        self.init(
-            placeId: dto.placeId,
-            googlePlaceId: dto.googlePlaceId,
-            name: dto.name,
-            category: dto.category?.diningCategoryTitle ?? "식당",
-            businessStatus: dto.businessStatus.diningBusinessStatusTitle,
-            distance: dto.distanceMeters.diningDistanceText,
-            address: dto.address ?? "",
-            rating: dto.rating ?? 0,
-            reviewCount: dto.reviewCount ?? 0,
-            images: [nil],
-            imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
-            isBookmarked: dto.isFavorite,
-            latitude: dto.latitude,
-            longitude: dto.longitude
-        )
+    private static func categoryTitle(for category: DiningPlace.Category) -> String {
+        switch category {
+        case .restaurant:
+            return "식당"
+        case .cafe:
+            return "카페"
+        case .pub:
+            return "바"
+        case .other:
+            return "빠에야 전문"
+        case .unknown(let rawValue):
+            return rawValue ?? "식당"
+        }
     }
 
-    init(dto: DiningDetailResponseDTO) {
-        self.init(
-            placeId: dto.placeId,
-            googlePlaceId: dto.googlePlaceId,
-            name: dto.name,
-            category: dto.category?.diningCategoryTitle ?? "식당",
-            businessStatus: dto.businessStatus.diningBusinessStatusTitle,
-            distance: dto.distanceMeters.diningDistanceText,
-            address: dto.address ?? "",
-            rating: dto.rating ?? 0,
-            reviewCount: dto.reviewCount ?? 0,
-            images: [nil],
-            imageURLs: [dto.imageUrl.flatMap(URL.init(string:))],
-            isBookmarked: dto.isFavorite,
-            latitude: dto.latitude,
-            longitude: dto.longitude,
-            description: dto.editorialSummary ?? "",
-            closingTime: dto.regularOpeningHours?.first ?? "",
-            phoneNumber: dto.phoneNumber ?? "",
-            price: dto.priceRange?.diningPriceRangeText ?? ""
-        )
+    private static func businessStatusTitle(for status: DiningPlace.BusinessStatus) -> String {
+        switch status {
+        case .operational:
+            return "영업중"
+        case .closedTemporarily:
+            return "임시 휴업"
+        case .closedPermanently:
+            return "폐업"
+        case .unknown(let rawValue):
+            return rawValue
+        }
     }
-}
 
-private extension String {
-    var diningPriceRangeText: String {
+    private static func distanceText(for distanceMeters: Int) -> String {
+        guard distanceMeters >= 1_000 else { return "\(distanceMeters)m" }
+        return String(format: "%.1fkm", Double(distanceMeters) / 1_000)
+    }
+
+    private static func priceRangeText(_ priceRange: String?) -> String {
+        guard let priceRange else { return "" }
         let currencySymbols = [
             "EUR": "€",
             "USD": "$",
@@ -142,25 +140,17 @@ private extension String {
             "JPY": "¥",
             "CNY": "¥"
         ]
-        var result = trimmingCharacters(in: .whitespacesAndNewlines)
+        var result = priceRange.trimmingCharacters(in: .whitespacesAndNewlines)
 
         currencySymbols.forEach { code, symbol in
-            result = result.replacingOccurrences(
-                of: code,
-                with: symbol,
-                options: .caseInsensitive
-            )
+            result = result.replacingOccurrences(of: code, with: symbol, options: .caseInsensitive)
 
             while result.contains("\(symbol) ") {
                 result = result.replacingOccurrences(of: "\(symbol) ", with: symbol)
             }
         }
 
-        result = result.replacingOccurrences(
-            of: #"\s*([~\-–—])\s*"#,
-            with: "$1",
-            options: .regularExpression
-        )
+        result = result.replacingOccurrences(of: #"\s*([~\-–—])\s*"#, with: "$1", options: .regularExpression)
 
         if let symbol = currencySymbols.values.first(where: { result.hasPrefix($0) }) {
             let rangeWithoutLeadingSymbol = String(result.dropFirst(symbol.count))
@@ -169,31 +159,5 @@ private extension String {
         }
 
         return result
-    }
-
-    var diningCategoryTitle: String {
-        switch self {
-        case "RESTAURANT": "식당"
-        case "CAFE": "카페"
-        case "PUB": "바"
-        case "OTHER": "빠에야 전문"
-        default: self
-        }
-    }
-
-    var diningBusinessStatusTitle: String {
-        switch self {
-        case "OPERATIONAL": "영업중"
-        case "CLOSED_TEMPORARILY": "임시 휴업"
-        case "CLOSED_PERMANENTLY": "폐업"
-        default: self
-        }
-    }
-}
-
-private extension Int {
-    var diningDistanceText: String {
-        guard self >= 1_000 else { return "\(self)m" }
-        return String(format: "%.1fkm", Double(self) / 1_000)
     }
 }

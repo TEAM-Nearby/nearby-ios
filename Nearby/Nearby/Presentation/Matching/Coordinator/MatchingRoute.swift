@@ -7,7 +7,7 @@
 
 enum MatchingRoute {
     case scheduleDetail(Int)
-    case manageSchedule(MatchingScheduleDetailDisplayData)
+    case manageSchedule(Int)
     case previous
     case alarm
     case companionTab

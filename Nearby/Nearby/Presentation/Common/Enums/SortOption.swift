@@ -21,14 +21,14 @@ enum SortOption: CaseIterable {
         }
     }
 
-    var serverKey: String {
+    var companionSort: CompanionSearchCriteria.Sort {
         switch self {
         case .latest:
-            return "LATEST"
+            return .latest
         case .nearest:
-            return "DISTANCE"
+            return .nearest
         case .closingSoon:
-            return "CLOSING_SOON"
+            return .closingSoon
         }
     }
 }

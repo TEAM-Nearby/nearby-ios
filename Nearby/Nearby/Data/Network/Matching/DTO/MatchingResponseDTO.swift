@@ -57,7 +57,12 @@ struct MatchMyScheduleResponseDTO: Decodable {
     let openChatUrl: String?
     let userNickname: String?
     let meetingTimeType: MeetingTimeType
-    let currentUserRole: NearbyUserType
+    let currentUserRole: UserRole
+
+    enum UserRole: String, Decodable {
+        case host = "HOST"
+        case participant = "GUEST"
+    }
 
     struct Schedule: Decodable {
         let place: Place

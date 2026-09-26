@@ -13,6 +13,8 @@ import Then
 
 final class NearCompanionCell: UICollectionViewCell {
 
+    // MARK: - Properties
+
     override var isHighlighted: Bool {
         didSet {
             contentView.backgroundColor = isHighlighted ? .bgSurfacePurple : .white
@@ -22,78 +24,86 @@ final class NearCompanionCell: UICollectionViewCell {
     private let profileAvatarCount = 4
 
     // MARK: - UI Components
-    
+
     private let dividerView = UIView()
     private let placeImageView = UIImageView()
     private let placeNameLabel = UILabel()
     private let timeLabel = UILabel()
-    
+
     private let contentLabel = UILabel()
     private let timeStackView = UIStackView()
     private let clockIcon = UIImageView()
     private let scheduleLabel = UILabel()
-    
+
     private let profileStackView = AvatarStackView()
     private let peopleStackView = UIStackView()
     private let overflowCountLabel = UILabel()
     private let currentStatusLabel = UILabel()
     private let arrowIcon = UIImageView()
-    
+
     // MARK: - Initializer
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         setStyle()
         setUI()
         setLayout()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
+    // MARK: - Life Cycle
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        placeImageView.kf.cancelDownloadTask()
+        placeImageView.image = nil
+    }
+
     // MARK: - Methods
-    
+
     private func setStyle() {
         contentView.backgroundColor = .white
 
         dividerView.do {
             $0.backgroundColor = .grey5
         }
-        
+
         placeImageView.do {
             $0.backgroundColor = .grey5
             $0.clipsToBounds = true
             $0.layer.cornerRadius = 16
         }
-        
+
         placeNameLabel.do {
             $0.setFont(.b2M16, textColor: .grey80)
             $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
-        
+
         timeLabel.do {
             $0.setFont(.c1R12, textColor: .grey30)
             $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
-        
+
         contentLabel.do {
             $0.setFont(.c1M12, textColor: .grey70)
             $0.numberOfLines = 2
             $0.lineBreakMode = .byTruncatingTail
         }
-        
+
         timeStackView.do {
             $0.axis = .horizontal
             $0.spacing = 4
         }
-        
+
         clockIcon.do {
             $0.image = .clockIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .chipIcOrange
         }
-        
+
         peopleStackView.do {
             $0.axis = .horizontal
             $0.spacing = 6
@@ -106,21 +116,21 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.setContentHuggingPriority(.required, for: .horizontal)
             $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
-        
+
         scheduleLabel.do {
             $0.setFont(.c1R12, textColor: .grey70)
         }
-        
+
         currentStatusLabel.do {
             $0.setFont(.c1M12, textColor: .highlightTextPurple)
         }
-        
+
         arrowIcon.do {
             $0.image = .chevronRightIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .grey40
         }
     }
-    
+
     private func setUI() {
         contentView.addSubviews(dividerView, placeImageView, placeNameLabel, timeLabel, contentLabel, timeStackView, peopleStackView, arrowIcon)
         timeStackView.addArrangedSubviews(clockIcon, scheduleLabel)
@@ -130,13 +140,13 @@ final class NearCompanionCell: UICollectionViewCell {
             currentStatusLabel
         )
     }
-    
+
     private func setLayout() {
         dividerView.snp.makeConstraints {
             $0.top.horizontalEdges.equalToSuperview()
             $0.height.equalTo(1)
         }
-        
+
         placeImageView.snp.makeConstraints {
             $0.top.equalTo(dividerView.snp.bottom).offset(16)
             $0.leading.equalToSuperview().inset(20)
@@ -144,68 +154,44 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.height.equalTo(140)
             $0.bottom.lessThanOrEqualToSuperview().inset(16)
         }
-        
+
         placeNameLabel.snp.makeConstraints {
             $0.top.equalTo(placeImageView).offset(14)
             $0.leading.equalTo(placeImageView.snp.trailing).offset(12)
             $0.trailing.lessThanOrEqualTo(timeLabel.snp.leading).offset(-8)
         }
-        
+
         timeLabel.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalTo(placeNameLabel)
         }
-        
+
         contentLabel.snp.makeConstraints {
             $0.top.equalTo(placeNameLabel.snp.bottom).offset(12)
             $0.leading.equalTo(placeNameLabel)
             $0.trailing.equalTo(timeLabel)
         }
-        
+
         timeStackView.snp.makeConstraints {
             $0.top.equalTo(contentLabel.snp.bottom).offset(10)
             $0.leading.equalTo(contentLabel).offset(4)
         }
-        
+
         clockIcon.snp.makeConstraints {
             $0.size.equalTo(16)
         }
-        
+
         peopleStackView.snp.makeConstraints {
             $0.top.equalTo(timeStackView.snp.bottom).offset(8)
             $0.bottom.equalToSuperview().inset(25)
             $0.leading.equalTo(contentLabel.snp.leading).offset(3)
         }
-        
+
         arrowIcon.snp.makeConstraints {
             $0.size.equalTo(16)
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalTo(profileStackView)
         }
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        placeImageView.kf.cancelDownloadTask()
-        placeImageView.image = nil
-    }
-
-    func configure(with item: NearCompanionCellItem) {
-        placeImageView.image = item.placeImage
-        if let placeImageURL = item.placeImageURL {
-            placeImageView.kf.setImage(with: placeImageURL, placeholder: item.placeImage)
-        }
-        placeNameLabel.text = item.placeName
-        timeLabel.text = item.writtenTime
-        contentLabel.setFont(.c1M12, text: item.content, textColor: .grey70, lineSpacing: 3)
-        scheduleLabel.text = item.schedule
-        profileStackView.configure(
-            withImageURLs: Array(
-                item.participantImageURLs.prefix(profileAvatarCount)
-            )
-        )
-        configureOverflowCount(item.detailState.participantCount)
-        currentStatusLabel.text = item.statusText
     }
 
     private func configureOverflowCount(_ participantCount: Int) {
@@ -218,5 +204,19 @@ final class NearCompanionCell: UICollectionViewCell {
             after: profileStackView
         )
         peopleStackView.setCustomSpacing(6, after: overflowCountLabel)
+    }
+
+    func configure(with item: NearCompanionCellItem) {
+        placeImageView.image = item.placeImage
+        if let placeImageURL = item.placeImageURL {
+            placeImageView.kf.setImage(with: placeImageURL, placeholder: item.placeImage)
+        }
+        placeNameLabel.text = item.placeName
+        timeLabel.text = item.writtenTime
+        contentLabel.setFont(.c1M12, text: item.content, textColor: .grey70, lineSpacing: 3)
+        scheduleLabel.text = item.schedule
+        profileStackView.configure(withImageURLs: Array( item.participantImageURLs.prefix(profileAvatarCount)))
+        configureOverflowCount(item.detailState.participantCount)
+        currentStatusLabel.text = item.statusText
     }
 }

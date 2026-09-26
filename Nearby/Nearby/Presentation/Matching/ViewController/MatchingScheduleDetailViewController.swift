@@ -17,7 +17,6 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
     var onRoute: ((MatchingRoute) -> Void)?
     private let rootView = MatchingScheduleDetailView()
     private let kakaoShareTemplateId: Int = 135215
-    private var currentDisplayData: MatchingScheduleDetailDisplayData?
     
     // MARK: - Initializer
     
@@ -62,7 +61,6 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         viewModel.output.displayData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] displayData in
-                self?.currentDisplayData = displayData
                 self?.rootView.configure(displayData: displayData)
             }
             .store(in: &cancellables)
@@ -83,15 +81,14 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         
         viewModel.output.showEdit
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] displayData in
-                self?.onRoute?(.manageSchedule(displayData))
+            .sink { [weak self] matchId in
+                self?.onRoute?(.manageSchedule(matchId))
             }
             .store(in: &cancellables)
         
         viewModel.output.showShare
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let displayData = self?.currentDisplayData else { return }
+            .sink { [weak self] displayData in
                 self?.share(displayData: displayData)
             }
             .store(in: &cancellables)
@@ -104,7 +101,6 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
             "name": displayData.cardItem.content.name
         ]
 
-        // TODO: - 서버 응답 값으로 displayData 구성
         guard ShareApi.isKakaoTalkSharingAvailable() else {
             if let url = ShareApi.shared.makeCustomUrl(templateId: .init(kakaoShareTemplateId), templateArgs: templateArgs) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)

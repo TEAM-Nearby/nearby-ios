@@ -10,9 +10,9 @@ import GoogleMaps
 import UIKit
 
 final class CompanionMapMarkerManager {
-    
+
     // MARK: - Properties
-    
+
     private struct Content {
         let nickname: String
         let written: String
@@ -20,57 +20,65 @@ final class CompanionMapMarkerManager {
         let date: String
         let style: MapMarkerStyle
     }
-    
+
     private struct Entry {
         let marker: GMSMarker
         let content: Content
         let placeId: Int?
     }
-    
-    // MARK: - UI Components
-    
+
     private weak var mapView: GMSMapView?
     private var currentLocationMarkers: [GMSMarker] = []
     private var currentLocationDirectionMarker: GMSMarker?
     private var entries: [Entry] = []
     private var level: CompanionMarkerLevel
     private let configuration: CompanionMapConfiguration
+    private lazy var restaurantMarkerIcon = makeMarkerImage(image: .icRestaurantMarker, size: configuration.mediumMarkerSize)
+    private lazy var savedRestaurantMarkerIcon = makeMarkerImage(image: .icStarHonbop, size: configuration.mediumMarkerSize)
 
-    var hasCompanionMarkers: Bool {
-        !entries.isEmpty
-    }
-    
     // MARK: - Initializer
-    
+
     init(mapView: GMSMapView, configuration: CompanionMapConfiguration) {
         self.mapView = mapView
         self.configuration = configuration
         self.level = CompanionMarkerLevel(zoom: mapView.camera.zoom, configuration: configuration)
     }
-    
+
     // MARK: - Methods
-    
+
     private func applyAppearance(to marker: GMSMarker, content: Content, level: CompanionMarkerLevel) {
         marker.tracksViewChanges = true
 
-        if content.style == .restaurant {
-            marker.iconView = makeImageMarker(image: .icRestaurantMarker, size: configuration.mediumMarkerSize)
+        switch content.style {
+        case .restaurant:
+            marker.iconView = nil
+            marker.icon = restaurantMarkerIcon
             marker.groundAnchor = CGPoint(x: 0.5, y: 1)
-            stopTrackingViewChanges(for: marker)
+            marker.tracksViewChanges = false
             return
+        case .savedRestaurant:
+            marker.iconView = nil
+            marker.icon = savedRestaurantMarkerIcon
+            marker.groundAnchor = CGPoint(x: 0.5, y: 1)
+            marker.tracksViewChanges = false
+            return
+        case .companion:
+            applyCompanionAppearance(to: marker, content: content, level: level)
         }
 
-        if content.style == .savedRestaurant {
-            marker.iconView = makeImageMarker(image: .icStarHonbop, size: configuration.mediumMarkerSize)
-            marker.groundAnchor = CGPoint(x: 0.5, y: 1)
-            stopTrackingViewChanges(for: marker)
-            return
-        }
-        
+        stopTrackingViewChanges(for: marker)
+    }
+
+    private func applyCompanionAppearance(to marker: GMSMarker, content: Content, level: CompanionMarkerLevel) {
         switch level {
         case .large:
             let chipView = CompanionChipView()
-            chipView.configure(nickname: content.nickname, written: content.written, place: content.place, date: content.date)
+            chipView.configure(
+                nickname: content.nickname,
+                written: content.written,
+                place: content.place,
+                date: content.date
+            )
             chipView.frame = CGRect(origin: .zero, size: chipView.intrinsicContentSize)
             chipView.layoutIfNeeded()
             marker.iconView = chipView
@@ -82,10 +90,8 @@ final class CompanionMapMarkerManager {
             marker.iconView = makeImageMarker(image: .spot, size: configuration.smallMarkerSize)
             marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
         }
-        
-        stopTrackingViewChanges(for: marker)
     }
-    
+
     private func makeCurrentLocationMarkerView(image: UIImage, frame: CGRect) -> UIView {
         let markerView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         let imageView = UIImageView(image: image)
@@ -95,12 +101,7 @@ final class CompanionMapMarkerManager {
         return markerView
     }
 
-    private func makeCurrentLocationMarker(
-        at coordinate: CLLocationCoordinate2D,
-        image: UIImage,
-        frame: CGRect,
-        zIndex: Int32
-    ) -> GMSMarker {
+    private func makeCurrentLocationMarker(at coordinate: CLLocationCoordinate2D, image: UIImage, frame: CGRect, zIndex: Int32) -> GMSMarker {
         let marker = GMSMarker(position: coordinate)
         marker.iconView = makeCurrentLocationMarkerView(image: image, frame: frame)
         marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
@@ -109,102 +110,114 @@ final class CompanionMapMarkerManager {
         marker.map = mapView
         return marker
     }
-    
+
     private func makeImageMarker(image: UIImage, size: CGFloat) -> UIView {
         let imageView = UIImageView(image: image)
         imageView.frame = CGRect(x: 0, y: 0, width: size, height: size)
         imageView.contentMode = .scaleAspectFit
         return imageView
     }
-    
+
+    private func makeMarkerImage(image: UIImage, size: CGFloat) -> UIImage {
+        let targetSize = CGSize(width: size, height: size)
+        return UIGraphicsImageRenderer(size: targetSize).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetSize))
+        }
+    }
+
     private func stopTrackingViewChanges(for marker: GMSMarker) {
         DispatchQueue.main.async {
             marker.tracksViewChanges = false
         }
     }
-    
-    func updateCurrentLocation(to location: CLLocation) {
+
+    private func addMarker(_ item: CompanionMapMarkerData) {
+        let content = Content(nickname: item.nickname, written: item.written, place: item.place, date: item.date, style: item.style)
+        let marker = GMSMarker(position: item.coordinate)
+        applyAppearance(to: marker, content: content, level: level)
+        marker.map = mapView
+        entries.append(Entry(marker: marker, content: content, placeId: item.placeId))
+    }
+
+    private func replaceMarkers(with items: [CompanionMapMarkerData], group: MapMarkerGroup) {
+        entries
+            .filter { $0.content.style.group == group }
+            .forEach { $0.marker.map = nil }
+        entries.removeAll { $0.content.style.group == group }
+
+        items
+            .filter { $0.style.group == group }
+            .forEach(addMarker)
+    }
+
+    func updateCurrentLocation(to coordinate: CLLocationCoordinate2D) {
         if !currentLocationMarkers.isEmpty {
-            currentLocationMarkers.forEach { $0.position = location.coordinate }
+            currentLocationMarkers.forEach { $0.position = coordinate }
             return
         }
 
-        let backgroundMarker = makeCurrentLocationMarker(
-            at: location.coordinate,
-            image: .markerMyLocationBg,
-            frame: CGRect(x: 0, y: 0, width: 50, height: 50),
-            zIndex: 1_000
-        )
-        let directionMarker = makeCurrentLocationMarker(
-            at: location.coordinate,
-            image: .markerMyLocationArrow,
-            frame: CGRect(x: 13, y: 0, width: 24, height: 24),
-            zIndex: 1_001
-        )
-        let profileMarker = makeCurrentLocationMarker(
-            at: location.coordinate,
-            image: .markerMyLocationProfile,
-            frame: CGRect(x: 10, y: 10, width: 30, height: 30),
-            zIndex: 1_002
-        )
+        let backgroundMarker = makeCurrentLocationMarker(at: coordinate, image: .markerMyLocationBg,
+                                                         frame: CGRect(x: 0, y: 0, width: 50, height: 50), zIndex: 1_000)
+        let directionMarker = makeCurrentLocationMarker(at: coordinate, image: .markerMyLocationArrow,
+                                                        frame: CGRect(x: 13, y: 0, width: 24, height: 24), zIndex: 1_001)
+        let profileMarker = makeCurrentLocationMarker(at: coordinate, image: .markerMyLocationProfile,
+                                                      frame: CGRect(x: 10, y: 10, width: 30, height: 30), zIndex: 1_002)
 
         currentLocationMarkers = [backgroundMarker, directionMarker, profileMarker]
         currentLocationDirectionMarker = directionMarker
     }
-    
-    @discardableResult
-    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, placeId: Int? = nil, nickname: String,
-                            written: String, place: String, date: String, style: MapMarkerStyle = .companion) -> GMSMarker {
-        let content = Content(nickname: nickname, written: written, place: place, date: date, style: style)
-        let marker = GMSMarker(position: coordinate)
-        applyAppearance(to: marker, content: content, level: level)
-        marker.map = mapView
-        entries.append(Entry(marker: marker, content: content, placeId: placeId))
-        return marker
-    }
 
     func replaceCompanionMarkers(with items: [CompanionMapMarkerData]) {
-        entries
-            .filter { $0.content.style == .companion }
-            .forEach { $0.marker.map = nil }
-        entries.removeAll { $0.content.style == .companion }
-
-        items.forEach { item in
-            addCompanionMarker(at: item.coordinate, placeId: item.placeId,
-                               nickname: item.nickname, written: item.written,
-                               place: item.place, date: item.date, style: item.style)
-        }
+        replaceMarkers(with: items, group: .companion)
     }
 
     func replaceDiningMarkers(with items: [CompanionMapMarkerData]) {
+        let companionEntries = entries.filter { $0.content.style == .companion }
+        var existingDiningEntries: [Int: Entry] = [:]
+
         entries
             .filter { $0.content.style != .companion }
-            .forEach { $0.marker.map = nil }
-        entries.removeAll { $0.content.style != .companion }
+            .forEach { entry in
+                guard let placeId = entry.placeId else {
+                    entry.marker.map = nil
+                    return
+                }
+
+                if let duplicateEntry = existingDiningEntries.updateValue(entry, forKey: placeId) {
+                    duplicateEntry.marker.map = nil
+                }
+            }
+
+        var updatedDiningEntries: [Entry] = []
 
         items.forEach { item in
-            addCompanionMarker(at: item.coordinate, placeId: item.placeId,
-                               nickname: item.nickname, written: item.written,
-                               place: item.place, date: item.date, style: item.style)
+            let content = Content(nickname: item.nickname, written: item.written,
+                                  place: item.place, date: item.date, style: item.style)
+            let marker = existingDiningEntries.removeValue(forKey: item.placeId)?.marker ?? GMSMarker(position: item.coordinate)
+            marker.position = item.coordinate
+            applyAppearance(to: marker, content: content, level: level)
+            marker.map = mapView
+            updatedDiningEntries.append(Entry(marker: marker, content: content, placeId: item.placeId))
         }
+
+        existingDiningEntries.values.forEach { $0.marker.map = nil }
+        entries = companionEntries + updatedDiningEntries
     }
-    
+
     func updateLevel(for zoom: Float) {
         let newLevel = CompanionMarkerLevel(zoom: zoom, configuration: configuration)
         guard newLevel != level else { return }
-        
+
         level = newLevel
-        entries.forEach { applyAppearance(to: $0.marker, content: $0.content, level: newLevel) }
-    }
-    
-    func containsCompanionMarker(_ marker: GMSMarker) -> Bool {
-        entries.contains { $0.marker === marker }
+        entries
+            .filter { $0.content.style.group == .companion }
+            .forEach { applyAppearance(to: $0.marker, content: $0.content, level: newLevel) }
     }
 
     func placeId(for marker: GMSMarker) -> Int? {
         entries.first { $0.marker === marker }?.placeId
     }
-    
+
     func updateHeading(_ heading: CLHeading) {
         guard heading.headingAccuracy >= 0 else { return }
 

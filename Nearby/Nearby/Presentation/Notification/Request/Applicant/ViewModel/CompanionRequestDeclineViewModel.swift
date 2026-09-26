@@ -37,8 +37,6 @@ final class CompanionRequestDeclineViewModel: BaseViewModelType {
     // MARK: - Properties
 
     let output = Output()
-    
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Action
 

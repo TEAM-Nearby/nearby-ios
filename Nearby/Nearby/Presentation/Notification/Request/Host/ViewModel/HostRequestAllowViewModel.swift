@@ -54,7 +54,6 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     private let postType: PostType
     private let profileImageUrl: String?
     let openChatURLString: String
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
 

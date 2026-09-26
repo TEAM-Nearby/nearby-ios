@@ -113,6 +113,7 @@ final class GradientCircleView: BaseView {
     }
 
     func configure(image: UIImage?) {
+        imageView.kf.cancelDownloadTask()
         imageView.image = image ?? .imgProfileDefault
     }
 }

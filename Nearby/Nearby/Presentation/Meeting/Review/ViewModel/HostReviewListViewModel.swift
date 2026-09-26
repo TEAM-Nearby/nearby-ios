@@ -27,7 +27,6 @@ final class HostReviewListViewModel: BaseViewModelType {
         let showReviewWrite = PassthroughSubject<(item: ReviewItem, isLast: Bool), Never>()
         let showCompletion = PassthroughSubject<Void, Never>()
         let reviewedIDs = CurrentValueSubject<Set<Int>, Never>([])
-        let errorMessage = PassthroughSubject<String, Never>()
     }
     
     struct HeaderInfo {
@@ -92,29 +91,28 @@ final class HostReviewListViewModel: BaseViewModelType {
         Task {
             do {
                 async let myPage = myPageRepository.fetchMyPage()
-                let DTO = try await repository.fetchReviewTargets(meetingId: meetingId)
-                let targets = DTO.reviewTargets
+                let reviewTargets = try await repository.fetchReviewTargets(meetingId: meetingId)
+                let reviewees = reviewTargets.reviewees
                 let myProfileImageUrl = (try? await myPage)?.profileImageUrl
 
-                if let first = targets.first {
-                    let people = targets.count == 1
+                if let first = reviewees.first {
+                    let people = reviewees.count == 1
                         ? "\(first.nickname) 님과의 동행"
-                        : "\(first.nickname) 외 \(targets.count - 1)명과의 동행"
+                        : "\(first.nickname) 외 \(reviewees.count - 1)명과의 동행"
                     output.headerInfo.send(
                         HeaderInfo(
                             people: people,
                             information: first.meetingDisplayDate,
                             location: first.cityName,
-                            avatarImageUrls: [myProfileImageUrl] + targets.map(\.profileImageUrl)
+                            avatarImageUrls: [myProfileImageUrl] + reviewees.map(\.profileImageURL)
                         )
                     )
                 }
 
-                output.reviewedIDs.send(Set(targets.filter(\.hasWrittenReview).map(\.revieweeUserId)))
-                output.items.send(targets.map { ReviewItem(target: $0, meetingId: meetingId) })
+                output.reviewedIDs.send(Set(reviewees.filter(\.hasWrittenReview).map(\.userID)))
+                output.items.send(reviewees.map { ReviewItem(reviewee: $0, meetingId: meetingId) })
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
             }
         }
     }
@@ -125,17 +123,12 @@ final class HostReviewListViewModel: BaseViewModelType {
         Task {
             defer { isCompleting = false }
             do {
-                let response = try await repository.completeMeeting(meetingId: meetingId)
-                eventCenter.notifyCompleted(matchId: response.matchId)
+                let completion = try await repository.completeMeeting(meetingId: meetingId)
+                eventCenter.notifyCompleted(matchId: completion.matchID)
                 output.showCompletion.send(())
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
             }
         }
-    }
-    
-    func item(at index: Int) -> ReviewItem {
-        items[index]
     }
 }

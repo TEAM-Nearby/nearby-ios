@@ -16,11 +16,14 @@ final class ReportPostView: BaseView {
     
     private let navigationBar = NearbyNavigationBar()
     
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    
     private let labelStackView = UIStackView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
     
-    let reasonTableView = UITableView()
+    let reasonTableView = SelfSizingTableView()
     
     private let reasonTextView = NearbyTextView(placeholder: "신고와 관련된 상세 내용을 입력해주세요. (선택)", contentInsets: UIEdgeInsets(top: 15, left: 16, bottom: 15, right: 16))
     
@@ -28,7 +31,6 @@ final class ReportPostView: BaseView {
     
     // MARK: - Properties
     
-    private var selectedReasons = Set<Int>()
     var onTextChanged: ((String) -> Void)?
     var onBackButtonDidTap: (() -> Void)?
     var onReportButtonDidTap: (() -> Void)?
@@ -54,11 +56,15 @@ final class ReportPostView: BaseView {
             $0.setFont(.b2M16, text: "신고하신 내용은 비공개로 안전하게 처리됩니다.", textColor: .grey40)
         }
         
+        scrollView.do {
+            $0.showsVerticalScrollIndicator = false
+            $0.keyboardDismissMode = .interactive
+        }
+        
         reasonTableView.do {
             $0.separatorStyle = .none
             $0.rowHeight = UITableView.automaticDimension
             $0.estimatedRowHeight = 65
-            $0.isScrollEnabled = false
             $0.backgroundColor = .clear
         }
         
@@ -73,7 +79,9 @@ final class ReportPostView: BaseView {
     }
     
     override func setUI() {
-        addSubviews(navigationBar, labelStackView, reasonTableView, reasonTextView, reportButton)
+        addSubviews(navigationBar, scrollView, reportButton)
+        scrollView.addSubview(contentView)
+        contentView.addSubviews(labelStackView, reasonTableView, reasonTextView)
         labelStackView.addArrangedSubviews(titleLabel, subtitleLabel)
     }
     
@@ -83,28 +91,44 @@ final class ReportPostView: BaseView {
             $0.horizontalEdges.equalToSuperview()
         }
         
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalTo(reportButton.snp.top).offset(-12)
+        }
+        
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+        }
+        
         labelStackView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom).offset(12)
+            $0.top.equalToSuperview().offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
         reasonTableView.snp.makeConstraints {
             $0.top.equalTo(labelStackView.snp.bottom).offset(32)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(300)
         }
         
         reasonTextView.snp.makeConstraints {
             $0.top.equalTo(reasonTableView.snp.bottom).offset(8)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(153)
+            $0.bottom.equalToSuperview().offset(-24)
         }
         
         reportButton.snp.makeConstraints {
-            $0.bottom.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
+            $0.bottom.equalTo(safeAreaLayoutGuide).priority(.high)
         }
+        
+        keyboardLayoutGuide.setConstraints(
+            [reportButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -16)],
+            activeWhenAwayFrom: .bottom
+        )
     }
     
     override func setAddTarget() {

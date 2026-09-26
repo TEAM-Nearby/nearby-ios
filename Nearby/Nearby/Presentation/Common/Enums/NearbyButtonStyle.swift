@@ -53,15 +53,6 @@ enum NearbyButtonStyle: Equatable {
         }
     }
     
-    var padding: CGFloat {
-        switch self {
-        case .primary, .disabled, .allowed, .rejected:
-            return 17
-        case .selected, .unselected, .gradient:
-            return 12
-        }
-    }
-    
     var title: String? {
         switch self {
         case .allowed:  return "수락하러 가기"

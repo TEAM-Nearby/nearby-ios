@@ -31,7 +31,6 @@ final class ReviewPostViewModel: BaseViewModelType {
         let showReport = PassthroughSubject<Void, Never>()
         let reviewSaved = PassthroughSubject<Void, Never>()
         let companionCompleted = PassthroughSubject<Void, Never>()
-        let errorMessage = PassthroughSubject<String, Never>()
     }
     
     struct DisplayData {
@@ -67,6 +66,11 @@ final class ReviewPostViewModel: BaseViewModelType {
 
     private var hasReviewContent: Bool {
         rating > 0 && !firstSelectedTags.isEmpty && !secondSelectedTags.isEmpty
+    }
+
+    private var hasPartialContent: Bool {
+        let hasAnyContent = rating > 0 || !firstSelectedTags.isEmpty || !secondSelectedTags.isEmpty
+        return hasAnyContent && !hasReviewContent
     }
 
     // MARK: - Initializer
@@ -140,7 +144,7 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
     
     private func updateCompletionState() {
-        output.isCompletionEnabled.send(isFinishButton ? true : hasReviewContent)
+        output.isCompletionEnabled.send(isFinishButton ? !hasPartialContent : hasReviewContent)
     }
 
     private func submitReview() {
@@ -151,24 +155,23 @@ final class ReviewPostViewModel: BaseViewModelType {
                 if !hasSubmittedReview {
                     let keywords = firstSelectedTags.sorted().map { ReviewKeyword.consideration[$0].rawValue }
                         + secondSelectedTags.sorted().map { ReviewKeyword.timePromise[$0].rawValue }
-                    let request = CreateReviewRequestDTO(
-                        revieweeUserId: reviewItem.revieweeUserId,
+                    let review = NewReview(
+                        revieweeUserID: reviewItem.revieweeUserId,
                         rating: rating,
                         keywords: keywords
                     )
-                    _ = try await repository.createReview(meetingId: reviewItem.meetingId, request: request)
+                    try await repository.createReview(meetingId: reviewItem.meetingId, review: review)
                     hasSubmittedReview = true
                 }
 
                 if isFinishButton {
-                    let response = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
-                    handleCompleteSuccess(response)
+                    let completion = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                    handleCompleteSuccess(completion)
                 } else {
                     output.reviewSaved.send(())
                 }
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
             }
         }
     }
@@ -178,17 +181,16 @@ final class ReviewPostViewModel: BaseViewModelType {
         Task {
             defer { isSubmitting = false }
             do {
-                let response = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
-                handleCompleteSuccess(response)
+                let completion = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                handleCompleteSuccess(completion)
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
             }
         }
     }
     
-    private func handleCompleteSuccess(_ response: ReviewCompleteDTO) {
-        eventCenter.notifyCompleted(matchId: response.matchId)
+    private func handleCompleteSuccess(_ completion: MeetingCompletion) {
+        eventCenter.notifyCompleted(matchId: completion.matchID)
         output.companionCompleted.send(())
     }
 }

@@ -185,7 +185,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         guard let meetingId else { return }
         Task {
             do {
-                _ = try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
+                try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
                 output.step.send(.completion)
                 updateVerifyButtonState()
                 refreshCompanionVerification()

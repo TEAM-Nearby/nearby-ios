@@ -10,7 +10,7 @@ import Foundation
 protocol MeetingRepository {
     func fetchMeetingList() async throws -> [Meeting]
     func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetail
-    func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws -> MeetingCheckInResponseDTO
+    func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws
 }
 
 final class DefaultMeetingRepository {
@@ -38,7 +38,7 @@ extension DefaultMeetingRepository: MeetingRepository {
         return MeetingMapper.map(response)
     }
     
-    func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws -> MeetingCheckInResponseDTO {
-        try await meetingService.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
+    func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws {
+        _ = try await meetingService.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
     }
 }

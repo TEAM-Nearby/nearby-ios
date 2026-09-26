@@ -27,9 +27,7 @@ struct MeetingItem {
         guard meetingId != nil else { return .notYet }
         return (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
     }
-}
-
-extension MeetingItem {
+    
     static func makeInformation(placeName: String, meetingDate: Date?) -> String {
         [placeName, meetingDate?.timeDisplayText]
             .compactMap { $0 }

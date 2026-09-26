@@ -123,8 +123,8 @@ final class HostReviewListViewModel: BaseViewModelType {
         Task {
             defer { isCompleting = false }
             do {
-                let response = try await repository.completeMeeting(meetingId: meetingId)
-                eventCenter.notifyCompleted(matchId: response.matchId)
+                let completion = try await repository.completeMeeting(meetingId: meetingId)
+                eventCenter.notifyCompleted(matchId: completion.matchID)
                 output.showCompletion.send(())
             } catch {
                 AppLogger.error(error)

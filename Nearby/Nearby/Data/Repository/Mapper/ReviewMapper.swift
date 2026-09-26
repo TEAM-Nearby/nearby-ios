@@ -16,6 +16,15 @@ enum ReviewMapper {
         )
     }
     
+    static func map(_ dto: ReviewCompleteDTO) -> MeetingCompletion {
+        MeetingCompletion(
+            meetingID: dto.meetingId,
+            matchID: dto.matchId,
+            isCurrentUserCompleted: dto.currentUserCompleted,
+            meetingStatus: dto.meetingStatus
+        )
+    }
+    
     static func map(_ dto: ReviewTargetDTO) -> Reviewee {
         Reviewee(
             userID: dto.revieweeUserId,

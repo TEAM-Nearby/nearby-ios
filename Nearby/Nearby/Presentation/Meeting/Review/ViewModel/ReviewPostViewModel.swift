@@ -165,8 +165,8 @@ final class ReviewPostViewModel: BaseViewModelType {
                 }
 
                 if isFinishButton {
-                    let response = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
-                    handleCompleteSuccess(response)
+                    let completion = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                    handleCompleteSuccess(completion)
                 } else {
                     output.reviewSaved.send(())
                 }
@@ -181,16 +181,16 @@ final class ReviewPostViewModel: BaseViewModelType {
         Task {
             defer { isSubmitting = false }
             do {
-                let response = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
-                handleCompleteSuccess(response)
+                let completion = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                handleCompleteSuccess(completion)
             } catch {
                 AppLogger.error(error)
             }
         }
     }
     
-    private func handleCompleteSuccess(_ response: ReviewCompleteDTO) {
-        eventCenter.notifyCompleted(matchId: response.matchId)
+    private func handleCompleteSuccess(_ completion: MeetingCompletion) {
+        eventCenter.notifyCompleted(matchId: completion.matchID)
         output.companionCompleted.send(())
     }
 }

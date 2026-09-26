@@ -91,26 +91,26 @@ final class HostReviewListViewModel: BaseViewModelType {
         Task {
             do {
                 async let myPage = myPageRepository.fetchMyPage()
-                let DTO = try await repository.fetchReviewTargets(meetingId: meetingId)
-                let targets = DTO.reviewTargets
+                let reviewTargets = try await repository.fetchReviewTargets(meetingId: meetingId)
+                let reviewees = reviewTargets.reviewees
                 let myProfileImageUrl = (try? await myPage)?.profileImageUrl
 
-                if let first = targets.first {
-                    let people = targets.count == 1
+                if let first = reviewees.first {
+                    let people = reviewees.count == 1
                         ? "\(first.nickname) 님과의 동행"
-                        : "\(first.nickname) 외 \(targets.count - 1)명과의 동행"
+                        : "\(first.nickname) 외 \(reviewees.count - 1)명과의 동행"
                     output.headerInfo.send(
                         HeaderInfo(
                             people: people,
                             information: first.meetingDisplayDate,
                             location: first.cityName,
-                            avatarImageUrls: [myProfileImageUrl] + targets.map(\.profileImageUrl)
+                            avatarImageUrls: [myProfileImageUrl] + reviewees.map(\.profileImageURL)
                         )
                     )
                 }
 
-                output.reviewedIDs.send(Set(targets.filter(\.hasWrittenReview).map(\.revieweeUserId)))
-                output.items.send(targets.map { ReviewItem(target: $0, meetingId: meetingId) })
+                output.reviewedIDs.send(Set(reviewees.filter(\.hasWrittenReview).map(\.userID)))
+                output.items.send(reviewees.map { ReviewItem(reviewee: $0, meetingId: meetingId) })
             } catch {
                 AppLogger.error(error)
             }

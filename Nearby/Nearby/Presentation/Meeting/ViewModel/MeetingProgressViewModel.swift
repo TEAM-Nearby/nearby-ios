@@ -219,22 +219,22 @@ final class MeetingProgressViewModel: BaseViewModelType {
         guard let meetingId else { return }
         Task {
             do {
-                let DTO = try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
-                userRole = DTO.currentUserRole
+                let reviewTargets = try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
+                userRole = reviewTargets.currentUserRole
 
-                switch DTO.currentUserRole {
+                switch reviewTargets.currentUserRole {
                 case .host:
-                    guard !DTO.reviewTargets.isEmpty else {
+                    guard !reviewTargets.reviewees.isEmpty else {
                         showVerificationWaiting()
                         return
                     }
                     output.showReviewList.send(nil)
                 case .participant:
-                    guard let target = DTO.reviewTargets.first else {
+                    guard let reviewee = reviewTargets.reviewees.first else {
                         showVerificationWaiting()
                         return
                     }
-                    output.showReviewList.send(ReviewItem(target: target, meetingId: meetingId))
+                    output.showReviewList.send(ReviewItem(reviewee: reviewee, meetingId: meetingId))
                 }
             } catch {
                 AppLogger.error(error)
@@ -252,9 +252,9 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private func refreshCompanionVerification() {
         guard let meetingId else { return }
         Task {
-            guard let DTO = try? await reviewRepository.fetchReviewTargets(meetingId: meetingId) else { return }
-            userRole = DTO.currentUserRole
-            hasVerifiedCompanion = !DTO.reviewTargets.isEmpty
+            guard let reviewTargets = try? await reviewRepository.fetchReviewTargets(meetingId: meetingId) else { return }
+            userRole = reviewTargets.currentUserRole
+            hasVerifiedCompanion = !reviewTargets.reviewees.isEmpty
             updateVerifyButtonState()
         }
     }

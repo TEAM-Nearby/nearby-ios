@@ -7,7 +7,7 @@
 
 protocol ReviewRepository {
     func createReview(meetingId: Int, request: CreateReviewRequestDTO) async throws -> CreateReviewResponseDTO
-    func fetchReviewTargets(meetingId: Int) async throws -> ReviewTargetsResponseDTO
+    func fetchReviewTargets(meetingId: Int) async throws -> ReviewTargets
     func completeMeeting(meetingId: Int) async throws -> ReviewCompleteDTO
 }
 
@@ -26,8 +26,9 @@ extension DefaultReviewRepository: ReviewRepository {
         try await service.createReview(meetingId: meetingId, request: request)
     }
 
-    func fetchReviewTargets(meetingId: Int) async throws -> ReviewTargetsResponseDTO {
-        try await service.fetchReviewTargets(meetingId: meetingId)
+    func fetchReviewTargets(meetingId: Int) async throws -> ReviewTargets {
+        let response = try await service.fetchReviewTargets(meetingId: meetingId)
+        return ReviewMapper.map(response)
     }
     
     func completeMeeting(meetingId: Int) async throws -> ReviewCompleteDTO {

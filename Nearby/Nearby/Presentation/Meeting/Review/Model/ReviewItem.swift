@@ -17,22 +17,20 @@ struct ReviewItem {
 }
 
 extension ReviewItem {
-    init(target: ReviewTargetDTO, meetingId: Int) {
+    init(reviewee: Reviewee, meetingId: Int) {
         self.init(
-            id: target.revieweeUserId,
+            id: reviewee.userID,
             meetingId: meetingId,
-            revieweeUserId: target.revieweeUserId,
-            profileImageUrl: target.profileImageUrl,
-            name: target.nickname,
-            information: "\(target.cityName) · \(target.meetingDisplayDate)"
+            revieweeUserId: reviewee.userID,
+            profileImageUrl: reviewee.profileImageURL,
+            name: reviewee.nickname,
+            information: "\(reviewee.cityName) · \(reviewee.meetingDisplayDate)"
         )
     }
 }
 
-extension ReviewTargetDTO {
+extension Reviewee {
     var meetingDisplayDate: String {
-        DateFormatter.cached(format: "yyyy-MM-dd")
-            .date(from: meetingDate)?
-            .toFormattedString("yyyy년 M월 d일") ?? meetingDate
+        meetingDate?.toFormattedString("yyyy년 M월 d일") ?? ""
     }
 }

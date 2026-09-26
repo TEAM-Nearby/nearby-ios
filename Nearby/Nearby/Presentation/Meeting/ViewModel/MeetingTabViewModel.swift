@@ -90,19 +90,18 @@ final class MeetingTabViewModel: BaseViewModelType {
             }
     }
 
-    private func makeMeetingItem(from DTO: MeetingResponseDTO) -> MeetingItem {
-        let meetingDate = DTO.meetingAt?.toDate()
-        return MeetingItem(
-            id: DTO.meetingId ?? DTO.matchId,
-            meetingId: DTO.meetingId,
-            matchId: DTO.matchId,
-            name: DTO.companion.nickname,
-            gender: DTO.companion.gender.genderDisplayText,
-            profileImageUrl: DTO.companion.profileImageUrl,
-            information: MeetingItem.makeInformation(placeName: DTO.placeName, meetingDate: meetingDate),
-            meetingDate: meetingDate,
-            postType: DTO.meetingTimeType,
-            isCheckedIn: DTO.isCheckedIn
+    private func makeMeetingItem(from meeting: Meeting) -> MeetingItem {
+        MeetingItem(
+            id: meeting.meetingID ?? meeting.matchID,
+            meetingId: meeting.meetingID,
+            matchId: meeting.matchID,
+            name: meeting.companion.nickname,
+            gender: meeting.companion.gender.genderDisplayText,
+            profileImageUrl: meeting.companion.profileImageURL,
+            information: MeetingItem.makeInformation(placeName: meeting.placeName, meetingDate: meeting.meetingAt),
+            meetingDate: meeting.meetingAt,
+            postType: meeting.meetingTimeType,
+            isCheckedIn: meeting.isCheckedIn
         )
     }
     

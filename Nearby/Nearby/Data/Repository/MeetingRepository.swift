@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MeetingRepository {
-    func fetchMeetingList() async throws -> [MeetingResponseDTO]
+    func fetchMeetingList() async throws -> [Meeting]
     func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetailResponseDTO
     func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws -> MeetingCheckInResponseDTO
 }
@@ -29,8 +29,8 @@ final class DefaultMeetingRepository {
 // MARK: - MeetingRepository
 
 extension DefaultMeetingRepository: MeetingRepository {
-    func fetchMeetingList() async throws -> [MeetingResponseDTO] {
-        try await meetingService.fetchMeetingList().meetings
+    func fetchMeetingList() async throws -> [Meeting] {
+        try await meetingService.fetchMeetingList().meetings.map(MeetingMapper.map)
     }
     
     func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetailResponseDTO {

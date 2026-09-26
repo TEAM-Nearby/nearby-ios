@@ -8,6 +8,14 @@
 import Foundation
 
 enum ReviewMapper {
+    static func map(_ review: NewReview) -> CreateReviewRequestDTO {
+        CreateReviewRequestDTO(
+            revieweeUserId: review.revieweeUserID,
+            rating: review.rating,
+            keywords: review.keywords
+        )
+    }
+    
     static func map(_ dto: ReviewTargetsResponseDTO) -> ReviewTargets {
         ReviewTargets(
             currentUserRole: dto.currentUserRole,

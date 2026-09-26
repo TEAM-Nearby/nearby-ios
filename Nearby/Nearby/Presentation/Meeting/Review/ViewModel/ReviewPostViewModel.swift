@@ -155,12 +155,12 @@ final class ReviewPostViewModel: BaseViewModelType {
                 if !hasSubmittedReview {
                     let keywords = firstSelectedTags.sorted().map { ReviewKeyword.consideration[$0].rawValue }
                         + secondSelectedTags.sorted().map { ReviewKeyword.timePromise[$0].rawValue }
-                    let request = CreateReviewRequestDTO(
-                        revieweeUserId: reviewItem.revieweeUserId,
+                    let review = NewReview(
+                        revieweeUserID: reviewItem.revieweeUserId,
                         rating: rating,
                         keywords: keywords
                     )
-                    _ = try await repository.createReview(meetingId: reviewItem.meetingId, request: request)
+                    try await repository.createReview(meetingId: reviewItem.meetingId, review: review)
                     hasSubmittedReview = true
                 }
 

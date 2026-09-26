@@ -127,7 +127,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 async let meetingDetailTask = repository.fetchMeetingDetail(meetingId: meetingId)
                 async let scheduleTask = try? matchingRepository.fetchMatchMySchedule(matchId: matchId)
 
-                let DTO = try await meetingDetailTask
+                let detail = try await meetingDetailTask
                 let scheduleResponse = await scheduleTask
 
                 if let place = scheduleResponse?.schedule?.place {
@@ -137,19 +137,19 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     )
                 }
                 
-                meetingDate = DTO.meetingAt?.toDate()
-                postType = DTO.meetingTimeType
+                meetingDate = detail.meetingAt
+                postType = detail.meetingTimeType
 
                 let data = MeetingProgressDisplayData(
-                    profileImageURL: DTO.hostProfileImageUrl,
-                    name: DTO.hostNickname,
-                    gender: DTO.hostGender.genderDisplayText,
-                    information: MeetingItem.makeInformation(placeName: DTO.placeName, meetingDate: meetingDate)
+                    profileImageURL: detail.hostProfileImageURL,
+                    name: detail.hostNickname,
+                    gender: detail.hostGender.genderDisplayText,
+                    information: MeetingItem.makeInformation(placeName: detail.placeName, meetingDate: meetingDate)
                 )
                 output.displayData.send(data)
                 
                 let initialStep = MeetingStep(
-                    isCheckedIn: DTO.currentUserCheckedIn,
+                    isCheckedIn: detail.isCurrentUserCheckedIn,
                     isWithinVerifiableWindow: isWithinVerifiableWindow
                 )
                 output.step.send(initialStep)

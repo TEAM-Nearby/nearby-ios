@@ -231,8 +231,8 @@ final class MeetingProgressView: BaseView {
     
     // MARK: - Methods
 
-    func configure(with data: MeetingProgressViewModel.DisplayData) {
-        if let urlString = data.profileImageUrl, let url = URL(string: urlString) {
+    func configure(with data: MeetingProgressDisplayData) {
+        if let urlString = data.profileImageURL, let url = URL(string: urlString) {
             imageView.kf.setImage(with: url, placeholder: UIImage.imgProfileDefault)
         } else {
             imageView.image = .imgProfileDefault
@@ -248,7 +248,7 @@ final class MeetingProgressView: BaseView {
         progressBar.image = step.progressBarImage
     }
     
-    func updateVerifyButtonState(_ state: MeetingProgressViewModel.VerifyButtonState) {
+    func updateVerifyButtonState(_ state: MeetingVerifyButtonState) {
         verifyButton.isEnabled = state.isTouchEnabled
         verifyButton.setStyleEnabled(state.isEnabled)
         verifyButton.setTitle(state.title, for: .normal)

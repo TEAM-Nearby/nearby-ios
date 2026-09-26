@@ -21,37 +21,26 @@ final class MeetingProgressViewModel: BaseViewModelType {
     // MARK: - Output
     
     struct Output {
-        let displayData = PassthroughSubject<DisplayData, Never>()
+        let displayData = PassthroughSubject<MeetingProgressDisplayData, Never>()
         let step = CurrentValueSubject<MeetingStep, Never>(.match)
-        let verifyButtonState = PassthroughSubject<VerifyButtonState, Never>()
+        let verifyButtonState = PassthroughSubject<MeetingVerifyButtonState, Never>()
         let showReport = PassthroughSubject<Void, Never>()
-        let showReviewList = PassthroughSubject<ReviewItem?, Never>()
+        let showReview = PassthroughSubject<ReviewRoute, Never>()
         let showVerificationWaitingToast = PassthroughSubject<Void, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
         let checkInSucceeded = PassthroughSubject<Void, Never>()
     }
     
-    struct DisplayData {
-        let profileImageUrl: String?
-        let name: String
-        let gender: String
-        let information: String
-    }
-    
-    struct VerifyButtonState {
-        let isEnabled: Bool
-        let isTouchEnabled: Bool
-        let isDescriptionHidden: Bool
-        let title: String
+    enum ReviewRoute {
+        case hostReviewList(meetingId: Int)
+        case participantReview(ReviewItem)
     }
     
     // MARK: - Properties
     
     let output = Output()
 
-    let meetingId: Int?
-    private(set) var userRole: NearbyUserType = .participant
-    private(set) var canMoveToComplete: Bool = false
+    private let meetingId: Int?
     private let item: MeetingItem
     private let matchId: Int
     private let repository: MeetingRepository
@@ -60,7 +49,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private var restaurantCoordinate: (latitude: Double, longitude: Double)?
     private var meetingDate: Date?
     private var postType: PostType = .scheduled
-    private var hasVerifiedCompanion = true
+    private var hasVerifiedCompanion: Bool?
     private var cancellables = Set<AnyCancellable>()
     
     private var currentStep: MeetingStep {
@@ -111,7 +100,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     longitude: restaurantCoordinate.longitude
                 )
             case .completion:
-                guard hasVerifiedCompanion else {
+                guard hasVerifiedCompanion != false else {
                     output.showVerificationWaitingToast.send(())
                     refreshCompanionVerification()
                     return
@@ -138,7 +127,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 async let meetingDetailTask = repository.fetchMeetingDetail(meetingId: meetingId)
                 async let scheduleTask = try? matchingRepository.fetchMatchMySchedule(matchId: matchId)
 
-                let DTO = try await meetingDetailTask
+                let detail = try await meetingDetailTask
                 let scheduleResponse = await scheduleTask
 
                 if let place = scheduleResponse?.schedule?.place {
@@ -148,27 +137,21 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     )
                 }
                 
-                userRole = DTO.currentUserRole
-                meetingDate = DTO.meetingAt?.toDate()
-                postType = DTO.meetingTimeType
+                meetingDate = detail.meetingAt
+                postType = detail.meetingTimeType
 
-                let information = [DTO.placeName, meetingDate?.timeDisplayText]
-                    .compactMap { $0 }
-                    .joined(separator: " · ")
-                let data = DisplayData(
-                    profileImageUrl: DTO.hostProfileImageUrl,
-                    name: DTO.hostNickname,
-                    gender: DTO.hostGender.genderDisplayText,
-                    information: information
+                let data = MeetingProgressDisplayData(
+                    profileImageURL: detail.hostProfileImageURL,
+                    name: detail.hostNickname,
+                    gender: detail.hostGender.genderDisplayText,
+                    information: MeetingItem.makeInformation(placeName: detail.placeName, meetingDate: meetingDate)
                 )
                 output.displayData.send(data)
                 
-                let initialStep: MeetingStep
-                if DTO.currentUserCheckedIn {
-                    initialStep = .completion
-                } else {
-                    initialStep = isWithinVerifiableWindow ? .verification : .match
-                }
+                let initialStep = MeetingStep(
+                    isCheckedIn: detail.isCurrentUserCheckedIn,
+                    isWithinVerifiableWindow: isWithinVerifiableWindow
+                )
                 output.step.send(initialStep)
 
                 updateVerifyButtonState()
@@ -187,8 +170,8 @@ final class MeetingProgressViewModel: BaseViewModelType {
         meetingDate = item.meetingDate
         postType = item.postType
         output.displayData.send(
-            DisplayData(
-                profileImageUrl: item.profileImageUrl,
+            MeetingProgressDisplayData(
+                profileImageURL: item.profileImageUrl,
                 name: item.name,
                 gender: item.gender,
                 information: item.information
@@ -202,8 +185,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         guard let meetingId else { return }
         Task {
             do {
-                let DTO = try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
-                canMoveToComplete = DTO.canMoveToComplete
+                try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
                 output.step.send(.completion)
                 updateVerifyButtonState()
                 refreshCompanionVerification()
@@ -220,21 +202,19 @@ final class MeetingProgressViewModel: BaseViewModelType {
         Task {
             do {
                 let DTO = try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
-                userRole = DTO.currentUserRole
-
                 switch DTO.currentUserRole {
                 case .host:
                     guard !DTO.reviewTargets.isEmpty else {
                         showVerificationWaiting()
                         return
                     }
-                    output.showReviewList.send(nil)
+                    output.showReview.send(.hostReviewList(meetingId: meetingId))
                 case .participant:
                     guard let target = DTO.reviewTargets.first else {
                         showVerificationWaiting()
                         return
                     }
-                    output.showReviewList.send(ReviewItem(target: target, meetingId: meetingId))
+                    output.showReview.send(.participantReview(ReviewItem(target: target, meetingId: meetingId)))
                 }
             } catch {
                 AppLogger.error(error)
@@ -253,7 +233,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
         guard let meetingId else { return }
         Task {
             guard let DTO = try? await reviewRepository.fetchReviewTargets(meetingId: meetingId) else { return }
-            userRole = DTO.currentUserRole
             hasVerifiedCompanion = !DTO.reviewTargets.isEmpty
             updateVerifyButtonState()
         }
@@ -261,8 +240,8 @@ final class MeetingProgressViewModel: BaseViewModelType {
 
     private func updateVerifyButtonState() {
         output.verifyButtonState.send(
-            VerifyButtonState(
-                isEnabled: isVerifiable || (currentStep == .completion && hasVerifiedCompanion),
+            MeetingVerifyButtonState(
+                isEnabled: isVerifiable || (currentStep == .completion && hasVerifiedCompanion == true),
                 isTouchEnabled: isVerifiable || currentStep == .completion,
                 isDescriptionHidden: isVerifiable || currentStep == .completion,
                 title: currentStep == .completion ? "다음" : "만남 인증하기"
@@ -276,13 +255,13 @@ final class MeetingProgressViewModel: BaseViewModelType {
             .sink { [weak self] _ in
                 guard let self else { return }
                 
-                let newStep: MeetingStep = isWithinVerifiableWindow ? .verification : .match
+                let newStep = MeetingStep(isCheckedIn: false, isWithinVerifiableWindow: isWithinVerifiableWindow)
                 if currentStep != .completion && currentStep != newStep {
                     output.step.send(newStep)
                 }
                 updateVerifyButtonState()
 
-                if currentStep == .completion && !hasVerifiedCompanion {
+                if currentStep == .completion && hasVerifiedCompanion != true {
                     refreshCompanionVerification()
                 }
             }

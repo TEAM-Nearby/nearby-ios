@@ -33,8 +33,13 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         initialLoadingTracker.begin(in: self)
-        viewModel.action(.viewDidLoad)
+        viewModel.action(.viewWillAppear)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.action(.viewDidDisappear)
     }
 
     // MARK: - Custom Methods
@@ -71,6 +76,13 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
                 }
             }
             .store(in: &cancellables)
+
+        viewModel.output.errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.onRoute?(.error(message))
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Method
@@ -102,11 +114,7 @@ extension MeetingTabViewController: UICollectionViewDataSource {
         let item = viewModel.item(at: indexPath.item)
         cell.configure(with: item)
         
-        cell.onNextButtonDidTap = { [weak self] in
-            self?.onRoute?(.progress(item))
-        }
-
-        cell.onVerifyButtonDidTap = { [weak self] in
+        cell.onMeetingProgressDidTap = { [weak self] in
             self?.onRoute?(.progress(item))
         }
         return cell

@@ -23,13 +23,14 @@ struct MeetingItem {
         postType.isVerifiable(meetingAt: meetingDate)
     }
     
-    var step: MeetingStep {
-        if isCheckedIn { return .completion }
-        return isWithinVerifiableWindow ? .verification : .match
-    }
-    
     var cellType: MeetingVerificationCellType {
         guard meetingId != nil else { return .notYet }
         return (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
+    }
+    
+    static func makeInformation(placeName: String, meetingDate: Date?) -> String {
+        [placeName, meetingDate?.timeDisplayText]
+            .compactMap { $0 }
+            .joined(separator: " · ")
     }
 }

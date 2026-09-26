@@ -44,6 +44,7 @@ extension MeetingTabCoordinator: Coordinator {
     private func makeChildNotificationCoordinator() -> NotificationCoordinator {
         let notificationCoordinator = diContainer.makeNotificationCoordinator(navigationController: navigationController)
         notificationCoordinator.parentCoordinator = self
+        childCoordinators.removeAll { $0 is NotificationCoordinator }
         addChildCoordinator(notificationCoordinator)
         return notificationCoordinator
     }
@@ -101,10 +102,6 @@ extension MeetingTabCoordinator: Coordinator {
         } else {
             navigationController.popToRootViewController(animated: true)
         }
-    }
-    
-    func popReportPost() {
-        navigationController.popViewController(animated: true)
     }
     
     func finishCompanionReview() {

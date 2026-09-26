@@ -23,7 +23,7 @@ final class MeetingEmptyView: BaseView {
     private let animationView = LottieAnimationView(name: "PostNone")
     private let titleLabel = UILabel()
     private let subTitleLabel = UILabel()
-    let searchButton = NearbyButton(style: .primary, title: "내 주변의 동행 찾아보기")
+    private let searchButton = NearbyButton(style: .primary, title: "내 주변의 동행 찾아보기")
     
     // MARK: - Custom Methods
     
@@ -49,10 +49,6 @@ final class MeetingEmptyView: BaseView {
             $0.setFont(.b2M16, text: "아래 버튼을 클릭해서\n함께 밥 먹을 동행을 구해보세요", textColor: .grey40)
             $0.textAlignment = .center
             $0.numberOfLines = 2
-        }
-        
-        searchButton.do {
-            $0.setTitle("내 주변의 동행 찾아보기", for: .normal)
         }
     }
     

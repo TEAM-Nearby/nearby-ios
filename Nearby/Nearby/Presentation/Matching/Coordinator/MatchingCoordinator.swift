@@ -45,13 +45,6 @@ extension MatchingCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
 
-    func showManageScheduleDetail(displayData: MatchingScheduleDetailDisplayData) {
-        let viewController = diContainer.matching.makeManageScheduleDetailViewController(displayData: displayData) { [weak self] route in
-            self?.handle(route)
-        }
-        navigationController.pushViewController(viewController, animated: true)
-    }
-
     func showManageScheduleDetail(matchId: Int) {
         let viewController = diContainer.matching.makeManageScheduleDetailViewController(matchId: matchId) { [weak self] route in
             self?.handle(route)
@@ -93,8 +86,8 @@ private extension MatchingCoordinator {
             showCompanionTab()
         case .previous:
             showPrevious()
-        case .manageSchedule(let displayData):
-            showManageScheduleDetail(displayData: displayData)
+        case .manageSchedule(let matchId):
+            showManageScheduleDetail(matchId: matchId)
         }
     }
 }

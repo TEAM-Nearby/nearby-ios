@@ -9,7 +9,7 @@ protocol RecruitCompanionRepository {
     func searchPlaces(query: String, latitude: Double, longitude: Double) async throws -> [PlaceSearchResultItem]
     func fetchPlaceDetail(for item: PlaceSearchResultItem) async throws -> SelectedPlace
     func resetPlaceSearchSession()
-    func recruitCompanion(request: RecruitCompanionRequestDTO) async throws -> RecruitCompanionResponseDTO
+    func recruitCompanion(_ submission: RecruitCompanionSubmission) async throws
 }
 
 final class DefaultRecruitCompanionRepository {
@@ -52,7 +52,24 @@ extension DefaultRecruitCompanionRepository: RecruitCompanionRepository {
         googlePlaceService.refreshSessionToken()
     }
 
-    func recruitCompanion(request: RecruitCompanionRequestDTO) async throws -> RecruitCompanionResponseDTO {
-        try await recruitCompanionService.recruitCompanion(request: request)
+    func recruitCompanion(_ submission: RecruitCompanionSubmission) async throws {
+        let request = RecruitCompanionRequestDTO(
+            place: RecruitCompanionRequestDTO.Place(
+                googlePlaceId: submission.place.placeID,
+                name: submission.place.name,
+                address: submission.place.address,
+                latitude: submission.place.latitude,
+                longitude: submission.place.longitude,
+                category: submission.place.category
+            ),
+            meetingTimeType: submission.meetingAt == nil ? .now : .scheduled,
+            // TODO: 스프린트 국제 시간 적용 시 UTC 직렬화로 복구
+            meetingAt: submission.meetingAt?.apiDateString,
+            maxParticipants: submission.maxParticipants,
+            styleKeywords: submission.styleKeywords,
+            content: submission.content,
+            openChatUrl: submission.openChatURL
+        )
+        _ = try await recruitCompanionService.recruitCompanion(request: request)
     }
 }

@@ -3,6 +3,7 @@
 //  Nearby
 //
 //  Created by 장지인 on 7/13/26.
+
 struct SelectedPlace {
     let placeID: String
     let name: String

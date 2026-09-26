@@ -14,56 +14,49 @@ final class DiningMapViewModel: BaseViewModelType {
     
     enum Input {
         case viewDidLoad
-        case bookmarkDidTap
     }
-
+    
     // MARK: - Output
     
     struct Output {
         let mapConfiguration: CompanionMapConfiguration
-        let isBookmarkSelected = CurrentValueSubject<Bool, Never>(false)
         let nickname = PassthroughSubject<String, Never>()
     }
     
-    // MARK: - Property
-
+    // MARK: - Properties
+    
     let output: Output
-
+    
     private let myPageRepository: MyPageRepository
     private var nicknameTask: Task<Void, Never>?
-
+    
     // MARK: - Initializer
     
-    init(
-        myPageRepository: MyPageRepository,
-        mapConfiguration: CompanionMapConfiguration = .diningMap
-    ) {
+    init(myPageRepository: MyPageRepository, mapConfiguration: CompanionMapConfiguration = .diningMap) {
         self.myPageRepository = myPageRepository
         self.output = Output(mapConfiguration: mapConfiguration)
     }
-
+    
     deinit {
         nicknameTask?.cancel()
     }
-
+    
     // MARK: - Action
     
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
             fetchNickname()
-        case .bookmarkDidTap:
-            output.isBookmarkSelected.send(!output.isBookmarkSelected.value)
         }
     }
-}
-
-private extension DiningMapViewModel {
+    
+    // MARK: - Method
+    
     func fetchNickname() {
         nicknameTask?.cancel()
         nicknameTask = Task { [weak self] in
             guard let self else { return }
-
+            
             do {
                 let response = try await myPageRepository.fetchMyPage()
                 guard !Task.isCancelled else { return }
@@ -83,7 +76,6 @@ private extension CompanionMapConfiguration {
         smallMarkerMaximumZoom: -1,
         largeMarkerMinimumZoom: 100,
         mediumMarkerSize: 24,
-        smallMarkerSize: 10,
-        markerItems: []
+        smallMarkerSize: 10
     )
 }

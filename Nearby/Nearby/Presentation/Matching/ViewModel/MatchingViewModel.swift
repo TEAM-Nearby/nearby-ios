@@ -35,6 +35,7 @@ final class MatchingViewModel: BaseViewModelType {
     private let repository: MatchedCompanionListRepository
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
+    private var fetchTask: Task<Void, Never>?
     
     var items: [MatchingMatchedCardItem] {
         return output.items.value
@@ -46,6 +47,10 @@ final class MatchingViewModel: BaseViewModelType {
         self.repository = repository
         self.eventCenter = eventCenter
         bindMeetingEvents()
+    }
+
+    deinit {
+        fetchTask?.cancel()
     }
     
     // MARK: - Action
@@ -74,17 +79,22 @@ final class MatchingViewModel: BaseViewModelType {
     }
     
     private func fetchMatches() {
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            
+        fetchTask?.cancel()
+        let repository = repository
+        let eventCenter = eventCenter
+        fetchTask = Task { @MainActor [weak self, repository, eventCenter] in
             do {
                 AppLogger.data("매칭된 동행 목록 조회를 시작합니다.")
-                let response = try await repository.fetchMatches()
-                let items = response.matches.map { $0.toMatchedCardItem() }
-                    .filter { !self.eventCenter.completedMatchIds.contains($0.matchId) }
+                let matches = try await repository.fetchMatches()
+                guard let self, !Task.isCancelled else { return }
+                let items = matches.map { $0.toMatchedCardItem() }
+                    .filter { !eventCenter.completedMatchIds.contains($0.matchId) }
                 AppLogger.data("매칭된 동행 목록 \(items.count)개를 조회했습니다.")
                 output.items.send(items)
+            } catch is CancellationError {
+                return
             } catch {
+                guard let self, !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭된 동행 목록 조회에 실패했습니다.")
                 output.items.send([])
             }
@@ -102,12 +112,12 @@ final class MatchingViewModel: BaseViewModelType {
     }
 }
 
-private extension MatchedCompanionListResponseDTO.Match {
+private extension MatchedCompanion {
     func toMatchedCardItem(type: NearbyUserType = .participant) -> MatchingMatchedCardItem {
         return MatchingMatchedCardItem(
-            matchId: Int(matchId),
+            matchId: matchID,
             content: MatchingMatchedCardContentModel(
-                profileImageUrl: hostProfileImageUrl, name: hostNickname, participantCount: 1,
+                profileImageUrl: hostProfileImageURL, name: hostNickname, participantCount: 1,
                 gender: hostGender.displayTitle, uploadedTime: createdAt.uploadedTimeTitle, place: placeName ?? "",
                 meetingTime: meetingAt?.meetingTimeTitle ?? meetingTimeType.displayTitle, description: content
             ),
@@ -116,7 +126,7 @@ private extension MatchedCompanionListResponseDTO.Match {
     }
 }
 
-private extension HostGender {
+private extension MatchedCompanionGender {
     var displayTitle: String {
         switch self {
         case .male:
@@ -127,7 +137,7 @@ private extension HostGender {
     }
 }
 
-private extension MeetingTimeType {
+private extension MatchedCompanionTimeType {
     var displayTitle: String {
         switch self {
         case .now:

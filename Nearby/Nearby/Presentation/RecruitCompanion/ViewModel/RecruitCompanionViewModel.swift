@@ -287,7 +287,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     private func postRecruitCompanion() {
         guard !isSubmitting else { return }
-        guard let request = makeRecruitCompanionRequest() else { return }
+        guard let submission = makeSubmission() else { return }
 
         isSubmitting = true
         publishState()
@@ -296,7 +296,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             guard let self else { return }
 
             do {
-                _ = try await repository.recruitCompanion(request: request)
+                try await repository.recruitCompanion(submission)
                 isSubmitting = false
                 publishState()
                 output.completeButtonDidTap.send(())
@@ -308,7 +308,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         }
     }
 
-    private func makeRecruitCompanionRequest() -> RecruitCompanionRequestDTO? {
+    private func makeSubmission() -> RecruitCompanionSubmission? {
         guard
             let selectedPlaceID = draft.selectedPlaceID,
             let selectedPlaceLatitude = draft.selectedPlaceLatitude,
@@ -317,27 +317,24 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             return nil
         }
 
-        return RecruitCompanionRequestDTO(
-            place: RecruitCompanionRequestDTO.Place(
-                googlePlaceId: selectedPlaceID,
+        return RecruitCompanionSubmission(
+            place: SelectedPlace(
+                placeID: selectedPlaceID,
                 name: draft.placeQuery,
                 address: draft.selectedPlaceAddress,
                 latitude: selectedPlaceLatitude,
                 longitude: selectedPlaceLongitude,
                 category: draft.selectedPlaceCategory
             ),
-            meetingTimeType: draft.meetingTimeType == .scheduled ? .scheduled : .now,
             meetingAt: draft.meetingTimeType == .scheduled
-                // TODO: 스프린트 국제 시간 적용 시 UTC 직렬화로 복구
-                // ? draft.meetingAt?.utcAPIDateTimeString
-                ? draft.meetingAt?.apiDateString
+                ? draft.meetingAt
                 : nil,
             maxParticipants: draft.maxParticipants,
             styleKeywords: RecruitCompanionStyleKeyword.allCases.filter {
                 draft.styleKeywords.contains($0)
             },
             content: draft.content.trimmed,
-            openChatUrl: draft.openChatURL.trimmed
+            openChatURL: draft.openChatURL.trimmed
         )
     }
 

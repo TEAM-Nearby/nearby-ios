@@ -10,6 +10,15 @@ import Foundation
 
 final class CompanionDetailViewModel: BaseViewModelType {
 
+    // MARK: - State
+
+    enum ViewState {
+        case idle
+        case loading(CompanionDetailState)
+        case loaded(CompanionDetailState)
+        case failed(Error)
+    }
+
     // MARK: - Route
 
     enum Route {
@@ -30,9 +39,9 @@ final class CompanionDetailViewModel: BaseViewModelType {
     // MARK: - Output
 
     struct Output {
-        let displayState = PassthroughSubject<CompanionDetailState, Never>()
+        let viewState = CurrentValueSubject<ViewState, Never>(.idle)
         let isApplying = CurrentValueSubject<Bool, Never>(false)
-        let error = PassthroughSubject<Error, Never>()
+        let applyError = PassthroughSubject<Error, Never>()
     }
 
     // MARK: - Properties
@@ -67,8 +76,12 @@ final class CompanionDetailViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            output.displayState.send(state)
-            fetchDetail()
+            if state.postId == nil {
+                output.viewState.send(.loaded(state))
+            } else {
+                output.viewState.send(.loading(state))
+                fetchDetail()
+            }
         case .backButtonDidTap:
             route?(.close)
         case .applyButtonDidTap:
@@ -78,10 +91,10 @@ final class CompanionDetailViewModel: BaseViewModelType {
             route?(.hostProfile(profileId: hostProfileId))
         }
     }
-}
 
-private extension CompanionDetailViewModel {
-    func fetchDetail() {
+    // MARK: - Methods
+
+    private func fetchDetail() {
         guard let postId = state.postId else { return }
 
         fetchTask?.cancel()
@@ -92,21 +105,18 @@ private extension CompanionDetailViewModel {
                 let response = try await repository.fetchDetail(postId: postId)
                 guard !Task.isCancelled else { return }
 
-                state = response.detailState(
-                    preserving: state,
-                    currentUserId: currentUserId
-                )
-                output.displayState.send(state)
+                state = response.detailState(preserving: state, currentUserId: currentUserId)
+                output.viewState.send(.loaded(state))
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
-                output.error.send(error)
+                output.viewState.send(.failed(error))
             }
         }
     }
 
-    func applyCompanion() {
+    private func applyCompanion() {
         guard state.isApplicationEnabled, let postId = state.postId, applyTask == nil else { return }
 
         output.isApplying.send(true)
@@ -118,38 +128,35 @@ private extension CompanionDetailViewModel {
             }
 
             do {
-                _ = try await repository.apply(postId: postId)
+                try await repository.apply(postId: postId)
                 guard !Task.isCancelled else { return }
                 route?(.applyCompanion(hostName: state.hostName))
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
-                output.error.send(error)
+                output.applyError.send(error)
             }
         }
     }
 }
 
-private extension CompanionDetailResponseDTO {
+private extension CompanionDetail {
     func detailState(preserving previousState: CompanionDetailState, currentUserId: Int?) -> CompanionDetailState {
         CompanionDetailState(
-            postId: postId,
-            hostProfileId: hostProfileId,
+            postId: postID,
+            hostProfileId: hostProfileID,
             postType: postType,
-            isApplicationEnabled: status == "RECRUITING"
-                && applyStatus == "NOT_APPLIED"
-                && participantCount < maxParticipants
-                && hostUserId != currentUserId,
-            tags: TravelStyleKeyword.titles(for: hostProfileSummary.keywords),
-            hostName: hostProfileSummary.nickname,
-            genderTitle: hostProfileSummary.gender == "FEMALE" ? "여성" : "남성",
-            profileImageURL: hostProfileSummary.profileImageUrl.flatMap(URL.init(string:)),
-            hostIntroduction: hostProfileSummary.intro,
-            mannerScoreText: String(format: "%.1f", hostProfileSummary.mannerScore),
-            isPhoneVerified: hostProfileSummary.phoneVerifiedAt != nil,
+            isApplicationEnabled: isRecruiting && hasNotApplied && participantCount < maxParticipants && hostUserID != currentUserId,
+            tags: TravelStyleKeyword.titles(for: hostProfile.keywords),
+            hostName: hostProfile.nickname,
+            genderTitle: hostProfile.gender.title,
+            profileImageURL: hostProfile.profileImageURL,
+            hostIntroduction: hostProfile.introduction,
+            mannerScoreText: String(format: "%.1f", hostProfile.mannerScore),
+            isPhoneVerified: hostProfile.isPhoneVerified,
             placeName: previousState.placeName,
-            googlePlaceId: googlePlaceId,
+            googlePlaceId: googlePlaceID,
             placeLatitude: previousState.placeLatitude,
             placeLongitude: previousState.placeLongitude,
             meetingTimeText: detailMeetingTimeTitle ?? previousState.meetingTimeText,
@@ -161,65 +168,40 @@ private extension CompanionDetailResponseDTO {
     }
 
     var participantProfileImageURLs: [String?] {
-        let imageURLs = participants.map(\.profileImageUrl)
+        let imageURLs = participants.map(\.profileImageURL)
         let missingCount = max(participantCount - imageURLs.count, 0)
         return imageURLs + [String?](repeating: nil, count: missingCount)
     }
 
     var postType: PostType {
-        guard meetingTimeType == "NOW" else { return .scheduled }
+        guard meetingTimeType == .now else { return .scheduled }
         return .immediate(expirationTime: expirationTimeText)
     }
 
     var expirationTimeText: String {
-        guard let time = expiresAt?.split(separator: "T").last?.prefix(5) else { return "곧" }
-        let components = time.split(separator: ":")
-        guard components.count == 2 else { return String(time) }
-        return "\(components[0])시 \(components[1])분"
+        guard let expiresAt else { return "곧" }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = .nearbyAPITimeZone
+        formatter.dateFormat = "H시 mm분"
+        return formatter.string(from: expiresAt)
     }
 
     var detailMeetingTimeTitle: String? {
         switch meetingTimeType {
-        case "NOW":
+        case .now:
             return "지금 바로"
-        case "UNDECIDED":
+        case .undecided:
             return "시간 미정"
-        default:
-            guard let meetingDate else { return nil }
+        case .scheduled, .unknown:
+            guard let meetingAt else { return nil }
 
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "ko_KR")
             formatter.timeZone = .current
             formatter.dateFormat = "M월 d일 (E) a h시 m분"
-            return formatter.string(from: meetingDate)
+            return formatter.string(from: meetingAt)
         }
-    }
-
-    var meetingDate: Date? {
-        guard let meetingAt else { return nil }
-
-        let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = isoFormatter.date(from: meetingAt) {
-            return date
-        }
-
-        isoFormatter.formatOptions = [.withInternetDateTime]
-        if let date = isoFormatter.date(from: meetingAt) {
-            return date
-        }
-
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = .nearbyAPITimeZone
-
-        for format in ["yyyy-MM-dd'T'HH:mm:ss.SSSSSS", "yyyy-MM-dd'T'HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm"] {
-            formatter.dateFormat = format
-            if let date = formatter.date(from: meetingAt) {
-                return date
-            }
-        }
-
-        return nil
     }
 }

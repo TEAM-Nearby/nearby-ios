@@ -8,31 +8,24 @@
 import UIKit
 
 struct CategoryItem {
+
+    // MARK: - Properties
+
     let title: String
     let icon: UIImage
     let iconColor: UIColor
-    
+    let category: CompanionPlace.Category
+
     var isRestaurant: Bool {
-        title == "식당"
+        category == .restaurant
     }
 
-    var serverKey: String {
-        switch title {
-        case "식당": return "RESTAURANT"
-        case "카페": return "CAFE"
-        case "펍": return "PUB"
-        case "박물관": return "MUSEUM"
-        case "사진 명소": return "PHOTO_SPOT"
-        default: return "OTHER"
-        }
-    }
-    
     static let categoryItems: [CategoryItem] = [
-        CategoryItem(title: "식당", icon: .icRestaurant, iconColor: .chipIcOrange),
-        CategoryItem(title: "카페", icon: .icCafe, iconColor: .chipIcOrange),
-        CategoryItem(title: "펍", icon: .icPub, iconColor: .chipIcOrange),
-        CategoryItem(title: "박물관", icon: .icMuseum, iconColor: .primary40),
-        CategoryItem(title: "사진 명소", icon: .icCamera, iconColor: .primary40),
-        CategoryItem(title: "기타", icon: .peopleIcon, iconColor: .primary40)
+        CategoryItem(title: "식당", icon: .icRestaurant, iconColor: .chipIcOrange, category: .restaurant),
+        CategoryItem(title: "카페", icon: .icCafe, iconColor: .chipIcOrange, category: .cafe),
+        CategoryItem(title: "펍", icon: .icPub, iconColor: .chipIcOrange, category: .pub),
+        CategoryItem(title: "박물관", icon: .icMuseum, iconColor: .primary40, category: .museum),
+        CategoryItem(title: "사진 명소", icon: .icCamera, iconColor: .primary40, category: .photoSpot),
+        CategoryItem(title: "기타", icon: .peopleIcon, iconColor: .primary40, category: .unknown)
     ]
 }

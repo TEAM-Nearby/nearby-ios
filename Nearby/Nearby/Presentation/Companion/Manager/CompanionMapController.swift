@@ -12,14 +12,14 @@ final class CompanionMapController: NSObject {
     
     // MARK: - Properties
     
-    var onCompanionMarkerTap: ((Int) -> Void)?
+    var onMarkerTap: ((Int) -> Void)?
     var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
 
     private let locationManager = CLLocationManager()
     private let mapView: GMSMapView
     private let markerManager: CompanionMapMarkerManager
     private let configuration: CompanionMapConfiguration
-    private var currentLocation: CLLocation?
+    private var currentCoordinate: CLLocationCoordinate2D?
     private let cameraVerticalOffset: CGFloat = 38
     
     // MARK: - Initializer
@@ -34,14 +34,14 @@ final class CompanionMapController: NSObject {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
 
         if let referenceCoordinate = configuration.referenceCoordinate {
-            moveCamera(to: CLLocation(latitude: referenceCoordinate.latitude, longitude: referenceCoordinate.longitude))
+            moveCamera(to: referenceCoordinate)
         }
     }
     
     // MARK: - Methods
     
-    private func moveCamera(to location: CLLocation) {
-        let target = cameraTarget(for: location.coordinate, zoom: configuration.initialZoom, verticalOffset: cameraVerticalOffset)
+    private func moveCamera(to coordinate: CLLocationCoordinate2D) {
+        let target = cameraTarget(for: coordinate, zoom: configuration.initialZoom, verticalOffset: cameraVerticalOffset)
         let camera = GMSCameraPosition.camera(withLatitude: target.latitude, longitude: target.longitude, zoom: configuration.initialZoom)
         mapView.animate(to: camera)
     }
@@ -62,18 +62,7 @@ final class CompanionMapController: NSObject {
         locationManager.startUpdatingHeading()
     }
 
-    private func addConfiguredMarkersIfNeeded(near location: CLLocation) {
-        guard !markerManager.hasCompanionMarkers else { return }
-        configuration.markerItems.forEach { item in
-            let coordinate = CLLocationCoordinate2D(
-                latitude: location.coordinate.latitude + item.latitudeOffset,
-                longitude: location.coordinate.longitude + item.longitudeOffset
-            )
-            addCompanionMarker(at: coordinate, nickname: item.nickname, written: item.written, place: item.place, date: item.date, style: item.style)
-        }
-    }
-
-    func start() {
+    private func requestLocation() {
         switch locationManager.authorizationStatus {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
@@ -87,21 +76,34 @@ final class CompanionMapController: NSObject {
         }
     }
 
+    private func updateCurrentLocation(to coordinate: CLLocationCoordinate2D) {
+        if let currentCoordinate,
+           currentCoordinate.latitude == coordinate.latitude,
+           currentCoordinate.longitude == coordinate.longitude { return }
+
+        currentCoordinate = coordinate
+        onLocationUpdate?(coordinate)
+        markerManager.updateCurrentLocation(to: coordinate)
+        moveCamera(to: coordinate)
+    }
+
+    func start() {
+        if let referenceCoordinate = configuration.referenceCoordinate {
+            updateCurrentLocation(to: referenceCoordinate)
+        }
+        requestLocation()
+    }
+
     func stop() {
         locationManager.stopUpdatingHeading()
     }
 
     func moveToCurrentLocation() {
-        guard let currentLocation else {
-            locationManager.requestLocation()
+        guard let currentCoordinate else {
+            requestLocation()
             return
         }
-        moveCamera(to: currentLocation)
-    }
-
-    @discardableResult
-    func addCompanionMarker(at coordinate: CLLocationCoordinate2D, nickname: String, written: String, place: String, date: String, style: MapMarkerStyle = .companion) -> GMSMarker {
-        markerManager.addCompanionMarker(at: coordinate, nickname: nickname, written: written, place: place, date: date, style: style)
+        moveCamera(to: currentCoordinate)
     }
 
     func updateCompanionMarkers(_ markers: [CompanionMapMarkerData]) {
@@ -122,7 +124,7 @@ extension CompanionMapController: GMSMapViewDelegate {
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         guard let placeId = markerManager.placeId(for: marker) else { return false }
-        onCompanionMarkerTap?(placeId)
+        onMarkerTap?(placeId)
         return true
     }
 }
@@ -131,28 +133,14 @@ extension CompanionMapController: GMSMapViewDelegate {
 
 extension CompanionMapController: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        switch manager.authorizationStatus {
-        case .authorizedAlways, .authorizedWhenInUse:
-            manager.requestLocation()
-            startUpdatingHeadingIfNeeded()
-        case .notDetermined, .denied, .restricted:
-            break
-        @unknown default:
-            break
-        }
+        requestLocation()
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        let displayedLocation = configuration.referenceCoordinate.map {
-            CLLocation(latitude: $0.latitude, longitude: $0.longitude)
-        } ?? location
+        let displayedCoordinate = configuration.referenceCoordinate ?? location.coordinate
 
-        currentLocation = displayedLocation
-        onLocationUpdate?(displayedLocation.coordinate)
-        markerManager.updateCurrentLocation(to: displayedLocation)
-        moveCamera(to: displayedLocation)
-        addConfiguredMarkersIfNeeded(near: displayedLocation)
+        updateCurrentLocation(to: displayedCoordinate)
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

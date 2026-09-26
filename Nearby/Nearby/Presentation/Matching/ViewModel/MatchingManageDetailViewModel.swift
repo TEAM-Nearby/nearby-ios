@@ -46,35 +46,13 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
 
     private var displayData: MatchingScheduleDetailDisplayData
     private let repository: MatchedCompanionListRepository
-    private let matchId: Int?
+    private let matchId: Int
     private var selectedDate = Date()
+    private var fetchTask: Task<Void, Never>?
+    private var confirmTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
-    init(displayData: MatchingScheduleDetailDisplayData, repository: MatchedCompanionListRepository) {
-        self.displayData = displayData
-        self.repository = repository
-        self.selectedDate = displayData.scheduledAt?.toDate() ?? Date()
-        self.matchId = nil
-    }
-
-    init(item: MatchingMatchedCardItem, repository: MatchedCompanionListRepository) {
-        self.displayData = MatchingScheduleDetailDisplayData(
-            cardItem: item,
-            placeName: item.content.place,
-            placeAddress: "",
-            googlePlaceId: nil,
-            latitude: 0,
-            longitude: 0,
-            scheduledAt: nil,
-            scheduledAtText: item.content.meetingTime,
-            openChatUrl: "",
-            type: item.type
-        )
-        self.matchId = nil
-        self.repository = repository
-    }
-    
     init(matchId: Int, repository: MatchedCompanionListRepository) {
         self.matchId = matchId
         self.displayData = MatchingScheduleDetailDisplayData(
@@ -93,16 +71,17 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         self.repository = repository
     }
 
+    deinit {
+        fetchTask?.cancel()
+        confirmTask?.cancel()
+    }
+
     // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            if matchId != nil {
-                fetchDisplayData()
-            } else {
-                output.displayData.send(makeDisplayData())
-            }
+            fetchDisplayData()
 
         case .backButtonDidTap:
             output.showBack.send(())
@@ -119,7 +98,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         }
     }
 
-    // MARK: - Method
+    // MARK: - Methods
 
     private func makeDisplayData() -> DisplayData {
         return DisplayData(
@@ -134,50 +113,58 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
     }
 
     private func confirmSchedule() {
-        let request = makeRequestDTO()
+        let scheduledAt = makeScheduledAt()
+        let matchID = displayData.cardItem.matchId
+        let repository = repository
 
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-
+        confirmTask?.cancel()
+        confirmTask = Task { @MainActor [weak self, repository] in
             do {
-                _ = try await repository.confirmSchedule(matchId: displayData.cardItem.matchId, request: request)
+                try await repository.confirmSchedule(matchId: matchID, scheduledAt: scheduledAt)
+                guard let self, !Task.isCancelled else { return }
                 output.showBack.send(())
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "동행 일정 확정에 실패했습니다.")
             }
         }
     }
 
-    private func makeRequestDTO() -> ConfirmCompanionScheduleRequestDTO {
+    private func makeScheduledAt() -> String {
         let normalizedDate = Calendar.current.date(
             bySetting: .second,
             value: 0,
             of: selectedDate
         ) ?? selectedDate
-        return ConfirmCompanionScheduleRequestDTO(scheduledAt: normalizedDate.apiDateString)
+        return normalizedDate.apiDateString
     }
     
     private func fetchDisplayData() {
-        Task { @MainActor [weak self] in
-            guard let self, let matchId else { return }
+        let matchID = matchId
+
+        fetchTask?.cancel()
+        let repository = repository
+        fetchTask = Task { @MainActor [weak self, repository] in
 
             do {
-                async let scheduleResponseTask = repository.fetchMatchMySchedule(matchId: matchId)
-                async let previewResponseTask = repository.fetchMatchPreview(matchId: matchId)
+                async let scheduleResponseTask = repository.fetchMatchMySchedule(matchId: matchID)
+                async let previewResponseTask = repository.fetchMatchPreview(matchId: matchID)
 
                 let scheduleResponse = try await scheduleResponseTask
                 let previewResponse = try? await previewResponseTask
-                let currentUserRole = scheduleResponse.currentUserRole
-                let cardItem = previewResponse?.toCardItem(
-                    type: currentUserRole,
-                    matchStatus: scheduleResponse.matchStatus.rawValue,
-                    fallbackPlaceName: scheduleResponse.schedule?.place.name ?? ""
-                ) ?? scheduleResponse.toCardItem(type: currentUserRole)
-
-                displayData = scheduleResponse.toDisplayData(type: currentUserRole, cardItem: cardItem)
+                guard let self, !Task.isCancelled else { return }
+                displayData = MatchingScheduleDetailMapper.map(
+                    scheduleDetail: scheduleResponse,
+                    preview: previewResponse
+                )
                 selectedDate = displayData.scheduledAt?.toDate() ?? Date()
                 output.displayData.send(makeDisplayData())
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
             }
         }

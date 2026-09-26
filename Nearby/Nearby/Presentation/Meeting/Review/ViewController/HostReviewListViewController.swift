@@ -78,13 +78,6 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
             }
             .store(in: &cancellables)
 
-        viewModel.output.errorAlert
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] alert in
-                self?.presentErrorAlert(title: alert.title, message: alert.message)
-            }
-            .store(in: &cancellables)
-
         viewModel.action(.viewDidLoad)
     }
 }

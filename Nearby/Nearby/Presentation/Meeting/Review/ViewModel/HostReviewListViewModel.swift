@@ -27,7 +27,6 @@ final class HostReviewListViewModel: BaseViewModelType {
         let showReviewWrite = PassthroughSubject<(item: ReviewItem, isLast: Bool), Never>()
         let showCompletion = PassthroughSubject<Void, Never>()
         let reviewedIDs = CurrentValueSubject<Set<Int>, Never>([])
-        let errorAlert = PassthroughSubject<ReviewErrorAlert, Never>()
     }
     
     struct HeaderInfo {
@@ -114,7 +113,6 @@ final class HostReviewListViewModel: BaseViewModelType {
                 output.items.send(targets.map { ReviewItem(target: $0, meetingId: meetingId) })
             } catch {
                 AppLogger.error(error)
-                output.errorAlert.send(.fetchTargets(error.localizedDescription))
             }
         }
     }
@@ -130,7 +128,6 @@ final class HostReviewListViewModel: BaseViewModelType {
                 output.showCompletion.send(())
             } catch {
                 AppLogger.error(error)
-                output.errorAlert.send(.completeMeeting(error.localizedDescription))
             }
         }
     }

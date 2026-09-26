@@ -7,7 +7,6 @@
 
 import UIKit
 
-/// 스크롤 없이 내용 전체 높이만큼 자리를 차지하는 테이블뷰
 final class SelfSizingTableView: UITableView {
     
     // MARK: - Initializer

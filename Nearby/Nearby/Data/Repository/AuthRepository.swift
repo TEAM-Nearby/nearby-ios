@@ -21,7 +21,8 @@ final class DefaultAuthRepository {
 
     // MARK: - Properties
 
-    private let oauthProvider: KakaoOAuthProvider
+    private let kakaoOAuthProvider: KakaoOAuthProvider
+    private let appleOAuthProvider: AppleOAuthProvider
     private let authService: AuthService
     private let tokenStorage: TokenStorage
 

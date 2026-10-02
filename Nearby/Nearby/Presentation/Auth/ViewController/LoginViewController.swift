@@ -29,6 +29,9 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
         loginView.kakaoLoginButton.addTarget(
             self, action: #selector(kakaoLoginButtonDidTap), for: .touchUpInside
         )
+        
+        loginView.appleLoginButton.addTarget(
+            self, action: #selector(appleLoginButtonDidTap), for: .touchUpInside)
     }
 
     override func bindState() {
@@ -46,5 +49,10 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
     @objc
     func kakaoLoginButtonDidTap() {
         viewModel.action(.kakaoLoginButtonDidTap)
+    }
+    
+    @objc
+    private func appleLoginButtonDidTap() {
+        viewModel.action(.appleLoginButtonDidTap)
     }
 }

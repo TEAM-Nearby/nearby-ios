@@ -14,6 +14,7 @@ final class LoginView: BaseView {
 
     // MARK: - UI Components
 
+    let appleLoginButton = UIButton(type: .system)
     let kakaoLoginButton = UIButton(type: .system)
     
     private let logoStackView = UIStackView()
@@ -40,7 +41,32 @@ final class LoginView: BaseView {
             $0.textAlignment = .center
             $0.setFont(.b2Sb16, text: "따로, 또 함께하는 여행", textColor: .grey70)
         }
+        
+        appleLoginButton.do {
+            $0.backgroundColor = .black
+            $0.layer.cornerRadius = 12
+            $0.clipsToBounds = true
 
+            var configuration = UIButton.Configuration.plain()
+            configuration.image = .iconApple
+            configuration.preferredSymbolConfigurationForImage =
+                UIImage.SymbolConfiguration(pointSize: 24)
+            configuration.imagePlacement = .leading
+            configuration.imagePadding = 16
+            configuration.baseForegroundColor = .white
+            configuration.title = "Apple로 로그인"
+
+            configuration.titleTextAttributesTransformer =
+                UIConfigurationTextAttributesTransformer { attributes in
+                    var updatedAttributes = attributes
+                    updatedAttributes.font = NearbyFont.b2Sb16.font
+                    updatedAttributes.foregroundColor = UIColor.white
+                    return updatedAttributes
+                }
+
+            $0.configuration = configuration
+        }
+        
         kakaoLoginButton.do {
             $0.backgroundColor = UIColor(red: 254 / 255, green: 229 / 255, blue: 0 / 255, alpha: 1)
             $0.layer.cornerRadius = 12
@@ -67,7 +93,7 @@ final class LoginView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(logoStackView, kakaoLoginButton)
+        addSubviews(logoStackView, appleLoginButton, kakaoLoginButton)
         logoStackView.addArrangedSubviews(logoImageView, subtitleLabel)
     }
 
@@ -82,6 +108,12 @@ final class LoginView: BaseView {
             $0.height.equalTo(48)
         }
 
+        appleLoginButton.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalTo(kakaoLoginButton.snp.top).offset(-12)
+            $0.height.equalTo(56)
+        }
+        
         kakaoLoginButton.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalTo(safeAreaLayoutGuide)

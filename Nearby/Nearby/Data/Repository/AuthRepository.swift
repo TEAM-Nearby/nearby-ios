@@ -9,6 +9,7 @@ import Foundation
 
 protocol AuthRepository {
     func loginWithKakao() async throws -> OnboardingStatus
+    func loginWithApple() async throws -> AppleCredential
     func logout() async throws
     func sendVerificationCode(phoneNumber: String) async throws -> PhoneVerificationResponseDTO
     func confirmVerificationCode(phoneVerificationId: Int, verificationCode: String) async throws -> PhoneVerificationConfirmResponseDTO

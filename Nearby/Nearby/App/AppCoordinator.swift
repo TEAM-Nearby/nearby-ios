@@ -16,13 +16,19 @@ final class AppCoordinator {
     var childCoordinators = [Coordinator]()
     private let window: UIWindow
     private let diContainer: AppDIContainer
+    private let appIntroductionStorage: AppIntroductionStorage
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
     
-    init(window: UIWindow, diContainer: AppDIContainer) {
+    init(
+        window: UIWindow,
+        diContainer: AppDIContainer,
+        appIntroductionStorage: AppIntroductionStorage
+    ) {
         self.window = window
         self.diContainer = diContainer
+        self.appIntroductionStorage = appIntroductionStorage
 
         NotificationCenter.default.publisher(for: .authenticationExpired)
             .receive(on: DispatchQueue.main)
@@ -52,6 +58,15 @@ extension AppCoordinator: Coordinator {
 
 private extension AppCoordinator {
     func handleLaunchFlow() {
+        guard appIntroductionStorage.hasCompletedAppIntroduction else {
+            showAppIntroduction()
+            return
+        }
+
+        handleAuthenticationFlow()
+    }
+
+    func handleAuthenticationFlow() {
         if diContainer.hasStoredSession {
             showMainTab()
         } else {
@@ -68,6 +83,21 @@ private extension AppCoordinator {
         
         window.rootViewController = splashViewController
         window.makeKeyAndVisible()
+    }
+
+    func showAppIntroduction() {
+        childCoordinators.removeAll()
+
+        let viewController = diContainer.makeAppIntroductionViewController()
+
+        viewController.onAppIntroductionCompleted = { [weak self] in
+            guard let self else { return }
+
+            appIntroductionStorage.markAppIntroductionAsCompleted()
+            handleAuthenticationFlow()
+        }
+
+        setRootViewController(viewController, animated: true)
     }
     
     func showLogin() {

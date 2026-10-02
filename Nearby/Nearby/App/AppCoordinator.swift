@@ -94,7 +94,7 @@ private extension AppCoordinator {
             guard let self else { return }
 
             appIntroductionStorage.markAppIntroductionAsCompleted()
-            handleAuthenticationFlow()
+            showLogin()
         }
 
         setRootViewController(viewController, animated: true)

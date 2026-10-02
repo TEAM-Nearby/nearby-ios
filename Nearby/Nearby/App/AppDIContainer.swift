@@ -16,7 +16,7 @@ final class AppDIContainer {
     private lazy var meetingEventCenter = MeetingEventCenter()
 
     private lazy var authService: AuthService = DefaultAuthService(networkProvider: networkProvider)
-    private lazy var authRepository: AuthRepository = DefaultAuthRepository(oauthProvider: DefaultKakaoOAuthProvider(), authService: authService, tokenStorage: tokenStorage)
+    private lazy var authRepository: AuthRepository = DefaultAuthRepository(kakaoOAuthProvider: DefaultKakaoOAuthProvider(), appleOAuthProvider: DefaultAppleOAuthProvider(), authService: authService, tokenStorage: tokenStorage)
     private lazy var myPageService: MyPageService = DefaultMyPageService(networkProvider: networkProvider)
     private lazy var myPageRepository: MyPageRepository = DefaultMyPageRepository(service: myPageService)
     private lazy var matchingService: MatchedCompanionListService = DefaultMatchedCompanionListService(networkProvider: networkProvider)

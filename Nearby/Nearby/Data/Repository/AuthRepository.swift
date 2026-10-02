@@ -40,7 +40,7 @@ final class DefaultAuthRepository {
 
 extension DefaultAuthRepository: AuthRepository {
     func loginWithKakao() async throws -> OnboardingStatus {
-        let credential = try await oauthProvider.requestCredential()
+        let credential = try await kakaoOAuthProvider.requestCredential()
         let response = try await authService.loginWithKakao(
             request: KakaoLoginRequestDTO(idToken: credential.idToken, nonce: credential.nonce)
         )
@@ -67,6 +67,10 @@ extension DefaultAuthRepository: AuthRepository {
 
         return response.onboardingStatus
     }
+    
+    func loginWithApple() async throws -> AppleCredential {
+        try await appleOAuthProvider.requestCredential()
+    }
 
     func logout() async throws {
         guard let refreshToken = tokenStorage.refreshToken, !refreshToken.isEmpty else {
@@ -84,7 +88,7 @@ extension DefaultAuthRepository: AuthRepository {
         try tokenStorage.clear()
 
         do {
-            try await oauthProvider.logout()
+            try await kakaoOAuthProvider.logout()
         } catch {
             AppLogger.error(error, message: "카카오 SDK 로그아웃 실패")
         }

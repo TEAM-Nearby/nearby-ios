@@ -13,6 +13,7 @@ final class LoginViewModel: BaseViewModelType {
     
     enum Input {
         case kakaoLoginButtonDidTap
+        case appleLoginButtonDidTap
     }
 
     // MARK: - Output
@@ -41,6 +42,8 @@ final class LoginViewModel: BaseViewModelType {
         switch trigger {
         case .kakaoLoginButtonDidTap:
             loginWithKakaoAccount()
+        case .appleLoginButtonDidTap:
+            loginWithApple()
         }
     }
 
@@ -54,6 +57,20 @@ final class LoginViewModel: BaseViewModelType {
                 output.loginDidSucceed?(onboardingStatus)
             } catch {
                 output.loginDidFail?(error)
+            }
+        }
+    }
+    
+    func loginWithApple() {
+        Task { @MainActor in
+            do {
+                let credential = try await authRepository.loginWithApple()
+
+                print("애플 로그인 성공")
+                print("identityToken : \(!credential.identityToken.isEmpty)")
+                print("authorizationCode : \(!credential.authorizationCode.isEmpty)")
+            } catch {
+                print("애플 로그인 실패 : \(error)")
             }
         }
     }

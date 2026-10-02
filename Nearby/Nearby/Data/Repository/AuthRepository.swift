@@ -28,8 +28,9 @@ final class DefaultAuthRepository {
 
     // MARK: - Initializer
 
-    init(oauthProvider: KakaoOAuthProvider, authService: AuthService, tokenStorage: TokenStorage) {
-        self.oauthProvider = oauthProvider
+    init(kakaoOAuthProvider: KakaoOAuthProvider, appleOAuthProvider: AppleOAuthProvider, authService: AuthService, tokenStorage: TokenStorage) {
+        self.kakaoOAuthProvider = kakaoOAuthProvider
+        self.appleOAuthProvider = appleOAuthProvider
         self.authService = authService
         self.tokenStorage = tokenStorage
     }

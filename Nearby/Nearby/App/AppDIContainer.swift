@@ -80,6 +80,6 @@ final class AppDIContainer {
     }
 
     func makeAppIntroductionViewController() -> AppIntroductionViewController {
-        AppIntroductionViewController()
+        AppIntroductionViewController(viewModel: EmptyViewModel())
     }
 }

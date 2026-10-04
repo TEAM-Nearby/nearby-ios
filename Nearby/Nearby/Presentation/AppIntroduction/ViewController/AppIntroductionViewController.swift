@@ -20,9 +20,12 @@ final class AppIntroductionViewController: BaseViewController<EmptyViewModel> {
 
     // MARK: - Initializer
 
-    init(pages: [AppIntroductionPage] = AppIntroductionPage.pages) {
+    init(
+        viewModel: EmptyViewModel,
+        pages: [AppIntroductionPage] = AppIntroductionPage.pages
+    ) {
         self.pages = pages
-        super.init(viewModel: EmptyViewModel())
+        super.init(viewModel: viewModel)
     }
 
     required init?(coder: NSCoder) {

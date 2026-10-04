@@ -45,7 +45,6 @@ final class AppIntroductionPageCell: UICollectionViewCell {
         descriptionLabel.do {
             $0.numberOfLines = 0
             $0.textAlignment = .center
-            $0.setFont(.b3M14, textColor: .grey50)
         }
         
         imageView.do {

@@ -66,11 +66,11 @@ final class LoginViewModel: BaseViewModelType {
             do {
                 let credential = try await authRepository.loginWithApple()
 
-                print("애플 로그인 성공")
-                print("identityToken : \(!credential.identityToken.isEmpty)")
-                print("authorizationCode : \(!credential.authorizationCode.isEmpty)")
+                AppLogger.debug("애플 로그인 성공")
+                AppLogger.debug("identityToken : \(!credential.identityToken.isEmpty)")
+                AppLogger.debug("authorizationCode : \(!credential.authorizationCode.isEmpty)")
             } catch {
-                print("애플 로그인 실패 : \(error)")
+                AppLogger.error(error, message: "애플 로그인 실패")
             }
         }
     }

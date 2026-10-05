@@ -62,15 +62,14 @@ final class LoginViewModel: BaseViewModelType {
     }
     
     func loginWithApple() {
-        Task { @MainActor in
-            do {
-                let credential = try await authRepository.loginWithApple()
+        Task { @MainActor [weak self] in
+            guard let self else { return }
 
-                AppLogger.debug("애플 로그인 성공")
-                AppLogger.debug("identityToken : \(!credential.identityToken.isEmpty)")
-                AppLogger.debug("authorizationCode : \(!credential.authorizationCode.isEmpty)")
+            do {
+                let onboardingStatus = try await authRepository.loginWithApple()
+                output.loginDidSucceed?(onboardingStatus)
             } catch {
-                AppLogger.error(error, message: "애플 로그인 실패")
+                output.loginDidFail?(error)
             }
         }
     }

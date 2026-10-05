@@ -14,6 +14,7 @@ final class MatchingFirstEntryGuideView: BaseView {
 
     // MARK: - UI Components
 
+    private let backgroundButton = UIButton()
     private let closeButton = UIButton(type: .system)
     private let sampleCard = MatchingMatchedCardCell(frame: .zero)
     private let arrowImageView = UIImageView()
@@ -43,10 +44,14 @@ final class MatchingFirstEntryGuideView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(closeButton, sampleCard, arrowImageView, guideLabel)
+        addSubviews(backgroundButton, closeButton, sampleCard, arrowImageView, guideLabel)
     }
 
     override func setLayout() {
+        backgroundButton.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
         closeButton.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide).offset(20)
             $0.trailing.equalToSuperview().inset(20)
@@ -72,4 +77,15 @@ final class MatchingFirstEntryGuideView: BaseView {
         }
     }
 
+    override func setAddTarget() {
+        backgroundButton.addTarget(self, action: #selector(dismissGuide), for: .touchUpInside)
+        closeButton.addTarget(self, action: #selector(dismissGuide), for: .touchUpInside)
+    }
+
+    // MARK: - Actions
+
+    @objc
+    private func dismissGuide() {
+        removeFromSuperview()
+    }
 }

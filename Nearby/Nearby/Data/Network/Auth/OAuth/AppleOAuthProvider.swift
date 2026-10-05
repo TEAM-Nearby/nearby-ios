@@ -36,7 +36,6 @@ final class DefaultAppleOAuthProvider: NSObject {
 }
 
 extension DefaultAppleOAuthProvider: AppleOAuthProvider {
-
     func requestCredential() async throws -> AppleCredential {
         try await withCheckedThrowingContinuation { continuation in
             self.continuation = continuation
@@ -46,9 +45,7 @@ extension DefaultAppleOAuthProvider: AppleOAuthProvider {
 
             request.requestedScopes = [.fullName, .email]
 
-            let authorizationController = ASAuthorizationController(
-                authorizationRequests: [request]
-            )
+            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
 
             authorizationController.delegate = self
             authorizationController.performRequests()
@@ -57,69 +54,47 @@ extension DefaultAppleOAuthProvider: AppleOAuthProvider {
 }
 
 extension DefaultAppleOAuthProvider: ASAuthorizationControllerDelegate {
-
     func authorizationController(
-        controller: ASAuthorizationController,
-        didCompleteWithAuthorization authorization: ASAuthorization
+        controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization
     ) {
         guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-            continuation?.resume(
-                throwing: AppleOAuthError.invalidCredential
-            )
+            continuation?.resume(throwing: AppleOAuthError.invalidCredential)
             continuation = nil
             return
         }
 
         guard let identityTokenData = credential.identityToken else {
-            continuation?.resume(
-                throwing: AppleOAuthError.missingIdentityToken
-            )
+            continuation?.resume(throwing: AppleOAuthError.missingIdentityToken)
             continuation = nil
             return
         }
 
-        guard let identityToken = String(
-            data: identityTokenData,
-            encoding: .utf8
-        ) else {
-            continuation?.resume(
-                throwing: AppleOAuthError.invalidIdentityToken
-            )
+        guard let identityToken = String(data: identityTokenData, encoding: .utf8) else {
+            continuation?.resume(throwing: AppleOAuthError.invalidIdentityToken)
             continuation = nil
             return
         }
 
         guard let authorizationCodeData = credential.authorizationCode else {
-            continuation?.resume(
-                throwing: AppleOAuthError.missingAuthorizationCode
-            )
+            continuation?.resume(throwing: AppleOAuthError.missingAuthorizationCode)
             continuation = nil
             return
         }
 
-        guard let authorizationCode = String(
-            data: authorizationCodeData,
-            encoding: .utf8
-        ) else {
-            continuation?.resume(
-                throwing: AppleOAuthError.invalidAuthorizationCode
-            )
+        guard let authorizationCode = String(data: authorizationCodeData, encoding: .utf8) else {
+            continuation?.resume(throwing: AppleOAuthError.invalidAuthorizationCode)
             continuation = nil
             return
         }
 
-        let appleCredential = AppleCredential(
-            identityToken: identityToken,
-            authorizationCode: authorizationCode
-        )
+        let appleCredential = AppleCredential(identityToken: identityToken, authorizationCode: authorizationCode)
 
         continuation?.resume(returning: appleCredential)
         continuation = nil
     }
 
     func authorizationController(
-        controller: ASAuthorizationController,
-        didCompleteWithError error: Error
+        controller: ASAuthorizationController, didCompleteWithError error: Error
     ) {
         continuation?.resume(throwing: error)
         continuation = nil

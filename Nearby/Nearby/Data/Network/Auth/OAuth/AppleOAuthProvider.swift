@@ -6,6 +6,7 @@
 //
 
 import AuthenticationServices
+import CryptoKit
 import Foundation
 import UIKit
 
@@ -15,6 +16,7 @@ struct AppleCredential {
 
     let identityToken: String
     let authorizationCode: String
+    let nonce: String
 }
 
 enum AppleOAuthError: Error {
@@ -23,6 +25,7 @@ enum AppleOAuthError: Error {
     case invalidIdentityToken
     case missingAuthorizationCode
     case invalidAuthorizationCode
+    case missingNonce
 }
 
 protocol AppleOAuthProvider {
@@ -34,6 +37,7 @@ final class DefaultAppleOAuthProvider: NSObject {
     // MARK: - Property
 
     private var continuation: CheckedContinuation<AppleCredential, Error>?
+    private var currentNonce: String?
 }
 
 extension DefaultAppleOAuthProvider: AppleOAuthProvider {
@@ -43,7 +47,12 @@ extension DefaultAppleOAuthProvider: AppleOAuthProvider {
 
             let provider = ASAuthorizationAppleIDProvider()
             let request = provider.createRequest()
-
+            
+            let nonce = UUID().uuidString
+            currentNonce = nonce
+            request.nonce = SHA256.hash(data: Data(nonce.utf8))
+                .compactMap { String(format: "%02x", $0) }
+                .joined()
             request.requestedScopes = [.fullName, .email]
 
             let authorizationController = ASAuthorizationController(authorizationRequests: [request])
@@ -88,11 +97,20 @@ extension DefaultAppleOAuthProvider: ASAuthorizationControllerDelegate {
             continuation = nil
             return
         }
+        
+        guard let nonce = currentNonce else {
+            continuation?.resume(
+                throwing: AppleOAuthError.missingNonce
+            )
+            continuation = nil
+            return
+        }
 
-        let appleCredential = AppleCredential(identityToken: identityToken, authorizationCode: authorizationCode)
+        let appleCredential = AppleCredential(identityToken: identityToken, authorizationCode: authorizationCode, nonce: nonce)
 
         continuation?.resume(returning: appleCredential)
         continuation = nil
+        currentNonce = nil
     }
 
     func authorizationController(
@@ -100,6 +118,7 @@ extension DefaultAppleOAuthProvider: ASAuthorizationControllerDelegate {
     ) {
         continuation?.resume(throwing: error)
         continuation = nil
+        currentNonce = nil
     }
 }
 

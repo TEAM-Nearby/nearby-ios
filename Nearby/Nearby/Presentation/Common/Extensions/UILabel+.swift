@@ -44,6 +44,19 @@ extension UILabel {
             ]
         )
     }
+
+    func setHighlight(target: String, color: UIColor) {
+        guard let attributedText,
+              let range = attributedText.string.range(of: target) else { return }
+
+        let highlightedText = NSMutableAttributedString(attributedString: attributedText)
+        highlightedText.addAttribute(
+            .foregroundColor,
+            value: color,
+            range: NSRange(range, in: attributedText.string)
+        )
+        self.attributedText = highlightedText
+    }
     
     func setRequiredTitle(_ title: String) {
         let attributedString = NSMutableAttributedString(

@@ -7,6 +7,7 @@
 
 import AuthenticationServices
 import Foundation
+import UIKit
 
 struct AppleCredential {
 
@@ -48,6 +49,7 @@ extension DefaultAppleOAuthProvider: AppleOAuthProvider {
             let authorizationController = ASAuthorizationController(authorizationRequests: [request])
 
             authorizationController.delegate = self
+            authorizationController.presentationContextProvider = self
             authorizationController.performRequests()
         }
     }
@@ -98,5 +100,18 @@ extension DefaultAppleOAuthProvider: ASAuthorizationControllerDelegate {
     ) {
         continuation?.resume(throwing: error)
         continuation = nil
+    }
+}
+
+extension DefaultAppleOAuthProvider: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        guard let windowScene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }),
+              let window = windowScene.windows.first(where: \.isKeyWindow) else {
+            return ASPresentationAnchor()
+        }
+
+        return window
     }
 }

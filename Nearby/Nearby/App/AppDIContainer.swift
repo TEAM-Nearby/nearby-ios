@@ -12,11 +12,12 @@ final class AppDIContainer {
     // MARK: - Properties
 
     private lazy var tokenStorage: TokenStorage = KeychainTokenStorage()
+    private lazy var appIntroductionStorage: AppIntroductionStorage = UserDefaultsAppIntroductionStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
     private lazy var meetingEventCenter = MeetingEventCenter()
 
     private lazy var authService: AuthService = DefaultAuthService(networkProvider: networkProvider)
-    private lazy var authRepository: AuthRepository = DefaultAuthRepository(oauthProvider: DefaultKakaoOAuthProvider(), authService: authService, tokenStorage: tokenStorage)
+    private lazy var authRepository: AuthRepository = DefaultAuthRepository(kakaoOAuthProvider: DefaultKakaoOAuthProvider(), appleOAuthProvider: DefaultAppleOAuthProvider(), authService: authService, tokenStorage: tokenStorage)
     private lazy var myPageService: MyPageService = DefaultMyPageService(networkProvider: networkProvider)
     private lazy var myPageRepository: MyPageRepository = DefaultMyPageRepository(service: myPageService)
     private lazy var matchingService: MatchedCompanionListService = DefaultMatchedCompanionListService(networkProvider: networkProvider)
@@ -43,7 +44,7 @@ final class AppDIContainer {
     // MARK: - Factory Methods
 
     func makeAppCoordinator(window: UIWindow) -> AppCoordinator {
-        AppCoordinator(window: window, diContainer: self)
+        AppCoordinator(window: window, diContainer: self, appIntroductionStorage: appIntroductionStorage)
     }
 
     func makeMainTabCoordinator() -> MainTabCoordinator {
@@ -76,5 +77,9 @@ final class AppDIContainer {
 
     func makeSplashViewController() -> SplashViewController {
         SplashViewController()
+    }
+
+    func makeAppIntroductionViewController() -> AppIntroductionViewController {
+        AppIntroductionViewController(viewModel: EmptyViewModel())
     }
 }

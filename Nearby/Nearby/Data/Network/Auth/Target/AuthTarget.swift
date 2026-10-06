@@ -70,7 +70,7 @@ extension AuthTarget: BaseTargetType {
             return ["idToken": request.idToken, "nonce": request.nonce]
         
         case .appleLogin(let request):
-            return ["idToken": request.idToken, "nonce": request.nonce]
+            return ["idToken": request.idToken, "nonce": request.nonce, "authorizationCode": request.authorizationCode]
 
         case .refresh(let request):
             return ["refreshToken": request.refreshToken]

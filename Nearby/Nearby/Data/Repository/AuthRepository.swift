@@ -72,7 +72,7 @@ extension DefaultAuthRepository: AuthRepository {
         let credential = try await appleOAuthProvider.requestCredential()
 
         let response = try await authService.loginWithApple(
-            request: AppleLoginRequestDTO(idToken: credential.identityToken, nonce: credential.nonce)
+            request: AppleLoginRequestDTO(idToken: credential.identityToken, nonce: credential.nonce, authorizationCode: credential.authorizationCode)
         )
 
         try tokenStorage.save(

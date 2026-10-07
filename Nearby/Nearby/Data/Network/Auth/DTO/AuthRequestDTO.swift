@@ -12,6 +12,12 @@ struct KakaoLoginRequestDTO: Encodable {
     let nonce: String
 }
 
+struct AppleLoginRequestDTO: Encodable {
+    let idToken: String
+    let nonce: String
+    let authorizationCode: String
+}
+
 struct TokenRefreshRequestDTO: Encodable {
     let refreshToken: String
 }

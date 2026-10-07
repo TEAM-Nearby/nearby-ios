@@ -9,7 +9,7 @@ import Foundation
 
 protocol AuthRepository {
     func loginWithKakao() async throws -> OnboardingStatus
-    func loginWithApple() async throws -> AppleCredential
+    func loginWithApple() async throws -> OnboardingStatus
     func logout() async throws
     func sendVerificationCode(phoneNumber: String) async throws -> PhoneVerificationResponseDTO
     func confirmVerificationCode(phoneVerificationId: Int, verificationCode: String) async throws -> PhoneVerificationConfirmResponseDTO
@@ -68,10 +68,19 @@ extension DefaultAuthRepository: AuthRepository {
         return response.onboardingStatus
     }
     
-    func loginWithApple() async throws -> AppleCredential {
-        try await appleOAuthProvider.requestCredential()
-    }
+    func loginWithApple() async throws -> OnboardingStatus {
+        let credential = try await appleOAuthProvider.requestCredential()
 
+        let response = try await authService.loginWithApple(
+            request: AppleLoginRequestDTO(idToken: credential.identityToken, nonce: credential.nonce, authorizationCode: credential.authorizationCode)
+        )
+
+        try tokenStorage.save(
+            accessToken: response.accessToken, refreshToken: response.refreshToken
+        )
+
+        return response.onboardingStatus
+    }
     func logout() async throws {
         guard let refreshToken = tokenStorage.refreshToken, !refreshToken.isEmpty else {
             throw NetworkError.unauthorized(code: "MISSING_REFRESH_TOKEN", message: "로그인 정보가 없습니다.")

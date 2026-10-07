@@ -11,6 +11,7 @@ import Alamofire
 
 protocol AuthService {
     func loginWithKakao(request: KakaoLoginRequestDTO) async throws -> KakaoLoginResponseDTO
+    func loginWithApple(request: AppleLoginRequestDTO) async throws -> AppleLoginResponseDTO
     func logout(request: LogoutRequestDTO) async throws -> LogoutResponseDTO
     func sendVerificationCode(request: PhoneVerificationRequestDTO) async throws -> PhoneVerificationResponseDTO
     func confirmVerificationCode(phoneVerificationId: Int, request: PhoneVerificationConfirmRequestDTO) async throws -> PhoneVerificationConfirmResponseDTO
@@ -45,6 +46,13 @@ extension DefaultAuthService: AuthService {
         try await networkProvider.request(
             AuthTarget.kakaoLogin(request),
             responseType: KakaoLoginResponseDTO.self
+        )
+    }
+    
+    func loginWithApple(request: AppleLoginRequestDTO) async throws -> AppleLoginResponseDTO {
+        try await networkProvider.request(
+            AuthTarget.appleLogin(request),
+            responseType: AppleLoginResponseDTO.self
         )
     }
 

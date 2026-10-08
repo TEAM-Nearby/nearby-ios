@@ -12,6 +12,9 @@ struct Meeting {
     let matchID: Int
     let companion: Companion
     let placeName: String
+    let city: String?
+    let timeZoneID: String?
+    let currentLocalTime: Date?
     let meetingAt: Date?
     let meetingTimeType: PostType
     let isCheckedIn: Bool
@@ -31,6 +34,9 @@ struct MeetingDetail {
     let hostGender: NearbyGender
     let hostProfileImageURL: String?
     let placeName: String
+    let city: String?
+    let timeZoneID: String?
+    let currentLocalTime: Date?
     let meetingAt: Date?
     let meetingTimeType: PostType
     let isCurrentUserCheckedIn: Bool

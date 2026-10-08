@@ -16,6 +16,9 @@ struct MeetingResponseDTO: Decodable {
     let matchId: Int
     let companion: Companion
     let placeName: String
+    let city: String?
+    let timeZoneId: String?
+    let currentLocalTime: String?
     let meetingAt: String?
     let meetingTimeType: PostType
     let isCheckedIn: Bool
@@ -39,6 +42,9 @@ struct MeetingDetailResponseDTO: Decodable {
     let hostProfileImageUrl: String?
     let hostNickname: String
     let placeName: String
+    let city: String?
+    let timeZoneId: String?
+    let currentLocalTime: String?
     let meetingAt: String?
     let meetingTimeType: PostType
     let currentUserCheckedIn: Bool

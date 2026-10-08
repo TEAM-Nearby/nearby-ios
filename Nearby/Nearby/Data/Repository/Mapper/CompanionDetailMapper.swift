@@ -14,12 +14,15 @@ enum CompanionDetailMapper {
             hostUserID: dto.hostUserId,
             hostProfileID: dto.hostProfileId,
             googlePlaceID: dto.googlePlaceId,
-            meetingAt: CompanionDateParser.parse(dto.meetingAt),
+            city: dto.city,
+            timeZoneID: dto.timeZoneId,
+            currentLocalTime: NearbyDateParser.parseInstant(dto.currentLocalTime),
+            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: dto.timeZoneId),
             maxParticipants: dto.maxParticipants,
             content: dto.content,
             isRecruiting: dto.status == "RECRUITING",
             meetingTimeType: CompanionMapper.mapMeetingTimeType(dto.meetingTimeType),
-            expiresAt: CompanionDateParser.parse(dto.expiresAt),
+            expiresAt: NearbyDateParser.parseInstant(dto.expiresAt),
             participantCount: dto.participantCount,
             participants: dto.participants.map {
                 CompanionParticipant(userID: $0.userId, profileImageURL: $0.profileImageUrl)

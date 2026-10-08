@@ -12,6 +12,9 @@ struct CompanionDetailResponseDTO: Decodable {
     let hostUserId: Int
     let hostProfileId: Int
     let googlePlaceId: String
+    let city: String?
+    let timeZoneId: String?
+    let currentLocalTime: String?
     let meetingAt: String?
     let maxParticipants: Int
     let content: String

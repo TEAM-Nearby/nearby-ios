@@ -31,7 +31,7 @@ extension MatchingMatchedCardItem {
         matchId: 1,
         content: MatchingMatchedCardContentModel(
             profileImage: .imgProfileDefault,
-            name: "정지영",
+            name: "니어바이",
             participantCount: 3,
             gender: "여성",
             uploadedTime: "15분 전 올림",

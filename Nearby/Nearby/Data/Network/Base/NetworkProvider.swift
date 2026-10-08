@@ -66,9 +66,18 @@ private extension NetworkProvider {
     func requestBaseResponse<T: Decodable>(_ target: BaseTargetType, responseType: T.Type, canRefreshToken: Bool) async throws -> BaseResponseDTO<T> {
         let urlRequest = try makeURLRequest(target: target)
 
+#if DEBUG
+        NetworkDebugLogger.logRequest(urlRequest)
+        let requestStartedAt = Date()
+#endif
+
         let dataResponse = await session.request(urlRequest)
             .serializingData()
             .response
+
+#if DEBUG
+        NetworkDebugLogger.logResponse(dataResponse.response, data: dataResponse.data, error: dataResponse.error, elapsedTime: Date().timeIntervalSince(requestStartedAt))
+#endif
 
         if let error = dataResponse.error {
             throw mapAFError(error)
@@ -264,3 +273,76 @@ private extension NetworkProvider {
 extension Notification.Name {
     static let authenticationExpired = Notification.Name("authenticationExpired")
 }
+
+#if DEBUG
+private enum NetworkDebugLogger {
+    private static let sensitiveKeys: Set<String> = ["authorization", "accessToken", "refreshToken", "identityToken", "authorizationCode", "password"]
+    private static let maximumBodyLength = 30_000
+
+    static func logRequest(_ request: URLRequest) {
+        var lines = ["➡️ REQUEST", "\(request.httpMethod ?? "UNKNOWN") \(request.url?.absoluteString ?? "UNKNOWN URL")"]
+
+        if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
+            lines.append("Headers: \(prettyJSONString(mask(headers)))")
+        }
+        if let body = request.httpBody, !body.isEmpty {
+            lines.append("Body: \(formattedBody(body))")
+        }
+
+        AppLogger.network(lines.joined(separator: "\n"))
+    }
+
+    static func logResponse(_ response: HTTPURLResponse?, data: Data?, error: Error?, elapsedTime: TimeInterval) {
+        var lines = ["⬅️ RESPONSE", "\(response?.statusCode.description ?? "NO STATUS") · \(String(format: "%.0f ms", elapsedTime * 1_000))", response?.url?.absoluteString ?? "UNKNOWN URL"]
+
+        if let data, !data.isEmpty {
+            lines.append("Body: \(formattedBody(data))")
+        }
+        if let error {
+            lines.append("Error: \(error.localizedDescription)")
+        }
+
+        AppLogger.network(lines.joined(separator: "\n"))
+    }
+
+    private static func formattedBody(_ data: Data) -> String {
+        guard let json = try? JSONSerialization.jsonObject(with: data) else {
+            return truncated(String(data: data, encoding: .utf8) ?? "<\(data.count) bytes>")
+        }
+        return truncated(prettyJSONString(mask(json)))
+    }
+
+    private static func mask(_ value: Any) -> Any {
+        if let dictionary = value as? [String: Any] {
+            return dictionary.reduce(into: [String: Any]()) { result, element in
+                result[element.key] = isSensitiveKey(element.key) ? "***" : mask(element.value)
+            }
+        }
+        if let dictionary = value as? [String: String] {
+            return dictionary.reduce(into: [String: String]()) { result, element in
+                result[element.key] = isSensitiveKey(element.key) ? "***" : element.value
+            }
+        }
+        if let array = value as? [Any] {
+            return array.map { mask($0) }
+        }
+        return value
+    }
+
+    private static func isSensitiveKey(_ key: String) -> Bool {
+        sensitiveKeys.contains { $0.caseInsensitiveCompare(key) == .orderedSame }
+    }
+
+    private static func prettyJSONString(_ value: Any) -> String {
+        guard JSONSerialization.isValidJSONObject(value), let data = try? JSONSerialization.data(withJSONObject: value, options: [.prettyPrinted, .sortedKeys]), let string = String(data: data, encoding: .utf8) else {
+            return String(describing: value)
+        }
+        return string
+    }
+
+    private static func truncated(_ value: String) -> String {
+        guard value.count > maximumBodyLength else { return value }
+        return String(value.prefix(maximumBodyLength)) + "\n… <truncated>"
+    }
+}
+#endif

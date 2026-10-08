@@ -165,5 +165,10 @@ final class DiningMapBottomSheetController {
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
         nearDiningSheetViewController.updateLocation(coordinate)
         saveDiningSheetViewController.updateLocation(coordinate)
+        diningInfoSheetViewController.updateLocation(coordinate)
+    }
+
+    func updateCityName(_ cityName: String) {
+        nearDiningSheetViewController.updateCityName(cityName)
     }
 }

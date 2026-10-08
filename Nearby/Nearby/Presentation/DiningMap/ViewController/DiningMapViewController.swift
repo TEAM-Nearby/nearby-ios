@@ -7,6 +7,8 @@
 
 import UIKit
 
+import Combine
+
 final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     
     // MARK: - Properties
@@ -82,6 +84,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         }
         
         mapController.onLocationUpdate = { [weak self] coordinate in
+            self?.viewModel.action(.locationDidUpdate(coordinate))
             self?.bottomSheetController.updateLocation(coordinate)
         }
     }
@@ -92,6 +95,15 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         }
         diningMapView.currentLocationButton.addTarget(self, action: #selector(currentLocationButtonDidTap), for: .touchUpInside)
         diningMapView.bookmarkButton.addTarget(self, action: #selector(bookmarkButtonDidTap), for: .touchUpInside)
+    }
+
+    override func bindState() {
+        viewModel.output.cityName
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] cityName in
+                self?.bottomSheetController.updateCityName(cityName)
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Methods

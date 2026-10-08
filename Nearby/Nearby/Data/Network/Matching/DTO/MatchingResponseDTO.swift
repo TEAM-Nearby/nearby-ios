@@ -45,6 +45,9 @@ struct MatchedCompanionPreviewResponseDTO: Decodable {
         let postId: Int
         let content: String
         let placeName: String
+        let city: String?
+        let timeZoneId: String?
+        let currentLocalTime: String?
         let meetingTimeType: MeetingTimeType
         let meetingAt: String?
     }
@@ -53,6 +56,9 @@ struct MatchedCompanionPreviewResponseDTO: Decodable {
 struct MatchMyScheduleResponseDTO: Decodable {
     let matchId: Int
     let matchStatus: MatchStatus
+    let city: String?
+    let timeZoneId: String?
+    let currentLocalTime: String?
     let schedule: Schedule?
     let openChatUrl: String?
     let userNickname: String?

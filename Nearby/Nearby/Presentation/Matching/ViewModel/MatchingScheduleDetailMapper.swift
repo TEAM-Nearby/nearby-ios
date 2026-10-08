@@ -8,16 +8,9 @@
 import Foundation
 
 enum MatchingScheduleDetailMapper {
-    static func map(
-        scheduleDetail: MatchedCompanionScheduleDetail,
-        preview: MatchedCompanionPreview?
-    ) -> MatchingScheduleDetailDisplayData {
+    static func map(scheduleDetail: MatchedCompanionScheduleDetail, preview: MatchedCompanionPreview?) -> MatchingScheduleDetailDisplayData {
         let userType = makeUserType(scheduleDetail.currentUserRole)
-        let cardItem = makeCardItem(
-            scheduleDetail: scheduleDetail,
-            preview: preview,
-            userType: userType
-        )
+        let cardItem = makeCardItem(scheduleDetail: scheduleDetail, preview: preview, userType: userType)
 
         return MatchingScheduleDetailDisplayData(
             cardItem: cardItem,
@@ -27,10 +20,7 @@ enum MatchingScheduleDetailMapper {
             latitude: scheduleDetail.schedule?.place.latitude ?? 0,
             longitude: scheduleDetail.schedule?.place.longitude ?? 0,
             scheduledAt: scheduleDetail.schedule?.scheduledAt,
-            scheduledAtText: makeDateTimeText(
-                scheduleDetail.schedule?.scheduledAt,
-                fallback: scheduleDetail.meetingTimeType
-            ),
+            scheduledAtText: makeDateTimeText(scheduleDetail.schedule?.scheduledAt, timeZoneID: scheduleDetail.timeZoneID, fallback: scheduleDetail.meetingTimeType),
             openChatUrl: scheduleDetail.openChatURL ?? "",
             type: userType
         )
@@ -38,11 +28,7 @@ enum MatchingScheduleDetailMapper {
 }
 
 private extension MatchingScheduleDetailMapper {
-    static func makeCardItem(
-        scheduleDetail: MatchedCompanionScheduleDetail,
-        preview: MatchedCompanionPreview?,
-        userType: NearbyUserType
-    ) -> MatchingMatchedCardItem {
+    static func makeCardItem(scheduleDetail: MatchedCompanionScheduleDetail, preview: MatchedCompanionPreview?, userType: NearbyUserType) -> MatchingMatchedCardItem {
         guard let preview else {
             return MatchingMatchedCardItem(
                 matchId: scheduleDetail.matchID,
@@ -52,10 +38,7 @@ private extension MatchingScheduleDetailMapper {
                     gender: "",
                     uploadedTime: "",
                     place: scheduleDetail.schedule?.place.name ?? "",
-                    meetingTime: makeTimeText(
-                        scheduleDetail.schedule?.scheduledAt,
-                        fallback: scheduleDetail.meetingTimeType
-                    ),
+                    meetingTime: makeTimeText(scheduleDetail.schedule?.scheduledAt, timeZoneID: scheduleDetail.timeZoneID, fallback: scheduleDetail.meetingTimeType),
                     description: ""
                 ),
                 matchStatus: scheduleDetail.matchStatus.rawValue,
@@ -63,25 +46,19 @@ private extension MatchingScheduleDetailMapper {
             )
         }
 
-        let placeName = preview.companionPost.placeName.isEmpty
-            ? scheduleDetail.schedule?.place.name ?? ""
-            : preview.companionPost.placeName
+        let placeName = preview.companionPost.placeName.isEmpty ? scheduleDetail.schedule?.place.name ?? "" : preview.companionPost.placeName
 
         return MatchingMatchedCardItem(
             matchId: preview.matchID,
             content: MatchingMatchedCardContentModel(
                 profileImageUrl: preview.host.hostProfileImageURL,
-                profileImageUrls: [preview.host.hostProfileImageURL]
-                    + preview.members.map(\.profileImageURL),
+                profileImageUrls: [preview.host.hostProfileImageURL] + preview.members.map(\.profileImageURL),
                 name: preview.host.hostName,
                 participantCount: preview.members.count + 1,
                 gender: "",
                 uploadedTime: "",
                 place: placeName,
-                meetingTime: makeTimeText(
-                    preview.companionPost.meetingAt,
-                    fallback: preview.companionPost.meetingTimeType
-                ),
+                meetingTime: makeTimeText(preview.companionPost.meetingAt, timeZoneID: preview.companionPost.timeZoneID, fallback: preview.companionPost.meetingTimeType),
                 description: preview.companionPost.content
             ),
             matchStatus: scheduleDetail.matchStatus.rawValue,
@@ -98,20 +75,30 @@ private extension MatchingScheduleDetailMapper {
         }
     }
 
-    static func makeTimeText(
-        _ scheduledAt: String?,
-        fallback timeType: MatchedCompanionTimeType
-    ) -> String {
+    static func makeTimeText(_ scheduledAt: String?, timeZoneID: String?, fallback timeType: MatchedCompanionTimeType) -> String {
         guard let scheduledAt else { return makeTimeTypeTitle(timeType) }
-        return scheduledAt.toDate()?.timeDisplayText ?? scheduledAt
+        guard let date = NearbyDateParser.parseLocal(scheduledAt, timeZoneID: timeZoneID) else {
+            return scheduledAt
+        }
+        return format(date, timeZoneID: timeZoneID, hourFormat: "a h시", minuteFormat: "a h시 m분")
     }
 
-    static func makeDateTimeText(
-        _ scheduledAt: String?,
-        fallback timeType: MatchedCompanionTimeType
-    ) -> String {
+    static func makeDateTimeText(_ scheduledAt: String?, timeZoneID: String?, fallback timeType: MatchedCompanionTimeType) -> String {
         guard let scheduledAt else { return makeTimeTypeTitle(timeType) }
-        return scheduledAt.toDate()?.meetingDisplayText ?? scheduledAt
+        guard let date = NearbyDateParser.parseLocal(scheduledAt, timeZoneID: timeZoneID) else {
+            return scheduledAt
+        }
+        return format(date, timeZoneID: timeZoneID, hourFormat: "M월 d일 (E) a h시", minuteFormat: "M월 d일 (E) a h시 m분")
+    }
+
+    static func format(_ date: Date, timeZoneID: String?, hourFormat: String, minuteFormat: String) -> String {
+        let timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
+        let minute = Calendar(identifier: .gregorian).dateComponents(in: timeZone, from: date).minute
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = timeZone
+        formatter.dateFormat = minute == 0 ? hourFormat : minuteFormat
+        return formatter.string(from: date)
     }
 
     static func makeTimeTypeTitle(_ timeType: MatchedCompanionTimeType) -> String {

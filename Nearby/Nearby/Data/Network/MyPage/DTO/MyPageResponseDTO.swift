@@ -27,7 +27,10 @@ struct MyCompanionPostsResponseDTO: Decodable {
 
 struct MyCompanionPostDTO: Decodable {
     let postId: Int
-    let cityName: String
+    let cityNameKor: String?
+    let city: String?
+    let timeZoneId: String?
+    let currentLocalTime: String?
     let scheduledAt: String?
     let place: MyCompanionPostPlaceDTO
     let hostProfileImageUrl: String?

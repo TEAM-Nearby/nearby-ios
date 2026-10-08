@@ -19,7 +19,7 @@ final class GooglePlaceService {
 
     // MARK: - Methods
 
-    func searchPlaces(query: String, latitude: Double, longitude: Double, completion: @escaping (Result<[PlaceSearchResultItem], Error>) -> Void) {
+    func searchPlaces(query: String, coordinate: CLLocationCoordinate2D?, completion: @escaping (Result<[PlaceSearchResultItem], Error>) -> Void) {
         let trimmedQuery = query.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
@@ -29,12 +29,11 @@ final class GooglePlaceService {
             return
         }
 
-        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-
         let filter = GMSAutocompleteFilter()
-        filter.origin = CLLocation(latitude: latitude, longitude: longitude)
-        filter.locationBias = GMSPlaceCircularLocationOption(coordinate, 30_000)
-        filter.regionCode = "ES"
+        if let coordinate {
+            filter.origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            filter.locationBias = GMSPlaceCircularLocationOption(coordinate, 30_000)
+        }
 
         let request = GMSAutocompleteRequest(query: trimmedQuery)
 

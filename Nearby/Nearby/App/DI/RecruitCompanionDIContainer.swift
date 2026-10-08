@@ -5,6 +5,7 @@
 //  Created by soomin on 9/9/26.
 //
 
+import CoreLocation
 import UIKit
 
 final class RecruitCompanionDIContainer {
@@ -29,8 +30,13 @@ final class RecruitCompanionDIContainer {
 
     // MARK: - Factory Method
 
-    func makeRecruitCompanionViewController(onRoute: @escaping (RecruitCompanionRoute) -> Void) -> UIViewController {
-        let viewModel = RecruitCompanionViewModel(repository: recruitCompanionRepository, searchCoordinate: (latitude: 41.3879706, longitude: 2.1671360))
+    func makeRecruitCompanionViewController(searchCoordinate: CLLocationCoordinate2D?, onRoute: @escaping (RecruitCompanionRoute) -> Void) -> UIViewController {
+#if DEBUG
+        let resolvedSearchCoordinate = CLLocationCoordinate2D(latitude: 48.8566, longitude: 2.3522)
+#else
+        let resolvedSearchCoordinate = searchCoordinate
+#endif
+        let viewModel = RecruitCompanionViewModel(repository: recruitCompanionRepository, searchCoordinate: resolvedSearchCoordinate)
         let viewController = RecruitCompanionViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true

@@ -5,6 +5,7 @@
 //  Created by soomin on 7/7/26.
 //
 
+import CoreLocation
 import UIKit
 
 final class CompanionCoordinator {
@@ -27,20 +28,28 @@ final class CompanionCoordinator {
 
     private func handle(_ route: CompanionViewModel.Route) {
         switch route {
-        case .recruitCompanion:
-            showRecruitCompanion()
+        case .recruitCompanion(let searchCoordinate):
+            showRecruitCompanion(searchCoordinate: searchCoordinate)
         case .companionDetail(let state):
             showCompanionDetail(state: state)
         }
     }
 
-    private func showRecruitCompanion() {
-        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController { [weak self] route in
+    private func showRecruitCompanion(searchCoordinate: CLLocationCoordinate2D?) {
+        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController(searchCoordinate: searchCoordinate) { [weak self] route in
             switch route {
-            case .previous: self?.showPrevious()
+            case .previous:
+                self?.showPrevious()
+            case .completed:
+                self?.showPrevious()
+                self?.refreshCompanions()
             }
         }
         navigationController.pushViewController(viewController, animated: true)
+    }
+
+    private func refreshCompanions() {
+        navigationController.viewControllers.compactMap { $0 as? CompanionViewController }.first?.refreshCompanions()
     }
 
     private func handle(_ route: CompanionDetailViewModel.Route) {

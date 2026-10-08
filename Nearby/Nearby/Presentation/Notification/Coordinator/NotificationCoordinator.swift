@@ -5,6 +5,7 @@
 //  Created by h2e on 7/11/26.
 //
 
+import CoreLocation
 import UIKit
 
 final class NotificationCoordinator {
@@ -193,9 +194,10 @@ extension NotificationCoordinator {
         companionCoordinator.parentCoordinator = self
         addChildCoordinator(companionCoordinator)
 
-        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController { [weak companionCoordinator] route in
+        let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController(searchCoordinate: CLLocationManager().location?.coordinate) { [weak companionCoordinator] route in
             switch route {
-            case .previous: companionCoordinator?.showPrevious()
+            case .previous, .completed:
+                companionCoordinator?.showPrevious()
             }
         }
         navigationController.pushViewController(viewController, animated: true)

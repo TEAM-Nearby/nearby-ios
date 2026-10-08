@@ -116,6 +116,10 @@ final class CompanionBottomSheetController {
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
         nearbySheetViewController.updateLocation(coordinate)
     }
+
+    func refreshCompanions() {
+        nearbySheetViewController.refreshCompanions()
+    }
     
     func updatePlaceCategory(_ category: CompanionPlace.Category) {
         nearbySheetViewController.updatePlaceCategory(category)

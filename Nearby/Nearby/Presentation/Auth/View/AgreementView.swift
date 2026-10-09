@@ -62,9 +62,12 @@ final class AgreementView: BaseView {
 
         var configuration = UIButton.Configuration.plain()
 
-        configuration.image = UIImage.checkboxDefault.withRenderingMode(.alwaysOriginal)
+        configuration.image = fixedSizeCheckboxImage(.checkboxDefault).withRenderingMode(.alwaysOriginal)
         configuration.imagePlacement = .leading
         configuration.imagePadding = 15
+
+        configuration.preferredSymbolConfigurationForImage = nil
+
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0)
 
         configuration.attributedTitle = AttributedString("전체 약관 동의", attributes: AttributeContainer([.font: NearbyFont.b1M18.font, .foregroundColor: UIColor.grey80]))
@@ -188,6 +191,24 @@ final class AgreementView: BaseView {
             isSelected ? .icCheckSelect : .icCheckDefault
         }
 
-        button.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+        var configuration = button.configuration
+        configuration?.image = (isAllAgreement ? fixedSizeCheckboxImage(image) : image).withRenderingMode(.alwaysOriginal)
+
+        button.configuration = configuration
     }
+    
+    
+    private func fixedSizeCheckboxImage(_ image: UIImage) -> UIImage {
+        let size = CGSize(width: 24, height: 24)
+
+        let renderer = UIGraphicsImageRenderer(size: size)
+
+        return renderer.image { _ in
+            let origin = CGPoint(x: (size.width - image.size.width) / 2, y: (size.height - image.size.height) / 2)
+
+            image.draw(at: origin)
+        }
+    }
+
+
 }

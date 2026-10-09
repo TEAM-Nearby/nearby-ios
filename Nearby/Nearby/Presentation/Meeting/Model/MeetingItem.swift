@@ -11,6 +11,7 @@ struct MeetingItem {
     let id: Int
     let meetingId: Int?
     let matchId: Int
+    let companionUserID: Int
     let name: String
     let gender: String
     let profileImageUrl: String?

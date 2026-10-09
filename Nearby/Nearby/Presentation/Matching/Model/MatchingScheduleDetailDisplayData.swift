@@ -15,6 +15,7 @@ struct MatchingScheduleDetailDisplayData {
     let latitude: Double
     let longitude: Double
     let scheduledAt: String?
+    let timeZoneID: String?
     let scheduledAtText: String
     let openChatUrl: String
     let type: NearbyUserType

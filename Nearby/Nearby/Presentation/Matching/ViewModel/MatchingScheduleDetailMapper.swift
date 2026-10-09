@@ -20,6 +20,7 @@ enum MatchingScheduleDetailMapper {
             latitude: scheduleDetail.schedule?.place.latitude ?? 0,
             longitude: scheduleDetail.schedule?.place.longitude ?? 0,
             scheduledAt: scheduleDetail.schedule?.scheduledAt,
+            timeZoneID: scheduleDetail.timeZoneID,
             scheduledAtText: makeDateTimeText(scheduleDetail.schedule?.scheduledAt, timeZoneID: scheduleDetail.timeZoneID, fallback: scheduleDetail.meetingTimeType),
             openChatUrl: scheduleDetail.openChatURL ?? "",
             type: userType

@@ -73,7 +73,6 @@ final class ReportPostViewModel: BaseViewModelType {
             
         case .reportButtonDidTap:
             guard isReportValid else { return }
-            // TODO: - 신고 API 연동 (selectedReasons, detailText)
             output.submitSuccess.send(())
         }
     }

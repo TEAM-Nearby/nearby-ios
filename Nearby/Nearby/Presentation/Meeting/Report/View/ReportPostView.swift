@@ -138,7 +138,7 @@ final class ReportPostView: BaseView {
         reportButton.addTarget(self, action: #selector(reportButtonDidTap), for: .touchUpInside)
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     func updateReportButton(isEnabled: Bool) {
         reportButton.isEnabled = isEnabled

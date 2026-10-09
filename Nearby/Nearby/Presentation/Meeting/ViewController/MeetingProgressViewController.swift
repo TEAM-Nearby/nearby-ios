@@ -10,11 +10,11 @@ import UIKit
 
 final class MeetingProgressViewController: BaseViewController<MeetingProgressViewModel> {
 
-    // MARK: - UI Component
+    // MARK: - UI Components
     
     private let meetingProgressView = MeetingProgressView()
     
-    // MARK: - Property
+    // MARK: - Properties
     
     var onRoute: ((MeetingRoute) -> Void)?
     

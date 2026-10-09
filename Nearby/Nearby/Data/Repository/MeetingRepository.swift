@@ -16,7 +16,7 @@ protocol MeetingRepository {
 
 final class DefaultMeetingRepository {
     
-    // MARK: - Property
+    // MARK: - Properties
     
     private let meetingService: MeetingService
     

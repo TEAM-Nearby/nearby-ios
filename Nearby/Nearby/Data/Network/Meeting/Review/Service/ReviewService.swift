@@ -12,8 +12,13 @@ protocol ReviewService {
 }
 
 final class DefaultReviewService {
+    
+    // MARK: - Properties
+    
     private let networkProvider: any NetworkProviding
-
+    
+    // MARK: - Initializer
+    
     init(networkProvider: any NetworkProviding) {
         self.networkProvider = networkProvider
     }

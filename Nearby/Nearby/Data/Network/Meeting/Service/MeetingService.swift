@@ -14,7 +14,7 @@ protocol MeetingService {
 
 final class DefaultMeetingService {
 
-    // MARK: - Property
+    // MARK: - Properties
 
     private let networkProvider: any NetworkProviding
 

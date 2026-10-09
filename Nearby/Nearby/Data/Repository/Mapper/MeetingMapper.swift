@@ -20,9 +20,9 @@ enum MeetingMapper {
             ),
             placeName: dto.placeName,
             city: dto.city,
-            timeZoneID: dto.timeZoneId,
+            timeZoneID: dto.timeZoneID,
             currentLocalTime: NearbyDateParser.parseInstant(dto.currentLocalTime),
-            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: dto.timeZoneId),
+            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: dto.timeZoneID),
             meetingTimeType: dto.meetingTimeType,
             isCheckedIn: dto.isCheckedIn
         )
@@ -37,9 +37,9 @@ enum MeetingMapper {
             hostProfileImageURL: dto.hostProfileImageUrl,
             placeName: dto.placeName,
             city: dto.city,
-            timeZoneID: dto.timeZoneId,
+            timeZoneID: dto.timeZoneID,
             currentLocalTime: NearbyDateParser.parseInstant(dto.currentLocalTime),
-            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: dto.timeZoneId),
+            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: dto.timeZoneID),
             meetingTimeType: dto.meetingTimeType,
             isCurrentUserCheckedIn: dto.currentUserCheckedIn,
             meetingStatus: dto.meetingStatus

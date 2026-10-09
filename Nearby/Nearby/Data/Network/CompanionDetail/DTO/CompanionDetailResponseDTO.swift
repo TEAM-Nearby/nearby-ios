@@ -13,7 +13,7 @@ struct CompanionDetailResponseDTO: Decodable {
     let hostProfileId: Int
     let googlePlaceId: String
     let city: String?
-    let timeZoneId: String?
+    let timeZoneID: String?
     let currentLocalTime: String?
     let meetingAt: String?
     let maxParticipants: Int
@@ -27,6 +27,28 @@ struct CompanionDetailResponseDTO: Decodable {
     let participants: [CompanionParticipantDTO]
     let applyStatus: String
     let hostProfileSummary: CompanionHostProfileSummaryDTO
+
+    enum CodingKeys: String, CodingKey {
+        case postId
+        case hostUserId
+        case hostProfileId
+        case googlePlaceId
+        case city
+        case timeZoneID = "timeZoneId"
+        case currentLocalTime
+        case meetingAt
+        case maxParticipants
+        case content
+        case openChatUrl
+        case status
+        case createdAt
+        case meetingTimeType
+        case expiresAt
+        case participantCount
+        case participants
+        case applyStatus
+        case hostProfileSummary
+    }
 }
 
 struct CompanionHostProfileSummaryDTO: Decodable {

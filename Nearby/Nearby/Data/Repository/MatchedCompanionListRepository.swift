@@ -68,7 +68,7 @@ private extension MatchedCompanionPreviewResponseDTO {
             },
             companionPost: MatchedCompanionPreview.CompanionPost(
                 postID: companionPost.postId, content: companionPost.content, placeName: companionPost.placeName,
-                city: companionPost.city, timeZoneID: companionPost.timeZoneId,
+                city: companionPost.city, timeZoneID: companionPost.timeZoneID,
                 currentLocalTime: NearbyDateParser.parseInstant(companionPost.currentLocalTime),
                 meetingTimeType: companionPost.meetingTimeType.toMatchedCompanionModel(), meetingAt: companionPost.meetingAt
             )
@@ -80,7 +80,7 @@ private extension MatchMyScheduleResponseDTO {
     func toModel() -> MatchedCompanionScheduleDetail {
         MatchedCompanionScheduleDetail(
             matchID: matchId, matchStatus: matchStatus.toModel(),
-            city: city, timeZoneID: timeZoneId,
+            city: city, timeZoneID: timeZoneID,
             currentLocalTime: NearbyDateParser.parseInstant(currentLocalTime),
             schedule: schedule.map {
                 MatchedCompanionScheduleDetail.Schedule(

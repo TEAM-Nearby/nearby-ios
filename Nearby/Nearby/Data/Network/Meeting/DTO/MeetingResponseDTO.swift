@@ -17,13 +17,28 @@ struct MeetingResponseDTO: Decodable {
     let companion: Companion
     let placeName: String
     let city: String?
-    let timeZoneId: String?
+    let timeZoneID: String?
     let currentLocalTime: String?
     let meetingAt: String?
     let meetingTimeType: PostType
     let isCheckedIn: Bool
     let meetingStatus: MeetingStatus?
     let progressStatus: MeetingProgressStatus
+
+    enum CodingKeys: String, CodingKey {
+        case meetingId
+        case matchId
+        case companion
+        case placeName
+        case city
+        case timeZoneID = "timeZoneId"
+        case currentLocalTime
+        case meetingAt
+        case meetingTimeType
+        case isCheckedIn
+        case meetingStatus
+        case progressStatus
+    }
     
     struct Companion: Decodable {
         let userId: Int
@@ -43,13 +58,32 @@ struct MeetingDetailResponseDTO: Decodable {
     let hostNickname: String
     let placeName: String
     let city: String?
-    let timeZoneId: String?
+    let timeZoneID: String?
     let currentLocalTime: String?
     let meetingAt: String?
     let meetingTimeType: PostType
     let currentUserCheckedIn: Bool
     let canCancelMeeting: Bool
     let meetingStatus: MeetingStatus
+
+    enum CodingKeys: String, CodingKey {
+        case meetingId
+        case currentUserRole
+        case hostId
+        case hostGender
+        case hostCheckedIn
+        case hostProfileImageUrl
+        case hostNickname
+        case placeName
+        case city
+        case timeZoneID = "timeZoneId"
+        case currentLocalTime
+        case meetingAt
+        case meetingTimeType
+        case currentUserCheckedIn
+        case canCancelMeeting
+        case meetingStatus
+    }
 }
 
 struct MeetingCheckInResponseDTO: Decodable {

@@ -95,7 +95,7 @@ final class MeetingTabViewModel: BaseViewModelType {
             id: meeting.meetingID ?? meeting.matchID,
             meetingId: meeting.meetingID,
             matchId: meeting.matchID,
-            companionUserID: meeting.companion.userID,
+            hostUserID: meeting.companion.userID,
             name: meeting.companion.nickname,
             gender: meeting.companion.gender.genderDisplayText,
             profileImageUrl: meeting.companion.profileImageURL,

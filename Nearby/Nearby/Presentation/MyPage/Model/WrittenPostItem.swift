@@ -60,7 +60,11 @@ struct WrittenPostItem {
 
 extension WrittenPostItem {
     init(response: MyCompanionPostDTO) {
-        let scheduledDate = NearbyDateParser.parseLocal(response.scheduledAt, timeZoneID: response.timeZoneId)
+        let scheduledDate = NearbyDateParser.parseLocal(response.scheduledAt, timeZoneID: response.timeZoneID)
+        let cityName = [response.cityNameKorean, response.city]
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first { !$0.isEmpty }
+            ?? "도시 정보 없음"
         let serverImageURLs = [response.hostProfileImageUrl]
             + response.members.map(\.profileImageUrl)
         let missingImageCount = max(
@@ -72,13 +76,13 @@ extension WrittenPostItem {
 
         self.init(
             id: response.postId,
-            cityName: response.cityNameKor ?? response.city ?? "도시 정보 없음",
+            cityName: cityName,
             placeName: response.place.name,
             latitude: response.place.latitude,
             longitude: response.place.longitude,
             placeID: response.place.googlePlaceId,
             meetingDateText: scheduledDate.map {
-                Self.meetingDateText($0, timeZoneID: response.timeZoneId)
+                Self.meetingDateText($0, timeZoneID: response.timeZoneID)
             } ?? "시간 미정",
             currentPeopleCount: response.currentParticipants,
             maximumPeopleCount: response.maxParticipants,

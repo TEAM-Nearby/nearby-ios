@@ -32,6 +32,7 @@ final class ReportPostViewModel: BaseViewModelType {
     let output: Output = Output()
     let reasons = ReportReason.allCases
     
+    private let target: MeetingReportTarget
     private(set) var selectedReasons = Set<Int>()
     private var detailText: String = ""
     
@@ -45,6 +46,12 @@ final class ReportPostViewModel: BaseViewModelType {
             return !detailText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
         return true
+    }
+    
+    // MARK: - Initializer
+    
+    init(target: MeetingReportTarget) {
+        self.target = target
     }
     
     // MARK: - Action

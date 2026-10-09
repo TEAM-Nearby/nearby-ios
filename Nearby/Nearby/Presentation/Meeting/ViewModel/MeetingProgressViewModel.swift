@@ -24,7 +24,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<MeetingProgressDisplayData, Never>()
         let step = CurrentValueSubject<MeetingStep, Never>(.match)
         let verifyButtonState = PassthroughSubject<MeetingVerifyButtonState, Never>()
-        let showReport = PassthroughSubject<Void, Never>()
+        let showReport = PassthroughSubject<MeetingReportTarget, Never>()
         let showReview = PassthroughSubject<ReviewRoute, Never>()
         let showVerificationWaitingToast = PassthroughSubject<Void, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
@@ -111,7 +111,8 @@ final class MeetingProgressViewModel: BaseViewModelType {
             }
             
         case .reportButtonDidTap:
-            output.showReport.send(())
+            guard let meetingId else { return }
+            output.showReport.send(MeetingReportTarget(meetingID: meetingId, reportedUserID: item.companionUserID))
         }
     }
     

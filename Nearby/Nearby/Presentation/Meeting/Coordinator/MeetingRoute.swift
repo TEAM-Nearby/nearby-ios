@@ -10,7 +10,7 @@ enum MeetingRoute {
     case companionTab
     case progress(MeetingItem)
     case previous
-    case report
+    case report(MeetingReportTarget)
     case reportCompletion
     case dismissReport
     case participantReview(ReviewItem)

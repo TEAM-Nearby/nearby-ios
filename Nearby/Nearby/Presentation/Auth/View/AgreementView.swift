@@ -107,9 +107,16 @@ final class AgreementView: BaseView {
             configuration.imagePlacement = .leading
             configuration.imagePadding = 20.5
             configuration.contentInsets = .zero
+            configuration.baseForegroundColor = .grey80
 
             $0.configuration = configuration
             $0.contentHorizontalAlignment = .leading
+
+            $0.configurationUpdateHandler = { button in
+                var updatedConfiguration = button.configuration
+                updatedConfiguration?.baseForegroundColor = .grey80
+                button.configuration = updatedConfiguration
+            }
         }
 
         bottomButton.isEnabled = false
@@ -197,7 +204,6 @@ final class AgreementView: BaseView {
         button.configuration = configuration
     }
     
-    
     private func fixedSizeCheckboxImage(_ image: UIImage) -> UIImage {
         let size = CGSize(width: 24, height: 24)
 
@@ -209,6 +215,5 @@ final class AgreementView: BaseView {
             image.draw(at: origin)
         }
     }
-
 
 }

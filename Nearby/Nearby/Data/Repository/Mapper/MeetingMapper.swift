@@ -39,4 +39,12 @@ enum MeetingMapper {
             meetingStatus: dto.meetingStatus
         )
     }
+    
+    static func map(_ report: MeetingReport) -> CreateMeetingReportRequestDTO {
+        CreateMeetingReportRequestDTO(
+            reportedUserId: report.reportedUserID,
+            reasons: report.reasons,
+            detail: report.detail
+        )
+    }
 }

@@ -50,6 +50,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private var meetingDate: Date?
     private var postType: PostType = .scheduled
     private var hasVerifiedCompanion: Bool?
+    private var currentUserRole: NearbyUserType?
     private var cancellables = Set<AnyCancellable>()
     
     private var currentStep: MeetingStep {
@@ -111,7 +112,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
             }
             
         case .reportButtonDidTap:
-            guard let meetingId else { return }
+            guard let meetingId, currentUserRole == .participant else { return }
             output.showReport.send(MeetingReportTarget(meetingID: meetingId, reportedUserID: item.hostUserID))
         }
     }
@@ -138,6 +139,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     )
                 }
                 
+                currentUserRole = detail.currentUserRole
                 meetingDate = detail.meetingAt
                 postType = detail.meetingTimeType
 

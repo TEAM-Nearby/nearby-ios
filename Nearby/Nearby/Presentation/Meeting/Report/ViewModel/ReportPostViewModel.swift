@@ -33,8 +33,10 @@ final class ReportPostViewModel: BaseViewModelType {
     let reasons = ReportReason.allCases
     
     private let target: MeetingReportTarget
+    private let repository: MeetingRepository
     private(set) var selectedReasons = Set<Int>()
     private var detailText: String = ""
+    private var isSubmitting = false
     
     private var isEtcSelected: Bool {
         selectedReasons.contains(ReportReason.extra.rawValue)
@@ -50,8 +52,9 @@ final class ReportPostViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(target: MeetingReportTarget) {
+    init(target: MeetingReportTarget, repository: MeetingRepository) {
         self.target = target
+        self.repository = repository
     }
     
     // MARK: - Action
@@ -72,8 +75,8 @@ final class ReportPostViewModel: BaseViewModelType {
             updateReportState()
             
         case .reportButtonDidTap:
-            guard isReportValid else { return }
-            output.submitSuccess.send(())
+            guard isReportValid, !isSubmitting else { return }
+            submitReport()
         }
     }
     
@@ -90,5 +93,23 @@ final class ReportPostViewModel: BaseViewModelType {
     
     private func updateReportState() {
         output.isReportButtonEnabled.send(isReportValid)
+    }
+    
+    private func submitReport() {
+        isSubmitting = true
+        let report = MeetingReport(
+            reportedUserID: target.reportedUserID,
+            reasons: selectedReasons.sorted().compactMap(ReportReason.init(rawValue:)),
+            detail: isEtcSelected ? detailText.trimmingCharacters(in: .whitespacesAndNewlines) : nil
+        )
+        Task {
+            defer { isSubmitting = false }
+            do {
+                try await repository.report(meetingId: target.meetingID, report: report)
+                output.submitSuccess.send(())
+            } catch {
+                AppLogger.error(error)
+            }
+        }
     }
 }

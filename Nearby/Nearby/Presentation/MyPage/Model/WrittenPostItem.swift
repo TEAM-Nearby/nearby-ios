@@ -60,7 +60,11 @@ struct WrittenPostItem {
 
 extension WrittenPostItem {
     init(response: MyCompanionPostDTO) {
-        let scheduledDate = response.scheduledAt.flatMap { Self.parseScheduledDate($0) }
+        let scheduledDate = NearbyDateParser.parseLocal(response.scheduledAt, timeZoneID: response.timeZoneID)
+        let cityName = [response.cityNameKorean, response.city]
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first { !$0.isEmpty }
+            ?? "도시 정보 없음"
         let serverImageURLs = [response.hostProfileImageUrl]
             + response.members.map(\.profileImageUrl)
         let missingImageCount = max(
@@ -72,12 +76,14 @@ extension WrittenPostItem {
 
         self.init(
             id: response.postId,
-            cityName: response.cityName,
+            cityName: cityName,
             placeName: response.place.name,
             latitude: response.place.latitude,
             longitude: response.place.longitude,
             placeID: response.place.googlePlaceId,
-            meetingDateText: scheduledDate.map { Self.meetingDateText($0) } ?? "시간 미정",
+            meetingDateText: scheduledDate.map {
+                Self.meetingDateText($0, timeZoneID: response.timeZoneID)
+            } ?? "시간 미정",
             currentPeopleCount: response.currentParticipants,
             maximumPeopleCount: response.maxParticipants,
             participantImageURLs: participantImageURLs,
@@ -88,34 +94,18 @@ extension WrittenPostItem {
 }
 
 private extension WrittenPostItem {
-    static func parseScheduledDate(_ value: String) -> Date? {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = .nearbyAPITimeZone
-
-        for format in ["yyyy-MM-dd'T'HH:mm:ss.SSSSSS", "yyyy-MM-dd'T'HH:mm:ss"] {
-            formatter.dateFormat = format
-            if let date = formatter.date(from: value) {
-                return date
-            }
-        }
-
-        return ISO8601DateFormatter.withFractionalSeconds.date(from: value)
-            ?? ISO8601DateFormatter.standard.date(from: value)
-    }
-
-    static func meetingDateText(_ date: Date) -> String {
+    static func meetingDateText(_ date: Date, timeZoneID: String?) -> String {
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = .current
+        calendar.timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
         let minute = calendar.component(.minute, from: date)
         let formatString = minute == 0 ? "M월 d일 (E) a h시" : "M월 d일 (E) a h시 m분"
-        return formatDate(date, format: formatString)
+        return formatDate(date, format: formatString, timeZoneID: timeZoneID)
     }
 
-    static func formatDate(_ date: Date, format: String) -> String {
+    static func formatDate(_ date: Date, format: String, timeZoneID: String?) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
-        formatter.timeZone = .current
+        formatter.timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
         formatter.dateFormat = format
         return formatter.string(from: date)
     }

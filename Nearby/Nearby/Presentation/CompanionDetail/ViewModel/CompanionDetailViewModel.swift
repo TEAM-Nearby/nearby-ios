@@ -183,7 +183,7 @@ private extension CompanionDetail {
 
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
-        formatter.timeZone = .nearbyAPITimeZone
+        formatter.timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
         formatter.dateFormat = "H시 mm분"
         return formatter.string(from: expiresAt)
     }
@@ -199,7 +199,7 @@ private extension CompanionDetail {
 
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "ko_KR")
-            formatter.timeZone = .current
+            formatter.timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
             formatter.dateFormat = "M월 d일 (E) a h시 m분"
             return formatter.string(from: meetingAt)
         }

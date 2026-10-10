@@ -12,6 +12,9 @@ struct CompanionDetail {
     let hostUserID: Int
     let hostProfileID: Int
     let googlePlaceID: String
+    let city: String?
+    let timeZoneID: String?
+    let currentLocalTime: Date?
     let meetingAt: Date?
     let maxParticipants: Int
     let content: String

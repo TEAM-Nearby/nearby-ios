@@ -18,7 +18,6 @@ final class NearbyNavigationBar: BaseView {
     var rightFirstButtonAction: (() -> Void)?
     var rightSecondButtonAction: (() -> Void)?
     var reportButtonAction: (() -> Void)?
-    var logoAction: (() -> Void)?
     var centerTitle: String?
     
     // MARK: - UI Components
@@ -47,7 +46,6 @@ final class NearbyNavigationBar: BaseView {
         logoImageView.do {
             $0.image = .nearbyLogo.withRenderingMode(.alwaysOriginal)
             $0.contentMode = .scaleAspectFit
-            $0.isUserInteractionEnabled = true
         }
 
         rightStackView.do {
@@ -121,7 +119,6 @@ final class NearbyNavigationBar: BaseView {
         rightFirstButton.addTarget(self, action: #selector(rightFirstButtonDidTap), for: .touchUpInside)
         rightSecondButton.addTarget(self, action: #selector(rightSecondButtonDidTap), for: .touchUpInside)
         reportButton.addTarget(self, action: #selector(reportButtonDidTap), for: .touchUpInside)
-        logoImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(logoDidTap)))
     }
     
     // MARK: - Methods
@@ -218,10 +215,6 @@ final class NearbyNavigationBar: BaseView {
         configureRightItems(rightItems)
     }
 
-    func updateRightItems(_ items: [NearbyNavigationBarItem]) {
-        configureRightItems(items)
-    }
-
     // MARK: - Actions
 
     @objc
@@ -244,8 +237,4 @@ final class NearbyNavigationBar: BaseView {
         reportButtonAction?()
     }
 
-    @objc
-    private func logoDidTap() {
-        logoAction?()
-    }
 }

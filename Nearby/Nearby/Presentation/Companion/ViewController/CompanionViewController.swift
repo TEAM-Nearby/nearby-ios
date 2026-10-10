@@ -47,6 +47,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
 
         mapController.onLocationUpdate = { [weak self] coordinate in
+            self?.viewModel.action(.locationDidUpdate(coordinate))
             self?.bottomSheetController.updateLocation(coordinate)
         }
 
@@ -89,6 +90,10 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
 
     // MARK: - Custom Methods
+
+    func refreshCompanions() {
+        bottomSheetController.refreshCompanions()
+    }
 
     override func setUI() {
         bottomSheetController.attach(to: self, in: bottomSheetHostView, centerOverlayView: companionView.companionCountChip, trailingOverlayView: companionView.currentLocationButton)

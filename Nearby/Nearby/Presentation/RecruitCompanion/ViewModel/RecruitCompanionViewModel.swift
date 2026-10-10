@@ -6,6 +6,7 @@
 //
 
 import Combine
+import CoreLocation
 import Foundation
 
 final class RecruitCompanionViewModel: BaseViewModelType {
@@ -106,7 +107,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
     let output = Output()
 
     private let repository: RecruitCompanionRepository
-    private let searchCoordinate: (latitude: Double, longitude: Double)
+    private let searchCoordinate: CLLocationCoordinate2D?
     private var draft = RecruitCompanionDraft()
     private var placeSearchWorkItem: DispatchWorkItem?
     private var placeDetailTask: Task<Void, Never>?
@@ -122,7 +123,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
     init(
         repository: RecruitCompanionRepository,
-        searchCoordinate: (latitude: Double, longitude: Double)
+        searchCoordinate: CLLocationCoordinate2D?
     ) {
         self.repository = repository
         self.searchCoordinate = searchCoordinate
@@ -247,8 +248,7 @@ final class RecruitCompanionViewModel: BaseViewModelType {
             do {
                 let suggestions = try await repository.searchPlaces(
                     query: query,
-                    latitude: searchCoordinate.latitude,
-                    longitude: searchCoordinate.longitude
+                    coordinate: searchCoordinate
                 )
                 guard latestPlaceSearchQuery == query else { return }
                 output.placeSuggestions.send(suggestions)

@@ -14,6 +14,7 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     
     enum Input {
         case updateRestaurant(NearDiningCellItem)
+        case locationDidUpdate(CLLocationCoordinate2D)
         case bookmarkDidTap
     }
     
@@ -38,7 +39,7 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     let output = Output()
     
     private let repository: DiningMapRepository
-    private let coordinate: CLLocationCoordinate2D
+    private var coordinate: CLLocationCoordinate2D?
     private var restaurant: NearDiningCellItem?
     private var fetchTask: Task<Void, Never>?
     private var favoriteTask: Task<Void, Never>?
@@ -46,9 +47,8 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(repository: DiningMapRepository, coordinate: CLLocationCoordinate2D) {
+    init(repository: DiningMapRepository) {
         self.repository = repository
-        self.coordinate = coordinate
     }
     
     deinit {
@@ -67,6 +67,8 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
             restaurant = item
             output.viewState.send(.loading(item))
             fetchDetail(placeId: item.placeId)
+        case .locationDidUpdate(let coordinate):
+            self.coordinate = coordinate
         case .bookmarkDidTap:
             updateFavorite()
         }
@@ -75,7 +77,7 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     // MARK: - Methods
     
     private func fetchDetail(placeId: Int?) {
-        guard let placeId else {
+        guard let placeId, let coordinate else {
             if let restaurant {
                 output.viewState.send(.loaded(restaurant))
             }

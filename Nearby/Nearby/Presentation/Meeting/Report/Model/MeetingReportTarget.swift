@@ -7,5 +7,5 @@
 
 struct MeetingReportTarget {
     let meetingID: Int
-    let reportedUserID: Int
+    let reportedUserID: Int?
 }

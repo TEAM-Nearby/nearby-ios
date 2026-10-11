@@ -112,8 +112,9 @@ final class MeetingProgressViewModel: BaseViewModelType {
             }
             
         case .reportButtonDidTap:
-            guard let meetingId, currentUserRole == .participant else { return }
-            output.showReport.send(MeetingReportTarget(meetingID: meetingId, reportedUserID: item.hostUserID))
+            guard let meetingId, let currentUserRole else { return }
+            let reportedUserID = currentUserRole == .participant ? item.hostUserID : nil
+            output.showReport.send(MeetingReportTarget(meetingID: meetingId, reportedUserID: reportedUserID))
         }
     }
     

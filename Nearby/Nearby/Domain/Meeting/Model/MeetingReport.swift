@@ -6,7 +6,7 @@
 //
 
 struct MeetingReport {
-    let reportedUserID: Int
+    let reportedUserID: Int?
     let reasons: [ReportReason]
     let detail: String?
 }

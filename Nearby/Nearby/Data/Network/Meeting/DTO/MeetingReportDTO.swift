@@ -6,7 +6,7 @@
 //
 
 struct CreateMeetingReportRequestDTO {
-    let reportedUserId: Int
+    let reportedUserId: Int?
     let reasons: [String]
     let detail: String?
 }

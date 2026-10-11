@@ -43,10 +43,10 @@ extension MeetingTarget: BaseTargetType {
         case .checkIn(_, let latitude, let longitude):
             return ["latitude": latitude, "longitude": longitude]
         case .report(_, let request):
-            var parameters: Parameters = [
-                "reportedUserId": request.reportedUserId,
-                "reasons": request.reasons
-            ]
+            var parameters: Parameters = ["reasons": request.reasons]
+            if let reportedUserId = request.reportedUserId {
+                parameters["reportedUserId"] = reportedUserId
+            }
             if let detail = request.detail {
                 parameters["detail"] = detail
             }

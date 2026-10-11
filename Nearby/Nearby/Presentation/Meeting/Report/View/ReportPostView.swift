@@ -25,7 +25,7 @@ final class ReportPostView: BaseView {
     
     let reasonTableView = SelfSizingTableView()
     
-    private let reasonTextView = NearbyTextView(placeholder: "신고와 관련된 상세 내용을 입력해주세요. (선택)", contentInsets: UIEdgeInsets(top: 15, left: 16, bottom: 15, right: 16))
+    private let reasonTextView: NearbyTextView
     
     private let reportButton = NearbyButton(style: .primary, title: "신고하기")
     
@@ -34,6 +34,17 @@ final class ReportPostView: BaseView {
     var onTextChanged: ((String) -> Void)?
     var onBackButtonDidTap: (() -> Void)?
     var onReportButtonDidTap: (() -> Void)?
+    
+    // MARK: - Initializer
+    
+    init(detailPlaceholder: String) {
+        reasonTextView = NearbyTextView(placeholder: detailPlaceholder, contentInsets: UIEdgeInsets(top: 15, left: 16, bottom: 15, right: 16))
+        super.init(frame: .zero)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Custom Methods
     

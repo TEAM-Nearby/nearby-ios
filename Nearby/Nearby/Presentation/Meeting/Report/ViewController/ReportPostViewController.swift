@@ -12,7 +12,7 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
 
     // MARK: - UI Components
     
-    private let reportPostView = ReportPostView()
+    private lazy var reportPostView = ReportPostView(detailPlaceholder: viewModel.detailPlaceholder)
     
     // MARK: - Properties
     

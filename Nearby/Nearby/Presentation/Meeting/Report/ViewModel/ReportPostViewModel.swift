@@ -38,6 +38,14 @@ final class ReportPostViewModel: BaseViewModelType {
     private var detailText: String = ""
     private var isSubmitting = false
     
+    var detailPlaceholder: String {
+        isNicknameRequired ? "신고할 사용자 닉네임을 적어주세요" : "신고와 관련된 상세 내용을 입력해주세요. (선택)"
+    }
+    
+    private var isNicknameRequired: Bool {
+        target.reportedUserID == nil
+    }
+    
     private var isEtcSelected: Bool {
         selectedReasons.contains(ReportReason.extra.rawValue)
     }

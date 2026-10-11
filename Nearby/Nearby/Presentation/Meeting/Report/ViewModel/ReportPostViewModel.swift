@@ -50,9 +50,13 @@ final class ReportPostViewModel: BaseViewModelType {
         selectedReasons.contains(ReportReason.extra.rawValue)
     }
     
+    private var isDetailRequired: Bool {
+        isNicknameRequired || isEtcSelected
+    }
+    
     private var isReportValid: Bool {
         guard !selectedReasons.isEmpty else { return false }
-        if isEtcSelected {
+        if isDetailRequired {
             return !detailText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
         return true
@@ -63,6 +67,7 @@ final class ReportPostViewModel: BaseViewModelType {
     init(target: MeetingReportTarget, repository: MeetingRepository) {
         self.target = target
         self.repository = repository
+        output.isDetailInputEnabled.send(isNicknameRequired)
     }
     
     // MARK: - Action
@@ -72,10 +77,10 @@ final class ReportPostViewModel: BaseViewModelType {
         case .reasonDidTap(let index):
             let changed = toggleReason(index)
             output.reloadReasons.send(changed)
-            if !isEtcSelected {
+            if !isDetailRequired {
                 detailText = ""
             }
-            output.isDetailInputEnabled.send(isEtcSelected)
+            output.isDetailInputEnabled.send(isDetailRequired)
             updateReportState()
             
         case .detailTextChanged(let text):
@@ -108,7 +113,7 @@ final class ReportPostViewModel: BaseViewModelType {
         let report = MeetingReport(
             reportedUserID: target.reportedUserID,
             reasons: selectedReasons.sorted().compactMap(ReportReason.init(rawValue:)),
-            detail: isEtcSelected ? detailText.trimmingCharacters(in: .whitespacesAndNewlines) : nil
+            detail: isDetailRequired ? detailText.trimmingCharacters(in: .whitespacesAndNewlines) : nil
         )
         Task {
             defer { isSubmitting = false }

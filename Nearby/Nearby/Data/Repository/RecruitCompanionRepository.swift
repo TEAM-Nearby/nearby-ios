@@ -5,8 +5,10 @@
 //  Created by 장지인 on 7/13/26.
 //
 
+import CoreLocation
+
 protocol RecruitCompanionRepository {
-    func searchPlaces(query: String, latitude: Double, longitude: Double) async throws -> [PlaceSearchResultItem]
+    func searchPlaces(query: String, coordinate: CLLocationCoordinate2D?) async throws -> [PlaceSearchResultItem]
     func fetchPlaceDetail(for item: PlaceSearchResultItem) async throws -> SelectedPlace
     func resetPlaceSearchSession()
     func recruitCompanion(_ submission: RecruitCompanionSubmission) async throws
@@ -30,9 +32,9 @@ final class DefaultRecruitCompanionRepository {
 // MARK: - RecruitCompanionRepository
 
 extension DefaultRecruitCompanionRepository: RecruitCompanionRepository {
-    func searchPlaces(query: String, latitude: Double, longitude: Double) async throws -> [PlaceSearchResultItem] {
+    func searchPlaces(query: String, coordinate: CLLocationCoordinate2D?) async throws -> [PlaceSearchResultItem] {
         try await withCheckedThrowingContinuation { continuation in
-            googlePlaceService.searchPlaces(query: query, latitude: latitude, longitude: longitude) { result in
+            googlePlaceService.searchPlaces(query: query, coordinate: coordinate) { result in
                 continuation.resume(with: result)
             }
         }

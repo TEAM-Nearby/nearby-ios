@@ -28,8 +28,18 @@ struct MeetingItem {
         return (!isCheckedIn && isWithinVerifiableWindow) ? .verifiable : .notYet
     }
     
-    static func makeInformation(placeName: String, meetingDate: Date?) -> String {
-        [placeName, meetingDate?.timeDisplayText]
+    static func makeInformation(placeName: String, meetingDate: Date?, timeZoneID: String? = nil) -> String {
+        let timeText = meetingDate.map { date in
+            let timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
+            let calendar = Calendar(identifier: .gregorian)
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "ko_KR")
+            formatter.timeZone = timeZone
+            formatter.dateFormat = calendar.dateComponents(in: timeZone, from: date).minute == 0 ? "a h시" : "a h시 m분"
+            return formatter.string(from: date)
+        }
+
+        return [placeName, timeText]
             .compactMap { $0 }
             .joined(separator: " · ")
     }

@@ -43,7 +43,7 @@ final class NearDiningBottomSheetView: BaseView {
         backgroundColor = .white
 
         titleLabel.do {
-            $0.setFont(.h3Sb20, text: "바르셀로나에서\n혼자 가기 편한 식당을 알고 싶다면?", textColor: .grey80)
+            $0.setFont(.h3Sb20, text: "현재 위치에서\n혼자 가기 편한 식당을 알고 싶다면?", textColor: .grey80)
             $0.numberOfLines = 2
         }
 
@@ -134,5 +134,9 @@ final class NearDiningBottomSheetView: BaseView {
         categoryChips.forEach { category, chip in
             chip.updateSelected(category == selectedCategory)
         }
+    }
+
+    func updateCityName(_ cityName: String) {
+        titleLabel.text = "\(cityName)에서\n혼자 가기 편한 식당을 알고 싶다면?"
     }
 }

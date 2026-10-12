@@ -27,7 +27,10 @@ struct MyCompanionPostsResponseDTO: Decodable {
 
 struct MyCompanionPostDTO: Decodable {
     let postId: Int
-    let cityName: String
+    let cityNameKorean: String?
+    let city: String?
+    let timeZoneID: String?
+    let currentLocalTime: String?
     let scheduledAt: String?
     let place: MyCompanionPostPlaceDTO
     let hostProfileImageUrl: String?
@@ -36,6 +39,22 @@ struct MyCompanionPostDTO: Decodable {
     let maxParticipants: Int
     let content: String
     let reviewKeywords: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case postId
+        case cityNameKorean = "cityNameKor"
+        case city
+        case timeZoneID = "timeZoneId"
+        case currentLocalTime
+        case scheduledAt
+        case place
+        case hostProfileImageUrl
+        case members
+        case currentParticipants
+        case maxParticipants
+        case content
+        case reviewKeywords
+    }
 }
 
 struct MyCompanionPostMemberDTO: Decodable {

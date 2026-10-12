@@ -53,6 +53,7 @@ final class NearbyMapView: BaseView {
 
     override func setStyle() {
         mapView.do {
+            $0.overrideUserInterfaceStyle = .light
             $0.layer.cornerRadius = cornerRadius
             $0.clipsToBounds = true
             $0.delegate = self

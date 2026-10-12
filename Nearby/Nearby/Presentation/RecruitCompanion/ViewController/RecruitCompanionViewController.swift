@@ -105,7 +105,7 @@ final class RecruitCompanionViewController: BaseViewController<RecruitCompanionV
         viewModel.output.completeButtonDidTap
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.onRoute?(.previous)
+                self?.onRoute?(.completed)
             }
             .store(in: &cancellables)
 

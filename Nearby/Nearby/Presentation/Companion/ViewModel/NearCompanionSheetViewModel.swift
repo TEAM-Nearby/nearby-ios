@@ -26,6 +26,7 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
         case placeCategoryDidSelect(CompanionPlace.Category)
         case sortOptionDidTap(SortOption)
         case companionDidSelect(Int)
+        case refresh
     }
     
     // MARK: - Output
@@ -81,6 +82,9 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
         case .companionDidSelect(let index):
             guard companions.indices.contains(index) else { return }
             output.selectedCompanion.send(companion(at: index))
+
+        case .refresh:
+            fetchPosts()
         }
     }
     

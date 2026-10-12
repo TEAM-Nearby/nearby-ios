@@ -65,7 +65,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
             ),
             placeName: "", placeAddress: "", googlePlaceId: nil,
             latitude: 0, longitude: 0,
-            scheduledAt: nil, scheduledAtText: "", openChatUrl: "",
+            scheduledAt: nil, timeZoneID: nil, scheduledAtText: "", openChatUrl: "",
             type: .host
         )
         self.repository = repository
@@ -159,7 +159,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
                     scheduleDetail: scheduleResponse,
                     preview: previewResponse
                 )
-                selectedDate = displayData.scheduledAt?.toDate() ?? Date()
+                selectedDate = NearbyDateParser.parseLocal(displayData.scheduledAt, timeZoneID: displayData.timeZoneID) ?? Date()
                 output.displayData.send(makeDisplayData())
             } catch is CancellationError {
                 return

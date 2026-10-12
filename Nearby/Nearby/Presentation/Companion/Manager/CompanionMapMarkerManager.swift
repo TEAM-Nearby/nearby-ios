@@ -224,6 +224,7 @@ final class CompanionMapMarkerManager {
         let degree = heading.trueHeading >= 0 ? heading.trueHeading : heading.magneticHeading
         guard degree >= 0 else { return }
 
-        currentLocationDirectionMarker?.rotation = degree
+        let correctedDegree = (degree - 90 + 360).truncatingRemainder(dividingBy: 360)
+        currentLocationDirectionMarker?.rotation = correctedDegree
     }
 }

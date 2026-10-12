@@ -144,7 +144,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     profileImageURL: detail.hostProfileImageURL,
                     name: detail.hostNickname,
                     gender: detail.hostGender.genderDisplayText,
-                    information: MeetingItem.makeInformation(placeName: detail.placeName, meetingDate: meetingDate)
+                    information: MeetingItem.makeInformation(placeName: detail.placeName, meetingDate: meetingDate, timeZoneID: detail.timeZoneID)
                 )
                 output.displayData.send(data)
                 

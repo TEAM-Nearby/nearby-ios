@@ -5,7 +5,6 @@
 //  Created by h2e on 10/12/26.
 //
 
-import Foundation
 import Alamofire
 
 enum PushEndpointTarget {

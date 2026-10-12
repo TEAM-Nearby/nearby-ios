@@ -30,6 +30,14 @@ final class MeetingTabCoordinator {
 // MARK: - Coordinator
 
 extension MeetingTabCoordinator: Coordinator {
+    private func makeChildNotificationCoordinator() -> NotificationCoordinator {
+        let notificationCoordinator = diContainer.makeNotificationCoordinator(navigationController: navigationController)
+        notificationCoordinator.parentCoordinator = self
+        childCoordinators.removeAll { $0 is NotificationCoordinator }
+        addChildCoordinator(notificationCoordinator)
+        return notificationCoordinator
+    }
+    
     func start() {
         let viewController = diContainer.meeting.makeMeetingViewController { [weak self] route in
             self?.handle(route)
@@ -39,14 +47,6 @@ extension MeetingTabCoordinator: Coordinator {
     
     func finish() {
         parentCoordinator?.removeChildCoordinator(self)
-    }
-    
-    private func makeChildNotificationCoordinator() -> NotificationCoordinator {
-        let notificationCoordinator = diContainer.makeNotificationCoordinator(navigationController: navigationController)
-        notificationCoordinator.parentCoordinator = self
-        childCoordinators.removeAll { $0 is NotificationCoordinator }
-        addChildCoordinator(notificationCoordinator)
-        return notificationCoordinator
     }
     
     func showMeetingProgress(for item: MeetingItem) {
@@ -120,18 +120,18 @@ extension MeetingTabCoordinator: Coordinator {
     
     // MARK: - Alert
 
+    private func presentAlert(title: String? = nil, message: String? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        navigationController.present(alert, animated: true)
+    }
+    
     func showCheckInSuccessAlert() {
         presentAlert(title: "만남이 인증되었습니다.")
     }
 
     func showErrorAlert(message: String) {
         presentAlert(message: message)
-    }
-
-    private func presentAlert(title: String? = nil, message: String? = nil) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
-        navigationController.present(alert, animated: true)
     }
 }
 

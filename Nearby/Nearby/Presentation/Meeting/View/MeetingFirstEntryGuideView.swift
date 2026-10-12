@@ -98,9 +98,9 @@ final class MeetingFirstEntryGuideView: BaseView {
         }
 
         closeButton.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(20)
-            $0.trailing.equalToSuperview().inset(20)
-            $0.size.equalTo(30)
+            $0.top.equalTo(safeAreaLayoutGuide).offset(2)
+            $0.trailing.equalToSuperview().inset(8)
+            $0.size.equalTo(44)
         }
 
         sampleCardStackView.snp.makeConstraints {

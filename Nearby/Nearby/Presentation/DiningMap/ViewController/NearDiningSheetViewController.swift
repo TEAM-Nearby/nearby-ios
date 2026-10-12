@@ -86,6 +86,10 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
         viewModel.action(.locationDidUpdate(coordinate))
     }
 
+    func updateCityName(_ cityName: String) {
+        nearDiningBottomSheetView.updateCityName(cityName)
+    }
+
     func restaurant(placeId: Int) -> NearDiningCellItem? {
         viewModel.restaurant(placeId: placeId)
     }

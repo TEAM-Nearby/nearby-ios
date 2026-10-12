@@ -17,6 +17,7 @@ enum NearbyMapViewFactory {
         options.camera = camera
         
         let mapView = GMSMapView(options: options)
+        mapView.overrideUserInterfaceStyle = .light
         mapView.isMyLocationEnabled = false
         mapView.settings.myLocationButton = false
         return mapView

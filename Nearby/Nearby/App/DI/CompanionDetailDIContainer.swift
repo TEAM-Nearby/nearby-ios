@@ -18,11 +18,7 @@ final class CompanionDetailDIContainer {
 
     // MARK: - Repository
 
-#if DEBUG
-    private lazy var companionDetailRepository: CompanionDetailRepository = MockCompanionDetailRepository()
-#else
     private lazy var companionDetailRepository: CompanionDetailRepository = DefaultCompanionDetailRepository(service: companionDetailService)
-#endif
 
     // MARK: - Initializer
 

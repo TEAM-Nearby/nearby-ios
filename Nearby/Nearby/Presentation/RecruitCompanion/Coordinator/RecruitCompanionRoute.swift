@@ -7,4 +7,5 @@
 
 enum RecruitCompanionRoute {
     case previous
+    case completed
 }

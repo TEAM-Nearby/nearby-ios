@@ -10,11 +10,11 @@ import UIKit
 
 final class MeetingProgressViewController: BaseViewController<MeetingProgressViewModel> {
 
-    // MARK: - UI Component
+    // MARK: - UI Components
     
     private let meetingProgressView = MeetingProgressView()
     
-    // MARK: - Property
+    // MARK: - Properties
     
     var onRoute: ((MeetingRoute) -> Void)?
     
@@ -67,8 +67,8 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
         
         viewModel.output.showReport
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.onRoute?(.report)
+            .sink { [weak self] target in
+                self?.onRoute?(.report(target))
             }
             .store(in: &cancellables)
         

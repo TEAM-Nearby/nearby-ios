@@ -24,7 +24,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let displayData = PassthroughSubject<MeetingProgressDisplayData, Never>()
         let step = CurrentValueSubject<MeetingStep, Never>(.match)
         let verifyButtonState = PassthroughSubject<MeetingVerifyButtonState, Never>()
-        let showReport = PassthroughSubject<Void, Never>()
+        let showReport = PassthroughSubject<MeetingReportTarget, Never>()
         let showReview = PassthroughSubject<ReviewRoute, Never>()
         let showVerificationWaitingToast = PassthroughSubject<Void, Never>()
         let errorMessage = PassthroughSubject<String, Never>()
@@ -50,6 +50,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
     private var meetingDate: Date?
     private var postType: PostType = .scheduled
     private var hasVerifiedCompanion: Bool?
+    private var currentUserRole: NearbyUserType?
     private var cancellables = Set<AnyCancellable>()
     
     private var currentStep: MeetingStep {
@@ -111,7 +112,9 @@ final class MeetingProgressViewModel: BaseViewModelType {
             }
             
         case .reportButtonDidTap:
-            output.showReport.send(())
+            guard let meetingId, let currentUserRole else { return }
+            let reportedUserID = currentUserRole == .participant ? item.hostUserID : nil
+            output.showReport.send(MeetingReportTarget(meetingID: meetingId, reportedUserID: reportedUserID))
         }
     }
     
@@ -137,6 +140,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     )
                 }
                 
+                currentUserRole = detail.currentUserRole
                 meetingDate = detail.meetingAt
                 postType = detail.meetingTimeType
 
@@ -144,7 +148,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     profileImageURL: detail.hostProfileImageURL,
                     name: detail.hostNickname,
                     gender: detail.hostGender.genderDisplayText,
-                    information: MeetingItem.makeInformation(placeName: detail.placeName, meetingDate: meetingDate)
+                    information: MeetingItem.makeInformation(placeName: detail.placeName, meetingDate: meetingDate, timeZoneID: detail.timeZoneID)
                 )
                 output.displayData.send(data)
                 

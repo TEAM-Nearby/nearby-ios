@@ -6,6 +6,7 @@
 //
 
 import Combine
+import CoreLocation
 import UIKit
 
 final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetViewModel> {
@@ -76,5 +77,9 @@ final class DiningInfoSheetViewController: BaseViewController<DiningInfoSheetVie
         if item.placeId != nil {
             initialLoadingTracker.begin(in: self)
         }
+    }
+
+    func updateLocation(_ coordinate: CLLocationCoordinate2D) {
+        viewModel.action(.locationDidUpdate(coordinate))
     }
 }

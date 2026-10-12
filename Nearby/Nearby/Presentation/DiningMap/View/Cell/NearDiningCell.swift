@@ -33,6 +33,7 @@ final class NearDiningCell: UICollectionViewCell {
     private let ratingLabel = UILabel()
     private let reviewCountLabel = UILabel()
     private let bookmarkButton = UIButton()
+    private let imageCollectionBackgroundButton = UIButton()
     private lazy var imageCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
     private var restaurantImages: [UIImage?] = []
     private var restaurantImageURLs: [URL?] = []
@@ -114,6 +115,7 @@ final class NearDiningCell: UICollectionViewCell {
         
         imageCollectionView.do {
             $0.backgroundColor = .clear
+            $0.backgroundView = imageCollectionBackgroundButton
             $0.dataSource = self
             $0.delegate = self
             $0.showsHorizontalScrollIndicator = false
@@ -121,6 +123,8 @@ final class NearDiningCell: UICollectionViewCell {
             $0.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
             $0.register(DiningImageCell.self)
         }
+
+        imageCollectionBackgroundButton.addTarget(self, action: #selector(imageCollectionBackgroundButtonDidTap), for: .touchUpInside)
         
         dividerView.do {
             $0.backgroundColor = .grey20
@@ -231,6 +235,11 @@ final class NearDiningCell: UICollectionViewCell {
     @objc
     private func bookmarkButtonDidTap() {
         onBookmarkTap?()
+    }
+
+    @objc
+    private func imageCollectionBackgroundButtonDidTap() {
+        onImageTap?()
     }
 }
 

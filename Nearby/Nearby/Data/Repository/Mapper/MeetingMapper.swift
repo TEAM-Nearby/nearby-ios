@@ -19,7 +19,10 @@ enum MeetingMapper {
                 profileImageURL: dto.companion.profileImageUrl
             ),
             placeName: dto.placeName,
-            meetingAt: dto.meetingAt?.toDate(),
+            city: dto.city,
+            timeZoneID: dto.timeZoneID,
+            currentLocalTime: NearbyDateParser.parseInstant(dto.currentLocalTime),
+            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: dto.timeZoneID),
             meetingTimeType: dto.meetingTimeType,
             isCheckedIn: dto.isCheckedIn
         )
@@ -33,10 +36,36 @@ enum MeetingMapper {
             hostGender: dto.hostGender,
             hostProfileImageURL: dto.hostProfileImageUrl,
             placeName: dto.placeName,
-            meetingAt: dto.meetingAt?.toDate(),
+            city: dto.city,
+            timeZoneID: dto.timeZoneID,
+            currentLocalTime: NearbyDateParser.parseInstant(dto.currentLocalTime),
+            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: dto.timeZoneID),
             meetingTimeType: dto.meetingTimeType,
             isCurrentUserCheckedIn: dto.currentUserCheckedIn,
             meetingStatus: dto.meetingStatus
         )
+    }
+    
+    static func map(_ report: MeetingReport) -> CreateMeetingReportRequestDTO {
+        CreateMeetingReportRequestDTO(
+            reportedUserId: report.reportedUserID,
+            reasons: report.reasons.map(map),
+            detail: report.detail
+        )
+    }
+    
+    static func map(_ reason: ReportReason) -> String {
+        switch reason {
+        case .inappropriate:
+            return "BAD_ATTITUDE"
+        case .noShow:
+            return "NO_SHOW"
+        case .dangerous:
+            return "SAFETY_THREAT"
+        case .moneyRequest:
+            return "MONEY_REQUEST"
+        case .extra:
+            return "ETC"
+        }
     }
 }

@@ -5,6 +5,8 @@
 //  Created by 장지인 on 7/13/26.
 //
 
+import CoreLocation
+
 protocol RecruitCompanionRepository {
     func searchPlaces(query: String, latitude: Double, longitude: Double) async throws -> [PlaceSearchResultItem]
     func recruitCompanion(_ submission: RecruitCompanionSubmission) async throws

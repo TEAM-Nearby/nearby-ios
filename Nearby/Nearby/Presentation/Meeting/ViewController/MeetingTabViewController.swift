@@ -10,11 +10,11 @@ import UIKit
 
 final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
 
-    // MARK: - UI Component
+    // MARK: - UI Components
 
     private let meetingTabView = MeetingTabView()
     
-    // MARK: - Property
+    // MARK: - Properties
     
     var onRoute: ((MeetingRoute) -> Void)?
     private let initialLoadingTracker = InitialLoadingTracker()
@@ -85,7 +85,7 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
             .store(in: &cancellables)
     }
     
-    // MARK: - Method
+    // MARK: - Methods
 
     private func setCollectionView() {
         meetingTabView.collectionView.register(

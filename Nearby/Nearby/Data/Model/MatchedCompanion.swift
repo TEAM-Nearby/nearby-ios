@@ -3,6 +3,8 @@
 //  Nearby
 //
 
+import Foundation
+
 struct MatchedCompanion {
     let matchID: Int
     let hostNickname: String
@@ -37,6 +39,9 @@ struct MatchedCompanionPreview {
         let postID: Int
         let content: String
         let placeName: String
+        let city: String?
+        let timeZoneID: String?
+        let currentLocalTime: Date?
         let meetingTimeType: MatchedCompanionTimeType
         let meetingAt: String?
     }
@@ -45,6 +50,9 @@ struct MatchedCompanionPreview {
 struct MatchedCompanionScheduleDetail {
     let matchID: Int
     let matchStatus: MatchedCompanionStatus
+    let city: String?
+    let timeZoneID: String?
+    let currentLocalTime: Date?
     let schedule: Schedule?
     let openChatURL: String?
     let userNickname: String?

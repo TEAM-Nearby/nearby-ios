@@ -28,7 +28,7 @@ final class ReviewPostViewModel: BaseViewModelType {
         let reloadFirstTags = PassthroughSubject<[Int], Never>()
         let reloadSecondTags = PassthroughSubject<[Int], Never>()
         let isCompletionEnabled = CurrentValueSubject<Bool, Never>(false)
-        let showReport = PassthroughSubject<Void, Never>()
+        let showReport = PassthroughSubject<MeetingReportTarget, Never>()
         let reviewSaved = PassthroughSubject<Void, Never>()
         let companionCompleted = PassthroughSubject<Void, Never>()
     }
@@ -113,7 +113,7 @@ final class ReviewPostViewModel: BaseViewModelType {
             updateCompletionState()
             
         case .reportButtonDidTap:
-            output.showReport.send(())
+            output.showReport.send(MeetingReportTarget(meetingID: reviewItem.meetingId, reportedUserID: reviewItem.revieweeUserId))
             
         case .completionButtonDidTap:
             guard output.isCompletionEnabled.value, !isSubmitting else { return }

@@ -45,19 +45,49 @@ struct MatchedCompanionPreviewResponseDTO: Decodable {
         let postId: Int
         let content: String
         let placeName: String
+        let city: String?
+        let timeZoneID: String?
+        let currentLocalTime: String?
         let meetingTimeType: MeetingTimeType
         let meetingAt: String?
+
+        enum CodingKeys: String, CodingKey {
+            case postId
+            case content
+            case placeName
+            case city
+            case timeZoneID = "timeZoneId"
+            case currentLocalTime
+            case meetingTimeType
+            case meetingAt
+        }
     }
 }
 
 struct MatchMyScheduleResponseDTO: Decodable {
     let matchId: Int
     let matchStatus: MatchStatus
+    let city: String?
+    let timeZoneID: String?
+    let currentLocalTime: String?
     let schedule: Schedule?
     let openChatUrl: String?
     let userNickname: String?
     let meetingTimeType: MeetingTimeType
     let currentUserRole: UserRole
+
+    enum CodingKeys: String, CodingKey {
+        case matchId
+        case matchStatus
+        case city
+        case timeZoneID = "timeZoneId"
+        case currentLocalTime
+        case schedule
+        case openChatUrl
+        case userNickname
+        case meetingTimeType
+        case currentUserRole
+    }
 
     enum UserRole: String, Decodable {
         case host = "HOST"

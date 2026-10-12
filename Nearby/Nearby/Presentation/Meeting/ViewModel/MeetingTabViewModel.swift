@@ -95,10 +95,11 @@ final class MeetingTabViewModel: BaseViewModelType {
             id: meeting.meetingID ?? meeting.matchID,
             meetingId: meeting.meetingID,
             matchId: meeting.matchID,
+            hostUserID: meeting.companion.userID,
             name: meeting.companion.nickname,
             gender: meeting.companion.gender.genderDisplayText,
             profileImageUrl: meeting.companion.profileImageURL,
-            information: MeetingItem.makeInformation(placeName: meeting.placeName, meetingDate: meeting.meetingAt),
+            information: MeetingItem.makeInformation(placeName: meeting.placeName, meetingDate: meeting.meetingAt, timeZoneID: meeting.timeZoneID),
             meetingDate: meeting.meetingAt,
             postType: meeting.meetingTimeType,
             isCheckedIn: meeting.isCheckedIn

@@ -6,7 +6,7 @@
 //
 
 import Combine
-import UIKit
+import Foundation
 
 final class ReportPostViewModel: BaseViewModelType {
     
@@ -32,19 +32,42 @@ final class ReportPostViewModel: BaseViewModelType {
     let output: Output = Output()
     let reasons = ReportReason.allCases
     
+    private let target: MeetingReportTarget
+    private let repository: MeetingRepository
     private(set) var selectedReasons = Set<Int>()
     private var detailText: String = ""
+    private var isSubmitting = false
+    
+    var detailPlaceholder: String {
+        isNicknameRequired ? "신고할 사용자의 닉네임과 상세 내용을 입력해주세요" : "신고와 관련된 상세 내용을 입력해주세요. (선택)"
+    }
+    
+    private var isNicknameRequired: Bool {
+        target.reportedUserID == nil
+    }
     
     private var isEtcSelected: Bool {
         selectedReasons.contains(ReportReason.extra.rawValue)
     }
     
+    private var isDetailRequired: Bool {
+        isNicknameRequired || isEtcSelected
+    }
+    
     private var isReportValid: Bool {
         guard !selectedReasons.isEmpty else { return false }
-        if isEtcSelected {
+        if isDetailRequired {
             return !detailText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
         return true
+    }
+    
+    // MARK: - Initializer
+    
+    init(target: MeetingReportTarget, repository: MeetingRepository) {
+        self.target = target
+        self.repository = repository
+        output.isDetailInputEnabled.send(isNicknameRequired)
     }
     
     // MARK: - Action
@@ -54,10 +77,10 @@ final class ReportPostViewModel: BaseViewModelType {
         case .reasonDidTap(let index):
             let changed = toggleReason(index)
             output.reloadReasons.send(changed)
-            if !isEtcSelected {
+            if !isDetailRequired {
                 detailText = ""
             }
-            output.isDetailInputEnabled.send(isEtcSelected)
+            output.isDetailInputEnabled.send(isDetailRequired)
             updateReportState()
             
         case .detailTextChanged(let text):
@@ -65,9 +88,8 @@ final class ReportPostViewModel: BaseViewModelType {
             updateReportState()
             
         case .reportButtonDidTap:
-            guard isReportValid else { return }
-            // TODO: - 신고 API 연동 (selectedReasons, detailText)
-            output.submitSuccess.send(())
+            guard isReportValid, !isSubmitting else { return }
+            submitReport()
         }
     }
     
@@ -84,5 +106,23 @@ final class ReportPostViewModel: BaseViewModelType {
     
     private func updateReportState() {
         output.isReportButtonEnabled.send(isReportValid)
+    }
+    
+    private func submitReport() {
+        isSubmitting = true
+        let report = MeetingReport(
+            reportedUserID: target.reportedUserID,
+            reasons: selectedReasons.sorted().compactMap(ReportReason.init(rawValue:)),
+            detail: isDetailRequired ? detailText.trimmingCharacters(in: .whitespacesAndNewlines) : nil
+        )
+        Task {
+            defer { isSubmitting = false }
+            do {
+                try await repository.report(meetingId: target.meetingID, report: report)
+                output.submitSuccess.send(())
+            } catch {
+                AppLogger.error(error)
+            }
+        }
     }
 }

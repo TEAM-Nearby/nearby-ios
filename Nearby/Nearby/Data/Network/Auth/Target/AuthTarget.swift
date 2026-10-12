@@ -9,6 +9,7 @@ import Alamofire
 
 enum AuthTarget {
     case kakaoLogin(KakaoLoginRequestDTO)
+    case appleLogin(AppleLoginRequestDTO)
     case refresh(TokenRefreshRequestDTO)
     case logout(LogoutRequestDTO)
     case sendVerificationCode(PhoneVerificationRequestDTO)
@@ -23,6 +24,9 @@ extension AuthTarget: BaseTargetType {
         switch self {
         case .kakaoLogin:
             return "/api/login/kakao"
+        
+        case .appleLogin:
+            return "/api/login/apple"
 
         case .refresh:
             return "/api/auth/refresh"
@@ -47,6 +51,7 @@ extension AuthTarget: BaseTargetType {
     var method: HTTPMethod {
         switch self {
         case .kakaoLogin,
+             .appleLogin,
              .refresh,
              .logout,
              .sendVerificationCode,
@@ -63,6 +68,9 @@ extension AuthTarget: BaseTargetType {
         switch self {
         case .kakaoLogin(let request):
             return ["idToken": request.idToken, "nonce": request.nonce]
+        
+        case .appleLogin(let request):
+            return ["idToken": request.idToken, "nonce": request.nonce, "authorizationCode": request.authorizationCode]
 
         case .refresh(let request):
             return ["refreshToken": request.refreshToken]
@@ -104,7 +112,7 @@ extension AuthTarget: BaseTargetType {
 
     var requiresAuth: Bool {
         switch self {
-        case .kakaoLogin, .refresh:
+        case .kakaoLogin, .appleLogin, .refresh:
             return false
 
         case .logout,

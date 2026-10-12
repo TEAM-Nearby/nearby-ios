@@ -11,11 +11,12 @@ protocol MeetingRepository {
     func fetchMeetingList() async throws -> [Meeting]
     func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetail
     func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws
+    func report(meetingId: Int, report: MeetingReport) async throws
 }
 
 final class DefaultMeetingRepository {
     
-    // MARK: - Property
+    // MARK: - Properties
     
     private let meetingService: MeetingService
     
@@ -40,5 +41,9 @@ extension DefaultMeetingRepository: MeetingRepository {
     
     func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws {
         _ = try await meetingService.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
+    }
+    
+    func report(meetingId: Int, report: MeetingReport) async throws {
+        _ = try await meetingService.report(meetingId: meetingId, request: MeetingMapper.map(report))
     }
 }

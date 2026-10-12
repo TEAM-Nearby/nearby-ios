@@ -17,6 +17,16 @@ struct KakaoLoginResponseDTO: Decodable {
     let onboardingStatus: OnboardingStatus
 }
 
+struct AppleLoginResponseDTO: Decodable {
+    let accessToken: String
+    let refreshToken: String
+    let tokenType: String
+    let accessTokenExpiresIn: Int
+    let refreshTokenExpiresIn: Int
+    let userId: Int
+    let onboardingStatus: OnboardingStatus
+}
+
 struct TokenRefreshResponseDTO: Decodable {
     let accessToken: String
     let refreshToken: String

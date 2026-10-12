@@ -10,15 +10,15 @@ import UIKit
 
 final class ReportCompletionViewController: BaseViewController<EmptyViewModel> {
 
-    // MARK: - UI Component
+    // MARK: - UI Components
     
     private let reportCompletionView = ReportCompletionView()
     
-    // MARK: - Property
+    // MARK: - Properties
     
     var onRoute: ((MeetingRoute) -> Void)?
     
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
     
     override func loadView() {
         view = reportCompletionView

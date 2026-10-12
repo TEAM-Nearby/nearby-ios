@@ -40,7 +40,7 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
         }
 
         viewModel.output.loginDidFail = { error in
-            print("카카오 로그인 실패:", error)
+            AppLogger.error(error, message: "로그인 실패")
         }
     }
 

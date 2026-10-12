@@ -48,7 +48,7 @@ final class CompanionViewModel: BaseViewModelType {
     // MARK: - Route
 
     enum Route {
-        case recruitCompanion
+        case recruitCompanion(CLLocationCoordinate2D?)
         case companionDetail(CompanionDetailState)
     }
 
@@ -61,6 +61,7 @@ final class CompanionViewModel: BaseViewModelType {
         case bottomSheetDidChange(BottomSheetState)
         case specificSheetDidClose
         case currentLocationButtonDidTap
+        case locationDidUpdate(CLLocationCoordinate2D)
         case reset
         case recruitCompanionButtonDidTap
         case companionDidSelect(CompanionDetailState)
@@ -86,6 +87,7 @@ final class CompanionViewModel: BaseViewModelType {
     private let myPageRepository: MyPageRepository
     private let initialNickname: String?
     private var nicknameTask: Task<Void, Never>?
+    private var currentCoordinate: CLLocationCoordinate2D?
 
     // MARK: - Initializer
 
@@ -127,10 +129,12 @@ final class CompanionViewModel: BaseViewModelType {
             updateBottomSheet(BottomSheetState(content: .nearbyCompanionList), selectedPlaceId: nil)
         case .currentLocationButtonDidTap:
             output.event.send(.moveToCurrentLocation)
+        case .locationDidUpdate(let coordinate):
+            currentCoordinate = coordinate
         case .reset:
             reset()
         case .recruitCompanionButtonDidTap:
-            route?(.recruitCompanion)
+            route?(.recruitCompanion(currentCoordinate))
         case .companionDidSelect(let state):
             route?(.companionDetail(state))
         }
@@ -210,8 +214,16 @@ final class CompanionViewModel: BaseViewModelType {
 }
 
 private extension CompanionMapConfiguration {
+    static var developmentReferenceCoordinate: CLLocationCoordinate2D? {
+#if DEBUG
+        CLLocationCoordinate2D(latitude: 48.8566, longitude: 2.3522)
+#else
+        nil
+#endif
+    }
+
     static let mock = CompanionMapConfiguration(
-        referenceCoordinate: CLLocationCoordinate2D(latitude: 41.3879706, longitude: 2.1671360),
+        referenceCoordinate: developmentReferenceCoordinate,
         initialZoom: 16.2,
         smallMarkerMaximumZoom: 14.0,
         largeMarkerMinimumZoom: 15.6,

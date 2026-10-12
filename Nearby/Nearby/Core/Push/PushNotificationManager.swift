@@ -42,14 +42,6 @@ final class PushNotificationManager: NSObject {
         }
     }
 
-    func stop() async {
-        do {
-            try await repository.unregister()
-        } catch {
-            AppLogger.error(error)
-        }
-    }
-
     private func requestAuthorization() async {
         do {
             try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])

@@ -67,7 +67,7 @@ final class MeetingFirstEntryGuideView: BaseView {
         }
 
         verificationDescriptionLabel.do {
-            $0.setFont(.b3M14, text: "* 만남 장소에 도착해서\n만남 인증하기 버튼을 눌러주세요", textColor: .grey20)
+            $0.setFont(.b3M14, text: "* 만남 장소에 도착해서\n만남 인증하기 버튼을 눌러주세요", textColor: .white)
             $0.numberOfLines = 0
         }
     }

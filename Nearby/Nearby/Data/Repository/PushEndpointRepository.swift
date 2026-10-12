@@ -17,12 +17,25 @@ final class DefaultPushEndpointRepository {
     private let platform = "IOS"
     private let service: PushEndpointService
     private let installationIDStorage: InstallationIDStorage
+    private var lastTask: Task<Void, Error>?
 
     // MARK: - Initializer
 
     init(service: PushEndpointService, installationIDStorage: InstallationIDStorage) {
         self.service = service
         self.installationIDStorage = installationIDStorage
+    }
+
+    // MARK: - Method
+
+    private func enqueue(_ operation: @escaping () async throws -> Void) async throws {
+        let previousTask = lastTask
+        let task = Task {
+            _ = await previousTask?.result
+            try await operation()
+        }
+        lastTask = task
+        try await task.value
     }
 }
 
@@ -35,10 +48,15 @@ extension DefaultPushEndpointRepository: PushEndpointRepository {
             token: token,
             platform: platform
         )
-        _ = try await service.register(request: request)
+        try await enqueue { [service] in
+            _ = try await service.register(request: request)
+        }
     }
 
     func unregister() async throws {
-        try await service.unregister(installationId: installationIDStorage.installationID)
+        let installationID = installationIDStorage.installationID
+        try await enqueue { [service] in
+            try await service.unregister(installationId: installationID)
+        }
     }
 }

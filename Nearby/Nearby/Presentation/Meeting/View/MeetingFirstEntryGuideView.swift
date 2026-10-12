@@ -68,11 +68,11 @@ final class MeetingFirstEntryGuideView: BaseView {
         }
 
         verificationBulletLabel.do {
-            $0.setFont(.b3M14, text: "*", textColor: .white)
+            $0.setFont(.b3M14, text: "*", textColor: .grey10)
         }
 
         verificationDescriptionLabel.do {
-            $0.setFont(.b3M14, text: "만남 장소에 도착해서\n만남 인증하기 버튼을 눌러주세요", textColor: .white)
+            $0.setFont(.b3M14, text: "만남 장소에 도착해서\n만남 인증하기 버튼을 눌러주세요", textColor: .grey10)
             $0.numberOfLines = 0
         }
     }
@@ -145,7 +145,7 @@ final class MeetingFirstEntryGuideView: BaseView {
 
         verificationDescriptionLabel.snp.makeConstraints {
             $0.top.equalTo(verificationBulletLabel)
-            $0.leading.equalTo(verificationGuideLabel).offset(11)
+            $0.leading.equalTo(verificationBulletLabel.snp.trailing).offset(4)
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
         }
     }

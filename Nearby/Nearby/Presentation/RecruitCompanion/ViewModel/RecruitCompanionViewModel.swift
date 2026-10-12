@@ -250,11 +250,16 @@ final class RecruitCompanionViewModel: BaseViewModelType {
 
         placeSearchTask = Task { @MainActor [weak self] in
             guard let self else { return }
+            guard let searchCoordinate else {
+                output.placeSuggestions.send([])
+                return
+            }
 
             do {
                 let suggestions = try await repository.searchPlaces(
                     query: query,
-                    coordinate: searchCoordinate
+                    latitude: searchCoordinate.latitude,
+                    longitude: searchCoordinate.longitude
                 )
                 guard !Task.isCancelled, latestPlaceSearchQuery == query else { return }
 

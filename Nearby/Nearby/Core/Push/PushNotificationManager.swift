@@ -5,6 +5,7 @@
 //  Created by h2e on 10/12/26.
 //
 
+import Combine
 import UIKit
 import UserNotifications
 
@@ -16,6 +17,7 @@ final class PushNotificationManager: NSObject {
 
     private let repository: PushEndpointRepository
     private let tokenStorage: TokenStorage
+    private var apnsTokenCancellable: AnyCancellable?
 
     private var hasStoredSession: Bool {
         guard let accessToken = tokenStorage.accessToken else { return false }
@@ -30,6 +32,15 @@ final class PushNotificationManager: NSObject {
     }
 
     // MARK: - Methods
+
+    private func bindAPNsToken() {
+        guard apnsTokenCancellable == nil else { return }
+        apnsTokenCancellable = NotificationCenter.default.publisher(for: .apnsTokenDidReceive)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                Task { await self?.registerCurrentToken() }
+            }
+    }
 
     private func requestAuthorization() async {
         do {
@@ -60,11 +71,11 @@ final class PushNotificationManager: NSObject {
     func start() {
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
+        bindAPNsToken()
 
         Task {
             await requestAuthorization()
             UIApplication.shared.registerForRemoteNotifications()
-            await registerCurrentToken()
         }
     }
 }
@@ -89,4 +100,8 @@ extension PushNotificationManager: UNUserNotificationCenterDelegate {
     ) async -> UNNotificationPresentationOptions {
         [.banner, .list, .sound]
     }
+}
+
+extension Notification.Name {
+    static let apnsTokenDidReceive = Notification.Name("apnsTokenDidReceive")
 }

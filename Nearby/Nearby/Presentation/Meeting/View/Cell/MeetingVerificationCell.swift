@@ -44,7 +44,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
 
     override func prepareForReuse() {
         super.prepareForReuse()

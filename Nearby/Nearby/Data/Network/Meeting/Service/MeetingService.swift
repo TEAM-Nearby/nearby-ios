@@ -9,11 +9,12 @@ protocol MeetingService {
     func fetchMeetingList() async throws -> MeetingListResponseDTO
     func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetailResponseDTO
     func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws -> MeetingCheckInResponseDTO
+    func report(meetingId: Int, request: CreateMeetingReportRequestDTO) async throws -> CreateMeetingReportResponseDTO
 }
 
 final class DefaultMeetingService {
 
-    // MARK: - Property
+    // MARK: - Properties
 
     private let networkProvider: any NetworkProviding
 
@@ -39,6 +40,13 @@ extension DefaultMeetingService: MeetingService {
         try await networkProvider.request(
             MeetingTarget.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude),
             responseType: MeetingCheckInResponseDTO.self
+        )
+    }
+    
+    func report(meetingId: Int, request: CreateMeetingReportRequestDTO) async throws -> CreateMeetingReportResponseDTO {
+        try await networkProvider.request(
+            MeetingTarget.report(meetingId: meetingId, request: request),
+            responseType: CreateMeetingReportResponseDTO.self
         )
     }
 }

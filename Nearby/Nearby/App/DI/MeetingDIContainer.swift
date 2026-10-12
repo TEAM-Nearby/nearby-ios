@@ -68,8 +68,8 @@ final class MeetingDIContainer {
         return viewController
     }
 
-    func makeReportPostViewController(onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
-        let viewController = ReportPostViewController(viewModel: ReportPostViewModel())
+    func makeReportPostViewController(target: MeetingReportTarget, onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
+        let viewController = ReportPostViewController(viewModel: ReportPostViewModel(target: target, repository: meetingRepository))
         viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController

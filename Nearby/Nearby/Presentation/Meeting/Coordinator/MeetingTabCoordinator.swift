@@ -80,9 +80,9 @@ extension MeetingTabCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showReportPost() {
+    func showReportPost(target: MeetingReportTarget) {
         reportReturnViewController = navigationController.topViewController
-        let viewController = diContainer.meeting.makeReportPostViewController { [weak self] route in
+        let viewController = diContainer.meeting.makeReportPostViewController(target: target) { [weak self] route in
             self?.handle(route)
         }
         navigationController.pushViewController(viewController, animated: true)
@@ -146,8 +146,8 @@ private extension MeetingTabCoordinator {
             showMeetingProgress(for: item)
         case .previous:
             navigationController.popViewController(animated: true)
-        case .report:
-            showReportPost()
+        case .report(let target):
+            showReportPost(target: target)
         case .reportCompletion:
             showReportComplete()
         case .dismissReport:

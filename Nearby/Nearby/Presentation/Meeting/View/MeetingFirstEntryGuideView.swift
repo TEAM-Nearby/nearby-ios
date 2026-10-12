@@ -43,7 +43,7 @@ final class MeetingFirstEntryGuideView: BaseView {
         }
 
         progressGuideLabel.do {
-            $0.setFont(.b3Sb14, text: "클릭하면 동행 진행 상황을 볼 수 있어요.", textColor: .white)
+            $0.setFont(.b2Sb16, text: "클릭하면 동행 진행 상황을 볼 수 있어요.", textColor: .white)
             $0.setHighlight(target: "동행 진행 상황", color: .primary30)
         }
 

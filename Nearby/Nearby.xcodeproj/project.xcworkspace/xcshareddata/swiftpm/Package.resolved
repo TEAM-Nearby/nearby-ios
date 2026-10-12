@@ -20,15 +20,6 @@
       }
     },
     {
-      "identity" : "ios-places-sdk",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/googlemaps/ios-places-sdk",
-      "state" : {
-        "revision" : "a6ac7dfeba7df305dca7ff89dfc485c41c35c4dc",
-        "version" : "10.15.0"
-      }
-    },
-    {
       "identity" : "kakao-ios-sdk",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kakao/kakao-ios-sdk",

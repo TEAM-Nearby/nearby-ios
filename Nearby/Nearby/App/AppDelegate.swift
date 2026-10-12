@@ -8,7 +8,6 @@
 import UIKit
 
 import GoogleMaps
-import GooglePlaces
 import KakaoSDKCommon
 
 @main
@@ -19,7 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             let googleMapAPIKey = try AppConfig.googleMapsAPIKey()
             GMSServices.provideAPIKey(googleMapAPIKey)
-            GMSPlacesClient.provideAPIKey(googleMapAPIKey)
         } catch {
             AppLogger.error(error)
             fatalError("Google Maps API key is missing. Set GOOGLE_MAPS_API_KEY before creating GMSMapView.")

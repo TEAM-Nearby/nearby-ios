@@ -17,8 +17,6 @@
 		7712132D2FF43A5B00D688FD /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132C2FF43A5B00D688FD /* KakaoSDKUser */; };
 		771213302FF43B3700D688FD /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 7712132F2FF43B3700D688FD /* GoogleMaps */; };
 		943A529E30054E1A00EC2A7E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 943A529D30054E1A00EC2A7E /* Lottie */; };
-		943A52A130054E2E00EC2A7E /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 943A52A030054E2E00EC2A7E /* GooglePlaces */; };
-		943A52A330054E2E00EC2A7E /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 943A52A230054E2E00EC2A7E /* GooglePlacesSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,8 +63,6 @@
 				77120FCF2FF4348E00D688FD /* Then in Frameworks */,
 				771213292FF43A5B00D688FD /* KakaoSDKCommon in Frameworks */,
 				771213272FF43A5B00D688FD /* KakaoSDKAuth in Frameworks */,
-				943A52A130054E2E00EC2A7E /* GooglePlaces in Frameworks */,
-				943A52A330054E2E00EC2A7E /* GooglePlacesSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,8 +117,6 @@
 				7712132C2FF43A5B00D688FD /* KakaoSDKUser */,
 				7712132F2FF43B3700D688FD /* GoogleMaps */,
 				943A529D30054E1A00EC2A7E /* Lottie */,
-				943A52A030054E2E00EC2A7E /* GooglePlaces */,
-				943A52A230054E2E00EC2A7E /* GooglePlacesSwift */,
 			);
 			productName = Nearby;
 			productReference = 771209D52FF423C700D688FD /* Nearby.app */;
@@ -160,7 +154,6 @@
 				771213252FF43A5B00D688FD /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 				7712132E2FF43B3700D688FD /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
 				943A529C30054E1A00EC2A7E /* XCRemoteSwiftPackageReference "lottie-ios" */,
-				943A529F30054E2E00EC2A7E /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 771209D62FF423C700D688FD /* Products */;
@@ -503,14 +496,6 @@
 				minimumVersion = 4.6.1;
 			};
 		};
-		943A529F30054E2E00EC2A7E /* XCRemoteSwiftPackageReference "ios-places-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googlemaps/ios-places-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.15.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -563,16 +548,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 943A529C30054E1A00EC2A7E /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
-		};
-		943A52A030054E2E00EC2A7E /* GooglePlaces */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 943A529F30054E2E00EC2A7E /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
-			productName = GooglePlaces;
-		};
-		943A52A230054E2E00EC2A7E /* GooglePlacesSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 943A529F30054E2E00EC2A7E /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
-			productName = GooglePlacesSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

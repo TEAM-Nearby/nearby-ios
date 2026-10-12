@@ -10,7 +10,7 @@ import UIKit
 
 final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
     
     private let reviewPostView = ReviewPostView()
     
@@ -114,7 +114,7 @@ final class ReviewPostViewController: BaseViewController<ReviewPostViewModel> {
         viewModel.action(.viewDidLoad)
     }
     
-    // MARK: - Methods
+    // MARK: - Method
     
     private func reloadItems(_ collectionView: UICollectionView?, _ indexes: [Int]) {
         guard let collectionView, !indexes.isEmpty else { return }

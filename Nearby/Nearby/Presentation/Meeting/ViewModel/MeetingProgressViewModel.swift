@@ -27,7 +27,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
         let showReport = PassthroughSubject<MeetingReportTarget, Never>()
         let showReview = PassthroughSubject<ReviewRoute, Never>()
         let showVerificationWaitingToast = PassthroughSubject<Void, Never>()
-        let errorMessage = PassthroughSubject<String, Never>()
         let checkInSucceeded = PassthroughSubject<Void, Never>()
     }
     
@@ -92,10 +91,7 @@ final class MeetingProgressViewModel: BaseViewModelType {
             switch currentStep {
             case .verification:
                 guard isVerifiable else { return }
-                guard let restaurantCoordinate else {
-                    output.errorMessage.send("식당 위치를 확인할 수 없어요.")
-                    return
-                }
+                guard let restaurantCoordinate else { return }
                 checkIn(
                     latitude: restaurantCoordinate.latitude,
                     longitude: restaurantCoordinate.longitude
@@ -165,7 +161,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 startTimer()
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
             }
         }
     }
@@ -196,7 +191,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 output.checkInSucceeded.send(())
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
             }
         }
     }
@@ -222,7 +216,6 @@ final class MeetingProgressViewModel: BaseViewModelType {
                 }
             } catch {
                 AppLogger.error(error)
-                output.errorMessage.send(error.localizedDescription)
             }
         }
     }

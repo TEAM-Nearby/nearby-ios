@@ -13,7 +13,7 @@ import Then
 
 final class MeetingVerificationCell: UICollectionViewCell {
 
-    // MARK: - Properties
+    // MARK: - Property
 
     var onMeetingProgressDidTap: (() -> Void)?
 
@@ -44,7 +44,7 @@ final class MeetingVerificationCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
 
     override func prepareForReuse() {
         super.prepareForReuse()

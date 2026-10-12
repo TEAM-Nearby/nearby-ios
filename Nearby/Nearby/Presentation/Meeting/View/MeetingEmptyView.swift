@@ -13,7 +13,7 @@ import Then
 
 final class MeetingEmptyView: BaseView {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onSearchButtonDidTap: (() -> Void)?
     

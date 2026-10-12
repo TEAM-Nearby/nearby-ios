@@ -10,15 +10,15 @@ import UIKit
 
 final class HostReviewListViewController: BaseViewController<HostReviewListViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
     
     private let hostReviewListView = HostReviewListView()
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onRoute: ((MeetingRoute) -> Void)?
     
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
     
     override func loadView() {
         view = hostReviewListView

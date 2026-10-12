@@ -25,14 +25,16 @@ final class DefaultAuthRepository {
     private let appleOAuthProvider: AppleOAuthProvider
     private let authService: AuthService
     private let tokenStorage: TokenStorage
+    private let pushEndpointRepository: PushEndpointRepository
 
     // MARK: - Initializer
 
-    init(kakaoOAuthProvider: KakaoOAuthProvider, appleOAuthProvider: AppleOAuthProvider, authService: AuthService, tokenStorage: TokenStorage) {
+    init(kakaoOAuthProvider: KakaoOAuthProvider, appleOAuthProvider: AppleOAuthProvider, authService: AuthService, tokenStorage: TokenStorage, pushEndpointRepository: PushEndpointRepository) {
         self.kakaoOAuthProvider = kakaoOAuthProvider
         self.appleOAuthProvider = appleOAuthProvider
         self.authService = authService
         self.tokenStorage = tokenStorage
+        self.pushEndpointRepository = pushEndpointRepository
     }
 }
 
@@ -84,6 +86,12 @@ extension DefaultAuthRepository: AuthRepository {
     func logout() async throws {
         guard let refreshToken = tokenStorage.refreshToken, !refreshToken.isEmpty else {
             throw NetworkError.unauthorized(code: "MISSING_REFRESH_TOKEN", message: "로그인 정보가 없습니다.")
+        }
+
+        do {
+            try await pushEndpointRepository.unregister()
+        } catch {
+            AppLogger.error(error, message: "푸시 수신 기기 해제 실패")
         }
 
         let response = try await authService.logout(

@@ -13,7 +13,7 @@ protocol ReviewService {
 
 final class DefaultReviewService {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     private let networkProvider: any NetworkProviding
     

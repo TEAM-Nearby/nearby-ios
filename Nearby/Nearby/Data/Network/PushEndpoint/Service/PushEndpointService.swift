@@ -12,7 +12,7 @@ protocol PushEndpointService {
 
 final class DefaultPushEndpointService {
 
-    // MARK: - Properties
+    // MARK: - Property
 
     private let networkProvider: any NetworkProviding
 

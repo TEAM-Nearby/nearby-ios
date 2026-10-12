@@ -173,6 +173,7 @@ private extension AppCoordinator {
     
     func showMainTab() {
         childCoordinators.removeAll()
+        diContainer.pushNotificationManager.start()
         
         let mainTabCoordinator = diContainer.makeMainTabCoordinator()
         

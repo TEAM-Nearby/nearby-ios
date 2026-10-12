@@ -45,4 +45,27 @@ enum MeetingMapper {
             meetingStatus: dto.meetingStatus
         )
     }
+    
+    static func map(_ report: MeetingReport) -> CreateMeetingReportRequestDTO {
+        CreateMeetingReportRequestDTO(
+            reportedUserId: report.reportedUserID,
+            reasons: report.reasons.map(map),
+            detail: report.detail
+        )
+    }
+    
+    static func map(_ reason: ReportReason) -> String {
+        switch reason {
+        case .inappropriate:
+            return "BAD_ATTITUDE"
+        case .noShow:
+            return "NO_SHOW"
+        case .dangerous:
+            return "SAFETY_THREAT"
+        case .moneyRequest:
+            return "MONEY_REQUEST"
+        case .extra:
+            return "ETC"
+        }
+    }
 }

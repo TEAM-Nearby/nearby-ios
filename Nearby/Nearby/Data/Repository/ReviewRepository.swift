@@ -12,8 +12,13 @@ protocol ReviewRepository {
 }
 
 final class DefaultReviewRepository {
+    
+    // MARK: - Properties
+    
     private let service: ReviewService
-
+    
+    // MARK: - Initializer
+    
     init(service: ReviewService) {
         self.service = service
     }

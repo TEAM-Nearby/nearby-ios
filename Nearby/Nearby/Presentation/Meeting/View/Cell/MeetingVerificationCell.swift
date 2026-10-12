@@ -117,12 +117,15 @@ final class MeetingVerificationCell: UICollectionViewCell {
     }
 
     func configure(with item: MeetingItem) {
+        configure(with: item, cellType: item.cellType)
+    }
+    
+    func configure(with item: MeetingItem, cellType: MeetingVerificationCellType) {
         profileView.configure(imageUrl: item.profileImageUrl, name: item.name, gender: item.gender, information: item.information)
         
-        let type = item.cellType
-        dividerView.isHidden = !type.showsVerifyView
-        verifyStackView.isHidden = !type.showsVerifyView
-        verifyButton.isEnabled = (type == .verifiable)
+        dividerView.isHidden = !cellType.showsVerifyView
+        verifyStackView.isHidden = !cellType.showsVerifyView
+        verifyButton.isEnabled = (cellType == .verifiable)
     }
 
     // MARK: - Action

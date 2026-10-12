@@ -10,11 +10,11 @@ import UIKit
 
 final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
     
     private lazy var reportPostView = ReportPostView(detailPlaceholder: viewModel.detailPlaceholder)
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onRoute: ((MeetingRoute) -> Void)?
     
@@ -83,7 +83,7 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
             .store(in: &cancellables)
     }
     
-    // MARK: - Methods
+    // MARK: - Method
     
     private func setTableView() {
         reportPostView.reasonTableView.register(ReportReasonCell.self, forCellReuseIdentifier: ReportReasonCell.identifier)

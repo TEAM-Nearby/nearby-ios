@@ -65,7 +65,7 @@ final class ReviewPostView: BaseView {
     
     private let completionButton = NearbyButton(style: .primary, title: "")
     
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
     
     override func layoutSubviews() {
         super.layoutSubviews()

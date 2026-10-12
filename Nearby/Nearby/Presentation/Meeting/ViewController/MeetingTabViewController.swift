@@ -10,7 +10,7 @@ import UIKit
 
 final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let meetingTabView = MeetingTabView()
     
@@ -85,7 +85,7 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
             .store(in: &cancellables)
     }
     
-    // MARK: - Methods
+    // MARK: - Method
 
     private func setCollectionView() {
         meetingTabView.collectionView.register(

@@ -76,6 +76,9 @@ final class PushNotificationManager: NSObject {
         Task {
             await requestAuthorization()
             UIApplication.shared.registerForRemoteNotifications()
+            if Messaging.messaging().apnsToken != nil {
+                await registerCurrentToken()
+            }
         }
     }
 }

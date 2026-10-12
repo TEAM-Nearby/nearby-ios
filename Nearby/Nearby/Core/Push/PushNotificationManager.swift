@@ -31,17 +31,6 @@ final class PushNotificationManager: NSObject {
 
     // MARK: - Methods
 
-    func start() {
-        UNUserNotificationCenter.current().delegate = self
-        Messaging.messaging().delegate = self
-
-        Task {
-            await requestAuthorization()
-            UIApplication.shared.registerForRemoteNotifications()
-            await registerCurrentToken()
-        }
-    }
-
     private func requestAuthorization() async {
         do {
             try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
@@ -65,6 +54,17 @@ final class PushNotificationManager: NSObject {
             try await repository.register(token: token)
         } catch {
             AppLogger.error(error)
+        }
+    }
+
+    func start() {
+        UNUserNotificationCenter.current().delegate = self
+        Messaging.messaging().delegate = self
+
+        Task {
+            await requestAuthorization()
+            UIApplication.shared.registerForRemoteNotifications()
+            await registerCurrentToken()
         }
     }
 }

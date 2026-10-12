@@ -129,10 +129,6 @@ extension MeetingTabCoordinator: Coordinator {
     func showCheckInSuccessAlert() {
         presentAlert(title: "만남이 인증되었습니다.")
     }
-
-    func showErrorAlert(message: String) {
-        presentAlert(message: message)
-    }
 }
 
 private extension MeetingTabCoordinator {
@@ -164,8 +160,6 @@ private extension MeetingTabCoordinator {
             finishCompanionReview()
         case .checkInSuccess:
             showCheckInSuccessAlert()
-        case .error(let message):
-            showErrorAlert(message: message)
         }
     }
 }

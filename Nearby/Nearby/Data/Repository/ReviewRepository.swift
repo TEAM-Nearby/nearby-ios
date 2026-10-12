@@ -13,7 +13,7 @@ protocol ReviewRepository {
 
 final class DefaultReviewRepository {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     private let service: ReviewService
     

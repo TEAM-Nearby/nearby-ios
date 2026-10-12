@@ -13,15 +13,20 @@ final class AppDIContainer {
 
     private lazy var tokenStorage: TokenStorage = KeychainTokenStorage()
     private lazy var appIntroductionStorage: AppIntroductionStorage = UserDefaultsAppIntroductionStorage()
+    private lazy var installationIDStorage: InstallationIDStorage = UserDefaultsInstallationIDStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
     private lazy var meetingEventCenter = MeetingEventCenter()
 
     private lazy var authService: AuthService = DefaultAuthService(networkProvider: networkProvider)
-    private lazy var authRepository: AuthRepository = DefaultAuthRepository(kakaoOAuthProvider: DefaultKakaoOAuthProvider(), appleOAuthProvider: DefaultAppleOAuthProvider(), authService: authService, tokenStorage: tokenStorage)
+    private lazy var authRepository: AuthRepository = DefaultAuthRepository(kakaoOAuthProvider: DefaultKakaoOAuthProvider(), appleOAuthProvider: DefaultAppleOAuthProvider(), authService: authService, tokenStorage: tokenStorage, pushEndpointRepository: pushEndpointRepository)
     private lazy var myPageService: MyPageService = DefaultMyPageService(networkProvider: networkProvider)
     private lazy var myPageRepository: MyPageRepository = DefaultMyPageRepository(service: myPageService)
     private lazy var matchingService: MatchedCompanionListService = DefaultMatchedCompanionListService(networkProvider: networkProvider)
     private lazy var matchingRepository: MatchedCompanionListRepository = DefaultMatchedCompanionListRepository(service: matchingService)
+    private lazy var pushEndpointService: PushEndpointService = DefaultPushEndpointService(networkProvider: networkProvider)
+    private lazy var pushEndpointRepository: PushEndpointRepository = DefaultPushEndpointRepository(service: pushEndpointService, installationIDStorage: installationIDStorage)
+
+    lazy var pushNotificationManager = PushNotificationManager(repository: pushEndpointRepository, tokenStorage: tokenStorage)
 
     lazy var auth = AuthDIContainer(authRepository: authRepository)
     lazy var companion = CompanionDIContainer(networkProvider: networkProvider, myPageRepository: myPageRepository)

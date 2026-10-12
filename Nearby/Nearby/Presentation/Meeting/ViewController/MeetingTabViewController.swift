@@ -10,7 +10,7 @@ import UIKit
 
 final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
 
     private let meetingTabView = MeetingTabView()
     
@@ -76,16 +76,9 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
                 }
             }
             .store(in: &cancellables)
-
-        viewModel.output.errorMessage
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] message in
-                self?.onRoute?(.error(message))
-            }
-            .store(in: &cancellables)
     }
     
-    // MARK: - Methods
+    // MARK: - Method
 
     private func setCollectionView() {
         meetingTabView.collectionView.register(

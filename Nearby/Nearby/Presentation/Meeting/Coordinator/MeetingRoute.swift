@@ -18,5 +18,4 @@ enum MeetingRoute {
     case hostReview(ReviewItem, Bool)
     case reviewCompletion
     case checkInSuccess
-    case error(String)
 }

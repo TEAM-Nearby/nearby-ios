@@ -13,7 +13,7 @@ import Then
 
 final class ReviewProfileView: BaseView {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onNextButtonDidTap: (() -> Void)?
     
@@ -90,7 +90,7 @@ final class ReviewProfileView: BaseView {
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
     }
     
-    // MARK: - Methods
+    // MARK: - Method
     
     func configure(imageUrl: String?, name: String, information: String, isReviewed: Bool) {
         if let imageUrl, let url = URL(string: imageUrl) {

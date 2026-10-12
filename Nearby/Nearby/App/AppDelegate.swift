@@ -7,6 +7,8 @@
 
 import UIKit
 
+import FirebaseCore
+import FirebaseMessaging
 import GoogleMaps
 import KakaoSDKCommon
 
@@ -15,6 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        FirebaseApp.configure()
+        
         do {
             let googleMapAPIKey = try AppConfig.googleMapsAPIKey()
             GMSServices.provideAPIKey(googleMapAPIKey)
@@ -32,6 +36,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         return true
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+        NotificationCenter.default.post(name: .apnsTokenDidReceive, object: nil)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        AppLogger.error(error)
     }
 
     // MARK: UISceneSession Lifecycle

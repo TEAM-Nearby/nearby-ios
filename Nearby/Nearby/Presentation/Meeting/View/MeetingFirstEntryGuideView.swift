@@ -23,6 +23,7 @@ final class MeetingFirstEntryGuideView: BaseView {
     private let verificationSampleCell = MeetingVerificationCell(frame: .zero)
     private let verificationArrowImageView = UIImageView()
     private let verificationGuideLabel = UILabel()
+    private let verificationBulletLabel = UILabel()
     private let verificationDescriptionLabel = UILabel()
 
     // MARK: - Custom Methods
@@ -61,13 +62,17 @@ final class MeetingFirstEntryGuideView: BaseView {
         }
 
         verificationGuideLabel.do {
-            $0.setFont(.b1Sb18, text: "만남 시간 1시간 전부터\n만남 인증하기 버튼이 활성화돼요!", textColor: .white)
+            $0.setFont(.b2Sb16, text: "만남 시간 1시간 전부터\n만남 인증하기 버튼이 활성화돼요!", textColor: .white)
             $0.setHighlight(target: "만남 인증하기 버튼", color: .primary30)
             $0.numberOfLines = 0
         }
 
+        verificationBulletLabel.do {
+            $0.setFont(.b3M14, text: "*", textColor: .white)
+        }
+
         verificationDescriptionLabel.do {
-            $0.setFont(.b3M14, text: "* 만남 장소에 도착해서\n만남 인증하기 버튼을 눌러주세요", textColor: .white)
+            $0.setFont(.b3M14, text: "만남 장소에 도착해서\n만남 인증하기 버튼을 눌러주세요", textColor: .white)
             $0.numberOfLines = 0
         }
     }
@@ -81,6 +86,7 @@ final class MeetingFirstEntryGuideView: BaseView {
             sampleCardStackView,
             verificationArrowImageView,
             verificationGuideLabel,
+            verificationBulletLabel,
             verificationDescriptionLabel
         )
         sampleCardStackView.addArrangedSubviews(progressSampleCell, verificationSampleCell)
@@ -109,7 +115,7 @@ final class MeetingFirstEntryGuideView: BaseView {
         }
 
         progressArrowImageView.snp.makeConstraints {
-            $0.bottom.equalTo(sampleCardStackView.snp.top).offset(-12)
+            $0.bottom.equalTo(sampleCardStackView.snp.top).offset(-18)
             $0.leading.equalToSuperview().inset(40)
             $0.size.equalTo(24)
         }
@@ -121,20 +127,25 @@ final class MeetingFirstEntryGuideView: BaseView {
         }
 
         verificationArrowImageView.snp.makeConstraints {
-            $0.top.equalTo(sampleCardStackView.snp.bottom).offset(20)
+            $0.top.equalTo(sampleCardStackView.snp.bottom).offset(18)
             $0.leading.equalToSuperview().inset(40)
             $0.size.equalTo(24)
         }
 
         verificationGuideLabel.snp.makeConstraints {
-            $0.top.equalTo(verificationArrowImageView)
+            $0.top.equalTo(sampleCardStackView.snp.bottom).offset(21)
             $0.leading.equalTo(verificationArrowImageView.snp.trailing).offset(8)
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
         }
 
-        verificationDescriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(verificationGuideLabel.snp.bottom).offset(12)
+        verificationBulletLabel.snp.makeConstraints {
+            $0.top.equalTo(verificationGuideLabel.snp.bottom).offset(8)
             $0.leading.equalTo(verificationGuideLabel)
+        }
+
+        verificationDescriptionLabel.snp.makeConstraints {
+            $0.top.equalTo(verificationBulletLabel)
+            $0.leading.equalTo(verificationGuideLabel).offset(11)
             $0.trailing.lessThanOrEqualToSuperview().inset(20)
         }
     }

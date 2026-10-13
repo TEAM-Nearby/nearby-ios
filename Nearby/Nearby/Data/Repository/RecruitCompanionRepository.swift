@@ -8,9 +8,7 @@
 import CoreLocation
 
 protocol RecruitCompanionRepository {
-    func searchPlaces(query: String, coordinate: CLLocationCoordinate2D?) async throws -> [PlaceSearchResultItem]
-    func fetchPlaceDetail(for item: PlaceSearchResultItem) async throws -> SelectedPlace
-    func resetPlaceSearchSession()
+    func searchPlaces(query: String, latitude: Double, longitude: Double) async throws -> [PlaceSearchResultItem]
     func recruitCompanion(_ submission: RecruitCompanionSubmission) async throws
 }
 
@@ -18,13 +16,11 @@ final class DefaultRecruitCompanionRepository {
 
     // MARK: - Properties
 
-    private let googlePlaceService: GooglePlaceService
     private let recruitCompanionService: RecruitCompanionService
 
     // MARK: - Initializer
 
-    init(googlePlaceService: GooglePlaceService, recruitCompanionService: RecruitCompanionService) {
-        self.googlePlaceService = googlePlaceService
+    init(recruitCompanionService: RecruitCompanionService) {
         self.recruitCompanionService = recruitCompanionService
     }
 }
@@ -32,26 +28,28 @@ final class DefaultRecruitCompanionRepository {
 // MARK: - RecruitCompanionRepository
 
 extension DefaultRecruitCompanionRepository: RecruitCompanionRepository {
-    func searchPlaces(query: String, coordinate: CLLocationCoordinate2D?) async throws -> [PlaceSearchResultItem] {
-        try await withCheckedThrowingContinuation { continuation in
-            googlePlaceService.searchPlaces(query: query, coordinate: coordinate) { result in
-                continuation.resume(with: result)
-            }
+    func searchPlaces(query: String, latitude: Double, longitude: Double) async throws -> [PlaceSearchResultItem] {
+        let response = try await recruitCompanionService.searchPlaces(
+            query: PlaceSearchQuery(
+                query: query,
+                latitude: latitude,
+                longitude: longitude,
+                radiusMeters: 20_000,
+                languageCode: "ko",
+                pageSize: 20
+            )
+        )
+
+        return response.places.map {
+            PlaceSearchResultItem(
+                placeID: $0.googlePlaceId,
+                name: $0.name,
+                address: $0.address,
+                latitude: $0.latitude,
+                longitude: $0.longitude,
+                category: $0.category.flatMap(PlaceCategory.init(rawValue:)) ?? .other
+            )
         }
-    }
-
-    func fetchPlaceDetail(for item: PlaceSearchResultItem) async throws -> SelectedPlace {
-        defer { googlePlaceService.refreshSessionToken() }
-
-        return try await withCheckedThrowingContinuation { continuation in
-            googlePlaceService.fetchPlaceDetail(for: item) { result in
-                continuation.resume(with: result)
-            }
-        }
-    }
-
-    func resetPlaceSearchSession() {
-        googlePlaceService.refreshSessionToken()
     }
 
     func recruitCompanion(_ submission: RecruitCompanionSubmission) async throws {

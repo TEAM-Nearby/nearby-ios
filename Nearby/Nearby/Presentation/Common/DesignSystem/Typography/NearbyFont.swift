@@ -10,6 +10,7 @@ import UIKit
 enum NearbyFont {
     case h1Sb24
     case h1B24
+    case h1B20
     case h2M22
     case h3Sb20
     case h3M20
@@ -31,6 +32,7 @@ enum NearbyFont {
         switch self {
         case .h1Sb24: return FontProperty(fontType: .semibold, size: 24)
         case .h1B24: return FontProperty(fontType: .bold, size: 24)
+        case .h1B20: return FontProperty(fontType: .bold, size: 20)
         case .h2M22:  return FontProperty(fontType: .medium, size: 22)
         case .h3Sb20: return FontProperty(fontType: .semibold, size: 20)
         case .h3M20:  return FontProperty(fontType: .medium, size: 20)

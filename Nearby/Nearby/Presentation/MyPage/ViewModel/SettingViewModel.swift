@@ -7,7 +7,8 @@
 
 import Foundation
 
-final class SettingViewModel: BaseViewModelType {
+final class SettingViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
 
     // MARK: - Input
 
@@ -61,27 +62,25 @@ private extension SettingViewModel {
     func logout() {
         guard logoutTask == nil else { return }
 
-        output.isLogoutLoading?(true)
-        logoutTask = Task { [weak self] in
-            guard let self else { return }
-            defer {
-                logoutTask = nil
-                output.isLogoutLoading?(false)
-            }
-
-            do {
+        logoutTask = requestRunner.run(
+            onStart: { [self] in
+                output.isLogoutLoading?(true)
+            },
+            operation: { [self] in
                 try await authRepository.logout()
-                guard !Task.isCancelled else { return }
+            },
+            onSuccess: { [self] _ in
                 output.logoutButtonDidTap?()
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else { return }
-
+            },
+            onFailure: { [self] error in
                 let message = (error as? LocalizedError)?.errorDescription
                     ?? "로그아웃에 실패했습니다. 다시 시도해 주세요."
                 output.logoutErrorMessage?(message)
+            },
+            onFinish: { [self] in
+                logoutTask = nil
+                output.isLogoutLoading?(false)
             }
-        }
+        )
     }
 }

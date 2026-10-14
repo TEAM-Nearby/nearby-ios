@@ -8,7 +8,8 @@
 import Combine
 import UIKit
 
-final class HostRequestReceiveViewModel: BaseViewModelType {
+final class HostRequestReceiveViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
 
     // MARK: - Input
 
@@ -126,18 +127,26 @@ final class HostRequestReceiveViewModel: BaseViewModelType {
 
     private func allowApplication() {
         guard !isRequesting else { return }
-        isRequesting = true
-        Task {
-            defer { isRequesting = false }
-            do {
-                let response = try await repository.allowApplication(applicationId: applicationId)
+
+        requestRunner.run(
+            onStart: { [self] in
+                isRequesting = true
+            },
+            operation: { [self] in
+                try await repository.allowApplication(applicationId: applicationId)
+            },
+            onSuccess: { [self] response in
                 matchId = response.matchId
                 hasAllowed = true
                 output.showHostAllowView.send(())
-            } catch {
+            },
+            onFailure: { [self] error in
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)
+            },
+            onFinish: { [self] in
+                isRequesting = false
             }
-        }
+        )
     }
 }

@@ -8,7 +8,8 @@
 import Combine
 import UIKit
 
-final class MeetingProgressViewModel: BaseViewModelType {
+final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
     
     // MARK: - Input
     
@@ -187,25 +188,33 @@ final class MeetingProgressViewModel: BaseViewModelType {
 
     private func checkIn(latitude: Double, longitude: Double) {
         guard let meetingId else { return }
-        Task {
-            do {
+
+        requestRunner.run(
+            policy: .meetingVerification,
+            operation: { [self] in
                 try await repository.checkIn(meetingId: meetingId, latitude: latitude, longitude: longitude)
+            },
+            onSuccess: { [self] _ in
                 output.step.send(.completion)
                 updateVerifyButtonState()
                 refreshCompanionVerification()
                 output.checkInSucceeded.send(())
-            } catch {
+            },
+            onFailure: { [self] error in
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)
             }
-        }
+        )
     }
     
     private func fetchReviewTargets() {
         guard let meetingId else { return }
-        Task {
-            do {
-                let reviewTargets = try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
+
+        requestRunner.run(
+            operation: { [self] in
+                try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
+            },
+            onSuccess: { [self] reviewTargets in
                 switch reviewTargets.currentUserRole {
                 case .host:
                     guard !reviewTargets.reviewees.isEmpty else {
@@ -220,11 +229,12 @@ final class MeetingProgressViewModel: BaseViewModelType {
                     }
                     output.showReview.send(.participantReview(ReviewItem(reviewee: reviewee, meetingId: meetingId)))
                 }
-            } catch {
+            },
+            onFailure: { [self] error in
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)
             }
-        }
+        )
     }
 
     private func showVerificationWaiting() {

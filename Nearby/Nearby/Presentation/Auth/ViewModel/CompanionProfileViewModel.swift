@@ -7,7 +7,8 @@
 
 import Foundation
 
-final class CompanionProfileViewModel: BaseViewModelType {
+final class CompanionProfileViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
     
     // MARK: - Input
     
@@ -143,17 +144,12 @@ private extension CompanionProfileViewModel {
             return
         }
         
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            
-            output.isLoading?(true)
-            
-            defer {
-                output.isLoading?(false)
-            }
-            
-            do {
-                let response = try await authRepository.completeCompanionProfile(
+        requestRunner.run(
+            onStart: { [self] in
+                output.isLoading?(true)
+            },
+            operation: { [self] in
+                try await authRepository.completeCompanionProfile(
                     nickname: trimmedNickname,
                     gender: selectedGender,
                     intro: trimmedIntroduction.isEmpty ? nil : trimmedIntroduction,
@@ -162,17 +158,22 @@ private extension CompanionProfileViewModel {
                     imageFileName: profileImageFileName,
                     imageContentType: profileImageContentType
                 )
-                
+            },
+            onSuccess: { [self] response in
                 guard response.onboardingStatus == .completed else {
                     output.onboardingDidFail?("온보딩 완료 상태를 확인하지 못했습니다.")
                     return
                 }
-                
+
                 output.onboardingDidComplete?()
-            } catch {
+            },
+            onFailure: { [self] error in
                 handleOnboardingError(error)
+            },
+            onFinish: { [self] in
+                output.isLoading?(false)
             }
-        }
+        )
     }
     
     func validateNickname(_ nickname: String) -> Bool {

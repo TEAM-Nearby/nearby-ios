@@ -9,7 +9,8 @@ import Combine
 import CoreLocation
 import Foundation
 
-final class RecruitCompanionViewModel: BaseViewModelType {
+final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
 
     // MARK: - Input
 
@@ -289,23 +290,25 @@ final class RecruitCompanionViewModel: BaseViewModelType {
         guard !isSubmitting else { return }
         guard let submission = makeSubmission() else { return }
 
-        isSubmitting = true
-        publishState()
-
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-
-            do {
+        requestRunner.run(
+            onStart: { [self] in
+                isSubmitting = true
+                publishState()
+            },
+            operation: { [self] in
                 try await repository.recruitCompanion(submission)
-                isSubmitting = false
-                publishState()
+            },
+            onSuccess: { [self] _ in
                 output.completeButtonDidTap.send(())
-            } catch {
+            },
+            onFailure: { error in
+                AppLogger.error(error, message: "동행 모집글 작성에 실패했습니다.")
+            },
+            onFinish: { [self] in
                 isSubmitting = false
                 publishState()
-                AppLogger.error(error, message: "동행 모집글 작성에 실패했습니다.")
             }
-        }
+        )
     }
 
     private func makeSubmission() -> RecruitCompanionSubmission? {

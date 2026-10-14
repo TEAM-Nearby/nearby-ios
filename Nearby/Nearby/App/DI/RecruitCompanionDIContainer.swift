@@ -20,7 +20,7 @@ final class RecruitCompanionDIContainer {
 
     // MARK: - Repository
 
-    private lazy var recruitCompanionRepository: RecruitCompanionRepository = DefaultRecruitCompanionRepository(googlePlaceService: GooglePlaceService(), recruitCompanionService: recruitCompanionService)
+    private lazy var recruitCompanionRepository: RecruitCompanionRepository = DefaultRecruitCompanionRepository(recruitCompanionService: recruitCompanionService)
 
     // MARK: - Initializer
 

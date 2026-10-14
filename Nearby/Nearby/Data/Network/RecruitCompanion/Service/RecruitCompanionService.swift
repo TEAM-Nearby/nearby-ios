@@ -6,6 +6,7 @@
 //
 
 protocol RecruitCompanionService {
+    func searchPlaces(query: PlaceSearchQuery) async throws -> PlaceSearchResponseDTO
     func recruitCompanion(request: RecruitCompanionRequestDTO) async throws -> RecruitCompanionResponseDTO
 }
 
@@ -25,6 +26,13 @@ final class DefaultRecruitCompanionService {
 // MARK: - RecruitCompanionService
 
 extension DefaultRecruitCompanionService: RecruitCompanionService {
+    func searchPlaces(query: PlaceSearchQuery) async throws -> PlaceSearchResponseDTO {
+        try await networkProvider.request(
+            RecruitCompanionTarget.searchPlaces(query),
+            responseType: PlaceSearchResponseDTO.self
+        )
+    }
+
     func recruitCompanion(request: RecruitCompanionRequestDTO) async throws -> RecruitCompanionResponseDTO {
         try await networkProvider.request(
             RecruitCompanionTarget.recruitCompanion(request),

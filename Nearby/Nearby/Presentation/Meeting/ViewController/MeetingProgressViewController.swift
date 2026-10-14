@@ -10,11 +10,11 @@ import UIKit
 
 final class MeetingProgressViewController: BaseViewController<MeetingProgressViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
     
     private let meetingProgressView = MeetingProgressView()
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onRoute: ((MeetingRoute) -> Void)?
     
@@ -95,13 +95,6 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.meetingProgressView.showVerificationWaitingToast()
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.errorMessage
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] message in
-                self?.onRoute?(.error(message))
             }
             .store(in: &cancellables)
         

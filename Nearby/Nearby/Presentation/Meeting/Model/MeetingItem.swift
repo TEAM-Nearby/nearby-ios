@@ -20,6 +20,20 @@ struct MeetingItem {
     let postType: PostType
     let isCheckedIn: Bool
     
+    static let sample = MeetingItem(
+        id: 0,
+        meetingId: nil,
+        matchId: 0,
+        hostUserID: 0,
+        name: "니어바이",
+        gender: "여성",
+        profileImageUrl: nil,
+        information: "시우다드 콘달 · 오후 4시 30분",
+        meetingDate: nil,
+        postType: .scheduled,
+        isCheckedIn: false
+    )
+    
     var isWithinVerifiableWindow: Bool {
         postType.isVerifiable(meetingAt: meetingDate)
     }

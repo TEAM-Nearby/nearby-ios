@@ -60,10 +60,6 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     // MARK: - Methods
     
-    func item(at index: Int) -> MeetingItem {
-        items[index]
-    }
-    
     private func fetchMeetings() {
         fetchTask?.cancel()
         fetchTask = Task {
@@ -114,5 +110,9 @@ final class MeetingTabViewModel: BaseViewModelType {
                 output.items.send(items.filter { $0.matchId != matchId })
             }
             .store(in: &cancellables)
+    }
+    
+    func item(at index: Int) -> MeetingItem {
+        items[index]
     }
 }

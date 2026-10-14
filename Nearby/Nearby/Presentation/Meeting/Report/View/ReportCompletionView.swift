@@ -12,7 +12,7 @@ import Then
 
 final class ReportCompletionView: BaseView {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onConfirmButtonDidTap: (() -> Void)?
     

@@ -10,21 +10,21 @@ import UIKit
 
 final class ReportCompletionViewController: BaseViewController<EmptyViewModel> {
 
-    // MARK: - UI Components
+    // MARK: - UI Component
     
     private let reportCompletionView = ReportCompletionView()
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onRoute: ((MeetingRoute) -> Void)?
     
-    // MARK: - Life Cycles
+    // MARK: - Life Cycle
     
     override func loadView() {
         view = reportCompletionView
     }
     
-    // MARK: - Custom Methods
+    // MARK: - Custom Method
     
     override func setAddTarget() {
         reportCompletionView.onConfirmButtonDidTap = { [weak self] in

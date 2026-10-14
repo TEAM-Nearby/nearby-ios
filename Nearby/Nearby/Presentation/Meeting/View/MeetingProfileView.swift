@@ -13,7 +13,7 @@ import Then
 
 final class MeetingProfileView: BaseView {
     
-    // MARK: - Properties
+    // MARK: - Property
     
     var onNextButtonDidTap: (() -> Void)?
     

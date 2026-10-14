@@ -111,9 +111,8 @@ final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
     private let searchCoordinate: CLLocationCoordinate2D?
     private var draft = RecruitCompanionDraft()
     private var placeSearchWorkItem: DispatchWorkItem?
-    private var placeDetailTask: Task<Void, Never>?
+    private var placeSearchTask: Task<Void, Never>?
     private var latestPlaceSearchQuery = ""
-    private var latestPlaceDetailID = ""
     private var isSubmitting = false
 
     private var isCompleteButtonEnabled: Bool {
@@ -164,8 +163,7 @@ final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
             publishState()
 
         case .placeQueryDidChange(let query):
-            placeDetailTask?.cancel()
-            latestPlaceDetailID = ""
+            placeSearchTask?.cancel()
             draft.placeQuery = query
             draft.selectedPlaceID = nil
             draft.selectedPlaceAddress = ""
@@ -189,9 +187,16 @@ final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
 
         case .placeDidSelect(let item):
             placeSearchWorkItem?.cancel()
-            placeDetailTask?.cancel()
+            placeSearchTask?.cancel()
             latestPlaceSearchQuery = ""
-            fetchPlaceDetail(for: item)
+            draft.placeQuery = item.name
+            draft.selectedPlaceID = item.placeID
+            draft.selectedPlaceAddress = item.address
+            draft.selectedPlaceLatitude = item.latitude
+            draft.selectedPlaceLongitude = item.longitude
+            draft.selectedPlaceCategory = item.category
+            output.placeSuggestions.send([])
+            publishState()
         }
     }
 
@@ -224,9 +229,8 @@ final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
         )
         latestPlaceSearchQuery = trimmedQuery
 
-        guard !trimmedQuery.isEmpty else {
+        guard !trimmedQuery.isEmpty, trimmedQuery.count <= 200 else {
             output.placeSuggestions.send([])
-            repository.resetPlaceSearchSession()
             return
         }
 
@@ -243,45 +247,28 @@ final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
     }
 
     private func searchPlaces(query: String) {
-        Task { @MainActor [weak self] in
+        guard !query.isEmpty else { return }
+
+        placeSearchTask = Task { @MainActor [weak self] in
             guard let self else { return }
+            guard let searchCoordinate else {
+                output.placeSuggestions.send([])
+                return
+            }
 
             do {
                 let suggestions = try await repository.searchPlaces(
                     query: query,
-                    coordinate: searchCoordinate
+                    latitude: searchCoordinate.latitude,
+                    longitude: searchCoordinate.longitude
                 )
-                guard latestPlaceSearchQuery == query else { return }
+                guard !Task.isCancelled, latestPlaceSearchQuery == query else { return }
+
                 output.placeSuggestions.send(suggestions)
             } catch {
-                guard latestPlaceSearchQuery == query else { return }
+                guard !Task.isCancelled, latestPlaceSearchQuery == query else { return }
                 AppLogger.error(error, message: "장소 검색에 실패했습니다.")
                 output.placeSuggestions.send([])
-            }
-        }
-    }
-
-    private func fetchPlaceDetail(for item: PlaceSearchResultItem) {
-        latestPlaceDetailID = item.placeID
-
-        placeDetailTask = Task { @MainActor [weak self] in
-            guard let self else { return }
-
-            do {
-                let place = try await repository.fetchPlaceDetail(for: item)
-                guard !Task.isCancelled, latestPlaceDetailID == item.placeID else { return }
-                draft.placeQuery = place.name
-                draft.selectedPlaceID = place.placeID
-                draft.selectedPlaceAddress = place.address
-                draft.selectedPlaceLatitude = place.latitude
-                draft.selectedPlaceLongitude = place.longitude
-                draft.selectedPlaceCategory = place.category
-                output.placeSuggestions.send([])
-                publishState()
-            } catch {
-                guard !Task.isCancelled, latestPlaceDetailID == item.placeID else { return }
-                AppLogger.error(error, message: "장소 상세 조회에 실패했습니다.")
-                output.showErrorMessage.send("장소 정보를 불러오지 못했습니다. 다시 선택해 주세요.")
             }
         }
     }

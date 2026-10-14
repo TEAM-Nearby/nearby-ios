@@ -38,6 +38,10 @@ class BaseViewController<VM: BaseViewModelType>: UIViewController {
         setLayout()
         setAddTarget()
         setDelegate()
+        if let provider = viewModel as? RequestRunning {
+            LoadingOverlayManager.shared.bind(provider.requestRunner, to: self)
+                .store(in: &cancellables)
+        }
         bindAction()
         bindState()
     }

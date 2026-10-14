@@ -10,19 +10,19 @@ enum CompanionProfileMapper {
         UpdateCompanionProfileRequestDTO(
             nickname: update.nickname,
             intro: update.intro,
-            profileImageUrl: update.profileImageURL,
+            profileImageURL: update.profileImageURL,
             travelStyleKeywords: update.travelStyleKeywords.map(\.rawValue)
         )
     }
 
     static func map(_ dto: CompanionProfileDetailResponseDTO) -> CompanionProfile {
         CompanionProfile(
-            profileID: dto.profileId,
+            profileID: dto.profileID,
             nickname: dto.nickname,
             gender: dto.gender,
             birthYear: dto.birthYear,
             intro: dto.intro,
-            profileImageURL: dto.profileImageUrl,
+            profileImageURL: dto.profileImageURL,
             travelStyleKeywords: dto.travelStyleKeywords.compactMap(TravelStyleKeyword.init(rawValue:))
         )
     }

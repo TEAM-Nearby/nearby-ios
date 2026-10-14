@@ -36,8 +36,8 @@ extension CompanionProfileTarget: BaseTargetType {
             if let intro = request.intro {
                 parameters["intro"] = intro
             }
-            if let profileImageUrl = request.profileImageUrl {
-                parameters["profileImageUrl"] = profileImageUrl
+            if let profileImageURL = request.profileImageURL {
+                parameters["profileImageUrl"] = profileImageURL
             }
             return parameters
         }

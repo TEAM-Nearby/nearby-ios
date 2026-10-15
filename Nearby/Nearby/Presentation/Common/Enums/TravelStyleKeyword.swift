@@ -30,7 +30,7 @@ enum TravelStyleKeyword: String, CaseIterable {
         case .introverted: return "내향형"
         case .planned: return "계획형"
         case .spontaneous: return "즉흥형"
-        case .cafeTour: return "감성 카페 투어"
+        case .cafeTour: return "느좋 카페 투어"
         case .walkingTour: return "도보여행"
         case .photoSpotTour: return "사진 맛집 투어"
         case .foodie: return "미식 탐방"
@@ -40,7 +40,7 @@ enum TravelStyleKeyword: String, CaseIterable {
         case .historyTour: return "역사 탐방"
         case .exhibitionLover: return "전시장 러버"
         case .slowTravel: return "한 곳 오래"
-        case .activeTravel: return "많이 돌아다니는"
+        case .activeTravel: return "많이 도는형"
         case .drinkingLover: return "음주 애호가"
         case .nonDrinker: return "음주 비선호"
         }

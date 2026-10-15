@@ -75,7 +75,7 @@ final class EmergencyContactView: BaseView {
         nameClearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey80
-            $0.isHidden = true
+            $0.isHidden = false
         }
 
         phoneTitleLabel.do {
@@ -99,21 +99,34 @@ final class EmergencyContactView: BaseView {
         phoneClearButton.do {
             $0.setImage(.cancelIcon.withRenderingMode(.alwaysTemplate), for: .normal)
             $0.tintColor = .grey80
-            $0.isHidden = true
+            $0.isHidden = false
         }
 
         policyContainerView.do {
-            $0.backgroundColor = .bgSurfaceGrey0
-            $0.layer.cornerRadius = 16
+            $0.backgroundColor = .clear
+            $0.layer.cornerRadius = 0
         }
 
         policyTitleLabel.do {
-            $0.setFont(.b3Sb14, text: "비상연락망 정책 안내", textColor: .grey80)
+            $0.setFont(.b2M16, text: "비상연락망 정책 안내", textColor: .grey40)
         }
 
         policyDescriptionLabel.do {
             $0.numberOfLines = 0
-            $0.setFont(.c1R12, text: "• 비상연락망은 안전한 동행을 위해 사용돼요.\n• 긴급 상황 발생 시 등록된 연락처로 연락할 수 있어요.", textColor: .grey60)
+            $0.setFont(
+                .b3R14,
+                text: """
+                • 비상 연락망은 안전을 위해서만 사용돼요
+                • 다른 사용자에게 공개되지 않아요
+                • 귀환 인증 실패 시에만 사용돼요
+                • 언제든 수정·삭제할 수 있어요
+                • 다른 사용자에게 공개되지 않아요
+                • 귀환 인증 실패 시에만 사용돼요
+                • 언제든 수정·삭제할 수 있어요
+                """,
+                textColor: .grey40
+            )
+            $0.setLineSpacing(lineSpacing: 12)
         }
 
         bottomButton.isEnabled = false
@@ -198,14 +211,14 @@ final class EmergencyContactView: BaseView {
         }
 
         policyTitleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(20)
-            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.top.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview()
         }
 
         policyDescriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(policyTitleLabel.snp.bottom).offset(12)
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview().inset(20)
+            $0.top.equalTo(policyTitleLabel.snp.bottom).offset(16)
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalToSuperview()
         }
 
         bottomButton.snp.makeConstraints {
@@ -218,11 +231,25 @@ final class EmergencyContactView: BaseView {
     // MARK: - Methods
 
     func updateClearButtons() {
-        nameClearButton.isHidden = nameTextField.text?.isEmpty ?? true
-        phoneClearButton.isHidden = phoneTextField.text?.isEmpty ?? true
+        nameClearButton.isHidden = false
+        phoneClearButton.isHidden = false
     }
 
     func updateBottomButton(isEnabled: Bool) {
         bottomButton.isEnabled = isEnabled
+    }
+}
+
+// MARK: - UILabel Extension
+
+private extension UILabel {
+
+    func setLineSpacing(lineSpacing: CGFloat) {
+        guard let text else { return }
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = lineSpacing
+
+        attributedText = NSMutableAttributedString(string: text, attributes: [.paragraphStyle: paragraphStyle, .font: font as Any, .foregroundColor: textColor as Any])
     }
 }

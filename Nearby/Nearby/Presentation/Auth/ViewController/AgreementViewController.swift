@@ -41,7 +41,6 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
         
         agreementView.bottomButton.addTarget(self, action: #selector(agreementButtonDidTap), for: .touchUpInside)
 
-
     }
 
     override func bindState() {
@@ -72,7 +71,6 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
             self?.onBackButtonDidTap?()
         }
     }
-
 
     // MARK: - Actions
 

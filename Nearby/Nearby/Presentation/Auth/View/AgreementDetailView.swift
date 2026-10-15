@@ -22,7 +22,8 @@ final class AgreementDetailView: BaseView {
 
     private let contentLabel = UILabel().then {
         $0.numberOfLines = 0
-        $0.textColor = .grey80
+        $0.font = NearbyFont.b3M14.font
+        $0.textColor = .grey50
         $0.textAlignment = .left
     }
 
@@ -69,6 +70,36 @@ final class AgreementDetailView: BaseView {
 
     func configure(title: String, content: String) {
         navigationBar.configure(leftItem: .back, centerItem: .title(title))
-        contentLabel.text = content
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .left
+        paragraphStyle.minimumLineHeight = 19.6
+        paragraphStyle.maximumLineHeight = 19.6
+
+        let bodyAttributes: [NSAttributedString.Key: Any] = [.font: NearbyFont.b3M14.font, .foregroundColor: UIColor.grey50, .paragraphStyle: paragraphStyle]
+
+        let titleAttributes: [NSAttributedString.Key: Any] = [.font: NearbyFont.b3Sb14.font, .foregroundColor: UIColor.grey50, .paragraphStyle: paragraphStyle]
+
+        let attributedText = NSMutableAttributedString()
+        let lines = content.components(separatedBy: "\n")
+
+        for (index, line) in lines.enumerated() {
+            if line.hasPrefix("#### ") {
+                let title = String(line.dropFirst(5))
+                attributedText.append(NSAttributedString(string: title, attributes: titleAttributes))
+            } else if line.hasPrefix("**"), line.hasSuffix("**"), line.count >= 4 {
+                let emphasizedText = String(line.dropFirst(2).dropLast(2))
+                attributedText.append(NSAttributedString(string: emphasizedText, attributes: titleAttributes))
+            } else {
+                attributedText.append(NSAttributedString(string: line, attributes: bodyAttributes))
+            }
+
+            if index < lines.count - 1 {
+                attributedText.append(NSAttributedString(string: "\n", attributes: bodyAttributes))
+            }
+        }
+
+        contentLabel.attributedText = attributedText
     }
+
 }

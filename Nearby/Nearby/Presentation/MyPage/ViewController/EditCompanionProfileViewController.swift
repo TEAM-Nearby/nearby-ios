@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import PhotosUI
 
 final class EditCompanionProfileViewController:
     BaseViewController<EditCompanionProfileViewModel> {
@@ -14,13 +15,14 @@ final class EditCompanionProfileViewController:
 
     var onBackButtonDidTap: (() -> Void)?
     var onProfileUpdateDidComplete: (() -> Void)?
+    private var profileImageTask: Task<Void, Never>?
 
     // MARK: - UI Component
 
     private let editProfileView = EditCompanionProfileView()
 
     // MARK: - Life Cycles
-
+    
     override func loadView() {
         view = editProfileView
     }
@@ -28,6 +30,14 @@ final class EditCompanionProfileViewController:
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.action(.viewDidLoad)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if isMovingFromParent || isBeingDismissed {
+            profileImageTask?.cancel()
+        }
     }
 
     // MARK: - Custom Methods
@@ -51,6 +61,10 @@ final class EditCompanionProfileViewController:
 
         editProfileView.onSaveButtonDidTap = { [weak self] in
             self?.viewModel.action(.saveButtonDidTap)
+        }
+        
+        editProfileView.onProfileImageButtonDidTap = { [weak self] in
+            self?.presentPhotoPicker()
         }
     }
 
@@ -79,6 +93,8 @@ final class EditCompanionProfileViewController:
             guard let self else { return }
 
             editProfileView.configure(nickname: profile.nickname, introduction: profile.intro, selectedKeywords: viewModel.currentSelectedKeywordTitles())
+
+            loadProfileImage(from: profile.profileImageURL)
         }
     }
 }
@@ -93,5 +109,68 @@ private extension EditCompanionProfileViewController {
         alertController.addAction(UIAlertAction(title: "확인", style: .default))
 
         present(alertController, animated: true)
+    }
+    
+    func loadProfileImage(from urlString: String?) {
+        profileImageTask?.cancel()
+
+        guard let urlString, let url = URL(string: urlString), url.scheme == "https" else {
+            return
+        }
+
+        profileImageTask = Task { [weak self] in
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+
+                guard !Task.isCancelled, let image = UIImage(data: data) else {
+                    return
+                }
+
+                await MainActor.run {
+                    self?.editProfileView.updateProfileImage(image)
+                }
+            } catch {
+                // 이미지 로딩 실패 시 기본 프로필 이미지 유지
+            }
+        }
+    }
+}
+
+// MARK: - PHPickerViewControllerDelegate
+
+extension EditCompanionProfileViewController: PHPickerViewControllerDelegate {
+
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+
+        guard let result = results.first, result.itemProvider.canLoadObject(ofClass: UIImage.self) else {
+            return
+        }
+
+        result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
+            guard error == nil, let image = object as? UIImage else {
+                return
+            }
+
+            Task { @MainActor [weak self] in
+                self?.editProfileView.updateProfileImage(image)
+            }
+        }
+    }
+}
+
+// MARK: - Photo Picker
+
+private extension EditCompanionProfileViewController {
+
+    func presentPhotoPicker() {
+        var configuration = PHPickerConfiguration()
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
+
+        present(picker, animated: true)
     }
 }

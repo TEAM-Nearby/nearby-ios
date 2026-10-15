@@ -143,13 +143,6 @@ final class NearDiningCell: UICollectionViewCell {
         dividerView.do {
             $0.backgroundColor = .grey20
         }
-
-        skeletonContainerView.do {
-            $0.backgroundColor = .white
-            $0.isHidden = true
-            $0.isUserInteractionEnabled = false
-            $0.accessibilityElementsHidden = true
-        }
     }
 
     // MARK: - Methods

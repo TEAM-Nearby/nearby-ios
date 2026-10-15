@@ -140,13 +140,6 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.image = .chevronRightIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .grey40
         }
-
-        skeletonContainerView.do {
-            $0.backgroundColor = .white
-            $0.isHidden = true
-            $0.isUserInteractionEnabled = false
-            $0.accessibilityElementsHidden = true
-        }
     }
 
     private func setUI() {

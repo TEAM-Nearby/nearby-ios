@@ -7,10 +7,11 @@
 
 import UIKit
 
-final class SkeletonShimmerContainerView: UIView {
+final class SkeletonShimmerContainerView: BaseView {
 
     // MARK: - Properties
 
+    private let skeletonLayer = CALayer()
     private let gradientLayer = CAGradientLayer()
     private let skeletonMaskLayer = CAShapeLayer()
     private let animationKey = "skeleton.shimmer"
@@ -19,24 +20,12 @@ final class SkeletonShimmerContainerView: UIView {
         didSet { updateAnimation() }
     }
 
-    // MARK: - Initializer
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        configureGradient()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    // MARK: - Life Cycle
+    // MARK: - Life Cycles
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        gradientLayer.frame = bounds
-        updateSkeletonMask()
+        updateLayers()
     }
 
     override func didMoveToWindow() {
@@ -44,22 +33,47 @@ final class SkeletonShimmerContainerView: UIView {
         updateAnimation()
     }
 
-    // MARK: - Methods
+    // MARK: - Custom Methods
 
-    private func configureGradient() {
+    override func setStyle() {
+        backgroundColor = .white
+        isHidden = true
         isUserInteractionEnabled = false
         accessibilityElementsHidden = true
 
+        skeletonLayer.backgroundColor = UIColor.bgSurfaceGrey0.cgColor
         gradientLayer.colors = [
-            UIColor.bgSurfaceGrey0.cgColor,
+            UIColor.clear.cgColor,
             UIColor.white.cgColor,
-            UIColor.bgSurfaceGrey0.cgColor
+            UIColor.clear.cgColor
         ]
-        gradientLayer.locations = [-1, -0.5, 0]
+    }
+
+    override func setUI() {
+        skeletonLayer.mask = skeletonMaskLayer
+        skeletonLayer.addSublayer(gradientLayer)
+        layer.addSublayer(skeletonLayer)
+    }
+
+    override func setLayout() {
+        gradientLayer.locations = [0, 0.5, 1]
         gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
         gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
-        gradientLayer.mask = skeletonMaskLayer
-        layer.addSublayer(gradientLayer)
+    }
+
+    // MARK: - Methods
+
+    private func updateLayers() {
+        let shimmerWidth = max(bounds.width * 0.7, 1)
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        skeletonLayer.frame = bounds
+        gradientLayer.frame = CGRect(x: -shimmerWidth, y: 0, width: shimmerWidth, height: bounds.height)
+        CATransaction.commit()
+
+        updateSkeletonMask()
+        restartAnimationIfNeeded()
     }
 
     private func updateSkeletonMask() {
@@ -80,28 +94,48 @@ final class SkeletonShimmerContainerView: UIView {
         }
         guard gradientLayer.animation(forKey: animationKey) == nil else { return }
 
-        let animation = CABasicAnimation(keyPath: "locations")
-        animation.fromValue = [-1, -0.5, 0]
-        animation.toValue = [1, 1.5, 2]
+        let animation = CABasicAnimation(keyPath: "transform.translation.x")
+        animation.fromValue = 0
+        animation.toValue = bounds.width + gradientLayer.bounds.width
         animation.duration = 1.17
         animation.repeatCount = .infinity
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         gradientLayer.add(animation, forKey: animationKey)
     }
+
+    private func restartAnimationIfNeeded() {
+        guard gradientLayer.animation(forKey: animationKey) != nil else {
+            updateAnimation()
+            return
+        }
+
+        gradientLayer.removeAnimation(forKey: animationKey)
+        updateAnimation()
+    }
 }
 
 final class SkeletonShimmerView: BaseView {
+
+    // MARK: - Properties
+
     let skeletonCornerRadius: CGFloat
+
+    // MARK: - Initializer
 
     init(cornerRadius: CGFloat) {
         skeletonCornerRadius = cornerRadius
         super.init(frame: .zero)
-        isUserInteractionEnabled = false
-        accessibilityElementsHidden = true
-        backgroundColor = .clear
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Custom Methods
+
+    override func setStyle() {
+        isUserInteractionEnabled = false
+        accessibilityElementsHidden = true
+        backgroundColor = .clear
     }
 }

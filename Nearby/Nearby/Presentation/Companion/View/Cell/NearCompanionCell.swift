@@ -17,11 +17,12 @@ final class NearCompanionCell: UICollectionViewCell {
 
     override var isHighlighted: Bool {
         didSet {
-            contentView.backgroundColor = isHighlighted ? .bgSurfacePurple : .white
+            contentView.backgroundColor = isHighlighted && !isShowingSkeleton ? .bgSurfacePurple : .white
         }
     }
 
     private let profileAvatarCount = 4
+    private var isShowingSkeleton = false
 
     // MARK: - UI Components
 
@@ -40,6 +41,15 @@ final class NearCompanionCell: UICollectionViewCell {
     private let overflowCountLabel = UILabel()
     private let currentStatusLabel = UILabel()
     private let arrowIcon = UIImageView()
+
+    private let skeletonContainerView = SkeletonShimmerContainerView()
+    private let skeletonImageView = SkeletonShimmerView(cornerRadius: 16)
+    private let skeletonTitleView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonContentView = SkeletonShimmerView(cornerRadius: 10)
+    private let skeletonScheduleView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonProfileView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonProfileSecondView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonStatusView = SkeletonShimmerView(cornerRadius: 8)
 
     // MARK: - Initializer
 
@@ -61,6 +71,7 @@ final class NearCompanionCell: UICollectionViewCell {
         super.prepareForReuse()
         placeImageView.kf.cancelDownloadTask()
         placeImageView.image = nil
+        setSkeletonVisible(false)
     }
 
     // MARK: - Methods
@@ -129,16 +140,24 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.image = .chevronRightIcon.withRenderingMode(.alwaysTemplate)
             $0.tintColor = .grey40
         }
+
+        skeletonContainerView.do {
+            $0.backgroundColor = .white
+            $0.isHidden = true
+            $0.isUserInteractionEnabled = false
+            $0.accessibilityElementsHidden = true
+        }
     }
 
     private func setUI() {
-        contentView.addSubviews(dividerView, placeImageView, placeNameLabel, timeLabel, contentLabel, timeStackView, peopleStackView, arrowIcon)
+        contentView.addSubviews(dividerView, placeImageView, placeNameLabel, timeLabel, contentLabel,
+                                timeStackView, peopleStackView, arrowIcon)
         timeStackView.addArrangedSubviews(clockIcon, scheduleLabel)
-        peopleStackView.addArrangedSubviews(
-            profileStackView,
-            overflowCountLabel,
-            currentStatusLabel
-        )
+        peopleStackView.addArrangedSubviews(profileStackView, overflowCountLabel, currentStatusLabel)
+
+        contentView.addSubview(skeletonContainerView)
+        skeletonContainerView.addSubviews(skeletonImageView, skeletonTitleView, skeletonContentView, skeletonScheduleView,
+                                          skeletonProfileView, skeletonProfileSecondView, skeletonStatusView)
     }
 
     private func setLayout() {
@@ -192,6 +211,59 @@ final class NearCompanionCell: UICollectionViewCell {
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalTo(profileStackView)
         }
+
+        skeletonContainerView.snp.makeConstraints {
+            $0.top.equalTo(dividerView.snp.bottom)
+            $0.horizontalEdges.bottom.equalToSuperview()
+        }
+
+        skeletonImageView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(16)
+            $0.leading.equalToSuperview().inset(20)
+            $0.width.equalTo(130)
+            $0.height.equalTo(140)
+            $0.bottom.lessThanOrEqualToSuperview().inset(16)
+        }
+
+        skeletonTitleView.snp.makeConstraints {
+            $0.top.equalTo(skeletonImageView)
+            $0.leading.equalTo(skeletonImageView.snp.trailing).offset(12)
+            $0.width.equalTo(138)
+            $0.height.equalTo(28)
+            $0.trailing.lessThanOrEqualToSuperview().inset(20)
+        }
+
+        skeletonContentView.snp.makeConstraints {
+            $0.top.equalTo(skeletonTitleView.snp.bottom).offset(8)
+            $0.leading.equalTo(skeletonTitleView)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(47)
+        }
+
+        skeletonScheduleView.snp.makeConstraints {
+            $0.top.equalTo(skeletonContentView.snp.bottom).offset(6)
+            $0.leading.trailing.equalTo(skeletonContentView)
+            $0.height.equalTo(15)
+        }
+
+        skeletonProfileView.snp.makeConstraints {
+            $0.top.equalTo(skeletonScheduleView.snp.bottom).offset(6)
+            $0.leading.equalTo(skeletonScheduleView).offset(4)
+            $0.size.equalTo(16)
+        }
+
+        skeletonProfileSecondView.snp.makeConstraints {
+            $0.leading.equalTo(skeletonProfileView.snp.trailing).offset(-4)
+            $0.centerY.equalTo(skeletonProfileView)
+            $0.size.equalTo(16)
+        }
+
+        skeletonStatusView.snp.makeConstraints {
+            $0.leading.equalTo(skeletonProfileSecondView.snp.trailing).offset(8)
+            $0.trailing.equalTo(skeletonScheduleView)
+            $0.centerY.equalTo(skeletonProfileView)
+            $0.height.equalTo(16)
+        }
     }
 
     private func configureOverflowCount(_ participantCount: Int) {
@@ -199,18 +271,25 @@ final class NearCompanionCell: UICollectionViewCell {
         overflowCountLabel.text = overflowCount > 0 ? "+\(overflowCount)" : nil
         overflowCountLabel.isHidden = overflowCount == 0
 
-        peopleStackView.setCustomSpacing(
-            overflowCount > 0 ? 0 : 6,
-            after: profileStackView
-        )
+        peopleStackView.setCustomSpacing(overflowCount > 0 ? 0 : 6, after: profileStackView)
         peopleStackView.setCustomSpacing(6, after: overflowCountLabel)
     }
 
+    private func setSkeletonVisible(_ isVisible: Bool) {
+        isShowingSkeleton = isVisible
+        skeletonContainerView.isHidden = !isVisible
+        isUserInteractionEnabled = !isVisible
+        accessibilityElementsHidden = isVisible
+    }
+
     func configure(with item: NearCompanionCellItem) {
+        setSkeletonVisible(false)
         placeImageView.image = item.placeImage
+
         if let placeImageURL = item.placeImageURL {
             placeImageView.kf.setImage(with: placeImageURL, placeholder: item.placeImage)
         }
+
         placeNameLabel.text = item.placeName
         timeLabel.text = item.writtenTime
         contentLabel.setFont(.c1M12, text: item.content, textColor: .grey70, lineSpacing: 3)
@@ -218,5 +297,11 @@ final class NearCompanionCell: UICollectionViewCell {
         profileStackView.configure(withImageURLs: Array( item.participantImageURLs.prefix(profileAvatarCount)))
         configureOverflowCount(item.detailState.participantCount)
         currentStatusLabel.text = item.statusText
+    }
+
+    func configureSkeleton() {
+        placeImageView.kf.cancelDownloadTask()
+        placeImageView.image = nil
+        setSkeletonVisible(true)
     }
 }

@@ -70,6 +70,7 @@ final class EmergencyContactView: BaseView {
             $0.font = NearbyFont.b3M14.font
             $0.textColor = .grey80
             $0.attributedPlaceholder = NSAttributedString(string: "연락처명을 입력해주세요", attributes: [.foregroundColor: UIColor.grey20])
+            $0.returnKeyType = .done
         }
 
         nameClearButton.do {

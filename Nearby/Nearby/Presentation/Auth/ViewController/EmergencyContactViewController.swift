@@ -36,6 +36,11 @@ final class EmergencyContactViewController: BaseViewController<EmergencyContactV
         emergencyContactView.phoneClearButton.addTarget(self, action: #selector(phoneClearButtonDidTap), for: .touchUpInside)
 
         emergencyContactView.bottomButton.addTarget(self, action: #selector(bottomButtonDidTap), for: .touchUpInside)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissEmergencyContactKeyboard))
+
+        tapGesture.cancelsTouchesInView = false
+        emergencyContactView.addGestureRecognizer(tapGesture)
     }
 
     override func bindAction() {
@@ -54,6 +59,11 @@ final class EmergencyContactViewController: BaseViewController<EmergencyContactV
         viewModel.output.registrationDidComplete = { [weak self] in
             self?.onRegistrationCompleted?()
         }
+    }
+    
+    override func setDelegate() {
+        emergencyContactView.nameTextField.delegate = self
+        emergencyContactView.phoneTextField.delegate = self
     }
 
     // MARK: - Action
@@ -93,5 +103,20 @@ final class EmergencyContactViewController: BaseViewController<EmergencyContactV
     @objc
     private func bottomButtonDidTap() {
         viewModel.action(.bottomButtonDidTap)
+    }
+    
+    @objc
+    private func dismissEmergencyContactKeyboard() {
+        view.endEditing(true)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension EmergencyContactViewController: UITextFieldDelegate {
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

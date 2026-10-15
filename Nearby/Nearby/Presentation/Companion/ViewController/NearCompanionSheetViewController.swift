@@ -17,9 +17,10 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
     var onSummaryTextChanged: ((String) -> Void)?
     var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
     var onTitleMultilineChanged: ((Bool) -> Void)?
+    var onCompanionAvailabilityChanged: ((Bool) -> Void)?
 
-    private let initialLoadingTracker = InitialLoadingTracker()
     private var nearCompanionSheetView = NearCompanionBottomView(sortOptions: SortOption.allCases)
+    private var isShowingSkeleton = false
 
     // MARK: - Life Cycle
 
@@ -57,15 +58,20 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
                 guard let self else { return }
 
                 switch state {
-                case .idle, .loading:
+                case .idle:
                     break
-                case .loaded(_, let markers, let summaryText):
-                    initialLoadingTracker.complete(in: self)
+                case .loading:
+                    isShowingSkeleton = true
                     nearCompanionSheetView.collectionView.reloadData()
+                case .loaded(let items, let markers, let summaryText):
+                    isShowingSkeleton = false
+                    nearCompanionSheetView.collectionView.reloadData()
+                    onCompanionAvailabilityChanged?(!items.isEmpty)
                     onSummaryTextChanged?(summaryText)
                     onMapMarkersChanged?(markers)
                 case .failed(let error):
-                    initialLoadingTracker.complete(in: self)
+                    isShowingSkeleton = false
+                    nearCompanionSheetView.collectionView.reloadData()
                     AppLogger.error(error)
                 }
             }
@@ -82,7 +88,6 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
     // MARK: - Methods
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
-        initialLoadingTracker.begin(in: self)
         viewModel.action(.locationDidUpdate(coordinate))
     }
 
@@ -107,12 +112,16 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
 
 extension NearCompanionSheetViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.nearCompanionCount
+        isShowingSkeleton ? 3 : viewModel.nearCompanionCount
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(NearCompanionCell.self, for: indexPath)
-        cell.configure(with: viewModel.companion(at: indexPath.item))
+        if isShowingSkeleton {
+            cell.configureSkeleton()
+        } else {
+            cell.configure(with: viewModel.companion(at: indexPath.item))
+        }
         return cell
     }
 }
@@ -121,6 +130,7 @@ extension NearCompanionSheetViewController: UICollectionViewDataSource {
 
 extension NearCompanionSheetViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard !isShowingSkeleton else { return }
         viewModel.action(.companionDidSelect(indexPath.item))
     }
 }

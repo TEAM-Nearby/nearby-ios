@@ -19,6 +19,7 @@ final class CompanionBottomSheetController {
     var onSummaryTextChanged: ((String) -> Void)?
     var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
     var onSpecificSheetClose: (() -> Void)?
+    var onCompanionAvailabilityChanged: ((Bool) -> Void)?
     
     private let bottomSheetViewController = NearbyBottomSheetViewController()
     private let nearbySheetViewController: NearCompanionSheetViewController
@@ -54,6 +55,9 @@ final class CompanionBottomSheetController {
         }
         nearbySheetViewController.onMapMarkersChanged = { [weak self] markers in
             self?.onMapMarkersChanged?(markers)
+        }
+        nearbySheetViewController.onCompanionAvailabilityChanged = { [weak self] hasCompanions in
+            self?.onCompanionAvailabilityChanged?(hasCompanions)
         }
         nearbySheetViewController.onTitleMultilineChanged = { [weak self] isMultiline in
             self?.updateHeight(for: .nearbyCompanionList, isTitleMultiline: isMultiline)

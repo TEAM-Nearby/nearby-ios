@@ -65,6 +65,7 @@ final class CompanionViewModel: BaseViewModelType {
         case reset
         case recruitCompanionButtonDidTap
         case companionDidSelect(CompanionDetailState)
+        case companionAvailabilityDidChange(Bool)
     }
 
     // MARK: - Output
@@ -137,6 +138,8 @@ final class CompanionViewModel: BaseViewModelType {
             route?(.recruitCompanion(currentCoordinate))
         case .companionDidSelect(let state):
             route?(.companionDetail(state))
+        case .companionAvailabilityDidChange(let hasCompanions):
+            updateCompanionAvailability(hasCompanions)
         }
     }
 
@@ -176,6 +179,18 @@ final class CompanionViewModel: BaseViewModelType {
         var viewState = output.viewState.value
         viewState.selectedPlaceId = placeId
         viewState.bottomSheet = BottomSheetState(content: .specificRestaurantCompanionList)
+        output.viewState.send(viewState)
+    }
+
+    private func updateCompanionAvailability(_ hasCompanions: Bool) {
+        var viewState = output.viewState.value
+        guard case .companions = viewState.category.content,
+              viewState.bottomSheet.content != .specificRestaurantCompanionList else { return }
+
+        let content: BottomSheetContent = hasCompanions ? .nearbyCompanionList : .nearbyCompanionEmpty
+        guard viewState.bottomSheet.content != content else { return }
+
+        viewState.bottomSheet = BottomSheetState(content: content)
         output.viewState.send(viewState)
     }
 

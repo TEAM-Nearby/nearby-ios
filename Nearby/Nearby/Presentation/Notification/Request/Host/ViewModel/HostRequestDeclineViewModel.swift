@@ -8,7 +8,8 @@
 import Combine
 import UIKit
 
-final class HostRequestDeclineViewModel: BaseViewModelType {
+final class HostRequestDeclineViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
 
     // MARK: - Input
 
@@ -71,17 +72,25 @@ final class HostRequestDeclineViewModel: BaseViewModelType {
     
     private func rejectApplication(reason: String) {
         guard !isRequesting else { return }
-        isRequesting = true
-        Task {
-            defer { isRequesting = false }
-            do {
+
+        requestRunner.run(
+            onStart: { [self] in
+                isRequesting = true
+            },
+            operation: { [self] in
                 let rejectionReason = reason.isBlank ? nil : reason
                 try await repository.rejectApplication(applicationId: applicationId, reason: rejectionReason)
+            },
+            onSuccess: { [self] _ in
                 output.showDeclineComplete.send(())
-            } catch {
+            },
+            onFailure: { [self] error in
                 AppLogger.error(error)
                 output.errorMessage.send(error.localizedDescription)
+            },
+            onFinish: { [self] in
+                isRequesting = false
             }
-        }
+        )
     }
 }

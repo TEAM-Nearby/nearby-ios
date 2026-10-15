@@ -8,7 +8,8 @@
 import Combine
 import Foundation
 
-final class CompanionDetailViewModel: BaseViewModelType {
+final class CompanionDetailViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
 
     // MARK: - State
 
@@ -119,25 +120,24 @@ final class CompanionDetailViewModel: BaseViewModelType {
     private func applyCompanion() {
         guard state.isApplicationEnabled, let postId = state.postId, applyTask == nil else { return }
 
-        output.isApplying.send(true)
-        applyTask = Task { [weak self] in
-            guard let self else { return }
-            defer {
+        applyTask = requestRunner.run(
+            onStart: { [self] in
+                output.isApplying.send(true)
+            },
+            operation: { [self] in
+                try await repository.apply(postId: postId)
+            },
+            onSuccess: { [self] _ in
+                route?(.applyCompanion(hostName: state.hostName))
+            },
+            onFailure: { [self] error in
+                output.applyError.send(error)
+            },
+            onFinish: { [self] in
                 applyTask = nil
                 output.isApplying.send(false)
             }
-
-            do {
-                try await repository.apply(postId: postId)
-                guard !Task.isCancelled else { return }
-                route?(.applyCompanion(hostName: state.hostName))
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else { return }
-                output.applyError.send(error)
-            }
-        }
+        )
     }
 }
 

@@ -64,6 +64,7 @@ final class NetworkProvider: NetworkProviding {
 
 private extension NetworkProvider {
     func requestBaseResponse<T: Decodable>(_ target: BaseTargetType, responseType: T.Type, canRefreshToken: Bool) async throws -> BaseResponseDTO<T> {
+        try Task.checkCancellation()
         let urlRequest = try makeURLRequest(target: target)
 
 #if DEBUG
@@ -74,6 +75,8 @@ private extension NetworkProvider {
         let dataResponse = await session.request(urlRequest)
             .serializingData()
             .response
+
+        try Task.checkCancellation()
 
 #if DEBUG
         NetworkDebugLogger.logResponse(dataResponse.response, data: dataResponse.data, error: dataResponse.error, elapsedTime: Date().timeIntervalSince(requestStartedAt))

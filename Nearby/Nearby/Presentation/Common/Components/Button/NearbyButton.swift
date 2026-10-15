@@ -14,9 +14,23 @@ final class NearbyButton: UIButton {
     private var style: NearbyButtonStyle
     private var gradientLayer: CAGradientLayer?
     private var titleContentInsets: UIEdgeInsets = .zero
+    private var requestedEnabled = true
+    private var requestedStyleEnabled = true
+
+    private(set) static weak var currentActionButton: NearbyButton?
+
+    var isRequestInProgress = false {
+        didSet {
+            super.isEnabled = requestedEnabled && !isRequestInProgress
+            refreshStyle()
+        }
+    }
     
     override var isEnabled: Bool {
-        didSet {
+        get { super.isEnabled }
+        set {
+            requestedEnabled = newValue
+            super.isEnabled = newValue && !isRequestInProgress
             refreshStyle()
         }
     }
@@ -45,6 +59,14 @@ final class NearbyButton: UIButton {
         titleLabel?.frame.origin.x += titleContentInsets.left - titleContentInsets.right
         titleLabel?.frame.origin.y += titleContentInsets.top - titleContentInsets.bottom
     }
+
+    override func sendAction(_ action: Selector, to target: Any?, for event: UIEvent?) {
+        Self.currentActionButton = self
+        super.sendAction(action, to: target, for: event)
+        if Self.currentActionButton === self {
+            Self.currentActionButton = nil
+        }
+    }
     
     // MARK: - Methods
     
@@ -61,7 +83,7 @@ final class NearbyButton: UIButton {
     }
     
     private func refreshStyle() {
-        if !isEnabled {
+        if !isEnabled || !requestedStyleEnabled {
             applyStyle(.disabled)
         } else {
             applyStyle(style)
@@ -93,14 +115,11 @@ final class NearbyButton: UIButton {
 
     func setEnabled(_ enabled: Bool) {
         isEnabled = enabled
-
-        let buttonStyle: NearbyButtonStyle = enabled ? style : .disabled
-        backgroundColor = buttonStyle.backgroundColor
-        setTitleColor(buttonStyle.titleColor, for: .normal)
     }
 
     func setStyleEnabled(_ isStyleEnabled: Bool) {
-        applyStyle(isStyleEnabled ? style : .disabled)
+        requestedStyleEnabled = isStyleEnabled
+        refreshStyle()
     }
 
     func setPaddedTitle(_ title: String, font: NearbyFont, titleColor: UIColor, titleInsets: UIEdgeInsets) {

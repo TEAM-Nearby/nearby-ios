@@ -7,7 +7,8 @@
 
 import Foundation
 
-final class PhoneVerificationViewModel: BaseViewModelType {
+final class PhoneVerificationViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
 
     // MARK: - Input
 
@@ -80,28 +81,27 @@ private extension PhoneVerificationViewModel {
             return
         }
 
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-
-            output.isLoading?(true)
-
-            defer {
-                output.isLoading?(false)
-            }
-
-            do {
-                let response = try await authRepository.sendVerificationCode(phoneNumber: phoneNumber)
-
+        requestRunner.run(
+            onStart: { [self] in
+                output.isLoading?(true)
+            },
+            operation: { [self] in
+                try await authRepository.sendVerificationCode(phoneNumber: phoneNumber)
+            },
+            onSuccess: { [self] response in
                 phoneVerificationID = response.phoneVerificationId
                 expiresIn = response.expiresIn
 
                 isVerificationMode = true
                 output.isVerificationMode?(true)
-
-            } catch {
+            },
+            onFailure: { [self] error in
                 handleVerificationError(error)
+            },
+            onFinish: { [self] in
+                output.isLoading?(false)
             }
-        }
+        )
     }
 
     func handleBackButtonDidTap() {
@@ -164,30 +164,30 @@ private extension PhoneVerificationViewModel {
             return
         }
 
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-
-            output.isLoading?(true)
-
-            defer {
-                output.isLoading?(false)
-            }
-
-            do {
-                let response = try await authRepository.confirmVerificationCode(
+        requestRunner.run(
+            onStart: { [self] in
+                output.isLoading?(true)
+            },
+            operation: { [self] in
+                try await authRepository.confirmVerificationCode(
                     phoneVerificationId: phoneVerificationID,
                     verificationCode: verificationCode
                 )
+            },
+            onSuccess: { [self] response in
                 guard response.phoneVerified else {
                     output.verificationCodeDidFail?("휴대폰 인증에 실패했습니다.")
                     return
                 }
                 output.verificationDidComplete?()
-
-            } catch {
+            },
+            onFailure: { [self] error in
                 handleConfirmVerificationError(error)
+            },
+            onFinish: { [self] in
+                output.isLoading?(false)
             }
-        }
+        )
     }
     
     func handleConfirmVerificationError(_ error: Error) {

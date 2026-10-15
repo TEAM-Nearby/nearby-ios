@@ -8,7 +8,8 @@
 import Combine
 import UIKit
 
-final class HostReviewListViewModel: BaseViewModelType {
+final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
     
     // MARK: - Input
     
@@ -119,16 +120,24 @@ final class HostReviewListViewModel: BaseViewModelType {
     
     private func completeMeeting() {
         guard !isCompleting else { return }
-        isCompleting = true
-        Task {
-            defer { isCompleting = false }
-            do {
-                let completion = try await repository.completeMeeting(meetingId: meetingId)
+
+        requestRunner.run(
+            onStart: { [self] in
+                isCompleting = true
+            },
+            operation: { [self] in
+                try await repository.completeMeeting(meetingId: meetingId)
+            },
+            onSuccess: { [self] completion in
                 eventCenter.notifyCompleted(matchId: completion.matchID)
                 output.showCompletion.send(())
-            } catch {
+            },
+            onFailure: { error in
                 AppLogger.error(error)
+            },
+            onFinish: { [self] in
+                isCompleting = false
             }
-        }
+        )
     }
 }

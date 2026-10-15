@@ -18,6 +18,7 @@ final class MyPageViewModel: BaseViewModelType {
         case writtenPostRowDidTap
         case sentRequestRowDidTap
         case receivedRequestRowDidTap
+        case editProfileButtonDidTap
     }
 
     // MARK: - Output
@@ -30,6 +31,7 @@ final class MyPageViewModel: BaseViewModelType {
         var writtenPostRowDidTap: (() -> Void)?
         var sentRequestRowDidTap: (() -> Void)?
         var receivedRequestRowDidTap: (() -> Void)?
+        var editProfileButtonDidTap: (() -> Void)?
     }
 
     // MARK: - Properties
@@ -71,6 +73,9 @@ final class MyPageViewModel: BaseViewModelType {
 
         case .receivedRequestRowDidTap:
             output.receivedRequestRowDidTap?()
+            
+        case .editProfileButtonDidTap:
+            output.editProfileButtonDidTap?()
         }
     }
 }

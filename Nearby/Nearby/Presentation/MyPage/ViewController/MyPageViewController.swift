@@ -17,6 +17,7 @@ final class MyPageViewController:
     var onWrittenPostRowDidTap: (() -> Void)?
     var onSentRequestRowDidTap: (() -> Void)?
     var onReceivedRequestRowDidTap: (() -> Void)?
+    var onEditProfileButtonDidTap: (() -> Void)?
     private let initialLoadingTracker = InitialLoadingTracker()
 
     // MARK: - UI Component
@@ -58,6 +59,10 @@ final class MyPageViewController:
         myPageView.onReceivedRequestRowDidTap = { [weak self] in
             self?.viewModel.action(.receivedRequestRowDidTap)
         }
+        
+        myPageView.onEditProfileButtonDidTap = { [weak self] in
+            self?.viewModel.action(.editProfileButtonDidTap)
+        }
     }
 
     override func bindState() {
@@ -91,6 +96,10 @@ final class MyPageViewController:
 
         viewModel.output.receivedRequestRowDidTap = { [weak self] in
             self?.onReceivedRequestRowDidTap?()
+        }
+        
+        viewModel.output.editProfileButtonDidTap = { [weak self] in
+            self?.onEditProfileButtonDidTap?()
         }
     }
 }

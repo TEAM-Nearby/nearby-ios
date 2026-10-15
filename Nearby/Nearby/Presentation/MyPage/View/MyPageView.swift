@@ -17,6 +17,7 @@ final class MyPageView: BaseView {
     var onWrittenPostRowDidTap: (() -> Void)?
     var onSentRequestRowDidTap: (() -> Void)?
     var onReceivedRequestRowDidTap: (() -> Void)?
+    var onEditProfileButtonDidTap: (() -> Void)?
 
     private let gradientLayer = CAGradientLayer()
 
@@ -28,6 +29,7 @@ final class MyPageView: BaseView {
     private let contentView = UIView()
 
     private let boardingPassImageView = UIImageView()
+    private let editProfileButton = UIButton(type: .system)
     private let profileImageView = GradientCircleView(diameter: 80)
     private let nameStackView = UIStackView()
     private let nicknameLabel = UILabel()
@@ -102,6 +104,13 @@ final class MyPageView: BaseView {
             $0.image = .mypageCard
             $0.contentMode = .scaleToFill
             $0.isUserInteractionEnabled = true
+        }
+        
+        editProfileButton.do {
+            $0.setTitle("수정하기", for: .normal)
+            $0.setTitleColor(.grey50, for: .normal)
+            $0.titleLabel?.font = NearbyFont.b3M14.font
+            $0.backgroundColor = .clear
         }
 
         nameStackView.do {
@@ -185,7 +194,8 @@ final class MyPageView: BaseView {
         boardingPassImageView.addSubviews(
             profileImageView, nameStackView, verificationChip,
             personalityChipContainerView, statsStackView,
-            firstDividerView, secondDividerView
+            firstDividerView, secondDividerView,
+            editProfileButton
         )
         
         boardingPassImageView.addLayoutGuide(personalityVerticalGuide)
@@ -226,6 +236,12 @@ final class MyPageView: BaseView {
         boardingPassImageView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        editProfileButton.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(20)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(32)
         }
 
         profileImageView.snp.makeConstraints {
@@ -350,6 +366,8 @@ final class MyPageView: BaseView {
         receivedRequestRowView.onTap = { [weak self] in
             self?.onReceivedRequestRowDidTap?()
         }
+        
+        editProfileButton.addTarget(self, action: #selector(editProfileButtonDidTap), for: .touchUpInside)
     }
     
     func configure(with item: MyPageDisplayModel) {
@@ -371,6 +389,13 @@ final class MyPageView: BaseView {
         configurePersonalityKeywords(item.travelStyleKeywords)
 
         configureMannerKeywords(item.mannerKeywords)
+    }
+    
+    // MARK: - Action
+
+    @objc
+    private func editProfileButtonDidTap() {
+        onEditProfileButtonDidTap?()
     }
 }
 

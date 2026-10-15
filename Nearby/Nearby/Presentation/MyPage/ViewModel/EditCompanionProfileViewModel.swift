@@ -12,6 +12,7 @@ final class EditCompanionProfileViewModel: BaseViewModelType {
     // MARK: - Input
 
     enum Input {
+        case viewDidLoad
         case nicknameDidChange(String)
         case introductionDidChange(String)
         case keywordButtonDidTap(String)
@@ -22,6 +23,7 @@ final class EditCompanionProfileViewModel: BaseViewModelType {
     // MARK: - Output
 
     struct Output {
+        var profileDidLoad: ((CompanionProfile) -> Void)?
         var selectedKeywordsDidChange: ((Set<String>) -> Void)?
         var keywordSelectionDidFail: ((String) -> Void)?
         var profileUpdateDidFail: ((String) -> Void)?
@@ -34,36 +36,37 @@ final class EditCompanionProfileViewModel: BaseViewModelType {
     var output = Output()
 
     private let repository: CompanionProfileRepository
-    private let originalProfile: CompanionProfile
+    private let profileID: Int
+    private var originalProfile: CompanionProfile?
 
-    private var nickname: String
-    private var introduction: String
-    private var selectedKeywords: Set<TravelStyleKeyword>
+    private var nickname = ""
+    private var introduction = ""
+    private var selectedKeywords: Set<TravelStyleKeyword> = []
     private var profileImageURL: String?
 
+    private var fetchTask: Task<Void, Never>?
     private var updateTask: Task<Void, Never>?
     private var isUpdating = false
 
     // MARK: - Initializer
 
-    init(repository: CompanionProfileRepository, profile: CompanionProfile) {
+    init(repository: CompanionProfileRepository, profileID: Int) {
         self.repository = repository
-        self.originalProfile = profile
-
-        nickname = profile.nickname
-        introduction = profile.intro ?? ""
-        selectedKeywords = Set(profile.travelStyleKeywords)
-        profileImageURL = profile.profileImageURL
+        self.profileID = profileID
     }
 
     deinit {
+        fetchTask?.cancel()
         updateTask?.cancel()
     }
 
-    // MARK: - Actions
+    // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {
+        case .viewDidLoad:
+            fetchProfile()
+
         case .nicknameDidChange(let value):
             nickname = value
 
@@ -83,10 +86,6 @@ final class EditCompanionProfileViewModel: BaseViewModelType {
 
     // MARK: - Methods
 
-    func currentProfile() -> CompanionProfile {
-        originalProfile
-    }
-
     func currentSelectedKeywordTitles() -> Set<String> {
         Set(selectedKeywords.map(\.title))
     }
@@ -96,7 +95,46 @@ final class EditCompanionProfileViewModel: BaseViewModelType {
 
 private extension EditCompanionProfileViewModel {
 
+    func fetchProfile() {
+        fetchTask?.cancel()
+        output.isLoading?(true)
+
+        fetchTask = Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let profile = try await repository.fetchCompanionProfile(
+                    profileID: profileID
+                )
+
+                guard !Task.isCancelled else { return }
+
+                await MainActor.run {
+                    self.originalProfile = profile
+                    self.nickname = profile.nickname
+                    self.introduction = profile.intro ?? ""
+                    self.selectedKeywords = Set(profile.travelStyleKeywords)
+                    self.profileImageURL = profile.profileImageURL
+
+                    self.output.profileDidLoad?(profile)
+                    self.output.isLoading?(false)
+                }
+            } catch {
+                guard !Task.isCancelled else { return }
+
+                await MainActor.run {
+                    self.output.isLoading?(false)
+                    self.output.profileUpdateDidFail?(
+                        "프로필 정보를 불러오지 못했습니다."
+                    )
+                }
+            }
+        }
+    }
+
     func toggleKeyword(_ title: String) {
+        guard originalProfile != nil else { return }
+
         guard let keyword = TravelStyleKeyword.allCases.first(
             where: { $0.title == title }
         ) else {
@@ -107,19 +145,24 @@ private extension EditCompanionProfileViewModel {
             selectedKeywords.remove(keyword)
         } else {
             guard selectedKeywords.count < 6 else {
-                output.keywordSelectionDidFail?(
-                    "여행 스타일 키워드는 최대 6개까지 선택할 수 있어요."
-                )
+                output.keywordSelectionDidFail?("여행 스타일 키워드는 최대 6개까지 선택할 수 있어요.")
                 return
             }
 
             selectedKeywords.insert(keyword)
         }
 
-        output.selectedKeywordsDidChange?(currentSelectedKeywordTitles())
+        output.selectedKeywordsDidChange?(
+            currentSelectedKeywordTitles()
+        )
     }
 
     func updateProfile() {
+        guard originalProfile != nil else {
+            output.profileUpdateDidFail?("프로필 정보를 불러온 후 다시 시도해주세요.")
+            return
+        }
+
         guard !isUpdating else { return }
 
         let trimmedNickname = nickname.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -131,7 +174,8 @@ private extension EditCompanionProfileViewModel {
 
         let trimmedIntroduction = introduction.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let update = CompanionProfileUpdate(nickname: trimmedNickname, intro: trimmedIntroduction, profileImageURL: profileImageURL, travelStyleKeywords: TravelStyleKeyword.allCases.filter {
+        let update = CompanionProfileUpdate(nickname: trimmedNickname, intro: trimmedIntroduction, profileImageURL: profileImageURL,
+            travelStyleKeywords: TravelStyleKeyword.allCases.filter {
                 selectedKeywords.contains($0)
             }
         )
@@ -160,9 +204,7 @@ private extension EditCompanionProfileViewModel {
                     self.isUpdating = false
                     self.updateTask = nil
                     self.output.isLoading?(false)
-                    self.output.profileUpdateDidFail?(
-                        "프로필을 수정하지 못했습니다."
-                    )
+                    self.output.profileUpdateDidFail?("프로필을 수정하지 못했습니다.")
                 }
             }
         }

@@ -31,7 +31,7 @@ final class MyPageViewModel: BaseViewModelType {
         var writtenPostRowDidTap: (() -> Void)?
         var sentRequestRowDidTap: (() -> Void)?
         var receivedRequestRowDidTap: (() -> Void)?
-        var editProfileButtonDidTap: (() -> Void)?
+        var editProfileRequested: ((Int) -> Void)?
     }
 
     // MARK: - Properties
@@ -39,9 +39,11 @@ final class MyPageViewModel: BaseViewModelType {
     var output = Output()
 
     private let repository: MyPageRepository
+    
+    private var profileID: Int?
 
     private var fetchTask: Task<Void, Never>?
-
+    
     // MARK: - Initializer
 
     init(repository: MyPageRepository) {
@@ -75,7 +77,11 @@ final class MyPageViewModel: BaseViewModelType {
             output.receivedRequestRowDidTap?()
             
         case .editProfileButtonDidTap:
-            output.editProfileButtonDidTap?()
+            guard let profileID else {
+                output.errorMessage?("프로필 정보를 확인할 수 없습니다.")
+                return
+            }
+            output.editProfileRequested?(profileID)
         }
     }
 }
@@ -102,6 +108,7 @@ private extension MyPageViewModel {
                 )
 
                 await MainActor.run {
+                    self.profileID = response.profileId
                     self.output.myPageData?(displayModel)
                 }
             } catch {

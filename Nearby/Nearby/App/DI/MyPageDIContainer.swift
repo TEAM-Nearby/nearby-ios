@@ -7,6 +7,12 @@
 
 final class MyPageDIContainer {
     
+    // MARK: - Properties
+
+    private lazy var companionProfileService: CompanionProfileService = DefaultCompanionProfileService(networkProvider: networkProvider)
+
+    private lazy var companionProfileRepository: CompanionProfileRepository = DefaultCompanionProfileRepository(service: companionProfileService)
+    
     // MARK: - Dependencies
 
     private let networkProvider: NetworkProvider
@@ -47,5 +53,11 @@ final class MyPageDIContainer {
 
     func makeWrittenPostViewController() -> WrittenPostViewController {
         WrittenPostViewController(viewModel: WrittenPostViewModel(repository: myPageRepository))
+    }
+    
+    func makeEditCompanionProfileViewController(profileID: Int) -> EditCompanionProfileViewController {
+        let viewModel = EditCompanionProfileViewModel(repository: companionProfileRepository, profileID: profileID)
+
+        return EditCompanionProfileViewController(viewModel: viewModel)
     }
 }

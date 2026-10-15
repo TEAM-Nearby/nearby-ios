@@ -17,8 +17,8 @@ final class MyPageViewController:
     var onWrittenPostRowDidTap: (() -> Void)?
     var onSentRequestRowDidTap: (() -> Void)?
     var onReceivedRequestRowDidTap: (() -> Void)?
-    var onEditProfileButtonDidTap: (() -> Void)?
     private let initialLoadingTracker = InitialLoadingTracker()
+    var onEditProfileRequested: ((Int) -> Void)?
 
     // MARK: - UI Component
 
@@ -98,8 +98,8 @@ final class MyPageViewController:
             self?.onReceivedRequestRowDidTap?()
         }
         
-        viewModel.output.editProfileButtonDidTap = { [weak self] in
-            self?.onEditProfileButtonDidTap?()
+        viewModel.output.editProfileRequested = { [weak self] profileID in
+            self?.onEditProfileRequested?(profileID)
         }
     }
 }

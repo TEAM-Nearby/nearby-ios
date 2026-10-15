@@ -8,12 +8,16 @@
 import Alamofire
 
 enum CompanionProfileTarget {
+    case detail(profileID: Int)
     case update(request: UpdateCompanionProfileRequestDTO)
 }
 
 extension CompanionProfileTarget: BaseTargetType {
     var path: String {
         switch self {
+        case .detail(let profileID):
+            return "/api/companion-profiles/\(profileID)"
+
         case .update:
             return "/api/users/me/companion-profile"
         }
@@ -21,6 +25,9 @@ extension CompanionProfileTarget: BaseTargetType {
 
     var method: HTTPMethod {
         switch self {
+        case .detail:
+            return .get
+
         case .update:
             return .put
         }
@@ -28,6 +35,9 @@ extension CompanionProfileTarget: BaseTargetType {
 
     var bodyParameters: Parameters? {
         switch self {
+        case .detail:
+            return nil
+            
         case .update(let request):
             var parameters: Parameters = [
                 "nickname": request.nickname,

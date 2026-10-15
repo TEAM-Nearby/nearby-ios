@@ -27,7 +27,7 @@ final class EditCompanionProfileViewController:
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureInitialProfile()
+        viewModel.action(.viewDidLoad)
     }
 
     // MARK: - Custom Methods
@@ -74,14 +74,12 @@ final class EditCompanionProfileViewController:
         viewModel.output.isLoading = { [weak self] isLoading in
             self?.editProfileView.bottomButton.isEnabled = !isLoading
         }
-    }
+        
+        viewModel.output.profileDidLoad = { [weak self] profile in
+            guard let self else { return }
 
-    // MARK: - Methods
-
-    private func configureInitialProfile() {
-        let profile = viewModel.currentProfile()
-
-        editProfileView.configure(nickname: profile.nickname, introduction: profile.intro, selectedKeywords: viewModel.currentSelectedKeywordTitles())
+            editProfileView.configure(nickname: profile.nickname, introduction: profile.intro, selectedKeywords: viewModel.currentSelectedKeywordTitles())
+        }
     }
 }
 

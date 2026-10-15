@@ -35,7 +35,7 @@ enum LoadingPolicy {
 @MainActor
 final class RequestRunner {
     
-    // MARK: - Property
+    // MARK: - Properties
     
     let id = UUID()
     private let loadingState: CTARequestState

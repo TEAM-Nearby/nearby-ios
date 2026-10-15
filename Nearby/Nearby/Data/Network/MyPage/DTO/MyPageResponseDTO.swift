@@ -20,6 +20,7 @@ struct MyPageResponseDTO: Decodable {
     let visitedCityCount: Int
     let receivedReviewCount: Int
     let profileId: Int?
+    let intro: String?
 }
 
 struct MyCompanionPostsResponseDTO: Decodable {

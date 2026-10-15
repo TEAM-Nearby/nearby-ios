@@ -11,19 +11,21 @@ import SnapKit
 import Then
 
 final class NearDiningCell: UICollectionViewCell {
-    override var isHighlighted: Bool {
-        didSet {
-            contentView.backgroundColor = isHighlighted ? .bgSurfacePurple : .white
-        }
-    }
-    
+
     // MARK: - Property
-    
+
     var onBookmarkTap: (() -> Void)?
     var onImageTap: (() -> Void)?
+    private var isShowingSkeleton = false
+
+    override var isHighlighted: Bool {
+        didSet {
+            contentView.backgroundColor = isHighlighted && !isShowingSkeleton ? .bgSurfacePurple : .white
+        }
+    }
 
     // MARK: - UI Components
-    
+
     private let nameLabel = UILabel()
     private let categoryLabel = UILabel()
     private let statusLabel = UILabel()
@@ -39,11 +41,22 @@ final class NearDiningCell: UICollectionViewCell {
     private var restaurantImageURLs: [URL?] = []
     private let dividerView = UIView()
 
+    private let skeletonContainerView = SkeletonShimmerContainerView()
+    private let skeletonNameView = SkeletonShimmerView(cornerRadius: 11)
+    private let skeletonCategoryView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonStatusView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonDistanceView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonAddressView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonRatingView = SkeletonShimmerView(cornerRadius: 8)
+    private let skeletonFirstImageView = SkeletonShimmerView(cornerRadius: 16)
+    private let skeletonSecondImageView = SkeletonShimmerView(cornerRadius: 16)
+    private let skeletonThirdImageView = SkeletonShimmerView(cornerRadius: 16)
+
     // MARK: - Initializer
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         setStyle()
         setUI()
         setLayout()
@@ -54,49 +67,50 @@ final class NearDiningCell: UICollectionViewCell {
     }
 
     // MARK: - Life Cycle
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
-        
+
         onBookmarkTap = nil
         onImageTap = nil
         restaurantImages = []
         restaurantImageURLs = []
         resetImageCollectionViewOffset()
         imageCollectionView.reloadData()
+        setSkeletonVisible(false)
     }
 
     // MARK: - Methods
-    
+
     private func setStyle() {
         contentView.backgroundColor = .white
-        
+
         nameLabel.do {
             $0.setFont(.b1Sb18, textColor: .grey80)
         }
-        
+
         categoryLabel.do {
             $0.setFont(.b3M14, textColor: .grey30)
         }
-        
+
         statusLabel.do {
             $0.setFont(.b3M14, textColor: .grey80)
         }
-        
+
         distanceLabel.do {
             $0.setFont(.c1M14, textColor: .grey30)
         }
-        
+
         addressLabel.do {
             $0.setFont(.b3R14, textColor: .grey50)
             $0.lineBreakMode = .byTruncatingTail
         }
-        
+
         starRatingView.do {
             $0.setSpacing(2)
             $0.setFilledStarColor(.chipIcOrange)
         }
-        
+
         ratingLabel.do {
             $0.setFont(.b3Sb14, textColor: .chipIcOrange)
             $0.transform = CGAffineTransform(translationX: 0, y: 1)
@@ -106,13 +120,13 @@ final class NearDiningCell: UICollectionViewCell {
             $0.setFont(.b3M14, textColor: .grey30)
             $0.transform = CGAffineTransform(translationX: 0, y: 1)
         }
-        
+
         bookmarkButton.do {
             $0.setImage(.bookmarkMini.withRenderingMode(.alwaysOriginal), for: .normal)
             $0.setImage(.bookmarkSelectedMini.withRenderingMode(.alwaysOriginal), for: .selected)
             $0.addTarget(self, action: #selector(bookmarkButtonDidTap), for: .touchUpInside)
         }
-        
+
         imageCollectionView.do {
             $0.backgroundColor = .clear
             $0.backgroundView = imageCollectionBackgroundButton
@@ -125,16 +139,27 @@ final class NearDiningCell: UICollectionViewCell {
         }
 
         imageCollectionBackgroundButton.addTarget(self, action: #selector(imageCollectionBackgroundButtonDidTap), for: .touchUpInside)
-        
+
         dividerView.do {
             $0.backgroundColor = .grey20
         }
+
+        skeletonContainerView.do {
+            $0.backgroundColor = .white
+            $0.isHidden = true
+            $0.isUserInteractionEnabled = false
+            $0.accessibilityElementsHidden = true
+        }
     }
-    
+
     // MARK: - Methods
 
     private func setUI() {
         contentView.addSubviews(nameLabel, categoryLabel, statusLabel, distanceLabel, addressLabel, starRatingView, ratingLabel, reviewCountLabel, bookmarkButton, imageCollectionView, dividerView)
+
+        contentView.addSubview(skeletonContainerView)
+        skeletonContainerView.addSubviews(skeletonNameView, skeletonCategoryView, skeletonStatusView, skeletonDistanceView,
+                                          skeletonAddressView, skeletonRatingView, skeletonFirstImageView, skeletonSecondImageView, skeletonThirdImageView)
     }
 
     private func setLayout() {
@@ -142,61 +167,126 @@ final class NearDiningCell: UICollectionViewCell {
             $0.top.equalToSuperview()
             $0.leading.equalToSuperview().inset(20)
         }
-        
+
         categoryLabel.snp.makeConstraints {
             $0.leading.equalTo(nameLabel.snp.trailing).offset(8)
             $0.centerY.equalTo(nameLabel)
         }
-        
+
         bookmarkButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.top.equalToSuperview().inset(29)
             $0.size.equalTo(40)
         }
-        
+
         statusLabel.snp.makeConstraints {
             $0.top.equalTo(nameLabel.snp.bottom).offset(4)
             $0.leading.equalTo(nameLabel)
         }
-        
+
         distanceLabel.snp.makeConstraints {
             $0.leading.equalTo(statusLabel.snp.trailing).offset(6)
             $0.centerY.equalTo(statusLabel)
         }
-        
+
         addressLabel.snp.makeConstraints {
             $0.top.equalTo(statusLabel.snp.bottom).offset(4)
             $0.leading.equalTo(nameLabel)
             $0.trailing.equalToSuperview().inset(86)
         }
-        
+
         starRatingView.snp.makeConstraints {
             $0.top.equalTo(addressLabel.snp.bottom).offset(6)
             $0.leading.equalTo(nameLabel)
             $0.width.equalTo(80)
             $0.height.equalTo(16)
         }
-        
+
         ratingLabel.snp.makeConstraints {
             $0.leading.equalTo(starRatingView.snp.trailing).offset(4)
             $0.centerY.equalTo(starRatingView)
         }
-        
+
         reviewCountLabel.snp.makeConstraints {
             $0.leading.equalTo(ratingLabel.snp.trailing).offset(4)
             $0.centerY.equalTo(starRatingView)
         }
-        
+
         imageCollectionView.snp.makeConstraints {
             $0.top.equalTo(starRatingView.snp.bottom).offset(10)
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(124)
         }
-        
+
         dividerView.snp.makeConstraints {
             $0.top.equalTo(imageCollectionView.snp.bottom).offset(16)
             $0.horizontalEdges.bottom.equalToSuperview()
             $0.height.equalTo(0.5)
+        }
+
+        skeletonContainerView.snp.makeConstraints {
+            $0.top.horizontalEdges.equalToSuperview()
+            $0.bottom.equalTo(dividerView.snp.top)
+        }
+
+        skeletonNameView.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().inset(20)
+            $0.width.equalTo(148)
+            $0.height.equalTo(22)
+        }
+
+        skeletonCategoryView.snp.makeConstraints {
+            $0.leading.equalTo(skeletonNameView.snp.trailing).offset(8)
+            $0.centerY.equalTo(skeletonNameView)
+            $0.width.equalTo(58)
+            $0.height.equalTo(16)
+        }
+
+        skeletonStatusView.snp.makeConstraints {
+            $0.top.equalTo(skeletonNameView.snp.bottom).offset(4)
+            $0.leading.equalTo(skeletonNameView)
+            $0.width.equalTo(52)
+            $0.height.equalTo(16)
+        }
+
+        skeletonDistanceView.snp.makeConstraints {
+            $0.leading.equalTo(skeletonStatusView.snp.trailing).offset(6)
+            $0.centerY.equalTo(skeletonStatusView)
+            $0.width.equalTo(58)
+            $0.height.equalTo(16)
+        }
+
+        skeletonAddressView.snp.makeConstraints {
+            $0.top.equalTo(skeletonStatusView.snp.bottom).offset(4)
+            $0.leading.equalTo(skeletonNameView)
+            $0.trailing.equalToSuperview().inset(86)
+            $0.height.equalTo(16)
+        }
+
+        skeletonRatingView.snp.makeConstraints {
+            $0.top.equalTo(skeletonAddressView.snp.bottom).offset(6)
+            $0.leading.equalTo(skeletonNameView)
+            $0.width.equalTo(148)
+            $0.height.equalTo(16)
+        }
+
+        skeletonFirstImageView.snp.makeConstraints {
+            $0.top.equalTo(skeletonRatingView.snp.bottom).offset(10)
+            $0.leading.equalToSuperview().inset(20)
+            $0.size.equalTo(124)
+        }
+
+        skeletonSecondImageView.snp.makeConstraints {
+            $0.leading.equalTo(skeletonFirstImageView.snp.trailing).offset(6)
+            $0.centerY.equalTo(skeletonFirstImageView)
+            $0.size.equalTo(124)
+        }
+
+        skeletonThirdImageView.snp.makeConstraints {
+            $0.leading.equalTo(skeletonSecondImageView.snp.trailing).offset(6)
+            $0.centerY.equalTo(skeletonFirstImageView)
+            $0.size.equalTo(124)
         }
     }
 
@@ -213,7 +303,15 @@ final class NearDiningCell: UICollectionViewCell {
         imageCollectionView.setContentOffset(CGPoint(x: -imageCollectionView.contentInset.left, y: 0), animated: false)
     }
 
+    private func setSkeletonVisible(_ isVisible: Bool) {
+        isShowingSkeleton = isVisible
+        skeletonContainerView.isHidden = !isVisible
+        isUserInteractionEnabled = !isVisible
+        accessibilityElementsHidden = isVisible
+    }
+
     func configure(with item: NearDiningCellItem, isLast: Bool) {
+        setSkeletonVisible(false)
         nameLabel.text = item.name
         categoryLabel.text = item.category
         statusLabel.text = item.businessStatus
@@ -229,7 +327,17 @@ final class NearDiningCell: UICollectionViewCell {
         imageCollectionView.reloadData()
         resetImageCollectionViewOffset()
     }
-    
+
+    func configureSkeleton(isLast: Bool) {
+        onBookmarkTap = nil
+        onImageTap = nil
+        restaurantImages = []
+        restaurantImageURLs = []
+        imageCollectionView.reloadData()
+        dividerView.isHidden = isLast
+        setSkeletonVisible(true)
+    }
+
     // MARK: - Action
 
     @objc
@@ -254,7 +362,7 @@ extension NearDiningCell: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(DiningImageCell.self, for: indexPath)
         let imageURL = restaurantImageURLs.indices.contains(indexPath.item) ? restaurantImageURLs[indexPath.item] : nil
         cell.configure(image: restaurantImages[indexPath.item], imageURL: imageURL)
-        
+
         return cell
     }
 }

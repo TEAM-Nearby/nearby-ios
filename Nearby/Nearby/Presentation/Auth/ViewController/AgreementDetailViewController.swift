@@ -8,6 +8,10 @@
 import UIKit
 
 final class AgreementDetailViewController: BaseViewController<AgreementDetailViewModel> {
+    
+    // MARK: - Property
+
+    var onBackButtonDidTap: (() -> Void)?
 
     // MARK: - UI Component
 
@@ -26,6 +30,14 @@ final class AgreementDetailViewController: BaseViewController<AgreementDetailVie
     }
 
     // MARK: - Custom Methods
+    
+    override func bindAction() {
+        super.bindAction()
+
+        agreementDetailView.navigationBar.leftButtonAction = { [weak self] in
+            self?.onBackButtonDidTap?()
+        }
+    }
 
     override func bindState() {
         super.bindState()
@@ -35,4 +47,3 @@ final class AgreementDetailViewController: BaseViewController<AgreementDetailVie
         }
     }
 }
-

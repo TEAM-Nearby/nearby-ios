@@ -108,8 +108,10 @@ private extension AppCoordinator {
         loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in guard let self else { return }
             
             switch onboardingStatus {
-            case .started,
-                 .phoneVerified:
+            case .started:
+                showAgreement()
+                
+            case .phoneVerified:
                 showPhoneVerification()
                 
             case .completed:
@@ -125,6 +127,42 @@ private extension AppCoordinator {
         setRootViewController(navigationController, animated: true)
     }
     
+    func showAgreement() {
+        guard let navigationController = window.rootViewController as? UINavigationController else {
+            return
+        }
+
+        let viewController = diContainer.auth.makeAgreementViewController()
+
+        viewController.onAgreementDetailRequested = { [weak self] type in
+            self?.showAgreementDetail(type: type)
+        }
+        
+        viewController.onBackButtonDidTap = { [weak navigationController] in
+            navigationController?.popViewController(animated: true)
+        }
+
+        viewController.onAgreementCompleted = { [weak self] in
+            self?.showPhoneVerification()
+        }
+
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showAgreementDetail(type: AgreementDetailType) {
+        guard let navigationController = window.rootViewController as? UINavigationController else {
+            return
+        }
+
+        let viewController = diContainer.auth.makeAgreementDetailViewController(type: type)
+        
+        viewController.onBackButtonDidTap = { [weak navigationController] in
+            navigationController?.popViewController(animated: true)
+        }
+
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
     func showPhoneVerification() {
         guard let navigationController = window.rootViewController as? UINavigationController else {
             return

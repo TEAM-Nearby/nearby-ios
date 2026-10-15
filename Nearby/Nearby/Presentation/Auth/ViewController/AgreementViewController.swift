@@ -13,6 +13,8 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
 
     private let agreementView = AgreementView()
     var onAgreementDetailRequested: ((AgreementDetailType) -> Void)?
+    var onBackButtonDidTap: (() -> Void)?
+    var onAgreementCompleted: (() -> Void)?
 
     // MARK: - Life Cycle
 
@@ -36,6 +38,9 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
         agreementView.privacyDetailButton.addTarget(self, action: #selector(privacyDetailButtonDidTap), for: .touchUpInside)
 
         agreementView.marketingDetailButton.addTarget(self, action: #selector(marketingDetailButtonDidTap), for: .touchUpInside)
+        
+        agreementView.bottomButton.addTarget(self, action: #selector(agreementButtonDidTap), for: .touchUpInside)
+
 
     }
 
@@ -59,6 +64,15 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
         }
 
     }
+    
+    override func bindAction() {
+        super.bindAction()
+
+        agreementView.navigationBar.leftButtonAction = { [weak self] in
+            self?.onBackButtonDidTap?()
+        }
+    }
+
 
     // MARK: - Actions
 
@@ -82,15 +96,24 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
         viewModel.action(.marketingAgreementDidTap)
     }
     
-    @objc private func locationDetailButtonDidTap() {
+    @objc
+    private func locationDetailButtonDidTap() {
         viewModel.action(.locationDetailDidTap)
     }
 
-    @objc private func privacyDetailButtonDidTap() {
+    @objc
+    private func privacyDetailButtonDidTap() {
         viewModel.action(.privacyDetailDidTap)
     }
 
-    @objc private func marketingDetailButtonDidTap() {
+    @objc
+    private func marketingDetailButtonDidTap() {
         viewModel.action(.marketingDetailDidTap)
     }
+    
+    @objc
+    private func agreementButtonDidTap() {
+        onAgreementCompleted?()
+    }
+
 }

@@ -108,11 +108,8 @@ private extension AppCoordinator {
         loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in guard let self else { return }
             
             switch onboardingStatus {
-            case .started:
+            case .started, .phoneVerified:
                 showAgreement()
-                
-            case .phoneVerified:
-                showPhoneVerification()
                 
             case .completed:
                 showMainTab()

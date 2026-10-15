@@ -31,6 +31,10 @@ final class AuthDIContainer {
         CompanionProfileViewController(viewModel: CompanionProfileViewModel(authRepository: authRepository))
     }
     
+    func makeEmergencyContactViewController() -> EmergencyContactViewController {
+        EmergencyContactViewController(viewModel: EmergencyContactViewModel())
+    }
+    
     func makeAgreementViewController() -> AgreementViewController {
         AgreementViewController(viewModel: AgreementViewModel())
     }

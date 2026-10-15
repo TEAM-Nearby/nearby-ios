@@ -200,9 +200,27 @@ private extension AppCoordinator {
         }
         
         viewController.onProfileCompleted = { [weak self] in
-            self?.showMainTab()
+            self?.showEmergencyContact()
         }
         
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func showEmergencyContact() {
+        guard let navigationController = window.rootViewController as? UINavigationController else {
+            return
+        }
+
+        let viewController = diContainer.auth.makeEmergencyContactViewController()
+
+        viewController.onBackButtonDidTap = { [weak navigationController] in
+            navigationController?.popViewController(animated: true)
+        }
+
+        viewController.onRegistrationCompleted = { [weak self] in
+            self?.showMainTab()
+        }
+
         navigationController.pushViewController(viewController, animated: true)
     }
     

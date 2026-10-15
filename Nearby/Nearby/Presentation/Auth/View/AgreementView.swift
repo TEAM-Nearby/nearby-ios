@@ -68,7 +68,7 @@ final class AgreementView: BaseView {
 
         configuration.preferredSymbolConfigurationForImage = nil
 
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0)
+        configuration.contentInsets = .zero
 
         configuration.attributedTitle = AttributedString("전체 약관 동의", attributes: AttributeContainer([.font: NearbyFont.b1M18.font, .foregroundColor: UIColor.grey80]))
 

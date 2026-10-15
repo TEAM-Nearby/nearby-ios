@@ -168,6 +168,9 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             let shouldShowMarkers = viewModel.output.viewState.value.category.shouldShowCompanionMarkers
             mapController.updateCompanionMarkers(shouldShowMarkers ? markers : [])
         }
+        bottomSheetController.onCompanionAvailabilityChanged = { [weak self] hasCompanions in
+            self?.viewModel.action(.companionAvailabilityDidChange(hasCompanions))
+        }
         bottomSheetController.onSpecificSheetClose = { [weak self] in
             self?.viewModel.action(.specificSheetDidClose)
         }

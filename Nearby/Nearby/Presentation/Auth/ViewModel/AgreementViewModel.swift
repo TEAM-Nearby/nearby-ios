@@ -16,12 +16,16 @@ final class AgreementViewModel: BaseViewModelType {
         case locationAgreementDidTap
         case privacyAgreementDidTap
         case marketingAgreementDidTap
+        case locationDetailDidTap
+        case privacyDetailDidTap
+        case marketingDetailDidTap
     }
 
     // MARK: - Outputs
 
     struct Output {
         var onAgreementStateChanged: ((AgreementState) -> Void)?
+        var onAgreementDetailRequested: ((AgreementDetailType) -> Void)?
     }
 
     struct AgreementState {
@@ -67,6 +71,18 @@ final class AgreementViewModel: BaseViewModelType {
 
         case .marketingAgreementDidTap:
             isMarketingAgreed.toggle()
+
+        case .locationDetailDidTap:
+            output.onAgreementDetailRequested?(.location)
+            return
+
+        case .privacyDetailDidTap:
+            output.onAgreementDetailRequested?(.privacy)
+            return
+
+        case .marketingDetailDidTap:
+            output.onAgreementDetailRequested?(.marketing)
+            return
         }
 
         updateAgreementState()

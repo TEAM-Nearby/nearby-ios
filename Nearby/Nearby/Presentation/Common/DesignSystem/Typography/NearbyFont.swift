@@ -19,6 +19,7 @@ enum NearbyFont {
     case b1M18
     case b2Sb16
     case b2M16
+    case b2R16
     case b3Sb14
     case b3M14
     case b3R14
@@ -41,6 +42,7 @@ enum NearbyFont {
         case .b1M18:  return FontProperty(fontType: .medium, size: 18)
         case .b2Sb16: return FontProperty(fontType: .semibold, size: 16)
         case .b2M16:  return FontProperty(fontType: .medium, size: 16)
+        case .b2R16:  return FontProperty(fontType: .regular, size: 16)
         case .b3Sb14: return FontProperty(fontType: .semibold, size: 14)
         case .b3M14:  return FontProperty(fontType: .medium, size: 14)
         case .b3R14:  return FontProperty(fontType: .regular, size: 14)

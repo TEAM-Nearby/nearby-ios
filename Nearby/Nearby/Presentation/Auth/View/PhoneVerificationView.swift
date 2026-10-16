@@ -16,7 +16,6 @@ final class PhoneVerificationView: BaseView {
 
     let navigationBar = NearbyNavigationBar()
 
-    private let progressContainerView = UIView()
     private let progressImageView = UIImageView()
 
     private let titleLabel = UILabel()
@@ -44,14 +43,9 @@ final class PhoneVerificationView: BaseView {
             $0.configure(leftItem: .back)
         }
 
-        progressContainerView.do {
-            $0.backgroundColor = .white
-        }
-
         progressImageView.do {
-            $0.image = .progressbarStep01
-            $0.contentMode = .scaleAspectFit
-            $0.clipsToBounds = true
+            $0.image = .progressStep1
+            $0.contentMode = .scaleToFill
         }
 
         titleLabel.do {
@@ -124,13 +118,11 @@ final class PhoneVerificationView: BaseView {
 
     override func setUI() {
         addSubviews(
-            navigationBar, progressContainerView, titleLabel,
+            navigationBar, progressImageView, titleLabel,
             phoneTitleLabel, phoneTextFieldContainerView, phoneErrorLabel,
             verificationTitleLabel, verificationTextFieldContainerView, verificationErrorLabel,
             bottomButton
         )
-
-        progressContainerView.addSubview(progressImageView)
 
         phoneTextFieldContainerView.addSubviews(phoneTextField, phoneClearButton)
 
@@ -142,22 +134,15 @@ final class PhoneVerificationView: BaseView {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top)
             $0.horizontalEdges.equalToSuperview()
         }
-
-        progressContainerView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom)
-            $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(37)
-        }
-
+        
         progressImageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalToSuperview().offset(20)
-            $0.size.equalTo(CGSize(width: 60, height: 37)
-            )
+            $0.top.equalTo(navigationBar.snp.bottom).offset(12)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(4)
         }
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(progressContainerView.snp.bottom).offset(26)
+            $0.top.equalTo(progressImageView.snp.bottom).offset(26)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 
@@ -227,8 +212,6 @@ final class PhoneVerificationView: BaseView {
     // MARK: - Methods
 
     func updateVerificationMode(_ isVerificationMode: Bool) {
-        progressImageView.image = isVerificationMode ? .progressbarStep02 : .progressbarStep01
-
         phoneClearButton.isHidden = !isVerificationMode
         phoneErrorLabel.isHidden = true
 

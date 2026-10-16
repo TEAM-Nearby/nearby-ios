@@ -20,6 +20,9 @@ final class SettingView: BaseView {
     let withdrawalButton = UIButton(type: .system)
     private let dividerView = UIView()
     private let versionLabel = UILabel()
+    private let menuContainerView = UIView()
+    private let logoutIconImageView = UIImageView()
+    private let termsIconImageView = UIImageView()
 
     // MARK: - Custom Methods
 
@@ -28,6 +31,22 @@ final class SettingView: BaseView {
 
         navigationBar.do {
             $0.configure(leftItem: .back, centerItem: .title("설정"))
+        }
+        
+        menuContainerView.do {
+            $0.backgroundColor = .bgSurfaceGrey0
+            $0.layer.cornerRadius = 20
+            $0.clipsToBounds = true
+        }
+        
+        logoutIconImageView.do {
+            $0.image = UIImage(named: "logoutIcon")
+            $0.contentMode = .scaleAspectFit
+        }
+
+        termsIconImageView.do {
+            $0.image = UIImage(named: "termsIcon")
+            $0.contentMode = .scaleAspectFit
         }
 
         logoutButton.do {
@@ -63,7 +82,8 @@ final class SettingView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(navigationBar, logoutButton, dividerView, agreementButton, versionLabel, withdrawalButton)
+        addSubviews(navigationBar, menuContainerView, versionLabel, withdrawalButton)
+        menuContainerView.addSubviews(logoutIconImageView, logoutButton, dividerView, termsIconImageView, agreementButton)
     }
 
     override func setLayout() {
@@ -71,27 +91,47 @@ final class SettingView: BaseView {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview()
         }
-
-        logoutButton.snp.makeConstraints {
+        
+        menuContainerView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(49)
+            $0.height.equalTo(105)
+        }
+        
+        logoutIconImageView.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(20)
+            $0.centerY.equalTo(logoutButton)
+            $0.size.equalTo(24)
+        }
+
+        logoutButton.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.equalTo(logoutIconImageView.snp.trailing).offset(3.05)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(52)
         }
 
         dividerView.snp.makeConstraints {
-            $0.top.equalTo(logoutButton.snp.bottom).offset(3)
-            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.top.equalTo(logoutButton.snp.bottom)
+            $0.horizontalEdges.equalToSuperview().inset(16)
             $0.height.equalTo(1)
         }
         
+        termsIconImageView.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(20)
+            $0.centerY.equalTo(agreementButton)
+            $0.size.equalTo(24)
+        }
+        
         agreementButton.snp.makeConstraints {
-            $0.top.equalTo(dividerView.snp.bottom).offset(3)
-            $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(49)
+            $0.top.equalTo(dividerView.snp.bottom)
+            $0.leading.equalTo(termsIconImageView.snp.trailing).offset(3.05)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(52)
         }
         
         versionLabel.snp.makeConstraints {
-            $0.top.equalTo(agreementButton.snp.bottom).offset(20)
+            $0.top.equalTo(menuContainerView.snp.bottom).offset(20)
             $0.centerX.equalToSuperview()
         }
         

@@ -34,6 +34,8 @@ final class MyPageView: BaseView {
     private let nameStackView = UIStackView()
     private let nicknameLabel = UILabel()
     private let genderLabel = UILabel()
+    private let introductionContainerView = UIView()
+    private let introductionTitleLabel = UILabel()
     private let introductionLabel = UILabel()
     private let verificationChip = NearbyChipButton(style: .badgeVerification, title: "본인인증 완료", horizontalInset: 22)
     private let personalityVerticalGuide = UILayoutGuide()
@@ -132,12 +134,24 @@ final class MyPageView: BaseView {
             $0.textColor = .primary50
         }
         
+        introductionContainerView.do {
+            $0.backgroundColor = .primary5
+            $0.layer.cornerRadius = 16
+            $0.clipsToBounds = true
+            $0.isHidden = true
+        }
+
+        introductionTitleLabel.do {
+            $0.text = "나의 한 줄 소개"
+            $0.font = NearbyFont.b2Sb16.font
+            $0.textColor = .primary50
+        }
+
         introductionLabel.do {
             $0.font = NearbyFont.b3M14.font
-            $0.textColor = .grey50
-            $0.textAlignment = .center
+            $0.textColor = .grey80
+            $0.textAlignment = .left
             $0.numberOfLines = 0
-            $0.isHidden = true
         }
 
         verificationChip.do {
@@ -201,10 +215,12 @@ final class MyPageView: BaseView {
         contentView.addSubviews(boardingPassImageView, mannerScoreCardView, menuCardView)
 
         boardingPassImageView.addSubviews(
-            profileImageView, nameStackView,introductionLabel,
-            verificationChip,personalityChipContainerView, statsStackView,
-            firstDividerView, secondDividerView,editProfileButton
+            profileImageView, nameStackView, introductionContainerView,
+            verificationChip, personalityChipContainerView, statsStackView,
+            firstDividerView, secondDividerView, editProfileButton
         )
+        
+        introductionContainerView.addSubviews(introductionTitleLabel, introductionLabel)
         
         boardingPassImageView.addLayoutGuide(personalityVerticalGuide)
 
@@ -263,26 +279,39 @@ final class MyPageView: BaseView {
             $0.centerX.equalToSuperview()
         }
 
-        introductionLabel.snp.makeConstraints {
-            $0.top.equalTo(nameStackView.snp.bottom).offset(8)
-            $0.horizontalEdges.equalToSuperview().inset(24)
-        }
-
         verificationChip.snp.makeConstraints {
-            $0.top.equalTo(introductionLabel.snp.bottom).offset(8)
+            $0.top.equalTo(nameStackView.snp.bottom).offset(8)
             $0.centerX.equalToSuperview()
             $0.height.equalTo(36)
         }
+
+        introductionContainerView.snp.makeConstraints {
+            $0.top.equalTo(verificationChip.snp.bottom).offset(32)
+            $0.horizontalEdges.equalToSuperview().inset(24)
+        }
+
+        introductionTitleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(16)
+            $0.horizontalEdges.equalToSuperview().inset(16)
+        }
+
+        introductionLabel.snp.makeConstraints {
+            $0.top.equalTo(introductionTitleLabel.snp.bottom).offset(12)
+            $0.horizontalEdges.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(16)
+        }
         
         personalityVerticalGuide.snp.makeConstraints {
-            $0.top.equalTo(verificationChip.snp.bottom)
+            $0.top.equalTo(introductionContainerView.snp.bottom)
             $0.bottom.equalTo(statsStackView.snp.top)
             $0.horizontalEdges.equalToSuperview()
         }
 
-        personalityChipContainerView.snp.makeConstraints {
+        personalityChipContainerView.snp.remakeConstraints {
+            $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
             $0.centerX.equalToSuperview()
             $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
+            $0.bottom.equalTo(statsStackView.snp.top).offset(-24)
         }
 
         personalityFirstLineStackView.snp.makeConstraints {
@@ -423,13 +452,18 @@ private extension MyPageView {
         let hasIntroduction = !text.isEmpty
 
         introductionLabel.text = text
-        introductionLabel.isHidden = !hasIntroduction
+        introductionContainerView.isHidden = !hasIntroduction
 
-        verificationChip.snp.remakeConstraints {
-            $0.top.equalTo(hasIntroduction ? introductionLabel.snp.bottom : nameStackView.snp.bottom).offset(8)
-            $0.centerX.equalToSuperview()
-            $0.height.equalTo(36)
+        introductionContainerView.snp.remakeConstraints {
+            $0.top.equalTo(verificationChip.snp.bottom).offset(hasIntroduction ? 24 : 0)
+            $0.horizontalEdges.equalToSuperview().inset(24)
+
+            if !hasIntroduction {
+                $0.height.equalTo(0)
+            }
         }
+
+        setNeedsLayout()
     }
 
     func configurePersonalityKeywords(_ keywords: [String]) {
@@ -566,7 +600,7 @@ private extension MyPageView {
             $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
 
             if hasSecondLine {
-                $0.top.equalTo(verificationChip.snp.bottom).offset(32)
+                $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
                 $0.bottom.lessThanOrEqualTo(statsStackView.snp.top).offset(-24)
             } else {
                 $0.centerY.equalTo(personalityVerticalGuide.snp.centerY)

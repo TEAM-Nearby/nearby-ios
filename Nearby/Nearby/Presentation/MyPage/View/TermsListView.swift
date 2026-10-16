@@ -43,8 +43,15 @@ final class TermsListView: BaseView {
     override func setUI() {
         addSubviews(navigationBar, termsStackView)
 
-        termsButtons.forEach {
-            termsStackView.addArrangedSubview($0)
+        termsButtons.forEach { button in
+            termsStackView.addArrangedSubview(button)
+
+            let dividerView = makeDividerView()
+            termsStackView.addArrangedSubview(dividerView)
+
+            dividerView.snp.makeConstraints {
+                $0.height.equalTo(1)
+            }
         }
     }
 
@@ -74,6 +81,13 @@ final class TermsListView: BaseView {
     }
     
     // MARK: - Methods
+    
+    private func makeDividerView() -> UIView {
+        let dividerView = UIView()
+        dividerView.backgroundColor = .grey5
+
+        return dividerView
+    }
 
     private func makeTermsButton(title: String) -> UIButton {
         let button = UIButton(type: .system)
@@ -81,10 +95,25 @@ final class TermsListView: BaseView {
         var configuration = UIButton.Configuration.plain()
         configuration.attributedTitle = AttributedString(title, attributes: AttributeContainer([.font: NearbyFont.b3M14.font, .foregroundColor: UIColor.grey80]))
         configuration.baseForegroundColor = .grey80
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 24)
 
         button.configuration = configuration
         button.contentHorizontalAlignment = .leading
+        
+        let chevronImageView = UIImageView().then {
+            $0.image = UIImage(systemName: "chevron.right")
+            $0.tintColor = .grey80
+            $0.contentMode = .scaleAspectFit
+            $0.isUserInteractionEnabled = false
+        }
+
+        button.addSubview(chevronImageView)
+
+        chevronImageView.snp.makeConstraints {
+            $0.trailing.equalToSuperview()
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(15)
+        }
 
         return button
     }

@@ -58,10 +58,7 @@ extension DefaultAuthService: AuthService {
     }
 
     func logout(request: LogoutRequestDTO) async throws -> LogoutResponseDTO {
-        try await networkProvider.request(
-            AuthTarget.logout(request),
-            responseType: LogoutResponseDTO.self
-        )
+        try await networkProvider.request(AuthTarget.logout(request), responseType: LogoutResponseDTO.self)
     }
     
     func withdraw() async throws -> WithdrawResponseDTO {

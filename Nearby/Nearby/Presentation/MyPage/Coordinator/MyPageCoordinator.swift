@@ -102,6 +102,10 @@ private extension MyPageCoordinator {
             self?.onLogoutDidFinish?()
         }
         
+        settingViewController.onWithdrawalDidComplete = { [weak self] in
+            self?.onLogoutDidFinish?()
+        }
+        
         settingViewController.onAgreementButtonDidTap = { [weak self] in
             self?.showTermsList()
         }

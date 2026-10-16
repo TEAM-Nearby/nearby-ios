@@ -14,6 +14,7 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
     var onBackButtonDidTap: (() -> Void)?
     var onLogoutButtonDidTap: (() -> Void)?
     var onAgreementButtonDidTap: (() -> Void)?
+    var onWithdrawalDidComplete: (() -> Void)?
     
     // MARK: - UI Component
     
@@ -58,6 +59,22 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
         
         viewModel.output.isLogoutLoading = { [weak self] isLoading in
             self?.settingView.logoutButton.isEnabled = !isLoading
+        }
+        
+        viewModel.output.withdrawalDidComplete = { [weak self] in
+            self?.onWithdrawalDidComplete?()
+        }
+
+        viewModel.output.isWithdrawalLoading = { [weak self] isLoading in
+            self?.settingView.withdrawalButton.isEnabled = !isLoading
+        }
+        
+        viewModel.output.withdrawalErrorMessage = { [weak self] message in
+            let alertController = UIAlertController(title: "회원 탈퇴 실패", message: message, preferredStyle: .alert)
+
+            alertController.addAction(UIAlertAction(title: "확인", style: .default))
+
+            self?.present(alertController, animated: true)
         }
     }
     

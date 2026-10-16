@@ -25,12 +25,20 @@ final class PlaceSearchResultCell: UITableViewCell {
     func configure(with item: PlaceSearchResultItem) {
         var configuration = defaultContentConfiguration()
         configuration.text = item.name
+        configuration.textProperties.color = .grey80
         configuration.secondaryText = item.address
+        configuration.secondaryTextProperties.color = .grey40
         configuration.secondaryTextProperties.numberOfLines = 1
         contentConfiguration = configuration
     }
 
     private func setStyle() {
         selectionStyle = .none
+        backgroundColor = .white
+        contentView.backgroundColor = .white
+
+        var backgroundConfiguration = UIBackgroundConfiguration.clear()
+        backgroundConfiguration.backgroundColor = .white
+        self.backgroundConfiguration = backgroundConfiguration
     }
 }

@@ -69,8 +69,8 @@ final class CompanionProfileView: BaseView {
         }
         
         progressImageView.do {
-            $0.image = .progressbarStep02
-            $0.contentMode = .scaleAspectFit
+            $0.image = .progressStep2
+            $0.contentMode = .scaleToFill
             $0.clipsToBounds = true
         }
         
@@ -196,13 +196,13 @@ final class CompanionProfileView: BaseView {
         progressContainerView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(37)
+            $0.height.equalTo(16)
         }
 
         progressImageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalToSuperview().offset(20)
-            $0.size.equalTo(CGSize(width: 60, height: 37))
+            $0.top.equalToSuperview().offset(12)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(4)
         }
         
         bottomButton.snp.makeConstraints {

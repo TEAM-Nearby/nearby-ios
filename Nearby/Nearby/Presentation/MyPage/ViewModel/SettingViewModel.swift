@@ -15,6 +15,7 @@ final class SettingViewModel: BaseViewModelType, RequestRunning {
     enum Input {
         case backButtonDidTap
         case logoutButtonDidTap
+        case agreementButtonDidTap
     }
 
     // MARK: - Output
@@ -22,6 +23,7 @@ final class SettingViewModel: BaseViewModelType, RequestRunning {
     struct Output {
         var backButtonDidTap: (() -> Void)?
         var logoutButtonDidTap: (() -> Void)?
+        var agreementButtonDidTap: (() -> Void)?
         var logoutErrorMessage: ((String) -> Void)?
         var isLogoutLoading: ((Bool) -> Void)?
     }
@@ -52,6 +54,9 @@ final class SettingViewModel: BaseViewModelType, RequestRunning {
 
         case .logoutButtonDidTap:
             logout()
+        
+        case .agreementButtonDidTap:
+            output.agreementButtonDidTap?()
         }
     }
 }

@@ -13,6 +13,7 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
     
     var onBackButtonDidTap: (() -> Void)?
     var onLogoutButtonDidTap: (() -> Void)?
+    var onAgreementButtonDidTap: (() -> Void)?
     
     // MARK: - UI Component
     
@@ -38,6 +39,7 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
         }
         
         settingView.logoutButton.addTarget(self, action: #selector(logoutButtonDidTap), for: .touchUpInside)
+        settingView.agreementButton.addTarget(self, action: #selector(agreementButtonDidTap), for: .touchUpInside)
     }
     
     override func bindAction() {
@@ -47,6 +49,10 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
         
         viewModel.output.logoutButtonDidTap = { [weak self] in
             self?.onLogoutButtonDidTap?()
+        }
+        
+        viewModel.output.agreementButtonDidTap = { [weak self] in
+            self?.onAgreementButtonDidTap?()
         }
         
         viewModel.output.isLogoutLoading = { [weak self] isLoading in
@@ -72,5 +78,10 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
     @objc
     func logoutButtonDidTap() {
         showLogoutConfirmationAlert()
+    }
+    
+    @objc
+    private func agreementButtonDidTap() {
+        viewModel.action(.agreementButtonDidTap)
     }
 }

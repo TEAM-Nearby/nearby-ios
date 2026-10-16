@@ -200,6 +200,8 @@ private extension EditCompanionProfileViewModel {
             } catch {
                 guard !Task.isCancelled else { return }
 
+                AppLogger.error(error, message: "동행 프로필 수정 API 오류")
+
                 await MainActor.run {
                     self.isUpdating = false
                     self.updateTask = nil

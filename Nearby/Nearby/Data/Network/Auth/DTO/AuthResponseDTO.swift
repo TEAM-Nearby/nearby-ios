@@ -64,5 +64,5 @@ struct CompanionProfileResponseDTO: Decodable {
     let intro: String?
     let profileImageUrl: String?
     let travelStyleKeywords: [String]
-    let onboardingStatus: OnboardingStatus
+    let onboardingStatus: OnboardingStatus?
 }

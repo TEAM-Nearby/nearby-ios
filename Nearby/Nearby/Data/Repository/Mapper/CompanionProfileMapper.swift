@@ -28,4 +28,8 @@ enum CompanionProfileMapper {
             }
         )
     }
+    
+    static func map(_ response: UpdateCompanionProfileResponseDTO) -> CompanionProfile {
+        CompanionProfile(profileID: response.profileId, nickname: response.nickname, gender: response.gender, birthYear: response.birthYear, intro: response.intro, profileImageURL: response.profileImageUrl, travelStyleKeywords: response.travelStyleKeywords.compactMap {TravelStyleKeyword(rawValue: $0)})
+    }
 }

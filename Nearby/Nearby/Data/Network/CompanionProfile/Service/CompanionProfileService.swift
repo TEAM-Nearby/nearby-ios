@@ -7,7 +7,7 @@
 
 protocol CompanionProfileService {
     func fetch(profileID: Int) async throws -> CompanionProfileDetailResponseDTO
-    func update(request: UpdateCompanionProfileRequestDTO) async throws -> CompanionProfileDetailResponseDTO
+    func update(request: UpdateCompanionProfileRequestDTO) async throws -> UpdateCompanionProfileResponseDTO
 }
 
 final class DefaultCompanionProfileService {
@@ -31,7 +31,7 @@ extension DefaultCompanionProfileService: CompanionProfileService {
         try await networkProvider.request(CompanionProfileTarget.detail(profileID: profileID), responseType: CompanionProfileDetailResponseDTO.self)
     }
 
-    func update(request: UpdateCompanionProfileRequestDTO) async throws -> CompanionProfileDetailResponseDTO {
-        try await networkProvider.request(CompanionProfileTarget.update(request: request), responseType: CompanionProfileDetailResponseDTO.self)
+    func update(request: UpdateCompanionProfileRequestDTO) async throws -> UpdateCompanionProfileResponseDTO {
+        try await networkProvider.request(CompanionProfileTarget.update(request: request), responseType: UpdateCompanionProfileResponseDTO.self)
     }
 }

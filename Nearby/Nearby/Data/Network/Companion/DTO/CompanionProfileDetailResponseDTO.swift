@@ -17,3 +17,13 @@ struct CompanionProfileDetailResponseDTO: Decodable {
     let intro: String?
     let keywords: [String]
 }
+
+struct UpdateCompanionProfileResponseDTO: Decodable {
+    let profileId: Int
+    let nickname: String
+    let gender: NearbyGender
+    let birthYear: Int?
+    let profileImageUrl: String?
+    let intro: String?
+    let travelStyleKeywords: [String]
+}

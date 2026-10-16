@@ -11,6 +11,7 @@ struct MyPageDisplayModel {
 
     let profileImageUrl: String?
     let nickname: String
+    let intro: String?
     let genderText: String
     let isPhoneVerified: Bool
     let mannerRating: Int
@@ -25,6 +26,7 @@ struct MyPageDisplayModel {
     init(response: MyPageResponseDTO) {
         profileImageUrl = response.profileImageUrl
         nickname = response.nickname
+        intro = response.intro
         genderText = response.gender.genderDisplayText
         isPhoneVerified = response.isPhoneVerified
 

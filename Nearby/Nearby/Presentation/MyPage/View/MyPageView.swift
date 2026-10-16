@@ -17,6 +17,7 @@ final class MyPageView: BaseView {
     var onWrittenPostRowDidTap: (() -> Void)?
     var onSentRequestRowDidTap: (() -> Void)?
     var onReceivedRequestRowDidTap: (() -> Void)?
+    var onEditProfileButtonDidTap: (() -> Void)?
 
     private let gradientLayer = CAGradientLayer()
 
@@ -28,10 +29,14 @@ final class MyPageView: BaseView {
     private let contentView = UIView()
 
     private let boardingPassImageView = UIImageView()
+    private let editProfileButton = UIButton(type: .system)
     private let profileImageView = GradientCircleView(diameter: 80)
     private let nameStackView = UIStackView()
     private let nicknameLabel = UILabel()
     private let genderLabel = UILabel()
+    private let introductionContainerView = UIView()
+    private let introductionTitleLabel = UILabel()
+    private let introductionLabel = UILabel()
     private let verificationChip = NearbyChipButton(style: .badgeVerification, title: "본인인증 완료", horizontalInset: 22)
     private let personalityVerticalGuide = UILayoutGuide()
     private let personalityChipContainerView = UIView()
@@ -103,6 +108,13 @@ final class MyPageView: BaseView {
             $0.contentMode = .scaleToFill
             $0.isUserInteractionEnabled = true
         }
+        
+        editProfileButton.do {
+            $0.setTitle("수정하기", for: .normal)
+            $0.setTitleColor(.grey50, for: .normal)
+            $0.titleLabel?.font = NearbyFont.b3M14.font
+            $0.backgroundColor = .clear
+        }
 
         nameStackView.do {
             $0.axis = .horizontal
@@ -120,6 +132,26 @@ final class MyPageView: BaseView {
             $0.font = NearbyFont.b1M18.font
             $0.text = ""
             $0.textColor = .primary50
+        }
+        
+        introductionContainerView.do {
+            $0.backgroundColor = .primary5
+            $0.layer.cornerRadius = 16
+            $0.clipsToBounds = true
+            $0.isHidden = true
+        }
+
+        introductionTitleLabel.do {
+            $0.text = "나의 한 줄 소개"
+            $0.font = NearbyFont.b2Sb16.font
+            $0.textColor = .primary50
+        }
+
+        introductionLabel.do {
+            $0.font = NearbyFont.b3M14.font
+            $0.textColor = .grey80
+            $0.textAlignment = .left
+            $0.numberOfLines = 0
         }
 
         verificationChip.do {
@@ -183,10 +215,12 @@ final class MyPageView: BaseView {
         contentView.addSubviews(boardingPassImageView, mannerScoreCardView, menuCardView)
 
         boardingPassImageView.addSubviews(
-            profileImageView, nameStackView, verificationChip,
-            personalityChipContainerView, statsStackView,
-            firstDividerView, secondDividerView
+            profileImageView, nameStackView, introductionContainerView,
+            verificationChip, personalityChipContainerView, statsStackView,
+            firstDividerView, secondDividerView, editProfileButton
         )
+        
+        introductionContainerView.addSubviews(introductionTitleLabel, introductionLabel)
         
         boardingPassImageView.addLayoutGuide(personalityVerticalGuide)
 
@@ -227,6 +261,12 @@ final class MyPageView: BaseView {
             $0.top.equalToSuperview().offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
+        
+        editProfileButton.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(20)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(32)
+        }
 
         profileImageView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
@@ -244,16 +284,34 @@ final class MyPageView: BaseView {
             $0.centerX.equalToSuperview()
             $0.height.equalTo(36)
         }
+
+        introductionContainerView.snp.makeConstraints {
+            $0.top.equalTo(verificationChip.snp.bottom).offset(32)
+            $0.horizontalEdges.equalToSuperview().inset(24)
+        }
+
+        introductionTitleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(16)
+            $0.horizontalEdges.equalToSuperview().inset(16)
+        }
+
+        introductionLabel.snp.makeConstraints {
+            $0.top.equalTo(introductionTitleLabel.snp.bottom).offset(12)
+            $0.horizontalEdges.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(16)
+        }
         
         personalityVerticalGuide.snp.makeConstraints {
-            $0.top.equalTo(verificationChip.snp.bottom)
+            $0.top.equalTo(introductionContainerView.snp.bottom)
             $0.bottom.equalTo(statsStackView.snp.top)
             $0.horizontalEdges.equalToSuperview()
         }
 
-        personalityChipContainerView.snp.makeConstraints {
+        personalityChipContainerView.snp.remakeConstraints {
+            $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
             $0.centerX.equalToSuperview()
             $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
+            $0.bottom.equalTo(statsStackView.snp.top).offset(-24)
         }
 
         personalityFirstLineStackView.snp.makeConstraints {
@@ -350,6 +408,8 @@ final class MyPageView: BaseView {
         receivedRequestRowView.onTap = { [weak self] in
             self?.onReceivedRequestRowDidTap?()
         }
+        
+        editProfileButton.addTarget(self, action: #selector(editProfileButtonDidTap), for: .touchUpInside)
     }
     
     func configure(with item: MyPageDisplayModel) {
@@ -357,6 +417,8 @@ final class MyPageView: BaseView {
 
         nicknameLabel.text = item.nickname
         genderLabel.text = item.genderText
+        
+        configureIntroduction(item.intro)
 
         verificationChip.isHidden = !item.isPhoneVerified
 
@@ -372,11 +434,37 @@ final class MyPageView: BaseView {
 
         configureMannerKeywords(item.mannerKeywords)
     }
+    
+    // MARK: - Action
+
+    @objc
+    private func editProfileButtonDidTap() {
+        onEditProfileButtonDidTap?()
+    }
 }
 
 // MARK: - Private Methods
 
 private extension MyPageView {
+    
+    func configureIntroduction(_ introduction: String?) {
+        let text = introduction?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let hasIntroduction = !text.isEmpty
+
+        introductionLabel.text = text
+        introductionContainerView.isHidden = !hasIntroduction
+
+        introductionContainerView.snp.remakeConstraints {
+            $0.top.equalTo(verificationChip.snp.bottom).offset(hasIntroduction ? 24 : 0)
+            $0.horizontalEdges.equalToSuperview().inset(24)
+
+            if !hasIntroduction {
+                $0.height.equalTo(0)
+            }
+        }
+
+        setNeedsLayout()
+    }
 
     func configurePersonalityKeywords(_ keywords: [String]) {
         removeAllArrangedSubviews(from: personalityFirstLineStackView)
@@ -512,7 +600,7 @@ private extension MyPageView {
             $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
 
             if hasSecondLine {
-                $0.top.equalTo(verificationChip.snp.bottom).offset(32)
+                $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
                 $0.bottom.lessThanOrEqualTo(statsStackView.snp.top).offset(-24)
             } else {
                 $0.centerY.equalTo(personalityVerticalGuide.snp.centerY)

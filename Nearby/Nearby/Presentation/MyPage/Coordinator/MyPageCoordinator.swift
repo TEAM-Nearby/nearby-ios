@@ -55,6 +55,10 @@ extension MyPageCoordinator: Coordinator {
         myPageViewController.onReceivedRequestRowDidTap = { [weak self] in
             self?.showAlarm(initialTab: .received)
         }
+        
+        myPageViewController.onEditProfileRequested = { [weak self] profileID in
+            self?.showEditCompanionProfile(profileID: profileID)
+        }
 
         navigationController.setViewControllers([myPageViewController], animated: false)
     }
@@ -126,5 +130,22 @@ private extension MyPageCoordinator {
         addChildCoordinator(notificationCoordinator)
 
         return notificationCoordinator
+    }
+    
+    func showEditCompanionProfile(profileID: Int) {
+        let viewController = appDIContainer.myPage
+            .makeEditCompanionProfileViewController(profileID: profileID)
+        
+        viewController.hidesBottomBarWhenPushed = true
+
+        viewController.onBackButtonDidTap = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        viewController.onProfileUpdateDidComplete = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        navigationController.pushViewController(viewController, animated: true)
     }
 }

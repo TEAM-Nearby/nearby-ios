@@ -14,16 +14,22 @@ enum CompanionProfileMapper {
             travelStyleKeywords: update.travelStyleKeywords.map(\.rawValue)
         )
     }
-
-    static func map(_ dto: CompanionProfileDetailResponseDTO) -> CompanionProfile {
+    
+    static func map(_ response: CompanionProfileDetailResponseDTO) -> CompanionProfile {
         CompanionProfile(
-            profileID: dto.profileID,
-            nickname: dto.nickname,
-            gender: dto.gender,
-            birthYear: dto.birthYear,
-            intro: dto.intro,
-            profileImageURL: dto.profileImageURL,
-            travelStyleKeywords: dto.travelStyleKeywords.compactMap(TravelStyleKeyword.init(rawValue:))
+            profileID: response.profileId,
+            nickname: response.nickname,
+            gender: response.gender,
+            birthYear: response.birthYear,
+            intro: response.intro,
+            profileImageURL: response.profileImageUrl,
+            travelStyleKeywords: response.keywords.compactMap {
+                TravelStyleKeyword(rawValue: $0)
+            }
         )
+    }
+    
+    static func map(_ response: UpdateCompanionProfileResponseDTO) -> CompanionProfile {
+        CompanionProfile(profileID: response.profileId, nickname: response.nickname, gender: response.gender, birthYear: response.birthYear, intro: response.intro, profileImageURL: response.profileImageUrl, travelStyleKeywords: response.travelStyleKeywords.compactMap {TravelStyleKeyword(rawValue: $0)})
     }
 }

@@ -12,7 +12,7 @@ struct UpdateCompanionProfileRequestDTO {
     let travelStyleKeywords: [String]
 }
 
-struct CompanionProfileDetailResponseDTO: Decodable {
+struct CompanionProfileLegacyResponseDTO: Decodable {
     let profileID: Int
     let nickname: String
     let gender: NearbyGender

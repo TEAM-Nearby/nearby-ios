@@ -101,12 +101,13 @@ final class SettingView: BaseView {
         logoutIconImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
             $0.centerY.equalTo(logoutButton)
-            $0.size.equalTo(24)
+            $0.width.equalTo(14.09)
+            $0.height.equalTo(16.12)
         }
 
         logoutButton.snp.makeConstraints {
             $0.top.equalToSuperview()
-            $0.leading.equalTo(logoutIconImageView.snp.trailing).offset(3.05)
+            $0.leading.equalTo(logoutIconImageView.snp.trailing).offset(12)
             $0.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(52)
         }
@@ -120,12 +121,13 @@ final class SettingView: BaseView {
         termsIconImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
             $0.centerY.equalTo(agreementButton)
-            $0.size.equalTo(24)
+            $0.width.equalTo(17)
+            $0.height.equalTo(20.5)
         }
-        
+
         agreementButton.snp.makeConstraints {
             $0.top.equalTo(dividerView.snp.bottom)
-            $0.leading.equalTo(termsIconImageView.snp.trailing).offset(3.05)
+            $0.leading.equalTo(termsIconImageView.snp.trailing).offset(12)
             $0.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(52)
         }

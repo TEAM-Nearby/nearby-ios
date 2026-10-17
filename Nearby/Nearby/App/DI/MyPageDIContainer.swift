@@ -50,6 +50,14 @@ final class MyPageDIContainer {
     func makeSettingViewController() -> SettingViewController {
         SettingViewController(viewModel: SettingViewModel(authRepository: authRepository))
     }
+    
+    func makeTermsListViewController() -> TermsListViewController {
+        TermsListViewController(viewModel: TermsListViewModel())
+    }
+    
+    func makeAgreementDetailViewController(type: AgreementDetailType) -> AgreementDetailViewController {
+        AgreementDetailViewController(viewModel: AgreementDetailViewModel(agreementType: type))
+    }
 
     func makeWrittenPostViewController() -> WrittenPostViewController {
         WrittenPostViewController(viewModel: WrittenPostViewModel(repository: myPageRepository))

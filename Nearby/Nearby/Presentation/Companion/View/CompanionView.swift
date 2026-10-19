@@ -120,6 +120,10 @@ final class CompanionView: BaseView {
         recruitCompanionButton.isHidden = !shouldShowRecruitButton
     }
 
+    func updateAlarm(hasUnread: Bool) {
+        topSectionView.updateAlarm(hasUnread: hasUnread)
+    }
+
     func setCategoryChipsHidden(_ isHidden: Bool) {
         categoryCollectionView.isHidden = isHidden
     }

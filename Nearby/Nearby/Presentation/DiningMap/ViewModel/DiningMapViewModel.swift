@@ -13,6 +13,7 @@ final class DiningMapViewModel: BaseViewModelType {
     // MARK: - Input
     
     enum Input {
+        case refreshNotifications
         case viewDidLoad
         case locationDidUpdate(CLLocationCoordinate2D)
     }
@@ -21,6 +22,7 @@ final class DiningMapViewModel: BaseViewModelType {
     
     struct Output {
         let mapConfiguration: CompanionMapConfiguration
+        let hasUnreadNotifications = CurrentValueSubject<Bool, Never>(false)
         let nickname = PassthroughSubject<String, Never>()
         let cityName = CurrentValueSubject<String, Never>("현재 위치")
     }
@@ -29,17 +31,21 @@ final class DiningMapViewModel: BaseViewModelType {
     
     let output: Output
     
+    private let notificationRepository: CompanionRequestRepository
+    private var notificationTask: Task<Void, Never>?
     private let myPageRepository: MyPageRepository
     private var nicknameTask: Task<Void, Never>?
     
     // MARK: - Initializer
     
-    init(myPageRepository: MyPageRepository, mapConfiguration: CompanionMapConfiguration = .diningMap) {
+    init(myPageRepository: MyPageRepository, notificationRepository: CompanionRequestRepository, mapConfiguration: CompanionMapConfiguration = .diningMap) {
+        self.notificationRepository = notificationRepository
         self.myPageRepository = myPageRepository
         self.output = Output(mapConfiguration: mapConfiguration)
     }
     
     deinit {
+        notificationTask?.cancel()
         nicknameTask?.cancel()
     }
     
@@ -47,6 +53,8 @@ final class DiningMapViewModel: BaseViewModelType {
     
     func action(_ trigger: Input) {
         switch trigger {
+        case .refreshNotifications:
+            refreshNotifications()
         case .viewDidLoad:
             fetchNickname()
         case .locationDidUpdate(let coordinate):
@@ -54,8 +62,27 @@ final class DiningMapViewModel: BaseViewModelType {
         }
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
+    private func refreshNotifications() {
+        notificationTask?.cancel()
+        notificationTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                async let sent = notificationRepository.fetchRequests(direction: .sent)
+                async let received = notificationRepository.fetchRequests(direction: .received)
+                let responses = try await (sent, received)
+                guard !Task.isCancelled else { return }
+                let hasUnread = responses.0.requests.contains { !$0.isRead }
+                    || responses.1.requests.contains { !$0.isRead }
+                output.hasUnreadNotifications.send(hasUnread)
+            } catch {
+                guard !Task.isCancelled else { return }
+                AppLogger.error(error)
+            }
+        }
+    }
+
     func fetchNickname() {
         nicknameTask?.cancel()
         nicknameTask = Task { [weak self] in

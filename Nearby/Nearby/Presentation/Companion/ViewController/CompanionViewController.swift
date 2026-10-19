@@ -68,6 +68,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setRecruitCompanionButtonLayout()
+        viewModel.action(.refreshNotifications)
         let bottomSheet = viewModel.output.viewState.value.bottomSheet
         setTabBarHidden(bottomSheet.content == .specificRestaurantCompanionList)
         mapController.start()
@@ -115,6 +116,22 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
 
     override func bindState() {
+        viewModel.output.hasUnreadNotifications
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hasUnread in
+                self?.companionView.updateAlarm(hasUnread: hasUnread)
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .merge(with: NotificationCenter.default.publisher(for: .companionNotificationDidChange))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.action(.refreshNotifications)
+            }
+            .store(in: &cancellables)
+
         viewModel.output.viewState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in

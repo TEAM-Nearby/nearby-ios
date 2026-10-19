@@ -59,6 +59,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        viewModel.action(.refreshNotifications)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         mapController.start()
         bottomSheetController.setHidden(false)
@@ -98,6 +99,22 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     }
 
     override func bindState() {
+        viewModel.output.hasUnreadNotifications
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hasUnread in
+                self?.diningMapView.updateAlarm(hasUnread: hasUnread)
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .merge(with: NotificationCenter.default.publisher(for: .companionNotificationDidChange))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.action(.refreshNotifications)
+            }
+            .store(in: &cancellables)
+
         viewModel.output.cityName
             .receive(on: DispatchQueue.main)
             .sink { [weak self] cityName in

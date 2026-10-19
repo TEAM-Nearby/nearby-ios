@@ -55,6 +55,7 @@ final class CompanionViewModel: BaseViewModelType {
     // MARK: - Input
 
     enum Input {
+        case refreshNotifications
         case viewDidLoad
         case categoryDidSelect(Int)
         case markerDidSelect(Int)
@@ -77,6 +78,7 @@ final class CompanionViewModel: BaseViewModelType {
             ViewState(nickname: nil, category: CategoryState(selectedIndex: 0, previousIndex: nil, content: .companions(.restaurant)),
                       bottomSheet: BottomSheetState(content: .nearbyCompanionList), selectedPlaceId: nil)
         )
+        let hasUnreadNotifications = CurrentValueSubject<Bool, Never>(false)
         let event = PassthroughSubject<ViewEvent, Never>()
     }
 
@@ -85,6 +87,8 @@ final class CompanionViewModel: BaseViewModelType {
     var route: ((Route) -> Void)?
     var output: Output
 
+    private let notificationRepository: CompanionRequestRepository
+    private var notificationTask: Task<Void, Never>?
     private let myPageRepository: MyPageRepository
     private let initialNickname: String?
     private var nicknameTask: Task<Void, Never>?
@@ -94,10 +98,12 @@ final class CompanionViewModel: BaseViewModelType {
 
     init(
         myPageRepository: MyPageRepository,
+        notificationRepository: CompanionRequestRepository,
         initialNickname: String? = nil,
         categoryItems: [CategoryItem] = CategoryItem.categoryItems,
         mapConfiguration: CompanionMapConfiguration = .mock
     ) {
+        self.notificationRepository = notificationRepository
         self.myPageRepository = myPageRepository
         self.initialNickname = initialNickname
         self.output = Output(
@@ -108,12 +114,15 @@ final class CompanionViewModel: BaseViewModelType {
 
     deinit {
         nicknameTask?.cancel()
+        notificationTask?.cancel()
     }
 
     // MARK: - Action
 
     func action(_ trigger: Input) {
         switch trigger {
+        case .refreshNotifications:
+            refreshNotifications()
         case .viewDidLoad:
             if let initialNickname {
                 updateNickname(initialNickname)
@@ -209,6 +218,25 @@ final class CompanionViewModel: BaseViewModelType {
         viewState.bottomSheet = bottomSheet
         viewState.selectedPlaceId = selectedPlaceId
         output.viewState.send(viewState)
+    }
+
+    private func refreshNotifications() {
+        notificationTask?.cancel()
+        notificationTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                async let sent = notificationRepository.fetchRequests(direction: .sent)
+                async let received = notificationRepository.fetchRequests(direction: .received)
+                let responses = try await (sent, received)
+                guard !Task.isCancelled else { return }
+                let hasUnread = responses.0.requests.contains { !$0.isRead }
+                    || responses.1.requests.contains { !$0.isRead }
+                output.hasUnreadNotifications.send(hasUnread)
+            } catch {
+                guard !Task.isCancelled else { return }
+                AppLogger.error(error)
+            }
+        }
     }
 
     private func fetchNickname() {

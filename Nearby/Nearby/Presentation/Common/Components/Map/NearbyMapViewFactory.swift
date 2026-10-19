@@ -20,6 +20,8 @@ enum NearbyMapViewFactory {
         mapView.overrideUserInterfaceStyle = .light
         mapView.isMyLocationEnabled = false
         mapView.settings.myLocationButton = false
+        mapView.settings.rotateGestures = false
+        mapView.settings.compassButton = false
         return mapView
     }
 }

@@ -144,6 +144,7 @@ final class CompanionViewModel: BaseViewModelType {
         case .reset:
             reset()
         case .recruitCompanionButtonDidTap:
+            guard output.viewState.value.category.content.shouldShowCompanions else { return }
             route?(.recruitCompanion(currentCoordinate))
         case .companionDidSelect(let state):
             route?(.companionDetail(state))

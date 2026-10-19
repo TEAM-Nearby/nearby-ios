@@ -110,9 +110,10 @@ final class CompanionView: BaseView {
 
     // MARK: - Methods
 
-    func updateMapControls(for state: BottomSheetState) {
-        let shouldShowMapControls = state.content == .nearbyCompanionList && state.level != .expanded
-        let shouldShowRecruitButton = state.content == .nearbyCompanionList
+    func updateMapControls(for state: BottomSheetState, showsRestaurantCompanions: Bool) {
+        let isNearbySheet = state.content == .nearbyCompanionList || state.content == .nearbyCompanionEmpty
+        let shouldShowMapControls = isNearbySheet && state.level != .expanded
+        let shouldShowRecruitButton = showsRestaurantCompanions && isNearbySheet
             && (state.level == .standard || state.level == .expanded)
 
         companionCountChip.isHidden = !shouldShowMapControls

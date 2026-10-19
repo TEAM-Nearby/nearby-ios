@@ -66,6 +66,13 @@ final class EditCompanionProfileViewController:
         editProfileView.onProfileImageButtonDidTap = { [weak self] in
             self?.presentPhotoPicker()
         }
+        
+        editProfileView.nicknameTextField.delegate = self
+        editProfileView.nicknameTextField.returnKeyType = .done
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        editProfileView.addGestureRecognizer(tapGesture)
     }
 
     override func bindState() {
@@ -172,5 +179,20 @@ private extension EditCompanionProfileViewController {
         picker.delegate = self
 
         present(picker, animated: true)
+    }
+    
+    @objc
+    private func dismissProfileKeyboard() {
+        view.endEditing(true)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension EditCompanionProfileViewController: UITextFieldDelegate {
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

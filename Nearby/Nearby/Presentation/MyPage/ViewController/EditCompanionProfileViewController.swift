@@ -159,8 +159,15 @@ extension EditCompanionProfileViewController: PHPickerViewControllerDelegate {
                 return
             }
 
+            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                return
+            }
+
             Task { @MainActor [weak self] in
-                self?.editProfileView.updateProfileImage(image)
+                guard let self else { return }
+
+                editProfileView.updateProfileImage(image)
+                viewModel.action(.profileImageDidSelect(imageData))
             }
         }
     }

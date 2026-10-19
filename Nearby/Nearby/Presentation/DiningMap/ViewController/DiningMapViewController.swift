@@ -61,6 +61,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
         super.viewWillAppear(animated)
         viewModel.action(.refreshNotifications)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        bottomSheetController.refreshCurrentList()
         mapController.start()
         bottomSheetController.setHidden(false)
         updateScreenAppearance(for: bottomSheetController.screenState)

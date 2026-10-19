@@ -13,6 +13,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     // MARK: - Input
     
     enum Input {
+        case refresh
         case locationDidUpdate(CLLocationCoordinate2D)
         case categoryDidSelect(DiningCategory)
         case restaurantDidSelect(Int)
@@ -67,6 +68,8 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     func action(_ trigger: Input) {
         switch trigger {
+        case .refresh:
+            fetchRestaurants()
         case .locationDidUpdate(let coordinate):
             currentCoordinate = coordinate
             fetchRestaurants()

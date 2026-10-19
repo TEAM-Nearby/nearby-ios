@@ -73,7 +73,8 @@ extension RecruitCompanionTarget: BaseTargetType {
                     "category": request.place.category.rawValue
                 ],
                 "meetingTimeType": request.meetingTimeType.rawValue,
-                "maxParticipants": request.maxParticipants,
+                "recruitmentCapacity": request.recruitmentCapacity,
+                "departEvenIfNotFull": request.departEvenIfNotFull,
                 "styleKeywords": request.styleKeywords.map(\.rawValue),
                 "content": request.content,
                 "openChatUrl": request.openChatUrl

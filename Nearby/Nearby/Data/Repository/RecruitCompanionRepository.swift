@@ -63,9 +63,9 @@ extension DefaultRecruitCompanionRepository: RecruitCompanionRepository {
                 category: submission.place.category
             ),
             meetingTimeType: submission.meetingAt == nil ? .now : .scheduled,
-            // TODO: 스프린트 국제 시간 적용 시 UTC 직렬화로 복구
             meetingAt: submission.meetingAt?.apiDateString,
-            maxParticipants: submission.maxParticipants,
+            recruitmentCapacity: submission.maxParticipants,
+            departEvenIfNotFull: true,
             styleKeywords: submission.styleKeywords,
             content: submission.content,
             openChatUrl: submission.openChatURL

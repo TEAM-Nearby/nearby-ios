@@ -11,7 +11,8 @@ struct RecruitCompanionRequestDTO: Encodable {
     let place: Place
     let meetingTimeType: MeetingTimeType
     let meetingAt: String?
-    let maxParticipants: Int
+    let recruitmentCapacity: Int
+    let departEvenIfNotFull: Bool
     let styleKeywords: [RecruitCompanionStyleKeyword]
     let content: String
     let openChatUrl: String

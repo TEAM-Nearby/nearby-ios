@@ -20,6 +20,10 @@ class StarRatingView: BaseView {
     
     private var starImageViews: [UIImageView] = []
     private let stackView = UIStackView()
+    private var partialStarImageView: UIImageView?
+    private var partialStarContainerView: UIView?
+    private var partialStarWidthConstraint: Constraint?
+    private var displayRating: Double = 0
     
     // MARK: - Custom Methods
     
@@ -54,18 +58,65 @@ class StarRatingView: BaseView {
     // MARK: - Methods
     
     private func updateStars() {
+        partialStarContainerView?.removeFromSuperview()
+        partialStarContainerView = nil
+        partialStarImageView = nil
+        partialStarWidthConstraint = nil
+
         for (index, imageView) in starImageViews.enumerated() {
-            let isFilled = index < rating
+            let fillAmount = max(0, min(1, displayRating - Double(index)))
+            let isFilled = fillAmount >= 1
             let image = UIImage(resource: isFilled ? .bigStarSelect : .bigStarDefault)
             imageView.image = isFilled && filledStarColor != nil
                 ? image.withRenderingMode(.alwaysTemplate)
                 : image
             imageView.tintColor = isFilled ? filledStarColor : nil
+
+            if fillAmount > 0 && fillAmount < 1 {
+                addPartialStar(to: imageView, fillAmount: fillAmount)
+            }
         }
+    }
+    
+    private func addPartialStar(to imageView: UIImageView, fillAmount: Double) {
+        let containerView = UIView()
+        containerView.clipsToBounds = true
+        containerView.isUserInteractionEnabled = false
+
+        let filledImageView = UIImageView()
+        filledImageView.contentMode = .scaleAspectFit
+
+        let image = UIImage(resource: .bigStarSelect)
+
+        filledImageView.image = filledStarColor != nil ? image.withRenderingMode(.alwaysTemplate) : image
+
+        filledImageView.tintColor = filledStarColor
+
+        imageView.addSubview(containerView)
+        containerView.addSubview(filledImageView)
+
+        containerView.snp.makeConstraints {
+            $0.leading.top.bottom.equalToSuperview()
+            partialStarWidthConstraint = $0.width.equalTo(imageView.snp.width).multipliedBy(fillAmount).constraint
+        }
+
+        filledImageView.snp.makeConstraints {
+            $0.leading.top.bottom.equalToSuperview()
+            $0.width.equalTo(imageView.snp.width)
+        }
+
+        partialStarContainerView = containerView
+        partialStarImageView = filledImageView
     }
     
     func setRating(_ value: Int) {
         rating = max(0, min(value, maxRating))
+        displayRating = Double(rating)
+        updateStars()
+    }
+    
+    func setRating(_ value: Double) {
+        displayRating = max(0, min(value, Double(maxRating)))
         updateStars()
     }
 

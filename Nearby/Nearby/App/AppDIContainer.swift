@@ -15,7 +15,7 @@ final class AppDIContainer {
     private lazy var appIntroductionStorage: AppIntroductionStorage = UserDefaultsAppIntroductionStorage()
     private lazy var installationIDStorage: InstallationIDStorage = UserDefaultsInstallationIDStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
-    private lazy var meetingEventCenter = MeetingEventCenter()
+    private lazy var meetingEventCenter = MeetingEventCenter(storage: UserDefaultsCompletedMeetingStorage(tokenStorage: tokenStorage))
 
     private lazy var authService: AuthService = DefaultAuthService(networkProvider: networkProvider)
     private lazy var authRepository: AuthRepository = DefaultAuthRepository(kakaoOAuthProvider: DefaultKakaoOAuthProvider(), appleOAuthProvider: DefaultAppleOAuthProvider(), authService: authService, tokenStorage: tokenStorage, pushEndpointRepository: pushEndpointRepository)

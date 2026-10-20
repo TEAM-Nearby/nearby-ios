@@ -27,6 +27,7 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
         case sortOptionDidTap(SortOption)
         case companionDidSelect(Int)
         case refresh
+        case stop
     }
     
     // MARK: - Output
@@ -49,6 +50,7 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
     private let repository: CompanionRepository
     private var currentCoordinate: CLLocationCoordinate2D?
     private var placeCategory: CompanionPlace.Category = .restaurant
+    private var isActive = false
     private var fetchTask: Task<Void, Never>?
     private var postsByPlaceId: [Int: [CompanionPost]] = [:]
     private var companions: [NearCompanionCellItem] = []
@@ -72,6 +74,7 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
             fetchPosts()
             
         case .placeCategoryDidSelect(let category):
+            isActive = true
             placeCategory = category
             fetchPosts()
             
@@ -84,28 +87,39 @@ final class NearCompanionSheetViewModel: BaseViewModelType {
             output.selectedCompanion.send(companion(at: index))
 
         case .refresh:
+            isActive = true
             fetchPosts()
+        case .stop:
+            isActive = false
+            fetchTask?.cancel()
+            output.viewState.send(.idle)
         }
     }
     
     // MARK: - Methods
     
     private func fetchPosts() {
-        guard let currentCoordinate else { return }
+        guard isActive, let currentCoordinate else { return }
         
         fetchTask?.cancel()
         let sort = output.selectedSortOption.value
+        let category = placeCategory
         output.viewState.send(.loading)
         
         fetchTask = Task { [weak self] in
             guard let self else { return }
             
+            let requestState = CTARequestState(timeout: 10)
+            requestState.begin()
+            defer { requestState.finish() }
             do {
                 let criteria = CompanionSearchCriteria(latitude: currentCoordinate.latitude,
                                                        longitude: currentCoordinate.longitude,
-                                                       radiusMeters: 1_000, placeCategory: placeCategory,
+                                                       radiusMeters: 1_000, placeCategory: category,
                                                        sort: sort.companionSort)
-                let response = try await repository.fetchList(criteria: criteria)
+                let response = try await requestState.perform { [repository] in
+                    try await repository.fetchList(criteria: criteria)
+                }
                 guard !Task.isCancelled else { return }
                 
                 postsByPlaceId = Dictionary(grouping: response.posts, by: { $0.place.placeID })

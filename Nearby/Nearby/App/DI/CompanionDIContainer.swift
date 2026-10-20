@@ -14,13 +14,17 @@ final class CompanionDIContainer {
     private let networkProvider: NetworkProvider
     private let myPageRepository: MyPageRepository
 
-    // MARK: - Service
+    // MARK: - Services
 
     private lazy var companionService: CompanionService = DefaultCompanionService(networkProvider: networkProvider)
 
-    // MARK: - Repository
+    private lazy var notificationService: CompanionRequestService = DefaultCompanionRequestService(networkProvider: networkProvider)
+
+    // MARK: - Repositories
 
     private lazy var companionRepository: CompanionRepository = DefaultCompanionRepository(service: companionService)
+
+    private lazy var notificationRepository: CompanionRequestRepository = DefaultCompanionRequestRepository(service: notificationService)
 
     // MARK: - Initializer
 
@@ -32,7 +36,7 @@ final class CompanionDIContainer {
     // MARK: - Factory Method
 
     func makeCompanionViewController(onRoute: @escaping (CompanionViewModel.Route) -> Void, onAlarmButtonDidTap: @escaping () -> Void) -> CompanionViewController {
-        let viewModel = CompanionViewModel(myPageRepository: myPageRepository)
+        let viewModel = CompanionViewModel(myPageRepository: myPageRepository, notificationRepository: notificationRepository)
         viewModel.route = onRoute
         let bottomSheetController = CompanionBottomSheetController(
             nearbySheetViewController: NearCompanionSheetViewController(viewModel: NearCompanionSheetViewModel(repository: companionRepository)),

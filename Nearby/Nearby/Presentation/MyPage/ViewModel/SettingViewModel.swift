@@ -15,6 +15,8 @@ final class SettingViewModel: BaseViewModelType, RequestRunning {
     enum Input {
         case backButtonDidTap
         case logoutButtonDidTap
+        case agreementButtonDidTap
+        case withdrawalButtonDidTap
     }
 
     // MARK: - Output
@@ -22,8 +24,12 @@ final class SettingViewModel: BaseViewModelType, RequestRunning {
     struct Output {
         var backButtonDidTap: (() -> Void)?
         var logoutButtonDidTap: (() -> Void)?
+        var agreementButtonDidTap: (() -> Void)?
         var logoutErrorMessage: ((String) -> Void)?
         var isLogoutLoading: ((Bool) -> Void)?
+        var withdrawalDidComplete: (() -> Void)?
+        var withdrawalErrorMessage: ((String) -> Void)?
+        var isWithdrawalLoading: ((Bool) -> Void)?
     }
 
     // MARK: - Property
@@ -32,6 +38,7 @@ final class SettingViewModel: BaseViewModelType, RequestRunning {
 
     private let authRepository: AuthRepository
     private var logoutTask: Task<Void, Never>?
+    private var withdrawalTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
@@ -41,6 +48,7 @@ final class SettingViewModel: BaseViewModelType, RequestRunning {
 
     deinit {
         logoutTask?.cancel()
+        withdrawalTask?.cancel()
     }
 
     // MARK: - Action
@@ -52,6 +60,12 @@ final class SettingViewModel: BaseViewModelType, RequestRunning {
 
         case .logoutButtonDidTap:
             logout()
+        
+        case .agreementButtonDidTap:
+            output.agreementButtonDidTap?()
+            
+        case .withdrawalButtonDidTap:
+            withdraw()
         }
     }
 }
@@ -80,6 +94,31 @@ private extension SettingViewModel {
             onFinish: { [self] in
                 logoutTask = nil
                 output.isLogoutLoading?(false)
+            }
+        )
+    }
+    
+    func withdraw() {
+        guard withdrawalTask == nil else { return }
+
+        withdrawalTask = requestRunner.run(
+            onStart: { [self] in
+                output.isWithdrawalLoading?(true)
+            },
+            operation: { [self] in
+                try await authRepository.withdraw()
+            },
+            onSuccess: { [self] _ in
+                output.withdrawalDidComplete?()
+            },
+            onFailure: { [self] error in
+                let message = (error as? LocalizedError)?.errorDescription
+                    ?? "회원 탈퇴에 실패했습니다. 다시 시도해 주세요."
+                output.withdrawalErrorMessage?(message)
+            },
+            onFinish: { [self] in
+                withdrawalTask = nil
+                output.isWithdrawalLoading?(false)
             }
         )
     }

@@ -14,7 +14,7 @@ struct MyPageDisplayModel {
     let intro: String?
     let genderText: String
     let isPhoneVerified: Bool
-    let mannerRating: Int
+    let mannerRating: Double
     let mannerKeywords: [String]
     let travelStyleKeywords: [String]
     let mealTogetherCountText: String
@@ -30,7 +30,7 @@ struct MyPageDisplayModel {
         genderText = response.gender.genderDisplayText
         isPhoneVerified = response.isPhoneVerified
 
-        mannerRating = Int(response.mannerScore.rounded())
+        mannerRating = Double(response.mannerScore)
 
         mannerKeywords = MannerKeyword.titles(
             for: response.mannerKeywords

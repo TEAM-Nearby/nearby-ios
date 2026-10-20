@@ -97,8 +97,8 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
         let alertController = UIAlertController(title: "정말 탈퇴하시겠습니까?", message: "탈퇴 시, 기존의 활동 기록은 모두 삭제되며\n되돌릴 수 없습니다.", preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: "네", style: .default) { [weak self] _ in
-                self?.viewModel.action(.withdrawalButtonDidTap)
-            })
+            self?.viewModel.action(.withdrawalButtonDidTap)
+        })
 
         alertController.addAction(UIAlertAction(title: "아니오", style: .cancel))
 

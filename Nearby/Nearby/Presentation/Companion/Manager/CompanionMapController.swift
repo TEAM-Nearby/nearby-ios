@@ -15,7 +15,6 @@ final class CompanionMapController: NSObject {
     var onMarkerTap: ((Int) -> Void)?
     var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
 
-    var onFallbackLocation: ((CLLocationCoordinate2D) -> Void)?
     var onInitialMapReady: (() -> Void)?
 
     private let initialFallbackCoordinate: CLLocationCoordinate2D?
@@ -86,7 +85,6 @@ final class CompanionMapController: NSObject {
     private func useFallbackLocationIfNeeded() {
         guard !hasResolvedInitialLocation, let initialFallbackCoordinate else { return }
         resolveInitialLocation(using: initialFallbackCoordinate)
-        onFallbackLocation?(initialFallbackCoordinate)
     }
 
     private func waitForInitialMap() {

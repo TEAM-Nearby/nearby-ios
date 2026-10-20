@@ -55,9 +55,6 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         mapController.onInitialMapReady = { [weak self] in
             self?.finishInitialMapLoading()
         }
-        mapController.onFallbackLocation = { [weak self] coordinate in
-            self?.bottomSheetController.updateLocation(coordinate)
-        }
         mapController.onLocationUpdate = { [weak self] coordinate in
             self?.viewModel.action(.locationDidUpdate(coordinate))
             self?.bottomSheetController.updateLocation(coordinate)

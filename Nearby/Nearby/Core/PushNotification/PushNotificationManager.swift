@@ -108,8 +108,6 @@ extension PushNotificationManager: UNUserNotificationCenterDelegate {
     }
 }
 
-// MARK: - Notification.Name
-
 extension Notification.Name {
     static let apnsTokenDidReceive = Notification.Name("apnsTokenDidReceive")
 }

@@ -42,8 +42,6 @@ extension DefaultCompanionRequestRepository: CompanionRequestRepository {
     }
 }
 
-// MARK: - Notification.Name
-
 extension Notification.Name {
     static let companionNotificationDidChange = Notification.Name("companionNotificationDidChange")
 }

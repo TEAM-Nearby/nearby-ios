@@ -24,7 +24,6 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
     struct Output {
         let reloadReasons = PassthroughSubject<[Int], Never>()
         let isReportButtonEnabled = CurrentValueSubject<Bool, Never>(false)
-        let isDetailInputEnabled = CurrentValueSubject<Bool, Never>(false)
         let submitSuccess = PassthroughSubject<Void, Never>()
     }
     
@@ -55,12 +54,13 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
         isNicknameRequired || isEtcSelected
     }
     
+    private var trimmedDetailText: String {
+        detailText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
     private var isReportValid: Bool {
         guard !selectedReasons.isEmpty else { return false }
-        if isDetailRequired {
-            return !detailText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        }
-        return true
+        return !isDetailRequired || !trimmedDetailText.isEmpty
     }
     
     // MARK: - Initializer
@@ -68,7 +68,6 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
     init(target: MeetingReportTarget, repository: MeetingRepository) {
         self.target = target
         self.repository = repository
-        output.isDetailInputEnabled.send(isNicknameRequired)
     }
     
     // MARK: - Action
@@ -78,10 +77,6 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
         case .reasonDidTap(let index):
             let changed = toggleReason(index)
             output.reloadReasons.send(changed)
-            if !isDetailRequired {
-                detailText = ""
-            }
-            output.isDetailInputEnabled.send(isDetailRequired)
             updateReportState()
             
         case .detailTextChanged(let text):
@@ -113,7 +108,7 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
         let report = MeetingReport(
             reportedUserID: target.reportedUserID,
             reasons: selectedReasons.sorted().compactMap(ReportReason.init(rawValue:)),
-            detail: isDetailRequired ? detailText.trimmingCharacters(in: .whitespacesAndNewlines) : nil
+            detail: trimmedDetailText.isEmpty ? nil : trimmedDetailText
         )
 
         requestRunner.run(

@@ -64,21 +64,32 @@ final class DiningMapViewModel: BaseViewModelType {
     
     // MARK: - Methods
     
+    private func fetchUnreadNotifications(direction: CompanionRequestDirection) async -> Bool? {
+        do {
+            let response = try await notificationRepository.fetchRequests(direction: direction)
+            guard !Task.isCancelled else { return nil }
+            let hasUnread = response.requests.contains { !$0.isRead }
+            if hasUnread {
+                output.hasUnreadNotifications.send(true)
+            }
+            return hasUnread
+        } catch {
+            guard !Task.isCancelled else { return nil }
+            AppLogger.error(error)
+            return nil
+        }
+    }
+
     private func refreshNotifications() {
         notificationTask?.cancel()
         notificationTask = Task { [weak self] in
             guard let self else { return }
-            do {
-                async let sent = notificationRepository.fetchRequests(direction: .sent)
-                async let received = notificationRepository.fetchRequests(direction: .received)
-                let responses = try await (sent, received)
-                guard !Task.isCancelled else { return }
-                let hasUnread = responses.0.requests.contains { !$0.isRead }
-                    || responses.1.requests.contains { !$0.isRead }
-                output.hasUnreadNotifications.send(hasUnread)
-            } catch {
-                guard !Task.isCancelled else { return }
-                AppLogger.error(error)
+            async let sent = fetchUnreadNotifications(direction: .sent)
+            async let received = fetchUnreadNotifications(direction: .received)
+            let results = await (sent, received)
+            guard !Task.isCancelled else { return }
+            if results.0 == false, results.1 == false {
+                output.hasUnreadNotifications.send(false)
             }
         }
     }

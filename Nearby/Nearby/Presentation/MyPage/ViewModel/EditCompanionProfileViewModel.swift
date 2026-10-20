@@ -17,6 +17,7 @@ final class EditCompanionProfileViewModel: BaseViewModelType {
         case introductionDidChange(String)
         case keywordButtonDidTap(String)
         case profileImageURLDidChange(String?)
+        case profileImageDidSelect(Data)
         case saveButtonDidTap
     }
 
@@ -43,6 +44,7 @@ final class EditCompanionProfileViewModel: BaseViewModelType {
     private var introduction = ""
     private var selectedKeywords: Set<TravelStyleKeyword> = []
     private var profileImageURL: String?
+    private var selectedProfileImageData: Data?
 
     private var fetchTask: Task<Void, Never>?
     private var updateTask: Task<Void, Never>?
@@ -78,6 +80,9 @@ final class EditCompanionProfileViewModel: BaseViewModelType {
 
         case .profileImageURLDidChange(let url):
             profileImageURL = url
+            
+        case .profileImageDidSelect(let data):
+            selectedProfileImageData = data
 
         case .saveButtonDidTap:
             updateProfile()
@@ -174,12 +179,6 @@ private extension EditCompanionProfileViewModel {
 
         let trimmedIntroduction = introduction.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let update = CompanionProfileUpdate(nickname: trimmedNickname, intro: trimmedIntroduction, profileImageURL: profileImageURL,
-            travelStyleKeywords: TravelStyleKeyword.allCases.filter {
-                selectedKeywords.contains($0)
-            }
-        )
-
         isUpdating = true
         output.isLoading?(true)
 
@@ -187,6 +186,16 @@ private extension EditCompanionProfileViewModel {
             guard let self else { return }
 
             do {
+                var imageURL = profileImageURL
+
+                if let imageData = selectedProfileImageData {
+                    imageURL = try await repository.uploadProfileImage(data: imageData, fileName: "\(UUID().uuidString).jpeg", contentType: "image/jpeg")
+                }
+
+                guard !Task.isCancelled else { return }
+
+                let update = CompanionProfileUpdate(nickname: trimmedNickname, intro: trimmedIntroduction, profileImageURL: imageURL, travelStyleKeywords: TravelStyleKeyword.allCases.filter {self.selectedKeywords.contains($0)})
+
                 _ = try await repository.updateCompanionProfile(update)
 
                 guard !Task.isCancelled else { return }

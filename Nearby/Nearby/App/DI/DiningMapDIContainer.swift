@@ -12,13 +12,17 @@ final class DiningMapDIContainer {
     private let networkProvider: NetworkProvider
     private let myPageRepository: MyPageRepository
 
-    // MARK: - Service
+    // MARK: - Services
 
     private lazy var diningMapService: DiningMapService = DefaultDiningMapService(networkProvider: networkProvider)
 
-    // MARK: - Repository
+    private lazy var notificationService: CompanionRequestService = DefaultCompanionRequestService(networkProvider: networkProvider)
+
+    // MARK: - Repositories
 
     private lazy var diningMapRepository: DiningMapRepository = DefaultDiningMapRepository(service: diningMapService)
+
+    private lazy var notificationRepository: CompanionRequestRepository = DefaultCompanionRequestRepository(service: notificationService)
 
     // MARK: - Initializer
 
@@ -30,6 +34,6 @@ final class DiningMapDIContainer {
     // MARK: - Factory Method
 
     func makeDiningMapViewController() -> DiningMapViewController {
-        DiningMapViewController(viewModel: DiningMapViewModel(myPageRepository: myPageRepository), nearDiningSheetViewController: NearDiningSheetViewController(viewModel: NearDiningBottomSheetViewModel(repository: diningMapRepository)), saveDiningSheetViewController: SaveDiningSheetViewController(viewModel: SaveDiningSheetViewModel(repository: diningMapRepository)), diningInfoSheetViewController: DiningInfoSheetViewController(viewModel: DiningInfoSheetViewModel(repository: diningMapRepository)))
+        DiningMapViewController(viewModel: DiningMapViewModel(myPageRepository: myPageRepository, notificationRepository: notificationRepository), nearDiningSheetViewController: NearDiningSheetViewController(viewModel: NearDiningBottomSheetViewModel(repository: diningMapRepository)), saveDiningSheetViewController: SaveDiningSheetViewController(viewModel: SaveDiningSheetViewModel(repository: diningMapRepository)), diningInfoSheetViewController: DiningInfoSheetViewController(viewModel: DiningInfoSheetViewModel(repository: diningMapRepository)))
     }
 }

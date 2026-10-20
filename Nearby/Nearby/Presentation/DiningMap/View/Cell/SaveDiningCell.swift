@@ -86,6 +86,7 @@ final class SaveDiningCell: UICollectionViewCell {
         }
         
         imageCollectionView.do {
+            $0.backgroundColor = .white
             $0.backgroundView = imageCollectionBackgroundButton
             $0.dataSource = self
             $0.delegate = self

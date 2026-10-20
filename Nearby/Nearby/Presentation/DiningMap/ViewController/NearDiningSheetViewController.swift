@@ -89,6 +89,10 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
         viewModel.action(.locationDidUpdate(coordinate))
     }
 
+    func refresh() {
+        viewModel.action(.refresh)
+    }
+
     func updateCityName(_ cityName: String) {
         nearDiningBottomSheetView.updateCityName(cityName)
     }

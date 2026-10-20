@@ -5,6 +5,8 @@
 //  Created by 신서연 on 7/14/26.
 //
 
+import Foundation
+
 protocol CompanionRequestRepository {
     func fetchRequests(direction: CompanionRequestDirection) async throws -> CompanionRequestListResponseDTO
     func markNotificationAsRead(notificationId: Int) async throws -> CompanionNotificationReadResponseDTO
@@ -32,6 +34,14 @@ extension DefaultCompanionRequestRepository: CompanionRequestRepository {
     }
 
     func markNotificationAsRead(notificationId: Int) async throws -> CompanionNotificationReadResponseDTO {
-        try await service.markNotificationAsRead(notificationId: notificationId)
+        let response = try await service.markNotificationAsRead(notificationId: notificationId)
+        if response.isRead {
+            NotificationCenter.default.post(name: .companionNotificationDidChange, object: nil)
+        }
+        return response
     }
+}
+
+extension Notification.Name {
+    static let companionNotificationDidChange = Notification.Name("companionNotificationDidChange")
 }

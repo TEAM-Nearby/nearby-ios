@@ -101,11 +101,12 @@ extension PushNotificationManager: UNUserNotificationCenterDelegate {
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
-        [.banner, .list, .sound]
+        await MainActor.run {
+            NotificationCenter.default.post(name: .companionNotificationDidChange, object: nil)
+        }
+        return [.banner, .list, .sound]
     }
 }
-
-// MARK: - Notification.Name
 
 extension Notification.Name {
     static let apnsTokenDidReceive = Notification.Name("apnsTokenDidReceive")

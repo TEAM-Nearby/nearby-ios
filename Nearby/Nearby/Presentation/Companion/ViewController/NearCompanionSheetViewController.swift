@@ -22,6 +22,10 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
     private var nearCompanionSheetView = NearCompanionBottomView(sortOptions: SortOption.allCases)
     private var isShowingSkeleton = false
 
+    var listState: AnyPublisher<NearCompanionSheetViewModel.ViewState, Never> {
+        viewModel.output.viewState.eraseToAnyPublisher()
+    }
+
     // MARK: - Life Cycle
 
     override func loadView() {
@@ -59,7 +63,8 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
 
                 switch state {
                 case .idle:
-                    break
+                    isShowingSkeleton = false
+                    nearCompanionSheetView.collectionView.reloadData()
                 case .loading:
                     isShowingSkeleton = true
                     nearCompanionSheetView.collectionView.reloadData()
@@ -86,6 +91,10 @@ final class NearCompanionSheetViewController: BaseViewController<NearCompanionSh
     }
 
     // MARK: - Methods
+
+    func stopRefreshing() {
+        viewModel.action(.stop)
+    }
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
         viewModel.action(.locationDidUpdate(coordinate))

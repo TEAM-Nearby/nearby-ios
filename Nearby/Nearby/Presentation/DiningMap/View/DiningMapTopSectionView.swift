@@ -56,7 +56,7 @@ final class DiningMapTopSectionView: BaseView {
         }
 
         navigationBar.do {
-            $0.configure(leftItem: .logo, rightItems: [.alarmPoint])
+            $0.configure(leftItem: .logo, rightItems: [.alarmButton])
             $0.backgroundColor = .clear
         }
     }
@@ -84,5 +84,11 @@ final class DiningMapTopSectionView: BaseView {
         navigationBar.rightFirstButtonAction = { [weak self] in
             self?.onAlarmButtonDidTap?()
         }
+    }
+
+    // MARK: - Method
+
+    func updateAlarm(hasUnread: Bool) {
+        navigationBar.configure(leftItem: .logo, rightItems: [hasUnread ? .alarmPoint : .alarmButton])
     }
 }

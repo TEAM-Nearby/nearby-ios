@@ -38,18 +38,11 @@ final class CompanionCoordinator {
     private func showRecruitCompanion(searchCoordinate: CLLocationCoordinate2D?) {
         let viewController = diContainer.recruitCompanion.makeRecruitCompanionViewController(searchCoordinate: searchCoordinate) { [weak self] route in
             switch route {
-            case .previous:
+            case .previous, .completed:
                 self?.showPrevious()
-            case .completed:
-                self?.showPrevious()
-                self?.refreshCompanions()
             }
         }
         navigationController.pushViewController(viewController, animated: true)
-    }
-
-    private func refreshCompanions() {
-        navigationController.viewControllers.compactMap { $0 as? CompanionViewController }.first?.refreshCompanions()
     }
 
     private func handle(_ route: CompanionDetailViewModel.Route) {

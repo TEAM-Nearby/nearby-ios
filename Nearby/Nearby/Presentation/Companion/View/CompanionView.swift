@@ -15,7 +15,7 @@ final class CompanionView: BaseView {
 
     // MARK: - UI Components
 
-    let mapView = NearbyMapViewFactory.makeMapView()
+    let mapView = NearbyMapViewFactory.makeMapView(initialCoordinate: CompanionMapConfiguration.fallbackCoordinate)
     private let topSectionView = CompanionTopSectionView()
     private let recruitCompanionButtonGradientLayer = CAGradientLayer()
     let companionCountChip = NearbyChipButton(style: .mapInfo, title: "", horizontalInset: 12)

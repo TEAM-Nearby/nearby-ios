@@ -15,6 +15,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     // MARK: - Properties
 
     var onAlarmButtonDidTap: (() -> Void)?
+    private var hasCompletedInitialMap = false
+    private var pendingListError: Error?
     private var isScreenVisible = false
     private var isBottomSheetInitialized = false
     private var restaurantSummaryText = "내 주변 0개의 동행이 있어요"
@@ -23,10 +25,10 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
 
     // MARK: - UI Components
 
-    private let listLoadingView = LoadingView()
+    private let initialMapLoadingView = LoadingView()
 
     private let bottomSheetController: CompanionBottomSheetController
-    private lazy var mapController = CompanionMapController(mapView: companionView.mapView, configuration: viewModel.output.mapConfiguration)
+    private lazy var mapController = CompanionMapController(mapView: companionView.mapView, configuration: viewModel.output.mapConfiguration, initialFallbackCoordinate: CompanionMapConfiguration.fallbackCoordinate)
     private var bottomSheetHostView: UIView { view }
     private var companionView = CompanionView()
 
@@ -50,6 +52,12 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             self?.viewModel.action(.markerDidSelect(placeId))
         }
 
+        mapController.onInitialMapReady = { [weak self] in
+            self?.finishInitialMapLoading()
+        }
+        mapController.onFallbackLocation = { [weak self] coordinate in
+            self?.bottomSheetController.updateLocation(coordinate)
+        }
         mapController.onLocationUpdate = { [weak self] coordinate in
             self?.viewModel.action(.locationDidUpdate(coordinate))
             self?.bottomSheetController.updateLocation(coordinate)
@@ -72,6 +80,10 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         isScreenVisible = true
+        if !hasCompletedInitialMap {
+            pendingListError = nil
+            showInitialLoading()
+        }
         refreshCompanions()
         setRecruitCompanionButtonLayout()
         viewModel.action(.refreshNotifications)
@@ -80,6 +92,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         mapController.start()
         setBottomSheetHidden(false)
         updateMapControls()
+        updateBottomSheetLayer(for: bottomSheet)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
@@ -87,7 +100,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         super.viewWillDisappear(animated)
         isScreenVisible = false
         bottomSheetController.stopRefreshing()
-        listLoadingView.isHidden = true
+        initialMapLoadingView.isHidden = true
         mapController.stop()
     }
 
@@ -105,10 +118,9 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         bottomSheetController.attach(to: self, in: bottomSheetHostView, centerOverlayView: companionView.companionCountChip, trailingOverlayView: companionView.currentLocationButton)
         bindBottomSheet()
         setRecruitCompanionButtonLayout()
-        listLoadingView.isHidden = true
-        listLoadingView.configure(message: "잠시만 기다려주세요")
-        view.addSubview(listLoadingView)
-        listLoadingView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        initialMapLoadingView.configure(message: "함께할 동행을 찾고 있어요")
+        view.addSubview(initialMapLoadingView)
+        initialMapLoadingView.snp.makeConstraints { $0.edges.equalToSuperview() }
     }
 
     override func setAddTarget() {
@@ -130,14 +142,17 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             .sink { [weak self] state in
                 guard let self else { return }
                 let isRelevant = isScreenVisible && viewModel.output.viewState.value.category.content.shouldShowCompanions
-                if case .loading = state {
-                    listLoadingView.isHidden = !isRelevant
-                    if isRelevant { view.bringSubviewToFront(listLoadingView) }
-                } else {
-                    listLoadingView.isHidden = true
-                }
-                if case .failed(let error) = state, isRelevant {
-                    showListError(error)
+                switch state {
+                case .failed(let error) where isRelevant:
+                    if hasCompletedInitialMap {
+                        showListError(error)
+                    } else {
+                        pendingListError = error
+                    }
+                case .idle, .loading, .loaded:
+                    pendingListError = nil
+                default:
+                    break
                 }
                 if case .loaded = state, let placeId = viewModel.output.viewState.value.selectedPlaceId {
                     bottomSheetController.updateSpecificCompanions(for: placeId)
@@ -180,6 +195,21 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
 
     // MARK: - Methods
+
+    private func showInitialLoading() {
+        initialMapLoadingView.isHidden = false
+        view.bringSubviewToFront(initialMapLoadingView)
+    }
+
+    private func finishInitialMapLoading() {
+        guard !hasCompletedInitialMap else { return }
+        hasCompletedInitialMap = true
+        initialMapLoadingView.isHidden = true
+        if isScreenVisible, let pendingListError {
+            showListError(pendingListError)
+            self.pendingListError = nil
+        }
+    }
 
     private func setRecruitCompanionButtonLayout() {
         let button = companionView.recruitCompanionButton
@@ -271,7 +301,6 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
             bottomSheetController.updatePlaceCategory(category)
         case .empty:
             bottomSheetController.stopRefreshing()
-            listLoadingView.isHidden = true
             mapController.updateCompanionMarkers([])
         }
     }
@@ -340,8 +369,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
            let tabBar = tabBarController?.tabBar {
             tabBar.superview?.bringSubviewToFront(tabBar)
         }
-        if !listLoadingView.isHidden {
-            view.bringSubviewToFront(listLoadingView)
+        if !initialMapLoadingView.isHidden {
+            view.bringSubviewToFront(initialMapLoadingView)
         }
     }
 

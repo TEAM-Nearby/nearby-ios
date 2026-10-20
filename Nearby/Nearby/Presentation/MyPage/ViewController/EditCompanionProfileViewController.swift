@@ -66,6 +66,13 @@ final class EditCompanionProfileViewController:
         editProfileView.onProfileImageButtonDidTap = { [weak self] in
             self?.presentPhotoPicker()
         }
+        
+        editProfileView.nicknameTextField.delegate = self
+        editProfileView.nicknameTextField.returnKeyType = .done
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        editProfileView.addGestureRecognizer(tapGesture)
     }
 
     override func bindState() {
@@ -152,8 +159,15 @@ extension EditCompanionProfileViewController: PHPickerViewControllerDelegate {
                 return
             }
 
+            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                return
+            }
+
             Task { @MainActor [weak self] in
-                self?.editProfileView.updateProfileImage(image)
+                guard let self else { return }
+
+                editProfileView.updateProfileImage(image)
+                viewModel.action(.profileImageDidSelect(imageData))
             }
         }
     }
@@ -172,5 +186,20 @@ private extension EditCompanionProfileViewController {
         picker.delegate = self
 
         present(picker, animated: true)
+    }
+    
+    @objc
+    private func dismissProfileKeyboard() {
+        view.endEditing(true)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension EditCompanionProfileViewController: UITextFieldDelegate {
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

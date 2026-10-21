@@ -8,7 +8,8 @@
 import Combine
 import Foundation
 
-final class ReportPostViewModel: BaseViewModelType {
+final class ReportPostViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
     
     // MARK: - Input
     
@@ -109,20 +110,28 @@ final class ReportPostViewModel: BaseViewModelType {
     }
     
     private func submitReport() {
-        isSubmitting = true
         let report = MeetingReport(
             reportedUserID: target.reportedUserID,
             reasons: selectedReasons.sorted().compactMap(ReportReason.init(rawValue:)),
             detail: isDetailRequired ? detailText.trimmingCharacters(in: .whitespacesAndNewlines) : nil
         )
-        Task {
-            defer { isSubmitting = false }
-            do {
+
+        requestRunner.run(
+            onStart: { [self] in
+                isSubmitting = true
+            },
+            operation: { [self] in
                 try await repository.report(meetingId: target.meetingID, report: report)
+            },
+            onSuccess: { [self] _ in
                 output.submitSuccess.send(())
-            } catch {
+            },
+            onFailure: { error in
                 AppLogger.error(error)
+            },
+            onFinish: { [self] in
+                isSubmitting = false
             }
-        }
+        )
     }
 }

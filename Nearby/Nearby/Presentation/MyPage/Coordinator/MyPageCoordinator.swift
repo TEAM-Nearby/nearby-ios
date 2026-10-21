@@ -55,6 +55,10 @@ extension MyPageCoordinator: Coordinator {
         myPageViewController.onReceivedRequestRowDidTap = { [weak self] in
             self?.showAlarm(initialTab: .received)
         }
+        
+        myPageViewController.onEditProfileRequested = { [weak self] profileID in
+            self?.showEditCompanionProfile(profileID: profileID)
+        }
 
         navigationController.setViewControllers([myPageViewController], animated: false)
     }
@@ -97,8 +101,45 @@ private extension MyPageCoordinator {
         settingViewController.onLogoutButtonDidTap = { [weak self] in
             self?.onLogoutDidFinish?()
         }
+        
+        settingViewController.onWithdrawalDidComplete = { [weak self] in
+            self?.onLogoutDidFinish?()
+        }
+        
+        settingViewController.onAgreementButtonDidTap = { [weak self] in
+            self?.showTermsList()
+        }
 
         navigationController.pushViewController(settingViewController, animated: true)
+    }
+    
+    func showTermsList() {
+        let termsListViewController = appDIContainer.myPage.makeTermsListViewController()
+
+        termsListViewController.hidesBottomBarWhenPushed = true
+
+        termsListViewController.onBackButtonDidTap = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        termsListViewController.onTermsDidTap = { [weak self] type in
+            self?.showAgreementDetail(type: type)
+        }
+
+        navigationController.pushViewController(termsListViewController, animated: true)
+    }
+    
+    func showAgreementDetail(type: AgreementDetailType) {
+        let viewController = appDIContainer.myPage
+            .makeAgreementDetailViewController(type: type)
+
+        viewController.hidesBottomBarWhenPushed = true
+
+        viewController.onBackButtonDidTap = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        navigationController.pushViewController(viewController, animated: true)
     }
 
     func showWrittenPost() {
@@ -126,5 +167,22 @@ private extension MyPageCoordinator {
         addChildCoordinator(notificationCoordinator)
 
         return notificationCoordinator
+    }
+    
+    func showEditCompanionProfile(profileID: Int) {
+        let viewController = appDIContainer.myPage
+            .makeEditCompanionProfileViewController(profileID: profileID)
+        
+        viewController.hidesBottomBarWhenPushed = true
+
+        viewController.onBackButtonDidTap = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        viewController.onProfileUpdateDidComplete = { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }
+
+        navigationController.pushViewController(viewController, animated: true)
     }
 }

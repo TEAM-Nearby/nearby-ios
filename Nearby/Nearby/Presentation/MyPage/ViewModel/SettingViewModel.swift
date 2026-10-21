@@ -7,13 +7,16 @@
 
 import Foundation
 
-final class SettingViewModel: BaseViewModelType {
+final class SettingViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
 
     // MARK: - Input
 
     enum Input {
         case backButtonDidTap
         case logoutButtonDidTap
+        case agreementButtonDidTap
+        case withdrawalButtonDidTap
     }
 
     // MARK: - Output
@@ -21,8 +24,12 @@ final class SettingViewModel: BaseViewModelType {
     struct Output {
         var backButtonDidTap: (() -> Void)?
         var logoutButtonDidTap: (() -> Void)?
+        var agreementButtonDidTap: (() -> Void)?
         var logoutErrorMessage: ((String) -> Void)?
         var isLogoutLoading: ((Bool) -> Void)?
+        var withdrawalDidComplete: (() -> Void)?
+        var withdrawalErrorMessage: ((String) -> Void)?
+        var isWithdrawalLoading: ((Bool) -> Void)?
     }
 
     // MARK: - Property
@@ -31,6 +38,7 @@ final class SettingViewModel: BaseViewModelType {
 
     private let authRepository: AuthRepository
     private var logoutTask: Task<Void, Never>?
+    private var withdrawalTask: Task<Void, Never>?
 
     // MARK: - Initializer
 
@@ -40,6 +48,7 @@ final class SettingViewModel: BaseViewModelType {
 
     deinit {
         logoutTask?.cancel()
+        withdrawalTask?.cancel()
     }
 
     // MARK: - Action
@@ -51,6 +60,12 @@ final class SettingViewModel: BaseViewModelType {
 
         case .logoutButtonDidTap:
             logout()
+        
+        case .agreementButtonDidTap:
+            output.agreementButtonDidTap?()
+            
+        case .withdrawalButtonDidTap:
+            withdraw()
         }
     }
 }
@@ -61,27 +76,50 @@ private extension SettingViewModel {
     func logout() {
         guard logoutTask == nil else { return }
 
-        output.isLogoutLoading?(true)
-        logoutTask = Task { [weak self] in
-            guard let self else { return }
-            defer {
-                logoutTask = nil
-                output.isLogoutLoading?(false)
-            }
-
-            do {
+        logoutTask = requestRunner.run(
+            onStart: { [self] in
+                output.isLogoutLoading?(true)
+            },
+            operation: { [self] in
                 try await authRepository.logout()
-                guard !Task.isCancelled else { return }
+            },
+            onSuccess: { [self] _ in
                 output.logoutButtonDidTap?()
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else { return }
-
+            },
+            onFailure: { [self] error in
                 let message = (error as? LocalizedError)?.errorDescription
                     ?? "로그아웃에 실패했습니다. 다시 시도해 주세요."
                 output.logoutErrorMessage?(message)
+            },
+            onFinish: { [self] in
+                logoutTask = nil
+                output.isLogoutLoading?(false)
             }
-        }
+        )
+    }
+    
+    func withdraw() {
+        guard withdrawalTask == nil else { return }
+
+        withdrawalTask = requestRunner.run(
+            onStart: { [self] in
+                output.isWithdrawalLoading?(true)
+            },
+            operation: { [self] in
+                try await authRepository.withdraw()
+            },
+            onSuccess: { [self] _ in
+                output.withdrawalDidComplete?()
+            },
+            onFailure: { [self] error in
+                let message = (error as? LocalizedError)?.errorDescription
+                    ?? "회원 탈퇴에 실패했습니다. 다시 시도해 주세요."
+                output.withdrawalErrorMessage?(message)
+            },
+            onFinish: { [self] in
+                withdrawalTask = nil
+                output.isWithdrawalLoading?(false)
+            }
+        )
     }
 }

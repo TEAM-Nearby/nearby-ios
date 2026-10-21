@@ -8,7 +8,8 @@
 import Combine
 import Foundation
 
-final class ReviewPostViewModel: BaseViewModelType {
+final class ReviewPostViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
     
     // MARK: - Input
     
@@ -148,10 +149,9 @@ final class ReviewPostViewModel: BaseViewModelType {
     }
 
     private func submitReview() {
-        isSubmitting = true
-        Task {
-            defer { isSubmitting = false }
-            do {
+        requestRunner.run(
+            onStart: { [self] in isSubmitting = true },
+            operation: { [self] () async throws -> MeetingCompletion? in
                 if !hasSubmittedReview {
                     let keywords = firstSelectedTags.sorted().map { ReviewKeyword.consideration[$0].rawValue }
                         + secondSelectedTags.sorted().map { ReviewKeyword.timePromise[$0].rawValue }
@@ -161,34 +161,38 @@ final class ReviewPostViewModel: BaseViewModelType {
                         keywords: keywords
                     )
                     try await repository.createReview(meetingId: reviewItem.meetingId, review: review)
+                    try Task.checkCancellation()
                     hasSubmittedReview = true
                 }
-
                 if isFinishButton {
-                    let completion = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                    return try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+                }
+                return nil
+            },
+            onSuccess: { [self] completion in
+                if let completion {
                     handleCompleteSuccess(completion)
                 } else {
                     output.reviewSaved.send(())
                 }
-            } catch {
-                AppLogger.error(error)
-            }
-        }
+            },
+            onFailure: { error in AppLogger.error(error) },
+            onFinish: { [self] in isSubmitting = false }
+        )
     }
-    
+
     private func completeMeeting() {
-        isSubmitting = true
-        Task {
-            defer { isSubmitting = false }
-            do {
-                let completion = try await repository.completeMeeting(meetingId: reviewItem.meetingId)
-                handleCompleteSuccess(completion)
-            } catch {
-                AppLogger.error(error)
-            }
-        }
+        requestRunner.run(
+            onStart: { [self] in isSubmitting = true },
+            operation: { [self] in
+                try await repository.completeMeeting(meetingId: reviewItem.meetingId)
+            },
+            onSuccess: { [self] completion in handleCompleteSuccess(completion) },
+            onFailure: { error in AppLogger.error(error) },
+            onFinish: { [self] in isSubmitting = false }
+        )
     }
-    
+
     private func handleCompleteSuccess(_ completion: MeetingCompletion) {
         eventCenter.notifyCompleted(matchId: completion.matchID)
         output.companionCompleted.send(())

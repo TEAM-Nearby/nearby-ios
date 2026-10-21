@@ -19,6 +19,8 @@ struct MyPageResponseDTO: Decodable {
     let mealTogetherCount: Int
     let visitedCityCount: Int
     let receivedReviewCount: Int
+    let profileId: Int?
+    let intro: String?
 }
 
 struct MyCompanionPostsResponseDTO: Decodable {

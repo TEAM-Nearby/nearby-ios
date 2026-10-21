@@ -83,12 +83,19 @@ extension CompanionMapMarkerData {
 }
 
 struct CompanionMapConfiguration {
+
+    // MARK: - Properties
+
+    static let fallbackCoordinate = CLLocationCoordinate2D(latitude: 41.3906935, longitude: 2.1699933)
+
     let referenceCoordinate: CLLocationCoordinate2D?
     let initialZoom: Float
     let smallMarkerMaximumZoom: Float
     let largeMarkerMinimumZoom: Float
     let mediumMarkerSize: CGFloat
     let smallMarkerSize: CGFloat
+
+    // MARK: - Initializer
 
     init(
         referenceCoordinate: CLLocationCoordinate2D? = nil,

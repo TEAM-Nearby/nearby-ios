@@ -11,6 +11,7 @@ protocol AuthRepository {
     func loginWithKakao() async throws -> OnboardingStatus
     func loginWithApple() async throws -> OnboardingStatus
     func logout() async throws
+    func withdraw() async throws
     func sendVerificationCode(phoneNumber: String) async throws -> PhoneVerificationResponseDTO
     func confirmVerificationCode(phoneVerificationId: Int, verificationCode: String) async throws -> PhoneVerificationConfirmResponseDTO
     func completeCompanionProfile(nickname: String, gender: NearbyGender, intro: String?,
@@ -109,6 +110,16 @@ extension DefaultAuthRepository: AuthRepository {
         } catch {
             AppLogger.error(error, message: "카카오 SDK 로그아웃 실패")
         }
+    }
+    
+    func withdraw() async throws {
+        let response = try await authService.withdraw()
+
+        guard response.withdrawn else {
+            throw NetworkError.serverError(status: 200, code: "WITHDRAW_FAILED", message: "회원 탈퇴 처리에 실패했습니다.")
+        }
+
+        try tokenStorage.clear()
     }
     
     func sendVerificationCode(phoneNumber: String) async throws -> PhoneVerificationResponseDTO {

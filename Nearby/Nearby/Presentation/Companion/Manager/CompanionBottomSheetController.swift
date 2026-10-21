@@ -5,6 +5,7 @@
 //  Created by soomin on 9/21/26.
 //
 
+import Combine
 import CoreLocation
 import UIKit
 
@@ -19,6 +20,7 @@ final class CompanionBottomSheetController {
     var onSummaryTextChanged: ((String) -> Void)?
     var onMapMarkersChanged: (([CompanionMapMarkerData]) -> Void)?
     var onSpecificSheetClose: (() -> Void)?
+    var onCompanionAvailabilityChanged: ((Bool) -> Void)?
     
     private let bottomSheetViewController = NearbyBottomSheetViewController()
     private let nearbySheetViewController: NearCompanionSheetViewController
@@ -27,6 +29,10 @@ final class CompanionBottomSheetController {
     private var displayedContent: BottomSheetContent?
     private var displayedState: BottomSheetState?
     
+    var listState: AnyPublisher<NearCompanionSheetViewModel.ViewState, Never> {
+        nearbySheetViewController.listState
+    }
+
     // MARK: - Initializer
     
     init(nearbySheetViewController: NearCompanionSheetViewController, specificSheetViewController: SpecificCompanionSheetViewController, emptySheetViewController: EmptyCompanionSheetViewController) {
@@ -55,6 +61,9 @@ final class CompanionBottomSheetController {
         nearbySheetViewController.onMapMarkersChanged = { [weak self] markers in
             self?.onMapMarkersChanged?(markers)
         }
+        nearbySheetViewController.onCompanionAvailabilityChanged = { [weak self] hasCompanions in
+            self?.onCompanionAvailabilityChanged?(hasCompanions)
+        }
         nearbySheetViewController.onTitleMultilineChanged = { [weak self] isMultiline in
             self?.updateHeight(for: .nearbyCompanionList, isTitleMultiline: isMultiline)
         }
@@ -77,6 +86,10 @@ final class CompanionBottomSheetController {
         }
     }
     
+    func stopRefreshing() {
+        nearbySheetViewController.stopRefreshing()
+    }
+
     func attach(to parentViewController: UIViewController, in hostView: UIView, centerOverlayView: UIView, trailingOverlayView: UIView) {
         parentViewController.addChild(bottomSheetViewController)
         hostView.addSubview(bottomSheetViewController.view)

@@ -12,6 +12,7 @@ enum AuthTarget {
     case appleLogin(AppleLoginRequestDTO)
     case refresh(TokenRefreshRequestDTO)
     case logout(LogoutRequestDTO)
+    case withdraw
     case sendVerificationCode(PhoneVerificationRequestDTO)
     case confirmVerificationCode(phoneVerificationId: Int, request: PhoneVerificationConfirmRequestDTO)
     case issueProfileImageUploadURL(ProfileImageUploadURLRequestDTO)
@@ -33,6 +34,9 @@ extension AuthTarget: BaseTargetType {
 
         case .logout:
             return "/api/auth/logout"
+            
+        case .withdraw:
+            return "/api/users/me"
 
         case .sendVerificationCode:
             return "/api/onboarding/phone-verifications"
@@ -61,6 +65,9 @@ extension AuthTarget: BaseTargetType {
             
         case .confirmVerificationCode:
             return .patch
+        
+        case .withdraw:
+            return .delete
         }
     }
 
@@ -77,6 +84,9 @@ extension AuthTarget: BaseTargetType {
 
         case .logout(let request):
             return ["refreshToken": request.refreshToken]
+        
+        case .withdraw:
+            return nil
 
         case .sendVerificationCode(let request):
             return ["phoneNumber": request.phoneNumber]
@@ -116,6 +126,7 @@ extension AuthTarget: BaseTargetType {
             return false
 
         case .logout,
+             .withdraw,
              .sendVerificationCode,
              .confirmVerificationCode,
              .issueProfileImageUploadURL,

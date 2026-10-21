@@ -11,9 +11,10 @@ struct MyPageDisplayModel {
 
     let profileImageUrl: String?
     let nickname: String
+    let intro: String?
     let genderText: String
     let isPhoneVerified: Bool
-    let mannerRating: Int
+    let mannerRating: Double
     let mannerKeywords: [String]
     let travelStyleKeywords: [String]
     let mealTogetherCountText: String
@@ -25,10 +26,11 @@ struct MyPageDisplayModel {
     init(response: MyPageResponseDTO) {
         profileImageUrl = response.profileImageUrl
         nickname = response.nickname
+        intro = response.intro
         genderText = response.gender.genderDisplayText
         isPhoneVerified = response.isPhoneVerified
 
-        mannerRating = Int(response.mannerScore.rounded())
+        mannerRating = Double(response.mannerScore)
 
         mannerKeywords = MannerKeyword.titles(
             for: response.mannerKeywords

@@ -15,8 +15,8 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     
     var onEvent: ((DiningMapSheetEvent) -> Void)?
 
-    private let initialLoadingTracker = InitialLoadingTracker()
     private let nearDiningBottomSheetView = NearDiningBottomSheetView(diningCategories: DiningCategory.allCases)
+    private var isShowingSkeleton = false
 
     // MARK: - Life Cycle
 
@@ -50,14 +50,18 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
             .sink { [weak self] state in
                 guard let self else { return }
                 switch state {
-                case .idle, .loading:
+                case .idle:
                     break
+                case .loading:
+                    isShowingSkeleton = true
+                    nearDiningBottomSheetView.collectionView.reloadData()
                 case .loaded(_, let markers):
-                    initialLoadingTracker.complete(in: self)
+                    isShowingSkeleton = false
                     nearDiningBottomSheetView.collectionView.reloadData()
                     onEvent?(.markersChanged(markers))
                 case .failed(let error):
-                    initialLoadingTracker.complete(in: self)
+                    isShowingSkeleton = false
+                    nearDiningBottomSheetView.collectionView.reloadData()
                     AppLogger.error(error)
                 }
             }
@@ -82,8 +86,11 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     // MARK: - Methods
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D) {
-        initialLoadingTracker.begin(in: self)
         viewModel.action(.locationDidUpdate(coordinate))
+    }
+
+    func refresh() {
+        viewModel.action(.refresh)
     }
 
     func updateCityName(_ cityName: String) {
@@ -107,11 +114,16 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
 
 extension NearDiningSheetViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.restaurantCount
+        isShowingSkeleton ? 3 : viewModel.restaurantCount
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(NearDiningCell.self, for: indexPath)
+        if isShowingSkeleton {
+            cell.configureSkeleton(isLast: indexPath.item == 2)
+            return cell
+        }
+
         cell.configure(with: viewModel.restaurant(at: indexPath.item), isLast: indexPath.item == viewModel.restaurantCount - 1)
         cell.onBookmarkTap = { [weak self] in
             self?.viewModel.action(.bookmarkDidTap(indexPath.item))
@@ -127,6 +139,7 @@ extension NearDiningSheetViewController: UICollectionViewDataSource {
 
 extension NearDiningSheetViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard !isShowingSkeleton else { return }
         viewModel.action(.restaurantDidSelect(indexPath.item))
     }
 }

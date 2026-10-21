@@ -8,7 +8,8 @@
 import Combine
 import Foundation
 
-final class MatchingManageDetailViewModel: BaseViewModelType {
+final class MatchingManageDetailViewModel: BaseViewModelType, RequestRunning {
+    let requestRunner = RequestRunner()
 
     // MARK: - Input
 
@@ -117,19 +118,17 @@ final class MatchingManageDetailViewModel: BaseViewModelType {
         let matchID = displayData.cardItem.matchId
         let repository = repository
 
-        confirmTask?.cancel()
-        confirmTask = Task { @MainActor [weak self, repository] in
-            do {
+        confirmTask = requestRunner.run(
+            operation: {
                 try await repository.confirmSchedule(matchId: matchID, scheduledAt: scheduledAt)
-                guard let self, !Task.isCancelled else { return }
+            },
+            onSuccess: { [self] _ in
                 output.showBack.send(())
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else { return }
+            },
+            onFailure: { error in
                 AppLogger.error(error, message: "동행 일정 확정에 실패했습니다.")
             }
-        }
+        )
     }
 
     private func makeScheduledAt() -> String {

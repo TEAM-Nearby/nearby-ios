@@ -13,6 +13,7 @@ protocol AuthService {
     func loginWithKakao(request: KakaoLoginRequestDTO) async throws -> KakaoLoginResponseDTO
     func loginWithApple(request: AppleLoginRequestDTO) async throws -> AppleLoginResponseDTO
     func logout(request: LogoutRequestDTO) async throws -> LogoutResponseDTO
+    func withdraw() async throws -> WithdrawResponseDTO
     func sendVerificationCode(request: PhoneVerificationRequestDTO) async throws -> PhoneVerificationResponseDTO
     func confirmVerificationCode(phoneVerificationId: Int, request: PhoneVerificationConfirmRequestDTO) async throws -> PhoneVerificationConfirmResponseDTO
     func issueProfileImageUploadURL(request: ProfileImageUploadURLRequestDTO) async throws -> ProfileImageUploadURLResponseDTO
@@ -57,9 +58,13 @@ extension DefaultAuthService: AuthService {
     }
 
     func logout(request: LogoutRequestDTO) async throws -> LogoutResponseDTO {
+        try await networkProvider.request(AuthTarget.logout(request), responseType: LogoutResponseDTO.self)
+    }
+    
+    func withdraw() async throws -> WithdrawResponseDTO {
         try await networkProvider.request(
-            AuthTarget.logout(request),
-            responseType: LogoutResponseDTO.self
+            AuthTarget.withdraw,
+            responseType: WithdrawResponseDTO.self
         )
     }
 

@@ -212,7 +212,8 @@ final class PhoneVerificationView: BaseView {
     // MARK: - Methods
 
     func updateVerificationMode(_ isVerificationMode: Bool) {
-        phoneClearButton.isHidden = !isVerificationMode
+        phoneClearButton.isHidden = isVerificationMode
+        phoneTextField.isEnabled = !isVerificationMode
         phoneErrorLabel.isHidden = true
 
         verificationTitleLabel.isHidden = !isVerificationMode

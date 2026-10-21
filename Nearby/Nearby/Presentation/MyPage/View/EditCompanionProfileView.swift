@@ -108,6 +108,7 @@ final class EditCompanionProfileView: BaseView {
 
         introductionTextView.do {
             $0.textView.isScrollEnabled = false
+            $0.maxLength = 50
         }
 
         travelStyleTitleLabel.do {

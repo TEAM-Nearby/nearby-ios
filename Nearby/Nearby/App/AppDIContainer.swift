@@ -16,7 +16,7 @@ final class AppDIContainer {
     private lazy var appIntroductionStorage: AppIntroductionStorage = UserDefaultsAppIntroductionStorage()
     private lazy var installationIDStorage: InstallationIDStorage = UserDefaultsInstallationIDStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
-    private lazy var meetingEventCenter = MeetingEventCenter()
+    private lazy var meetingEventCenter = MeetingEventCenter(storage: UserDefaultsCompletedMeetingStorage(tokenStorage: tokenStorage))
 
     private lazy var authService: AuthService = DefaultAuthService(networkProvider: networkProvider)
     private lazy var authRepository: AuthRepository = DefaultAuthRepository(kakaoOAuthProvider: DefaultKakaoOAuthProvider(), appleOAuthProvider: DefaultAppleOAuthProvider(), authService: authService, tokenStorage: tokenStorage, pushEndpointRepository: pushEndpointRepository, onboardingStatusStorage: onboardingStatusStorage)
@@ -35,7 +35,7 @@ final class AppDIContainer {
     lazy var diningMap = DiningMapDIContainer(networkProvider: networkProvider, myPageRepository: myPageRepository)
     lazy var matching = MatchingDIContainer(repository: matchingRepository, eventCenter: meetingEventCenter)
     lazy var myPage = MyPageDIContainer(networkProvider: networkProvider, authRepository: authRepository, authService: authService, myPageRepository: myPageRepository)
-    lazy var meeting = MeetingDIContainer(networkProvider: networkProvider, eventCenter: meetingEventCenter, matchingRepository: matchingRepository, myPageRepository: myPageRepository)
+    lazy var meeting = MeetingDIContainer(networkProvider: networkProvider, tokenStorage: tokenStorage, eventCenter: meetingEventCenter, matchingRepository: matchingRepository, myPageRepository: myPageRepository)
     lazy var notification = NotificationDIContainer(networkProvider: networkProvider)
     lazy var recruitCompanion = RecruitCompanionDIContainer(networkProvider: networkProvider)
 

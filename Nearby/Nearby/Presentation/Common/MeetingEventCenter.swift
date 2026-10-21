@@ -8,12 +8,27 @@
 import Combine
 
 final class MeetingEventCenter {
+
+    // MARK: - Properties
+
     let meetingCompleted = PassthroughSubject<Int, Never>()
 
-    private(set) var completedMatchIds = Set<Int>()
+    private let storage: CompletedMeetingStorage
+
+    var completedMatchIds: Set<Int> {
+        storage.completedMatchIDs
+    }
+
+    // MARK: - Initializer
+
+    init(storage: CompletedMeetingStorage) {
+        self.storage = storage
+    }
+
+    // MARK: - Method
 
     func notifyCompleted(matchId: Int) {
-        completedMatchIds.insert(matchId)
+        storage.insert(matchID: matchId)
         meetingCompleted.send(matchId)
     }
 }

@@ -44,6 +44,12 @@ final class NearbyTextView: BaseView {
     }
     
     var onTextChanged: ((String) -> Void)?
+
+    var placeholderTextColor: UIColor = .grey20 {
+        didSet {
+            placeholderLabel.textColor = placeholderTextColor
+        }
+    }
     
     // MARK: - Initializer
     
@@ -85,7 +91,7 @@ final class NearbyTextView: BaseView {
         }
         
         placeholderLabel.do {
-            $0.setFont(textFont, text: placeholder, textColor: .grey20)
+            $0.setFont(textFont, text: placeholder, textColor: placeholderTextColor)
         }
         
         clearButton.do {

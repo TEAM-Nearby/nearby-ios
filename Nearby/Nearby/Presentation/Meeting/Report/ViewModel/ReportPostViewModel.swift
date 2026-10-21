@@ -116,7 +116,12 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
                 isSubmitting = true
             },
             operation: { [self] in
-                try await repository.report(meetingId: target.meetingID, report: report)
+                switch target {
+                case .meeting(let meetingID, _):
+                    try await repository.report(meetingId: meetingID, report: report)
+                case .match(let matchID, _):
+                    try await repository.report(matchId: matchID, report: report)
+                }
             },
             onSuccess: { [self] _ in
                 output.submitSuccess.send(())

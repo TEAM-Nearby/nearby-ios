@@ -109,9 +109,13 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
             }
             
         case .reportButtonDidTap:
-            guard let meetingId, let currentUserRole else { return }
+            guard let currentUserRole else { return }
             let reportedUserID = currentUserRole == .participant ? item.hostUserID : nil
-            output.showReport.send(MeetingReportTarget(meetingID: meetingId, reportedUserID: reportedUserID))
+            if let meetingId {
+                output.showReport.send(.meeting(id: meetingId, reportedUserID: reportedUserID))
+            } else {
+                output.showReport.send(.match(id: matchId, reportedUserID: reportedUserID))
+            }
         }
     }
     
@@ -179,6 +183,14 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
         )
         output.step.send(.match)
         updateVerifyButtonState()
+        fetchCurrentUserRole()
+    }
+
+    private func fetchCurrentUserRole() {
+        Task {
+            guard let schedule = try? await matchingRepository.fetchMatchMySchedule(matchId: matchId) else { return }
+            currentUserRole = schedule.currentUserRole == .host ? .host : .participant
+        }
     }
 
     private func checkIn(latitude: Double, longitude: Double) {

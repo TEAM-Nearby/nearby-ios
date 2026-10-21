@@ -259,6 +259,9 @@ private extension AppCoordinator {
         addChildCoordinator(mainTabCoordinator)
         mainTabCoordinator.start()
         setRootViewController(mainTabCoordinator.rootViewController, animated: true)
+        diContainer.pushNotificationManager.onRoute = { [weak mainTabCoordinator] route in
+            mainTabCoordinator?.showNotification(for: route)
+        }
     }
     
     func setRootViewController(_ viewController: UIViewController, animated: Bool) {

@@ -117,6 +117,11 @@ extension MeetingTabCoordinator: Coordinator {
         let notificationCoordinator = makeChildNotificationCoordinator()
         notificationCoordinator.showAlarm()
     }
+
+    func showNotification(for route: PushNotificationRoute) {
+        let notificationCoordinator = makeChildNotificationCoordinator()
+        notificationCoordinator.showAlarm(for: route)
+    }
     
     // MARK: - Alert
 

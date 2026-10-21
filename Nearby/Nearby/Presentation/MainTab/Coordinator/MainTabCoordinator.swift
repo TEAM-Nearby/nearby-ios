@@ -38,6 +38,12 @@ extension MainTabCoordinator {
         guard let index = NearbyTabItem.allCases.firstIndex(of: item) else { return }
         rootViewController.selectedIndex = index
     }
+
+    func showNotification(for route: PushNotificationRoute) {
+        switchTab(to: .meeting)
+        let meetingCoordinator = childCoordinators.first { $0 is MeetingTabCoordinator } as? MeetingTabCoordinator
+        meetingCoordinator?.showNotification(for: route)
+    }
 }
 
 private extension MainTabCoordinator {

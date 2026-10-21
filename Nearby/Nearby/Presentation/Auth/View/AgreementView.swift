@@ -103,9 +103,9 @@ final class AgreementView: BaseView {
         [locationAgreementButton, privacyAgreementButton, marketingAgreementButton].forEach {
             var configuration = UIButton.Configuration.plain()
 
-            configuration.image = UIImage.icCheckDefault.withRenderingMode(.alwaysOriginal)
+            configuration.image = fixedSizeCheckboxImage(.icCheckDefault).withRenderingMode(.alwaysOriginal)
             configuration.imagePlacement = .leading
-            configuration.imagePadding = 20.5
+            configuration.imagePadding = 15
             configuration.contentInsets = .zero
             configuration.baseForegroundColor = .grey80
 
@@ -171,7 +171,7 @@ final class AgreementView: BaseView {
         containerView.addSubviews(agreementButton, detailButton)
 
         agreementButton.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(10)
+            $0.leading.equalToSuperview()
             $0.verticalEdges.equalToSuperview()
             $0.trailing.lessThanOrEqualTo(detailButton.snp.leading).offset(-8)
         }
@@ -199,7 +199,7 @@ final class AgreementView: BaseView {
         }
 
         var configuration = button.configuration
-        configuration?.image = (isAllAgreement ? fixedSizeCheckboxImage(image) : image).withRenderingMode(.alwaysOriginal)
+        configuration?.image = fixedSizeCheckboxImage(image).withRenderingMode(.alwaysOriginal)
 
         button.configuration = configuration
     }

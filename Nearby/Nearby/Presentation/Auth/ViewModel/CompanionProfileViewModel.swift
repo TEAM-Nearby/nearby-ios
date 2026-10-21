@@ -127,8 +127,8 @@ private extension CompanionProfileViewModel {
             return
         }
         
-        guard trimmedIntroduction.count <= 50 else {
-            output.onboardingDidFail?("한줄 소개는 50자 이하로 입력해주세요.")
+        guard trimmedIntroduction.count <= 150 else {
+            output.onboardingDidFail?("한줄 소개는 150자 이하로 입력해주세요.")
             return
         }
         

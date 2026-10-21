@@ -20,10 +20,14 @@ final class MatchingManageScheduleDetailView: BaseView {
     var confirmButtonAction: (() -> Void)?
     private var isDatePickerVisible = false
     private var matchedCardViewHeightConstraint: Constraint?
+    private var placeTitleTopFromDateAndTimeButtonConstraint: Constraint?
+    private var placeTitleTopFromDatePickerConstraint: Constraint?
 
     // MARK: - UI Components
 
     private let navigationBar = NearbyNavigationBar()
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
     private let matchedCardView = MatchingMatchedCardCell(frame: .zero)
     private let dateAndTimeTitleLabel = UILabel()
     private let datePickerContainerView = UIView()
@@ -44,6 +48,11 @@ final class MatchingManageScheduleDetailView: BaseView {
 
         navigationBar.do {
             $0.configure(leftItem: .back, centerItem: .title("상세 일정"), rightItems: [.alarm])
+        }
+
+        scrollView.do {
+            $0.alwaysBounceVertical = true
+            $0.showsVerticalScrollIndicator = false
         }
 
         matchedCardView.do {
@@ -107,17 +116,20 @@ final class MatchingManageScheduleDetailView: BaseView {
     }
 
     override func setUI() {
-        addSubviews(
-            navigationBar, matchedCardView, dateAndTimeTitleLabel,
+        addSubviews(navigationBar, scrollView, confirmExplainLabel, confirmButton)
+        scrollView.addSubview(contentView)
+        contentView.addSubviews(
+            matchedCardView, dateAndTimeTitleLabel,
             dateAndTimeButton, dateAndTimeImageView, placeTitleLabel,
             placeImageView, placeDetailLabel, mapView,
-            confirmExplainLabel, confirmButton, datePickerContainerView
+            datePickerContainerView
         )
         datePickerContainerView.addSubview(datePicker)
     }
 
     override func setLayout() {
         setHeaderLayout()
+        setScrollLayout()
         setDateAndTimeLayout()
         setPlaceLayout()
         setConfirmLayout()
@@ -128,9 +140,22 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview()
         }
+    }
+
+    private func setScrollLayout() {
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalTo(confirmExplainLabel.snp.top).offset(-12)
+        }
+
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+        }
 
         matchedCardView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom).offset(18)
+            $0.top.equalToSuperview().offset(18)
             $0.horizontalEdges.equalToSuperview().inset(20)
             matchedCardViewHeightConstraint = $0.height.equalTo(
                 MatchingMatchedCardCell.height(displayMode: .scheduleDetail)
@@ -170,9 +195,11 @@ final class MatchingManageScheduleDetailView: BaseView {
 
     private func setPlaceLayout() {
         placeTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(dateAndTimeButton.snp.bottom).offset(28)
+            placeTitleTopFromDateAndTimeButtonConstraint = $0.top.equalTo(dateAndTimeButton.snp.bottom).offset(28).constraint
+            placeTitleTopFromDatePickerConstraint = $0.top.equalTo(datePickerContainerView.snp.bottom).offset(28).constraint
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
+        placeTitleTopFromDatePickerConstraint?.deactivate()
 
         placeImageView.snp.makeConstraints {
             $0.top.equalTo(placeTitleLabel.snp.bottom).offset(11)
@@ -190,6 +217,7 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.top.equalTo(placeDetailLabel.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(230)
+            $0.bottom.equalToSuperview().inset(24)
         }
     }
 
@@ -245,8 +273,14 @@ final class MatchingManageScheduleDetailView: BaseView {
     }
 
     private func updateDatePickerVisibility() {
+        if isDatePickerVisible {
+            placeTitleTopFromDateAndTimeButtonConstraint?.deactivate()
+            placeTitleTopFromDatePickerConstraint?.activate()
+        } else {
+            placeTitleTopFromDatePickerConstraint?.deactivate()
+            placeTitleTopFromDateAndTimeButtonConstraint?.activate()
+        }
         datePickerContainerView.isHidden = !isDatePickerVisible
-        bringSubviewToFront(datePickerContainerView)
     }
 
     // MARK: - Actions

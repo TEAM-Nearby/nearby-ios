@@ -168,6 +168,15 @@ final class DiningMapBottomSheetController {
         diningInfoSheetViewController.updateLocation(coordinate)
     }
 
+    func refreshCurrentList() {
+        switch screenState.listType {
+        case .nearby:
+            nearDiningSheetViewController.refresh()
+        case .saved:
+            saveDiningSheetViewController.refresh()
+        }
+    }
+
     func updateCityName(_ cityName: String) {
         nearDiningSheetViewController.updateCityName(cityName)
     }

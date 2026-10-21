@@ -115,6 +115,12 @@ final class NearbyTextView: BaseView {
         }
     }
     
+    // MARK: - Custom Methods
+
+    override func setAddTarget() {
+        clearButton.addTarget(self, action: #selector(clearButtonDidTap), for: .touchUpInside)
+    }
+    
     // MARK: - Methods
     
     private func remakeTextViewConstraints() {
@@ -172,6 +178,12 @@ final class NearbyTextView: BaseView {
     func clearText() {
         textView.text = nil
         placeholderLabel.isHidden = false
+    }
+    
+    @objc
+    private func clearButtonDidTap() {
+        clearText()
+        onTextChanged?("")
     }
     
     func setPlaceholderTruncation(numberOfLines: Int) {

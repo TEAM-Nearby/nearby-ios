@@ -11,12 +11,13 @@ final class MyPageDIContainer {
 
     private lazy var companionProfileService: CompanionProfileService = DefaultCompanionProfileService(networkProvider: networkProvider)
 
-    private lazy var companionProfileRepository: CompanionProfileRepository = DefaultCompanionProfileRepository(service: companionProfileService)
+    private lazy var companionProfileRepository: CompanionProfileRepository = DefaultCompanionProfileRepository(service: companionProfileService, authService: authService)
     
     // MARK: - Dependencies
 
     private let networkProvider: NetworkProvider
     private let authRepository: AuthRepository
+    private let authService: AuthService
     private let myPageRepository: MyPageRepository
 
     // MARK: - Service
@@ -29,9 +30,10 @@ final class MyPageDIContainer {
 
     // MARK: - Initializer
 
-    init(networkProvider: NetworkProvider, authRepository: AuthRepository, myPageRepository: MyPageRepository) {
+    init(networkProvider: NetworkProvider, authRepository: AuthRepository, authService: AuthService, myPageRepository: MyPageRepository) {
         self.networkProvider = networkProvider
         self.authRepository = authRepository
+        self.authService = authService
         self.myPageRepository = myPageRepository
     }
 

@@ -104,7 +104,7 @@ final class MeetingFirstEntryGuideView: BaseView {
         }
 
         sampleCardStackView.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(126)
+            $0.top.equalTo(safeAreaLayoutGuide).offset(130)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
 

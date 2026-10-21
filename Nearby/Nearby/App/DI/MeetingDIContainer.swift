@@ -12,6 +12,7 @@ final class MeetingDIContainer {
     // MARK: - Dependencies
 
     private let networkProvider: NetworkProvider
+    private let tokenStorage: TokenStorage
     private let eventCenter: MeetingEventCenter
     private let matchingRepository: MatchedCompanionListRepository
     private let myPageRepository: MyPageRepository
@@ -28,8 +29,9 @@ final class MeetingDIContainer {
 
     // MARK: - Initializer
 
-    init(networkProvider: NetworkProvider, eventCenter: MeetingEventCenter, matchingRepository: MatchedCompanionListRepository, myPageRepository: MyPageRepository) {
+    init(networkProvider: NetworkProvider, tokenStorage: TokenStorage, eventCenter: MeetingEventCenter, matchingRepository: MatchedCompanionListRepository, myPageRepository: MyPageRepository) {
         self.networkProvider = networkProvider
+        self.tokenStorage = tokenStorage
         self.eventCenter = eventCenter
         self.matchingRepository = matchingRepository
         self.myPageRepository = myPageRepository
@@ -44,7 +46,7 @@ final class MeetingDIContainer {
     }
 
     func makeMeetingProgressViewController(item: MeetingItem, onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
-        let viewModel = MeetingProgressViewModel(item: item, repository: meetingRepository, matchingRepository: matchingRepository, reviewRepository: reviewRepository)
+        let viewModel = MeetingProgressViewModel(item: item, currentUserId: tokenStorage.currentUserId, repository: meetingRepository, matchingRepository: matchingRepository, reviewRepository: reviewRepository)
         let viewController = MeetingProgressViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true

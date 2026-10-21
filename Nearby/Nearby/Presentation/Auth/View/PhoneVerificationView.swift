@@ -44,7 +44,7 @@ final class PhoneVerificationView: BaseView {
         }
 
         progressImageView.do {
-            $0.image = .progressStep1
+            $0.image = .progressStep2
             $0.contentMode = .scaleToFill
         }
 

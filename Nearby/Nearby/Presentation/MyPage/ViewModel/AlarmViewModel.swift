@@ -129,7 +129,7 @@ private extension AlarmViewModel {
 
                 let items = response.requests.map {
                     var item = AlarmRequestItem(dto: $0, tab: selectedTab)
-                    if let id = item.notificationId, readNotificationIDs.contains(id) {
+                    if let id = item.notificationId, self.readNotificationIDs.contains(id) {
                         item.isRead = true
                     }
                     return item

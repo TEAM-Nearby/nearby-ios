@@ -55,6 +55,7 @@ final class LoginView: BaseView {
             configuration.imagePadding = 16
             configuration.baseForegroundColor = .white
             configuration.title = "Apple로 로그인"
+            configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 0)
 
             configuration.titleTextAttributesTransformer =
                 UIConfigurationTextAttributesTransformer { attributes in
@@ -65,6 +66,7 @@ final class LoginView: BaseView {
                 }
 
             $0.configuration = configuration
+            $0.contentHorizontalAlignment = .center
         }
         
         kakaoLoginButton.do {

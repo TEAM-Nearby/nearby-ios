@@ -44,6 +44,7 @@ final class NearbyTextView: BaseView {
     }
     
     var onTextChanged: ((String) -> Void)?
+    var maxLength: Int?
 
     var placeholderTextColor: UIColor = .grey20 {
         didSet {
@@ -203,7 +204,28 @@ final class NearbyTextView: BaseView {
 
 extension NearbyTextView: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
+        if let maxLength, textView.markedTextRange == nil, textView.text.count > maxLength {
+            textView.text = String(textView.text.prefix(maxLength))
+        }
         placeholderLabel.isHidden = !textView.text.isEmpty
         onTextChanged?(textView.text)
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard let maxLength else {
+            return true
+        }
+
+        guard textView.markedTextRange == nil else {
+            return true
+        }
+
+        guard let currentText = textView.text, let textRange = Range(range, in: currentText) else {
+            return false
+        }
+
+        let updatedText = currentText.replacingCharacters(in: textRange, with: text)
+
+        return updatedText.count <= maxLength
     }
 }

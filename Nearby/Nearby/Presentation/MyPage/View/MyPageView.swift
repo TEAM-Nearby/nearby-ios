@@ -104,7 +104,7 @@ final class MyPageView: BaseView {
         }
 
         boardingPassImageView.do {
-            $0.image = .mypageCard
+            $0.image = .mypageWithoutIntro
             $0.contentMode = .scaleToFill
             $0.isUserInteractionEnabled = true
         }
@@ -450,12 +450,14 @@ private extension MyPageView {
     func configureIntroduction(_ introduction: String?) {
         let text = introduction?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let hasIntroduction = !text.isEmpty
+        
+        boardingPassImageView.image = hasIntroduction ? .mypageWithIntro : .mypageWithoutIntro
 
         introductionLabel.text = text
         introductionContainerView.isHidden = !hasIntroduction
 
         introductionContainerView.snp.remakeConstraints {
-            $0.top.equalTo(verificationChip.snp.bottom).offset(hasIntroduction ? 24 : 0)
+            $0.top.equalTo(verificationChip.snp.bottom).offset(hasIntroduction ? 32 : 0)
             $0.horizontalEdges.equalToSuperview().inset(24)
 
             if !hasIntroduction {
@@ -600,7 +602,14 @@ private extension MyPageView {
             $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
 
             if hasSecondLine {
-                $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
+                let hasIntroduction = !introductionContainerView.isHidden
+
+                if hasIntroduction {
+                    $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
+                } else {
+                    $0.top.equalTo(verificationChip.snp.bottom).offset(32)
+                }
+
                 $0.bottom.lessThanOrEqualTo(statsStackView.snp.top).offset(-24)
             } else {
                 $0.centerY.equalTo(personalityVerticalGuide.snp.centerY)

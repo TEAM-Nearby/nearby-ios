@@ -57,12 +57,12 @@ final class MeetingTabView: BaseView {
         }
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom).offset(12)
+            $0.top.equalTo(navigationBar.snp.bottom).offset(24)
             $0.leading.equalToSuperview().inset(20)
         }
         
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(32)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(24)
             $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalToSuperview()
         }

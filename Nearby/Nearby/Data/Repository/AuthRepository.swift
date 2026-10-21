@@ -27,15 +27,17 @@ final class DefaultAuthRepository {
     private let authService: AuthService
     private let tokenStorage: TokenStorage
     private let pushEndpointRepository: PushEndpointRepository
+    private let onboardingStatusStorage: OnboardingStatusStorage
 
     // MARK: - Initializer
 
-    init(kakaoOAuthProvider: KakaoOAuthProvider, appleOAuthProvider: AppleOAuthProvider, authService: AuthService, tokenStorage: TokenStorage, pushEndpointRepository: PushEndpointRepository) {
+    init(kakaoOAuthProvider: KakaoOAuthProvider, appleOAuthProvider: AppleOAuthProvider, authService: AuthService, tokenStorage: TokenStorage, pushEndpointRepository: PushEndpointRepository, onboardingStatusStorage: OnboardingStatusStorage) {
         self.kakaoOAuthProvider = kakaoOAuthProvider
         self.appleOAuthProvider = appleOAuthProvider
         self.authService = authService
         self.tokenStorage = tokenStorage
         self.pushEndpointRepository = pushEndpointRepository
+        self.onboardingStatusStorage = onboardingStatusStorage
     }
 }
 
@@ -68,6 +70,8 @@ extension DefaultAuthRepository: AuthRepository {
             AppLogger.error(error, message: "[AuthIdentity] 사용자 식별자 불일치")
         }
 
+        onboardingStatusStorage.save(response.onboardingStatus)
+
         return response.onboardingStatus
     }
     
@@ -81,6 +85,8 @@ extension DefaultAuthRepository: AuthRepository {
         try tokenStorage.save(
             accessToken: response.accessToken, refreshToken: response.refreshToken
         )
+
+        onboardingStatusStorage.save(response.onboardingStatus)
 
         return response.onboardingStatus
     }
@@ -104,6 +110,7 @@ extension DefaultAuthRepository: AuthRepository {
         }
 
         try tokenStorage.clear()
+        onboardingStatusStorage.clear()
 
         do {
             try await kakaoOAuthProvider.logout()
@@ -120,6 +127,7 @@ extension DefaultAuthRepository: AuthRepository {
         }
 
         try tokenStorage.clear()
+        onboardingStatusStorage.clear()
     }
     
     func sendVerificationCode(phoneNumber: String) async throws -> PhoneVerificationResponseDTO {

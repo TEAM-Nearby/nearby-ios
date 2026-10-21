@@ -114,7 +114,7 @@ final class ReviewPostViewModel: BaseViewModelType, RequestRunning {
             updateCompletionState()
             
         case .reportButtonDidTap:
-            output.showReport.send(MeetingReportTarget(meetingID: reviewItem.meetingId, reportedUserID: reviewItem.revieweeUserId))
+            output.showReport.send(.meeting(id: reviewItem.meetingId, reportedUserID: reviewItem.revieweeUserId))
             
         case .completionButtonDidTap:
             guard output.isCompletionEnabled.value, !isSubmitting else { return }

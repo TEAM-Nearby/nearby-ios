@@ -69,6 +69,7 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
     
     init(
         item: MeetingItem,
+        currentUserId: Int?,
         repository: MeetingRepository,
         matchingRepository: MatchedCompanionListRepository,
         reviewRepository: ReviewRepository
@@ -76,6 +77,7 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
         self.item = item
         self.meetingId = item.meetingId
         self.matchId = item.matchId
+        self.currentUserRole = currentUserId.map { item.hostUserID == $0 ? .host : .participant }
         self.repository = repository
         self.matchingRepository = matchingRepository
         self.reviewRepository = reviewRepository
@@ -109,9 +111,13 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
             }
             
         case .reportButtonDidTap:
-            guard let meetingId, let currentUserRole else { return }
+            guard let currentUserRole else { return }
             let reportedUserID = currentUserRole == .participant ? item.hostUserID : nil
-            output.showReport.send(MeetingReportTarget(meetingID: meetingId, reportedUserID: reportedUserID))
+            if let meetingId {
+                output.showReport.send(.meeting(id: meetingId, reportedUserID: reportedUserID))
+            } else {
+                output.showReport.send(.match(id: matchId, reportedUserID: reportedUserID))
+            }
         }
     }
     

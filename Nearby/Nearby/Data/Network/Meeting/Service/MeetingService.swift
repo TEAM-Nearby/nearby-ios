@@ -10,6 +10,7 @@ protocol MeetingService {
     func fetchMeetingDetail(meetingId: Int) async throws -> MeetingDetailResponseDTO
     func checkIn(meetingId: Int, latitude: Double, longitude: Double) async throws -> MeetingCheckInResponseDTO
     func report(meetingId: Int, request: CreateMeetingReportRequestDTO) async throws -> CreateMeetingReportResponseDTO
+    func reportMatch(matchId: Int, request: CreateMeetingReportRequestDTO) async throws -> CreateMatchReportResponseDTO
 }
 
 final class DefaultMeetingService {
@@ -47,6 +48,13 @@ extension DefaultMeetingService: MeetingService {
         try await networkProvider.request(
             MeetingTarget.report(meetingId: meetingId, request: request),
             responseType: CreateMeetingReportResponseDTO.self
+        )
+    }
+    
+    func reportMatch(matchId: Int, request: CreateMeetingReportRequestDTO) async throws -> CreateMatchReportResponseDTO {
+        try await networkProvider.request(
+            MeetingTarget.reportMatch(matchId: matchId, request: request),
+            responseType: CreateMatchReportResponseDTO.self
         )
     }
 }

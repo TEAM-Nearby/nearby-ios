@@ -81,7 +81,11 @@ final class ReportPostView: BaseView {
         
         reasonTextView.do {
             $0.isClearButtonHidden = true
+            $0.backgroundColor = .white
+            $0.placeholderTextColor = .grey30
             $0.layer.cornerRadius = 12
+            $0.layer.borderWidth = 0.5
+            $0.layer.borderColor = UIColor.grey20.cgColor
             $0.clipsToBounds = true
             $0.onTextChanged = { [weak self] text in
                 self?.onTextChanged?(text)
@@ -153,15 +157,6 @@ final class ReportPostView: BaseView {
     
     func updateReportButton(isEnabled: Bool) {
         reportButton.isEnabled = isEnabled
-    }
-
-    func updateDetailInput(isEnabled: Bool) {
-        reasonTextView.textView.isEditable = isEnabled
-        reasonTextView.alpha = isEnabled ? 1.0 : 0.5
-        if !isEnabled {
-            reasonTextView.textView.resignFirstResponder()
-            reasonTextView.clearText()
-        }
     }
     
     // MARK: - Action

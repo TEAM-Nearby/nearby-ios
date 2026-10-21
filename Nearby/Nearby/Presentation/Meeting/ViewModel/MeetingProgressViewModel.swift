@@ -69,6 +69,7 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
     
     init(
         item: MeetingItem,
+        currentUserId: Int?,
         repository: MeetingRepository,
         matchingRepository: MatchedCompanionListRepository,
         reviewRepository: ReviewRepository
@@ -76,6 +77,7 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
         self.item = item
         self.meetingId = item.meetingId
         self.matchId = item.matchId
+        self.currentUserRole = currentUserId.map { item.hostUserID == $0 ? .host : .participant }
         self.repository = repository
         self.matchingRepository = matchingRepository
         self.reviewRepository = reviewRepository
@@ -183,14 +185,6 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
         )
         output.step.send(.match)
         updateVerifyButtonState()
-        fetchCurrentUserRole()
-    }
-
-    private func fetchCurrentUserRole() {
-        Task {
-            guard let schedule = try? await matchingRepository.fetchMatchMySchedule(matchId: matchId) else { return }
-            currentUserRole = schedule.currentUserRole == .host ? .host : .participant
-        }
     }
 
     private func checkIn(latitude: Double, longitude: Double) {

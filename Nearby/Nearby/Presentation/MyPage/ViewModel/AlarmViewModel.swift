@@ -45,6 +45,7 @@ final class AlarmViewModel: BaseViewModelType {
     private var notificationReadTask: Task<Void, Never>?
     private var hasLoadedOnce = false
     private var readingNotificationIDs = Set<Int>()
+    private var readNotificationIDs = Set<Int>()
 
     // MARK: - Initializer
 
@@ -127,7 +128,11 @@ private extension AlarmViewModel {
                 guard !Task.isCancelled else { return }
 
                 let items = response.requests.map {
-                    AlarmRequestItem(dto: $0, tab: selectedTab)
+                    var item = AlarmRequestItem(dto: $0, tab: selectedTab)
+                    if let id = item.notificationId, readNotificationIDs.contains(id) {
+                        item.isRead = true
+                    }
+                    return item
                 }
 
                 output.items.send(items)
@@ -165,9 +170,17 @@ private extension AlarmViewModel {
             }
 
             do {
-                _ = try await repository.markNotificationAsRead(notificationId: notificationId)
+                let response = try await repository.markNotificationAsRead(notificationId: notificationId)
 
                 guard !Task.isCancelled else { return }
+                if response.isRead {
+                    readNotificationIDs.insert(response.notificationId)
+                }
+                var items = output.items.value
+                for index in items.indices where items[index].notificationId == response.notificationId {
+                    items[index].isRead = response.isRead
+                }
+                output.items.send(items)
                 handleAction(for: item)
 
             } catch is CancellationError {

@@ -32,9 +32,9 @@ extension NearbyNavigationBarItem {
         case .setting:
             return .settingIcon
         case .alarmButton:
-            return .alarmIcon
-        case .alarmPoint:
             return .icAlarmBtn.withRenderingMode(.alwaysOriginal)
+        case .alarmPoint:
+            return .icAlarmBtnRed.withRenderingMode(.alwaysOriginal)
         default:
             return nil
         }

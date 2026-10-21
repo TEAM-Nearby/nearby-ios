@@ -67,4 +67,10 @@ final class DiningMapView: BaseView {
             $0.size.equalTo(40)
         }
     }
+
+    // MARK: - Method
+
+    func updateAlarm(hasUnread: Bool) {
+        topSectionView.updateAlarm(hasUnread: hasUnread)
+    }
 }

@@ -15,7 +15,7 @@ final class CompanionView: BaseView {
 
     // MARK: - UI Components
 
-    let mapView = NearbyMapViewFactory.makeMapView()
+    let mapView = NearbyMapViewFactory.makeMapView(initialCoordinate: CompanionMapConfiguration.fallbackCoordinate)
     private let topSectionView = CompanionTopSectionView()
     private let recruitCompanionButtonGradientLayer = CAGradientLayer()
     let companionCountChip = NearbyChipButton(style: .mapInfo, title: "", horizontalInset: 12)
@@ -110,14 +110,19 @@ final class CompanionView: BaseView {
 
     // MARK: - Methods
 
-    func updateMapControls(for state: BottomSheetState) {
-        let shouldShowMapControls = state.content == .nearbyCompanionList && state.level != .expanded
-        let shouldShowRecruitButton = state.content == .nearbyCompanionList
+    func updateMapControls(for state: BottomSheetState, showsRestaurantCompanions: Bool) {
+        let isNearbySheet = state.content == .nearbyCompanionList || state.content == .nearbyCompanionEmpty
+        let shouldShowMapControls = isNearbySheet && state.level != .expanded
+        let shouldShowRecruitButton = showsRestaurantCompanions && isNearbySheet
             && (state.level == .standard || state.level == .expanded)
 
         companionCountChip.isHidden = !shouldShowMapControls
         currentLocationButton.isHidden = !shouldShowMapControls
         recruitCompanionButton.isHidden = !shouldShowRecruitButton
+    }
+
+    func updateAlarm(hasUnread: Bool) {
+        topSectionView.updateAlarm(hasUnread: hasUnread)
     }
 
     func setCategoryChipsHidden(_ isHidden: Bool) {

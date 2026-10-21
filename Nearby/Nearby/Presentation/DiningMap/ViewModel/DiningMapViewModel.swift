@@ -13,6 +13,7 @@ final class DiningMapViewModel: BaseViewModelType {
     // MARK: - Input
     
     enum Input {
+        case refreshNotifications
         case viewDidLoad
         case locationDidUpdate(CLLocationCoordinate2D)
     }
@@ -21,6 +22,7 @@ final class DiningMapViewModel: BaseViewModelType {
     
     struct Output {
         let mapConfiguration: CompanionMapConfiguration
+        let hasUnreadNotifications = CurrentValueSubject<Bool, Never>(false)
         let nickname = PassthroughSubject<String, Never>()
         let cityName = CurrentValueSubject<String, Never>("현재 위치")
     }
@@ -29,17 +31,21 @@ final class DiningMapViewModel: BaseViewModelType {
     
     let output: Output
     
+    private let notificationRepository: CompanionRequestRepository
+    private var notificationTask: Task<Void, Never>?
     private let myPageRepository: MyPageRepository
     private var nicknameTask: Task<Void, Never>?
     
     // MARK: - Initializer
     
-    init(myPageRepository: MyPageRepository, mapConfiguration: CompanionMapConfiguration = .diningMap) {
+    init(myPageRepository: MyPageRepository, notificationRepository: CompanionRequestRepository, mapConfiguration: CompanionMapConfiguration = .diningMap) {
+        self.notificationRepository = notificationRepository
         self.myPageRepository = myPageRepository
         self.output = Output(mapConfiguration: mapConfiguration)
     }
     
     deinit {
+        notificationTask?.cancel()
         nicknameTask?.cancel()
     }
     
@@ -47,6 +53,8 @@ final class DiningMapViewModel: BaseViewModelType {
     
     func action(_ trigger: Input) {
         switch trigger {
+        case .refreshNotifications:
+            refreshNotifications()
         case .viewDidLoad:
             fetchNickname()
         case .locationDidUpdate(let coordinate):
@@ -54,8 +62,38 @@ final class DiningMapViewModel: BaseViewModelType {
         }
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
+    private func fetchUnreadNotifications(direction: CompanionRequestDirection) async -> Bool? {
+        do {
+            let response = try await notificationRepository.fetchRequests(direction: direction)
+            guard !Task.isCancelled else { return nil }
+            let hasUnread = response.requests.contains { !$0.isRead }
+            if hasUnread {
+                output.hasUnreadNotifications.send(true)
+            }
+            return hasUnread
+        } catch {
+            guard !Task.isCancelled else { return nil }
+            AppLogger.error(error)
+            return nil
+        }
+    }
+
+    private func refreshNotifications() {
+        notificationTask?.cancel()
+        notificationTask = Task { [weak self] in
+            guard let self else { return }
+            async let sent = fetchUnreadNotifications(direction: .sent)
+            async let received = fetchUnreadNotifications(direction: .received)
+            let results = await (sent, received)
+            guard !Task.isCancelled else { return }
+            if results.0 == false, results.1 == false {
+                output.hasUnreadNotifications.send(false)
+            }
+        }
+    }
+
     func fetchNickname() {
         nicknameTask?.cancel()
         nicknameTask = Task { [weak self] in

@@ -5,6 +5,7 @@
 //  Created by soomin on 9/21/26.
 //
 
+import Combine
 import CoreLocation
 import UIKit
 
@@ -28,6 +29,10 @@ final class CompanionBottomSheetController {
     private var displayedContent: BottomSheetContent?
     private var displayedState: BottomSheetState?
     
+    var listState: AnyPublisher<NearCompanionSheetViewModel.ViewState, Never> {
+        nearbySheetViewController.listState
+    }
+
     // MARK: - Initializer
     
     init(nearbySheetViewController: NearCompanionSheetViewController, specificSheetViewController: SpecificCompanionSheetViewController, emptySheetViewController: EmptyCompanionSheetViewController) {
@@ -81,6 +86,10 @@ final class CompanionBottomSheetController {
         }
     }
     
+    func stopRefreshing() {
+        nearbySheetViewController.stopRefreshing()
+    }
+
     func attach(to parentViewController: UIViewController, in hostView: UIView, centerOverlayView: UIView, trailingOverlayView: UIView) {
         parentViewController.addChild(bottomSheetViewController)
         hostView.addSubview(bottomSheetViewController.view)

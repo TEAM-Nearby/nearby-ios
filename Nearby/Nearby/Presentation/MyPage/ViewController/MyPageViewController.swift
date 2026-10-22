@@ -11,7 +11,7 @@ final class MyPageViewController: BaseViewController<MyPageViewModel> {
 
     // MARK: - Properties
 
-    var onLoginRequested: (() -> Void)?
+    var onLoginRequired: ((Bool) -> Void)?
     var onAlarmButtonDidTap: (() -> Void)?
     var onSettingButtonDidTap: (() -> Void)?
     var onWrittenPostRowDidTap: (() -> Void)?
@@ -128,9 +128,7 @@ final class MyPageViewController: BaseViewController<MyPageViewModel> {
         default:
             isGeneralFeature = false
         }
-        let guideViewController = GuestLoginGuideViewController(isGeneralFeature: isGeneralFeature)
-        guideViewController.onLogin = { [weak self] in self?.onLoginRequested?() }
-        present(guideViewController, animated: true)
+        onLoginRequired?(isGeneralFeature)
     }
 
     func showErrorAlert(message: String) {

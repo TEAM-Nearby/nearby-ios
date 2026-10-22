@@ -20,7 +20,6 @@ final class MyPageCoordinator {
     private let isGuest: Bool
     private let appDIContainer: AppDIContainer
 
-    var onLoginRequested: (() -> Void)?
     var onLogoutDidFinish: (() -> Void)?
     var onFindCompanionDidTap: (() -> Void)?
 
@@ -39,7 +38,9 @@ extension MyPageCoordinator: Coordinator {
     func start() {
         let myPageViewController = appDIContainer.myPage.makeMyPageViewController(isGuest: isGuest)
 
-        myPageViewController.onLoginRequested = { [weak self] in self?.onLoginRequested?() }
+        myPageViewController.onLoginRequired = { [weak self] isGeneralFeature in
+            (self?.parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest(isGeneralFeature: isGeneralFeature)
+        }
 
         myPageViewController.onAlarmButtonDidTap = { [weak self] in
             self?.showAlarm()

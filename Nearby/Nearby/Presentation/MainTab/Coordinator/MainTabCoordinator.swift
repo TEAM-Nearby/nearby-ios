@@ -130,7 +130,6 @@ final class MainTabCoordinator {
             navigationController: navigationController, isGuest: isGuest
         )
         
-        myPageCoordinator.onLoginRequested = { [weak self] in self?.onLoginRequested?() }
         myPageCoordinator.parentCoordinator = self
         
         myPageCoordinator.onLogoutDidFinish = { [weak self] in
@@ -161,6 +160,7 @@ final class MainTabCoordinator {
     }
     
     func showNotification(for route: PushNotificationRoute) {
+        guard !requireLoginIfGuest(isGeneralFeature: true) else { return }
         switchTab(to: .meeting)
         let meetingCoordinator = childCoordinators.first { $0 is MeetingTabCoordinator } as? MeetingTabCoordinator
         meetingCoordinator?.showNotification(for: route)

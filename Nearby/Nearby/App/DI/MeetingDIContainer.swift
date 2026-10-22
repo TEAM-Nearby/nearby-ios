@@ -39,8 +39,8 @@ final class MeetingDIContainer {
 
     // MARK: - Factory Methods
 
-    func makeMeetingViewController(onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
-        let viewController = MeetingTabViewController(viewModel: MeetingTabViewModel(repository: meetingRepository, eventCenter: eventCenter))
+    func makeMeetingViewController(isGuest: Bool = false, onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
+        let viewController = MeetingTabViewController(viewModel: MeetingTabViewModel(repository: meetingRepository, eventCenter: eventCenter, isGuest: isGuest))
         viewController.onRoute = onRoute
         return viewController
     }

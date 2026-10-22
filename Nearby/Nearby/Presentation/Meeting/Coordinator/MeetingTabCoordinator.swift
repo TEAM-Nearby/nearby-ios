@@ -15,6 +15,7 @@ final class MeetingTabCoordinator {
     var childCoordinators = [Coordinator]()
     private let navigationController: UINavigationController
     private let diContainer: AppDIContainer
+    private var isGuest: Bool { (parentCoordinator as? MainTabCoordinator)?.isGuest ?? false }
     
     private weak var reportReturnViewController: UIViewController?
     private weak var hostReviewListViewController: HostReviewListViewController?
@@ -39,7 +40,7 @@ extension MeetingTabCoordinator: Coordinator {
     }
     
     func start() {
-        let viewController = diContainer.meeting.makeMeetingViewController { [weak self] route in
+        let viewController = diContainer.meeting.makeMeetingViewController(isGuest: isGuest) { [weak self] route in
             self?.handle(route)
         }
         navigationController.setViewControllers([viewController], animated: false)
@@ -114,6 +115,7 @@ extension MeetingTabCoordinator: Coordinator {
     }
     
     func showNotification() {
+        if (parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest(isGeneralFeature: true) == true { return }
         let notificationCoordinator = makeChildNotificationCoordinator()
         notificationCoordinator.showAlarm()
     }

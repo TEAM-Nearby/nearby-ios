@@ -10,6 +10,7 @@ final class DiningMapDIContainer {
     // MARK: - Dependencies
 
     private let networkProvider: NetworkProvider
+    private let guestNetworkProvider: NetworkProvider
     private let myPageRepository: MyPageRepository
 
     // MARK: - Services
@@ -22,18 +23,22 @@ final class DiningMapDIContainer {
 
     private lazy var diningMapRepository: DiningMapRepository = DefaultDiningMapRepository(service: diningMapService)
 
+    private lazy var guestRepository: DiningMapRepository = DefaultDiningMapRepository(service: DefaultDiningMapService(networkProvider: guestNetworkProvider))
+
     private lazy var notificationRepository: CompanionRequestRepository = DefaultCompanionRequestRepository(service: notificationService)
 
     // MARK: - Initializer
 
-    init(networkProvider: NetworkProvider, myPageRepository: MyPageRepository) {
+    init(networkProvider: NetworkProvider, guestNetworkProvider: NetworkProvider, myPageRepository: MyPageRepository) {
         self.networkProvider = networkProvider
+        self.guestNetworkProvider = guestNetworkProvider
         self.myPageRepository = myPageRepository
     }
 
     // MARK: - Factory Method
 
-    func makeDiningMapViewController() -> DiningMapViewController {
-        DiningMapViewController(viewModel: DiningMapViewModel(myPageRepository: myPageRepository, notificationRepository: notificationRepository), nearDiningSheetViewController: NearDiningSheetViewController(viewModel: NearDiningBottomSheetViewModel(repository: diningMapRepository)), saveDiningSheetViewController: SaveDiningSheetViewController(viewModel: SaveDiningSheetViewModel(repository: diningMapRepository)), diningInfoSheetViewController: DiningInfoSheetViewController(viewModel: DiningInfoSheetViewModel(repository: diningMapRepository)))
+    func makeDiningMapViewController(isGuest: Bool = false, onLoginRequired: (() -> Void)? = nil) -> DiningMapViewController {
+        let diningMapRepository = isGuest ? guestRepository : self.diningMapRepository
+        return DiningMapViewController(viewModel: DiningMapViewModel(myPageRepository: myPageRepository, notificationRepository: notificationRepository, isGuest: isGuest), nearDiningSheetViewController: NearDiningSheetViewController(viewModel: NearDiningBottomSheetViewModel(repository: diningMapRepository, isGuest: isGuest, onLoginRequired: onLoginRequired)), saveDiningSheetViewController: SaveDiningSheetViewController(viewModel: SaveDiningSheetViewModel(repository: diningMapRepository, isGuest: isGuest, onLoginRequired: onLoginRequired)), diningInfoSheetViewController: DiningInfoSheetViewController(viewModel: DiningInfoSheetViewModel(repository: diningMapRepository, isGuest: isGuest, onLoginRequired: onLoginRequired)))
     }
 }

@@ -16,6 +16,7 @@ final class DiningMapCoordinator {
 
     private let navigationController: UINavigationController
     private let diContainer: AppDIContainer
+    private var isGuest: Bool { (parentCoordinator as? MainTabCoordinator)?.isGuest ?? false }
     
     // MARK: - Initializer
 
@@ -25,6 +26,7 @@ final class DiningMapCoordinator {
     }
 
     private func showAlarm() {
+        if (parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest(isGeneralFeature: true) == true { return }
         let coordinator = diContainer.makeNotificationCoordinator(
             navigationController: navigationController
         )
@@ -38,7 +40,9 @@ final class DiningMapCoordinator {
 
 extension DiningMapCoordinator: Coordinator {
     func start() {
-        let viewController = diContainer.diningMap.makeDiningMapViewController()
+        let viewController = diContainer.diningMap.makeDiningMapViewController(isGuest: isGuest, onLoginRequired: { [weak self] in
+            _ = (self?.parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest(isGeneralFeature: true)
+        })
         viewController.onAlarmButtonDidTap = { [weak self] in
             self?.showAlarm()
         }

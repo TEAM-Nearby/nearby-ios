@@ -31,6 +31,7 @@ final class DiningMapViewModel: BaseViewModelType {
     
     let output: Output
     
+    private let isGuest: Bool
     private let notificationRepository: CompanionRequestRepository
     private var notificationTask: Task<Void, Never>?
     private let myPageRepository: MyPageRepository
@@ -38,7 +39,8 @@ final class DiningMapViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(myPageRepository: MyPageRepository, notificationRepository: CompanionRequestRepository, mapConfiguration: CompanionMapConfiguration = .diningMap) {
+    init(myPageRepository: MyPageRepository, notificationRepository: CompanionRequestRepository, isGuest: Bool = false, mapConfiguration: CompanionMapConfiguration = .diningMap) {
+        self.isGuest = isGuest
         self.notificationRepository = notificationRepository
         self.myPageRepository = myPageRepository
         self.output = Output(mapConfiguration: mapConfiguration)
@@ -81,6 +83,7 @@ final class DiningMapViewModel: BaseViewModelType {
     }
 
     private func refreshNotifications() {
+        guard !isGuest else { return }
         notificationTask?.cancel()
         notificationTask = Task { [weak self] in
             guard let self else { return }
@@ -95,6 +98,7 @@ final class DiningMapViewModel: BaseViewModelType {
     }
 
     func fetchNickname() {
+        guard !isGuest else { return }
         nicknameTask?.cancel()
         nicknameTask = Task { [weak self] in
             guard let self else { return }

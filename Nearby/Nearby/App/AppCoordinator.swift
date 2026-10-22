@@ -115,6 +115,7 @@ private extension AppCoordinator {
     
     func showLogin() {
         childCoordinators.removeAll()
+        diContainer.pushNotificationManager.onRoute = nil
         
         let loginViewController = diContainer.auth.makeLoginViewController()
 

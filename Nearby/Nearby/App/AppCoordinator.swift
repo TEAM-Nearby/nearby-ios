@@ -67,10 +67,23 @@ private extension AppCoordinator {
     }
 
     func handleAuthenticationFlow() {
-        if diContainer.hasStoredSession {
-            showMainTab()
-        } else {
+        guard diContainer.hasStoredSession else {
             showLogin()
+            return
+        }
+
+        guard let onboardingStatus = diContainer.storedOnboardingStatus else {
+            showLogin()
+            return
+        }
+
+        switch onboardingStatus {
+        case .started, .phoneVerified:
+            showLogin()
+            showAgreement()
+
+        case .completed:
+            showMainTab()
         }
     }
     
@@ -218,7 +231,10 @@ private extension AppCoordinator {
         }
 
         viewController.onRegistrationCompleted = { [weak self] in
-            self?.showMainTab()
+            guard let self else { return }
+
+            diContainer.saveOnboardingStatus(.completed)
+            showMainTab()
         }
 
         navigationController.pushViewController(viewController, animated: true)

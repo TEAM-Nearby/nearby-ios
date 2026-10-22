@@ -29,6 +29,12 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     
     override func setAddTarget() {
         addKeyboardDismissGesture()
+        companionProfileView.introductionTextView.onTextChanged = { [weak self] text in
+            guard let self else { return }
+
+            companionProfileView.updateIntroductionTextViewHeight()
+            viewModel.action(.introductionDidChange(text))
+        }
 
         companionProfileView.navigationBar.leftButtonAction = { [weak self] in
             self?.onBackButtonDidTap?()
@@ -58,7 +64,6 @@ final class CompanionProfileViewController: BaseViewController<CompanionProfileV
     
     override func setDelegate() {
         companionProfileView.nicknameTextField.delegate = self
-        companionProfileView.introductionTextView.textView.delegate = self
     }
     
     override func bindState() {
@@ -201,14 +206,3 @@ extension CompanionProfileViewController: UITextFieldDelegate {
     }
 }
 
-// MARK: - UITextViewDelegate
-
-extension CompanionProfileViewController: UITextViewDelegate {
-    func textViewDidChange(_ textView: UITextView) {
-        let text = textView.text ?? ""
-        
-        companionProfileView.updateIntroductionPlaceholder(isHidden: !text.isEmpty)
-        companionProfileView.updateIntroductionTextViewHeight()
-        viewModel.action(.introductionDidChange(text))
-    }
-}

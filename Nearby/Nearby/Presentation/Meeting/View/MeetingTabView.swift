@@ -31,7 +31,7 @@ final class MeetingTabView: BaseView {
         backgroundColor = .white
         
         navigationBar.do {
-            $0.configure(leftItem: .logo, rightItems: [.alarmButton])
+            $0.configure(centerItem: .logo, rightItems: [.alarm], logoLeadingInset: 20)
         }
         
         titleLabel.do {
@@ -57,19 +57,21 @@ final class MeetingTabView: BaseView {
         }
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().inset(20)
+            $0.top.equalTo(navigationBar.snp.bottom).offset(24)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(34)
         }
         
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(32)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(24)
             $0.horizontalEdges.equalToSuperview()
-            $0.bottom.equalToSuperview()
+            $0.bottom.equalTo(safeAreaLayoutGuide)
         }
         
         emptyView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
-            $0.horizontalEdges.bottom.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalTo(safeAreaLayoutGuide)
         }
     }
     

@@ -23,8 +23,8 @@ final class MatchingDIContainer {
 
     // MARK: - Factory Methods
 
-    func makeMatchingViewController(onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
-        let viewModel = MatchingViewModel(repository: matchingRepository, eventCenter: eventCenter)
+    func makeMatchingViewController(isGuest: Bool = false, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
+        let viewModel = MatchingViewModel(repository: matchingRepository, eventCenter: eventCenter, isGuest: isGuest)
         let viewController = MatchingViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
         return viewController

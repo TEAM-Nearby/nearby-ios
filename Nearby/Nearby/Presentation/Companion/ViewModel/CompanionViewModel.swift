@@ -87,6 +87,7 @@ final class CompanionViewModel: BaseViewModelType {
     var route: ((Route) -> Void)?
     var output: Output
 
+    private let isGuest: Bool
     private let notificationRepository: CompanionRequestRepository
     private var notificationTask: Task<Void, Never>?
     private let myPageRepository: MyPageRepository
@@ -99,10 +100,12 @@ final class CompanionViewModel: BaseViewModelType {
     init(
         myPageRepository: MyPageRepository,
         notificationRepository: CompanionRequestRepository,
+        isGuest: Bool = false,
         initialNickname: String? = nil,
         categoryItems: [CategoryItem] = CategoryItem.categoryItems,
         mapConfiguration: CompanionMapConfiguration = .mock
     ) {
+        self.isGuest = isGuest
         self.notificationRepository = notificationRepository
         self.myPageRepository = myPageRepository
         self.initialNickname = initialNickname
@@ -238,6 +241,7 @@ final class CompanionViewModel: BaseViewModelType {
     }
 
     private func refreshNotifications() {
+        guard !isGuest else { return }
         notificationTask?.cancel()
         notificationTask = Task { [weak self] in
             guard let self else { return }
@@ -252,6 +256,7 @@ final class CompanionViewModel: BaseViewModelType {
     }
 
     private func fetchNickname() {
+        guard !isGuest else { return }
         nicknameTask?.cancel()
         nicknameTask = Task { [weak self] in
             guard let self else { return }

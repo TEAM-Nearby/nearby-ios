@@ -16,6 +16,7 @@ final class AppDIContainer {
     private lazy var appIntroductionStorage: AppIntroductionStorage = UserDefaultsAppIntroductionStorage()
     private lazy var installationIDStorage: InstallationIDStorage = UserDefaultsInstallationIDStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
+    private lazy var guestNetworkProvider = NetworkProvider(tokenStorage: tokenStorage, usesAuthentication: false)
     private lazy var meetingEventCenter = MeetingEventCenter(storage: UserDefaultsCompletedMeetingStorage(tokenStorage: tokenStorage))
 
     private lazy var authService: AuthService = DefaultAuthService(networkProvider: networkProvider)
@@ -30,9 +31,9 @@ final class AppDIContainer {
     lazy var pushNotificationManager = PushNotificationManager(repository: pushEndpointRepository, tokenStorage: tokenStorage)
 
     lazy var auth = AuthDIContainer(authRepository: authRepository)
-    lazy var companion = CompanionDIContainer(networkProvider: networkProvider, myPageRepository: myPageRepository)
+    lazy var companion = CompanionDIContainer(networkProvider: networkProvider, guestNetworkProvider: guestNetworkProvider, myPageRepository: myPageRepository)
     lazy var companionDetail = CompanionDetailDIContainer(tokenStorage: tokenStorage, networkProvider: networkProvider)
-    lazy var diningMap = DiningMapDIContainer(networkProvider: networkProvider, myPageRepository: myPageRepository)
+    lazy var diningMap = DiningMapDIContainer(networkProvider: networkProvider, guestNetworkProvider: guestNetworkProvider, myPageRepository: myPageRepository)
     lazy var matching = MatchingDIContainer(repository: matchingRepository, eventCenter: meetingEventCenter)
     lazy var myPage = MyPageDIContainer(networkProvider: networkProvider, authRepository: authRepository, authService: authService, myPageRepository: myPageRepository)
     lazy var meeting = MeetingDIContainer(networkProvider: networkProvider, tokenStorage: tokenStorage, eventCenter: meetingEventCenter, matchingRepository: matchingRepository, myPageRepository: myPageRepository)
@@ -61,8 +62,8 @@ final class AppDIContainer {
         AppCoordinator(window: window, diContainer: self, appIntroductionStorage: appIntroductionStorage)
     }
 
-    func makeMainTabCoordinator() -> MainTabCoordinator {
-        MainTabCoordinator(diContainer: self)
+    func makeMainTabCoordinator(isGuest: Bool = false) -> MainTabCoordinator {
+        MainTabCoordinator(diContainer: self, isGuest: isGuest)
     }
 
     func makeMeetingCoordinator(navigationController: UINavigationController) -> MeetingTabCoordinator {
@@ -81,8 +82,8 @@ final class AppDIContainer {
         MatchingCoordinator(navigationController: navigationController, diContainer: self)
     }
 
-    func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
-        MyPageCoordinator(navigationController: navigationController, appDIContainer: self)
+    func makeMyPageCoordinator(navigationController: UINavigationController, isGuest: Bool = false) -> MyPageCoordinator {
+        MyPageCoordinator(navigationController: navigationController, appDIContainer: self, isGuest: isGuest)
     }
 
     func makeNotificationCoordinator(navigationController: UINavigationController) -> NotificationCoordinator {

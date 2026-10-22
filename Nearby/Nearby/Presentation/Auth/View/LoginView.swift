@@ -16,6 +16,7 @@ final class LoginView: BaseView {
 
     let appleLoginButton = UIButton(type: .system)
     let kakaoLoginButton = UIButton(type: .system)
+    let guestLoginButton = UIButton(type: .system)
     
     private let logoStackView = UIStackView()
     private let logoImageView = UIImageView()
@@ -92,10 +93,17 @@ final class LoginView: BaseView {
 
             $0.configuration = configuration
         }
+
+        guestLoginButton.do {
+            $0.setTitle("게스트로 시작하기", for: .normal)
+            $0.setTitleColor(.grey50, for: .normal)
+            $0.titleLabel?.font = NearbyFont.b2M16.font
+            $0.setUnderline(gap: 0.5, thickness: 1.3)
+        }
     }
 
     override func setUI() {
-        addSubviews(logoStackView, appleLoginButton, kakaoLoginButton)
+        addSubviews(logoStackView, appleLoginButton, kakaoLoginButton, guestLoginButton)
         logoStackView.addArrangedSubviews(logoImageView, subtitleLabel)
     }
 
@@ -118,8 +126,15 @@ final class LoginView: BaseView {
         
         kakaoLoginButton.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.bottom.equalTo(safeAreaLayoutGuide)
+            $0.bottom.equalTo(guestLoginButton.snp.top).offset(-12)
             $0.height.equalTo(56)
+        }
+
+        guestLoginButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(safeAreaLayoutGuide).inset(4)
+            $0.height.equalTo(42)
+            $0.width.equalTo(139)
         }
     }
 }

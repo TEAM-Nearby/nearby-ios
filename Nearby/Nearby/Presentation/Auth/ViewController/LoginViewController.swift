@@ -9,8 +9,9 @@ import UIKit
 
 final class LoginViewController: BaseViewController<LoginViewModel> {
 
-    // MARK: - Property
+    // MARK: - Properties
 
+    var onGuestDidTap: (() -> Void)?
     var onLoginDidSucceed: ((OnboardingStatus) -> Void)?
 
     // MARK: - UI Component
@@ -26,6 +27,7 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
     // MARK: - Custom Methods
 
     override func setAddTarget() {
+        loginView.guestLoginButton.addTarget(self, action: #selector(guestButtonDidTap), for: .touchUpInside)
         loginView.kakaoLoginButton.addTarget(
             self, action: #selector(kakaoLoginButtonDidTap), for: .touchUpInside
         )
@@ -44,7 +46,12 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
         }
     }
 
-    // MARK: - Action
+    // MARK: - Actions
+
+    @objc
+    private func guestButtonDidTap() {
+        onGuestDidTap?()
+    }
 
     @objc
     func kakaoLoginButtonDidTap() {

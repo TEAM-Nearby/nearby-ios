@@ -17,6 +17,7 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     var onAlarmButtonDidTap: (() -> Void)?
     private var hasCompletedInitialMap = false
     private var pendingListError: Error?
+    private var isAwaitingGuestAgreement: Bool
     private var isScreenVisible = false
     private var isBottomSheetInitialized = false
     private var restaurantSummaryText = "내 주변 0개의 동행이 있어요"
@@ -34,7 +35,8 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
 
     // MARK: - Initializer
 
-    init(viewModel: CompanionViewModel, bottomSheetController: CompanionBottomSheetController) {
+    init(viewModel: CompanionViewModel, bottomSheetController: CompanionBottomSheetController, isGuest: Bool = false) {
+        self.isAwaitingGuestAgreement = isGuest
         self.bottomSheetController = bottomSheetController
         super.init(viewModel: viewModel)
     }
@@ -77,20 +79,13 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         isScreenVisible = true
-        if !hasCompletedInitialMap {
-            pendingListError = nil
-            showInitialLoading()
-        }
-        refreshCompanions()
-        setRecruitCompanionButtonLayout()
-        viewModel.action(.refreshNotifications)
-        let bottomSheet = viewModel.output.viewState.value.bottomSheet
-        setTabBarHidden(bottomSheet.content == .specificRestaurantCompanionList)
-        mapController.start()
-        setBottomSheetHidden(false)
-        updateMapControls()
-        updateBottomSheetLayer(for: bottomSheet)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        companionView.isUserInteractionEnabled = !isAwaitingGuestAgreement
+        guard !isAwaitingGuestAgreement else {
+            initialMapLoadingView.isHidden = true
+            return
+        }
+        startExploring()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -192,6 +187,22 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
     }
 
     // MARK: - Methods
+
+    private func startExploring() {
+        if !hasCompletedInitialMap {
+            pendingListError = nil
+            showInitialLoading()
+        }
+        refreshCompanions()
+        setRecruitCompanionButtonLayout()
+        viewModel.action(.refreshNotifications)
+        let bottomSheet = viewModel.output.viewState.value.bottomSheet
+        setTabBarHidden(bottomSheet.content == .specificRestaurantCompanionList)
+        mapController.start()
+        setBottomSheetHidden(false)
+        updateMapControls()
+        updateBottomSheetLayer(for: bottomSheet)
+    }
 
     private func showInitialLoading() {
         initialMapLoadingView.isHidden = false
@@ -371,8 +382,15 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         }
     }
 
+    func completeGuestAgreement() {
+        guard isAwaitingGuestAgreement else { return }
+        isAwaitingGuestAgreement = false
+        companionView.isUserInteractionEnabled = true
+        if isScreenVisible { startExploring() }
+    }
+
     func refreshCompanions() {
-        guard isScreenVisible, viewModel.output.viewState.value.category.content.shouldShowCompanions else { return }
+        guard isScreenVisible, !isAwaitingGuestAgreement, viewModel.output.viewState.value.category.content.shouldShowCompanions else { return }
         bottomSheetController.refreshCompanions()
     }
 

@@ -15,6 +15,7 @@ final class MatchingCoordinator {
     var childCoordinators = [Coordinator]()
     private let navigationController: UINavigationController
     private let diContainer: AppDIContainer
+    private var isGuest: Bool { (parentCoordinator as? MainTabCoordinator)?.isGuest ?? false }
 
     // MARK: - Initializer
 
@@ -28,7 +29,7 @@ final class MatchingCoordinator {
 
 extension MatchingCoordinator: Coordinator {
     func start() {
-        let viewController = diContainer.matching.makeMatchingViewController { [weak self] route in
+        let viewController = diContainer.matching.makeMatchingViewController(isGuest: isGuest) { [weak self] route in
             self?.handle(route)
         }
         navigationController.setViewControllers([viewController], animated: false)
@@ -62,6 +63,7 @@ extension MatchingCoordinator: Coordinator {
     }
 
     func showAlarm() {
+        if (parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest(isGeneralFeature: true) == true { return }
         let notificationCoordinator = diContainer.makeNotificationCoordinator(
             navigationController: navigationController
         )

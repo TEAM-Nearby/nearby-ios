@@ -19,6 +19,7 @@ final class MyPageView: BaseView {
     var onReceivedRequestRowDidTap: (() -> Void)?
     var onEditProfileButtonDidTap: (() -> Void)?
 
+    private let isGuest: Bool
     private let gradientLayer = CAGradientLayer()
 
     // MARK: - UI Components
@@ -30,6 +31,7 @@ final class MyPageView: BaseView {
 
     private let boardingPassImageView = UIImageView()
     private let editProfileButton = UIButton(type: .system)
+    private let guestProfileImageView = UIImageView(image: .imgProfileDefault)
     private let profileImageView = GradientCircleView(diameter: 80)
     private let nameStackView = UIStackView()
     private let nicknameLabel = UILabel()
@@ -62,6 +64,17 @@ final class MyPageView: BaseView {
     private let writtenPostRowView = MyPageMenuRowView(title: "내가 작성한 모집글")
     private let sentRequestRowView = MyPageMenuRowView(title: "보낸 요청")
     private let receivedRequestRowView = MyPageMenuRowView(title: "받은 요청")
+
+    // MARK: - Initializer
+
+    init(isGuest: Bool = false) {
+        self.isGuest = isGuest
+        super.init(frame: .zero)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Life Cycle
 
@@ -108,7 +121,7 @@ final class MyPageView: BaseView {
             $0.contentMode = .scaleToFill
             $0.isUserInteractionEnabled = true
         }
-        
+
         editProfileButton.do {
             $0.setTitle("수정하기", for: .normal)
             $0.setTitleColor(.grey50, for: .normal)
@@ -133,7 +146,7 @@ final class MyPageView: BaseView {
             $0.text = ""
             $0.textColor = .primary50
         }
-        
+
         introductionContainerView.do {
             $0.backgroundColor = .primary5
             $0.layer.cornerRadius = 16
@@ -203,6 +216,22 @@ final class MyPageView: BaseView {
             $0.layer.cornerRadius = 16
             $0.clipsToBounds = true
         }
+
+        guestProfileImageView.contentMode = .scaleAspectFit
+        guestProfileImageView.isHidden = !isGuest
+
+        if isGuest {
+            profileImageView.isHidden = true
+            editProfileButton.isHidden = true
+            genderLabel.isHidden = true
+            verificationChip.isHidden = true
+            personalityChipContainerView.isHidden = true
+            mannerChipContainerView.isHidden = true
+            nicknameLabel.text = "로그인이 필요해요"
+            introductionContainerView.isHidden = false
+            introductionLabel.text = "로그인 후 프로필을 만들어보세요!"
+            [mealStatView, cityStatView, reviewStatView].forEach { $0.setGuestAppearance() }
+        }
     }
 
     override func setUI() {
@@ -215,13 +244,13 @@ final class MyPageView: BaseView {
         contentView.addSubviews(boardingPassImageView, mannerScoreCardView, menuCardView)
 
         boardingPassImageView.addSubviews(
-            profileImageView, nameStackView, introductionContainerView,
+            profileImageView, guestProfileImageView, nameStackView, introductionContainerView,
             verificationChip, personalityChipContainerView, statsStackView,
             firstDividerView, secondDividerView, editProfileButton
         )
-        
+
         introductionContainerView.addSubviews(introductionTitleLabel, introductionLabel)
-        
+
         boardingPassImageView.addLayoutGuide(personalityVerticalGuide)
 
         nameStackView.addArrangedSubviews(nicknameLabel, genderLabel)
@@ -261,7 +290,7 @@ final class MyPageView: BaseView {
             $0.top.equalToSuperview().offset(24)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
-        
+
         editProfileButton.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().inset(20)
@@ -269,9 +298,13 @@ final class MyPageView: BaseView {
         }
 
         profileImageView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(20)
+            $0.top.equalToSuperview().offset(isGuest ? 32 : 20)
             $0.centerX.equalToSuperview()
             $0.size.equalTo(80)
+        }
+
+        guestProfileImageView.snp.makeConstraints {
+            $0.edges.equalTo(profileImageView)
         }
 
         nameStackView.snp.makeConstraints {
@@ -286,7 +319,7 @@ final class MyPageView: BaseView {
         }
 
         introductionContainerView.snp.makeConstraints {
-            $0.top.equalTo(verificationChip.snp.bottom).offset(32)
+            $0.top.equalTo(isGuest ? nameStackView.snp.bottom : verificationChip.snp.bottom).offset(isGuest ? 44 : 32)
             $0.horizontalEdges.equalToSuperview().inset(24)
         }
 
@@ -300,37 +333,42 @@ final class MyPageView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(16)
             $0.bottom.equalToSuperview().inset(16)
         }
-        
+
         personalityVerticalGuide.snp.makeConstraints {
             $0.top.equalTo(introductionContainerView.snp.bottom)
             $0.bottom.equalTo(statsStackView.snp.top)
             $0.horizontalEdges.equalToSuperview()
         }
 
-        personalityChipContainerView.snp.remakeConstraints {
-            $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
-            $0.centerX.equalToSuperview()
-            $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
-            $0.bottom.equalTo(statsStackView.snp.top).offset(-24)
-        }
+        if !isGuest {
+            personalityChipContainerView.snp.remakeConstraints {
+                $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
+                $0.centerX.equalToSuperview()
+                $0.horizontalEdges.greaterThanOrEqualToSuperview().inset(25)
+                $0.bottom.equalTo(statsStackView.snp.top).offset(-24)
+            }
 
-        personalityFirstLineStackView.snp.makeConstraints {
-            $0.top.centerX.equalToSuperview()
-            $0.height.equalTo(36)
-        }
+            personalityFirstLineStackView.snp.makeConstraints {
+                $0.top.centerX.equalToSuperview()
+                $0.height.equalTo(36)
+            }
 
-        personalitySecondLineStackView.snp.makeConstraints {
-            $0.top.equalTo(personalityFirstLineStackView.snp.bottom).offset(4)
-            $0.centerX.bottom.equalToSuperview()
-            $0.height.equalTo(36)
+            personalitySecondLineStackView.snp.makeConstraints {
+                $0.top.equalTo(personalityFirstLineStackView.snp.bottom).offset(4)
+                $0.centerX.bottom.equalToSuperview()
+                $0.height.equalTo(36)
+            }
         }
 
         statsStackView.snp.makeConstraints {
+            if isGuest {
+                $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
+            }
             $0.horizontalEdges.equalToSuperview().inset(25)
             $0.height.equalTo(79)
             $0.bottom.equalToSuperview().inset(20)
         }
-        
+
         firstDividerView.snp.makeConstraints {
             $0.width.equalTo(1)
             $0.top.bottom.equalTo(statsStackView)
@@ -394,6 +432,7 @@ final class MyPageView: BaseView {
             $0.height.equalTo(54)
             $0.bottom.equalToSuperview()
         }
+        if isGuest { updateMannerScoreLayout(hasKeywords: false) }
     }
 
     override func setAddTarget() {
@@ -408,16 +447,17 @@ final class MyPageView: BaseView {
         receivedRequestRowView.onTap = { [weak self] in
             self?.onReceivedRequestRowDidTap?()
         }
-        
+
         editProfileButton.addTarget(self, action: #selector(editProfileButtonDidTap), for: .touchUpInside)
     }
-    
+
     func configure(with item: MyPageDisplayModel) {
+        guard !isGuest else { return }
         profileImageView.configure(imageUrl: item.profileImageUrl)
 
         nicknameLabel.text = item.nickname
         genderLabel.text = item.genderText
-        
+
         configureIntroduction(item.intro)
 
         verificationChip.isHidden = !item.isPhoneVerified
@@ -434,7 +474,7 @@ final class MyPageView: BaseView {
 
         configureMannerKeywords(item.mannerKeywords)
     }
-    
+
     // MARK: - Action
 
     @objc
@@ -446,7 +486,7 @@ final class MyPageView: BaseView {
 // MARK: - Private Methods
 
 private extension MyPageView {
-    
+
     func configureIntroduction(_ introduction: String?) {
         let text = introduction?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let hasIntroduction = !text.isEmpty
@@ -488,7 +528,7 @@ private extension MyPageView {
 
         updatePersonalityChipLayout(hasSecondLine: hasSecondLine)
     }
-    
+
     func configureMannerKeywords(_ keywords: [String]) {
         removeAllArrangedSubviews(from: mannerKeywordStackView)
 
@@ -513,7 +553,7 @@ private extension MyPageView {
 
         updateMannerScoreLayout(hasKeywords: hasMannerKeywords)
     }
-    
+
     func updateMannerScoreLayout(hasKeywords: Bool) {
         starRatingView.snp.remakeConstraints {
             $0.top.equalTo(mannerTitleLabel.snp.bottom).offset(17)
@@ -542,7 +582,7 @@ private extension MyPageView {
 
         setNeedsLayout()
     }
-    
+
     func removeAllArrangedSubviews(from stackView: UIStackView) {
         stackView.arrangedSubviews.forEach { arrangedSubview in
             stackView.removeArrangedSubview(arrangedSubview)
@@ -572,7 +612,7 @@ private extension MyPageView {
 
         return chip
     }
-    
+
     func updatePersonalityChipLayout(hasSecondLine: Bool) {
         personalityFirstLineStackView.snp.remakeConstraints {
             $0.top.equalToSuperview()
@@ -619,7 +659,7 @@ private extension MyPageView {
         setNeedsLayout()
         layoutIfNeeded()
     }
-    
+
     func makeMannerKeywordRowStackView() -> UIStackView {
         let stackView = UIStackView()
 
@@ -658,8 +698,12 @@ private final class MyPageStatItemView: UIView {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
+
     // MARK: - Methods
+
+    func setGuestAppearance() {
+        valueLabel.textColor = .grey40
+    }
 
     func updateValue(_ value: String) {
         valueLabel.text = value

@@ -38,6 +38,8 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     
     let output = Output()
     
+    private let isGuest: Bool
+    private let onLoginRequired: (() -> Void)?
     private let repository: DiningMapRepository
     private var coordinate: CLLocationCoordinate2D?
     private var restaurant: NearDiningCellItem?
@@ -47,7 +49,9 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(repository: DiningMapRepository) {
+    init(repository: DiningMapRepository, isGuest: Bool = false, onLoginRequired: (() -> Void)? = nil) {
+        self.isGuest = isGuest
+        self.onLoginRequired = onLoginRequired
         self.repository = repository
     }
     
@@ -113,6 +117,10 @@ final class DiningInfoSheetViewModel: BaseViewModelType {
     }
     
     private func updateFavorite() {
+        guard !isGuest else {
+            onLoginRequired?()
+            return
+        }
         guard favoriteTask == nil, var item = restaurant, let placeId = item.placeId else { return }
         
         let isFavorite = !item.isBookmarked

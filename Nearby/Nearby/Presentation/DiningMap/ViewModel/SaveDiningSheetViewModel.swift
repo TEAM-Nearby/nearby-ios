@@ -63,6 +63,8 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     
     let output = Output()
     
+    private let isGuest: Bool
+    private let onLoginRequired: (() -> Void)?
     private let repository: DiningMapRepository
     private var restaurants: [NearDiningCellItem] = []
     private var totalCount = 0
@@ -77,7 +79,9 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(repository: DiningMapRepository) {
+    init(repository: DiningMapRepository, isGuest: Bool = false, onLoginRequired: (() -> Void)? = nil) {
+        self.isGuest = isGuest
+        self.onLoginRequired = onLoginRequired
         self.repository = repository
     }
     
@@ -112,6 +116,10 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     // MARK: - Methods
     
     private func fetchFavorites() {
+        guard !isGuest else {
+            output.viewState.send(.loaded(items: [], totalCount: 0, markers: []))
+            return
+        }
         guard let currentCoordinate else { return }
         
         fetchTask?.cancel()
@@ -143,6 +151,10 @@ final class SaveDiningSheetViewModel: BaseViewModelType {
     }
     
     private func removeFavorite(at index: Int) {
+        guard !isGuest else {
+            onLoginRequired?()
+            return
+        }
         guard
             restaurants.indices.contains(index),
             let placeId = restaurants[index].placeId,

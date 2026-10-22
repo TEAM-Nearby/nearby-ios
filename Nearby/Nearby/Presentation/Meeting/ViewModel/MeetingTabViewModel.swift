@@ -28,6 +28,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     let output = Output()
     
+    private let isGuest: Bool
     private let repository: MeetingRepository
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
@@ -38,10 +39,11 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     // MARK: - Initializer
 
-    init(repository: MeetingRepository, eventCenter: MeetingEventCenter) {
+    init(repository: MeetingRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
+        self.isGuest = isGuest
         self.repository = repository
         self.eventCenter = eventCenter
-        bindMeetingEvents()
+        if !isGuest { bindMeetingEvents() }
     }
     
     // MARK: - Action
@@ -61,6 +63,10 @@ final class MeetingTabViewModel: BaseViewModelType {
     // MARK: - Methods
     
     private func fetchMeetings() {
+        guard !isGuest else {
+            output.items.send([])
+            return
+        }
         fetchTask?.cancel()
         fetchTask = Task {
             do {
@@ -78,6 +84,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     }
     
     private func startTimer() {
+        guard !isGuest else { return }
         timerCancellable = Timer.publish(every: 60, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in

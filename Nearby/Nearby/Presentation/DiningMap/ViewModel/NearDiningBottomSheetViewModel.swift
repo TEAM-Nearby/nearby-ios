@@ -42,6 +42,8 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     let output = Output()
     
+    private let isGuest: Bool
+    private let onLoginRequired: (() -> Void)?
     private let repository: DiningMapRepository
     private var restaurants: [NearDiningCellItem] = []
     private var currentCoordinate: CLLocationCoordinate2D?
@@ -55,7 +57,9 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(repository: DiningMapRepository) {
+    init(repository: DiningMapRepository, isGuest: Bool = false, onLoginRequired: (() -> Void)? = nil) {
+        self.isGuest = isGuest
+        self.onLoginRequired = onLoginRequired
         self.repository = repository
     }
     
@@ -114,6 +118,10 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     }
     
     private func updateFavorite(at index: Int) {
+        guard !isGuest else {
+            onLoginRequired?()
+            return
+        }
         guard
             restaurants.indices.contains(index),
             let placeId = restaurants[index].placeId,

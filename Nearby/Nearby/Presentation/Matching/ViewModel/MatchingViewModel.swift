@@ -32,6 +32,7 @@ final class MatchingViewModel: BaseViewModelType {
     
     let output = Output()
     
+    private let isGuest: Bool
     private let repository: MatchedCompanionListRepository
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
@@ -43,10 +44,11 @@ final class MatchingViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(repository: MatchedCompanionListRepository, eventCenter: MeetingEventCenter) {
+    init(repository: MatchedCompanionListRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
+        self.isGuest = isGuest
         self.repository = repository
         self.eventCenter = eventCenter
-        bindMeetingEvents()
+        if !isGuest { bindMeetingEvents() }
     }
 
     deinit {
@@ -79,6 +81,10 @@ final class MatchingViewModel: BaseViewModelType {
     }
     
     private func fetchMatches() {
+        guard !isGuest else {
+            output.items.send([])
+            return
+        }
         fetchTask?.cancel()
         let repository = repository
         let eventCenter = eventCenter

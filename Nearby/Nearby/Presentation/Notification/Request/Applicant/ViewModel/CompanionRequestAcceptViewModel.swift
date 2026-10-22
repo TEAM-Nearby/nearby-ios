@@ -42,7 +42,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
         let date: String
         let people: String
         let buttonTitle: String
-        let avatarImages: [UIImage?]
+        let avatarImageURLs: [String?]
         let chatDescription: String
     }
 
@@ -55,12 +55,14 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
     private var matchId: Int?
     private var matchStatus: MatchStatus?
     private let repository: ApplicantCompanionRepository
+    private let matchingRepository: MatchedCompanionListRepository
 
     // MARK: - Initializer
 
-    init(applicationId: Int, repository: ApplicantCompanionRepository) {
+    init(applicationId: Int, repository: ApplicantCompanionRepository, matchingRepository: MatchedCompanionListRepository) {
         self.applicationId = applicationId
         self.repository = repository
+        self.matchingRepository = matchingRepository
     }
 
     // MARK: - Action
@@ -106,6 +108,10 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                 matchId = result.matchId
                 matchStatus = MatchStatus(rawValue: result.matchStatus)
 
+                let preview = try? await matchingRepository.fetchMatchPreview(matchId: result.matchId)
+                let avatarImageURLs = preview.map { [$0.host.hostProfileImageURL] + $0.members.map(\.profileImageURL) }
+                    ?? [String?](repeating: nil, count: result.participantCount)
+
                 let data = DisplayData(
                     hostProfileImageUrl: result.host.profileImageUrl,
                     title: "\(result.host.nickname) 님과 동행이 매칭됐어요!",
@@ -113,7 +119,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                     date: result.meetingAt?.toDate()?.meetingDisplayText ?? "",
                     people: "\(result.participantCount)/\(result.maxParticipants)명",
                     buttonTitle: "확인했어요",
-                    avatarImages: [UIImage?](repeating: nil, count: result.participantCount),
+                    avatarImageURLs: avatarImageURLs,
                     chatDescription: "\(result.host.nickname) 님이 만남 약속을 위한 오픈채팅방을 열어뒀어요. 입장해서 인사를 나눠보세요!"
                 )
                 output.displayData.send(data)

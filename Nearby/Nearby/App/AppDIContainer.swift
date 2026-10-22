@@ -37,7 +37,7 @@ final class AppDIContainer {
     lazy var matching = MatchingDIContainer(repository: matchingRepository, eventCenter: meetingEventCenter)
     lazy var myPage = MyPageDIContainer(networkProvider: networkProvider, authRepository: authRepository, authService: authService, myPageRepository: myPageRepository)
     lazy var meeting = MeetingDIContainer(networkProvider: networkProvider, tokenStorage: tokenStorage, eventCenter: meetingEventCenter, matchingRepository: matchingRepository, myPageRepository: myPageRepository)
-    lazy var notification = NotificationDIContainer(networkProvider: networkProvider)
+    lazy var notification = NotificationDIContainer(networkProvider: networkProvider, matchingRepository: matchingRepository)
     lazy var recruitCompanion = RecruitCompanionDIContainer(networkProvider: networkProvider)
 
     var hasStoredSession: Bool {

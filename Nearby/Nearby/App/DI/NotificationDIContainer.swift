@@ -12,6 +12,7 @@ final class NotificationDIContainer {
     // MARK: - Dependency
 
     private let networkProvider: NetworkProvider
+    private let matchingRepository: MatchedCompanionListRepository
 
     // MARK: - Services
 
@@ -27,8 +28,9 @@ final class NotificationDIContainer {
 
     // MARK: - Initializer
 
-    init(networkProvider: NetworkProvider) {
+    init(networkProvider: NetworkProvider, matchingRepository: MatchedCompanionListRepository) {
         self.networkProvider = networkProvider
+        self.matchingRepository = matchingRepository
     }
 
     // MARK: - Factory Methods
@@ -48,7 +50,7 @@ final class NotificationDIContainer {
     }
 
     func makeCompanionRequestAcceptViewController(applicationId: Int, onRoute: @escaping (NotificationRoute) -> Void) -> UIViewController {
-        let viewController = CompanionRequestAcceptViewController(viewModel: CompanionRequestAcceptViewModel(applicationId: applicationId, repository: applicantRepository))
+        let viewController = CompanionRequestAcceptViewController(viewModel: CompanionRequestAcceptViewModel(applicationId: applicationId, repository: applicantRepository, matchingRepository: matchingRepository))
         viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController

@@ -87,7 +87,7 @@ extension NotificationCoordinator: Coordinator {
     }
 
     func showAlarm(for route: PushNotificationRoute) {
-        let alarmViewController = makeAlarmViewController()
+        let alarmViewController = makeAlarmViewController(initialTab: alarmTab(for: route))
         alarmViewController.hidesBottomBarWhenPushed = true
         let viewController = makeViewController(for: route)
         viewController.hidesBottomBarWhenPushed = true
@@ -98,6 +98,15 @@ extension NotificationCoordinator: Coordinator {
     private func makeAlarmViewController(initialTab: AlarmTab = .sent) -> AlarmViewController {
         diContainer.myPage.makeAlarmViewController(initialTab: initialTab) { [weak self] route in
             self?.handle(route)
+        }
+    }
+
+    private func alarmTab(for route: PushNotificationRoute) -> AlarmTab {
+        switch route {
+        case .hostRequestReceive:
+            return .received
+        case .companionRequestAccept, .companionRequestDecline:
+            return .sent
         }
     }
 

@@ -81,7 +81,7 @@ extension GuestAgreementViewController: UIViewControllerTransitioningDelegate {
     }
 }
 
-private final class GuestAgreementDetailTransition: NSObject, UIViewControllerAnimatedTransitioning {
+private final class GuestAgreementDetailTransition: NSObject {
 
     // MARK: - Property
 
@@ -94,7 +94,11 @@ private final class GuestAgreementDetailTransition: NSObject, UIViewControllerAn
         super.init()
     }
 
-    // MARK: - Methods
+}
+
+// MARK: - UIViewControllerAnimatedTransitioning
+
+extension GuestAgreementDetailTransition: UIViewControllerAnimatedTransitioning {
 
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         0.3

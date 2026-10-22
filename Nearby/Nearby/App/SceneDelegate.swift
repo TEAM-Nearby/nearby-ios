@@ -26,6 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         appCoordinator = appDIContainer.makeAppCoordinator(window: window)
         appCoordinator?.start()
+        appDIContainer.pushNotificationManager.handleLaunchNotification(connectionOptions.notificationResponse)
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

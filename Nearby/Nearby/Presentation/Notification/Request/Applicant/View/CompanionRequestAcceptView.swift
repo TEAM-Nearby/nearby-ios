@@ -185,7 +185,7 @@ final class CompanionRequestAcceptView: BaseView {
         
         chatDescriptionLabel.do {
             $0.setFont(.b2M16, text: "", textColor: .grey60)
-            $0.numberOfLines = 2
+            $0.numberOfLines = 0
             $0.textAlignment = .left
         }
         

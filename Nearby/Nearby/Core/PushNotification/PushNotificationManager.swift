@@ -18,6 +18,11 @@ final class PushNotificationManager: NSObject {
     private let repository: PushEndpointRepository
     private let tokenStorage: TokenStorage
     private var apnsTokenCancellable: AnyCancellable?
+    private var pendingRoute: PushNotificationRoute?
+
+    var onRoute: ((PushNotificationRoute) -> Void)? {
+        didSet { deliverPendingRoute() }
+    }
 
     private var hasStoredSession: Bool {
         guard let accessToken = tokenStorage.accessToken else { return false }
@@ -68,6 +73,17 @@ final class PushNotificationManager: NSObject {
         }
     }
 
+    private func handle(_ route: PushNotificationRoute) {
+        pendingRoute = route
+        deliverPendingRoute()
+    }
+
+    private func deliverPendingRoute() {
+        guard let onRoute, let pendingRoute else { return }
+        self.pendingRoute = nil
+        onRoute(pendingRoute)
+    }
+
     func start() {
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
@@ -80,6 +96,12 @@ final class PushNotificationManager: NSObject {
                 await registerCurrentToken()
             }
         }
+    }
+
+    func handleLaunchNotification(_ response: UNNotificationResponse?) {
+        guard let userInfo = response?.notification.request.content.userInfo,
+              let route = PushNotificationRoute(userInfo: userInfo) else { return }
+        handle(route)
     }
 }
 
@@ -105,6 +127,16 @@ extension PushNotificationManager: UNUserNotificationCenterDelegate {
             NotificationCenter.default.post(name: .companionNotificationDidChange, object: nil)
         }
         return [.banner, .list, .sound]
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+        guard let route = PushNotificationRoute(userInfo: response.notification.request.content.userInfo) else { return }
+        await MainActor.run {
+            handle(route)
+        }
     }
 }
 

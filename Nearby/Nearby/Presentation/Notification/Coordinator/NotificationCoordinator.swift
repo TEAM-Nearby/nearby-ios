@@ -86,9 +86,44 @@ extension NotificationCoordinator: Coordinator {
         navigationController.pushViewController(alarmViewController, animated: true)
     }
 
+    func showAlarm(for route: PushNotificationRoute) {
+        let alarmViewController = makeAlarmViewController(initialTab: alarmTab(for: route))
+        alarmViewController.hidesBottomBarWhenPushed = true
+        let viewController = makeViewController(for: route)
+        viewController.hidesBottomBarWhenPushed = true
+        let rootViewControllers = Array(navigationController.viewControllers.prefix(1))
+        navigationController.setViewControllers(rootViewControllers + [alarmViewController, viewController], animated: true)
+    }
+
     private func makeAlarmViewController(initialTab: AlarmTab = .sent) -> AlarmViewController {
         diContainer.myPage.makeAlarmViewController(initialTab: initialTab) { [weak self] route in
             self?.handle(route)
+        }
+    }
+
+    private func alarmTab(for route: PushNotificationRoute) -> AlarmTab {
+        switch route {
+        case .hostRequestReceive:
+            return .received
+        case .companionRequestAccept, .companionRequestDecline:
+            return .sent
+        }
+    }
+
+    private func makeViewController(for route: PushNotificationRoute) -> UIViewController {
+        switch route {
+        case .hostRequestReceive(let applicationId):
+            return diContainer.notification.makeHostRequestReceiveViewController(applicationId: applicationId) { [weak self] route in
+                self?.handle(route)
+            }
+        case .companionRequestAccept(let applicationId):
+            return diContainer.notification.makeCompanionRequestAcceptViewController(applicationId: applicationId) { [weak self] route in
+                self?.handle(route)
+            }
+        case .companionRequestDecline:
+            return diContainer.notification.makeCompanionRequestDeclineViewController { [weak self] route in
+                self?.handle(route)
+            }
         }
     }
 }

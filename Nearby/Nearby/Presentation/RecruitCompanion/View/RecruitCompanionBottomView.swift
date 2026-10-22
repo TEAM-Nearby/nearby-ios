@@ -59,6 +59,7 @@ final class RecruitCompanionBottomView: BaseView {
             $0.setPlaceholderTruncation(numberOfLines: 1)
             $0.verticallyCentersSingleLineText = true
             $0.textView.isScrollEnabled = false
+            $0.textView.returnKeyType = .search
         }
 
         descriptionTitleLabel.do {
@@ -255,6 +256,15 @@ final class RecruitCompanionBottomView: BaseView {
 // MARK: - UITextViewDelegate
 
 extension RecruitCompanionBottomView: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard textView == meetingPlaceTextView.textView, text == "\n" else {
+            return true
+        }
+
+        placeSearchButtonAction?()
+        return false
+    }
+
     func textViewDidChange(_ textView: UITextView) {
         let shouldHidePlaceholder = !textView.text.isEmpty
 

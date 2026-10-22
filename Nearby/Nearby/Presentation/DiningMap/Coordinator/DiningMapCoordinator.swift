@@ -46,6 +46,10 @@ extension DiningMapCoordinator: Coordinator {
         viewController.onAlarmButtonDidTap = { [weak self] in
             self?.showAlarm()
         }
+        viewController.onSavedListAccessRequested = { [weak self] in
+            guard let coordinator = self?.parentCoordinator as? MainTabCoordinator else { return false }
+            return !coordinator.requireLoginIfGuest(isGeneralFeature: true)
+        }
         navigationController.setViewControllers([viewController], animated: false)
     }
 

@@ -14,6 +14,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     // MARK: - Properties
     
     var onAlarmButtonDidTap: (() -> Void)?
+    var onSavedListAccessRequested: (() -> Bool)?
     private let diningMapView = DiningMapView()
     private let bottomSheetController: DiningMapBottomSheetController
     private lazy var mapController = CompanionMapController(mapView: diningMapView.mapView, configuration: viewModel.output.mapConfiguration)
@@ -209,6 +210,7 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     
     @objc
     private func bookmarkButtonDidTap() {
+        guard onSavedListAccessRequested?() != false else { return }
         bottomSheetController.toggleList()
     }
 }

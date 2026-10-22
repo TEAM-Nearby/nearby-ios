@@ -60,7 +60,7 @@ final class MeetingEmptyView: BaseView {
     
     override func setLayout() {
         animationView.snp.makeConstraints {
-            $0.bottom.equalTo(self.snp.centerY).multipliedBy(0.98)
+            $0.top.equalToSuperview().inset(65)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(300)
             $0.height.equalTo(animationView.snp.width)
@@ -70,11 +70,15 @@ final class MeetingEmptyView: BaseView {
             $0.top.equalTo(animationView.snp.bottom).offset(-70)
             $0.horizontalEdges.equalToSuperview()
         }
+
+        titleLabel.snp.makeConstraints {
+            $0.height.equalTo(28)
+        }
         
         searchButton.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
-            $0.bottom.equalTo(safeAreaLayoutGuide).offset(-16)
+            $0.bottom.equalToSuperview().inset(16)
         }
     }
     

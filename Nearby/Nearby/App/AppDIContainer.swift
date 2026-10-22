@@ -16,6 +16,7 @@ final class AppDIContainer {
     private lazy var appIntroductionStorage: AppIntroductionStorage = UserDefaultsAppIntroductionStorage()
     private lazy var installationIDStorage: InstallationIDStorage = UserDefaultsInstallationIDStorage()
     private lazy var networkProvider = NetworkProvider(tokenStorage: tokenStorage)
+    private lazy var guestNetworkProvider = NetworkProvider(tokenStorage: tokenStorage, usesAuthentication: false)
     private lazy var meetingEventCenter = MeetingEventCenter(storage: UserDefaultsCompletedMeetingStorage(tokenStorage: tokenStorage))
 
     private lazy var authService: AuthService = DefaultAuthService(networkProvider: networkProvider)

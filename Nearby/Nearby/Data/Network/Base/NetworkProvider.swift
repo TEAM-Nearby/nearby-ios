@@ -29,12 +29,14 @@ final class NetworkProvider: NetworkProviding {
         let task: Task<Void, Error>
     }
 
+    private let usesAuthentication: Bool
     private let session: Session
     private let tokenStorage: TokenStorage
     private let refreshLock = NSLock()
     private var refreshOperation: RefreshOperation?
 
-    init(session: Session = .default, tokenStorage: TokenStorage) {
+    init(session: Session = .default, tokenStorage: TokenStorage, usesAuthentication: Bool = true) {
+        self.usesAuthentication = usesAuthentication
         self.session = session
         self.tokenStorage = tokenStorage
     }
@@ -43,7 +45,7 @@ final class NetworkProvider: NetworkProviding {
         let response: BaseResponseDTO<T> = try await requestBaseResponse(
             target,
             responseType: responseType,
-            canRefreshToken: true
+            canRefreshToken: usesAuthentication
         )
 
         guard let data = response.data else {
@@ -57,7 +59,7 @@ final class NetworkProvider: NetworkProviding {
         _ = try await requestBaseResponse(
             target,
             responseType: EmptyResponse.self,
-            canRefreshToken: true
+            canRefreshToken: usesAuthentication
         )
     }
 }
@@ -114,7 +116,7 @@ private extension NetworkProvider {
             )
         }
 
-        if shouldInvalidateSession(for: error) {
+        if usesAuthentication, shouldInvalidateSession(for: error) {
             invalidateSession()
         }
         throw error
@@ -133,7 +135,7 @@ private extension NetworkProvider {
         var request = URLRequest(url: url)
         request.method = target.method
         request.headers = target.makeHeaders(
-            accessToken: target.requiresAuth ? tokenStorage.accessToken : nil
+            accessToken: usesAuthentication && target.requiresAuth ? tokenStorage.accessToken : nil
         )
 
         if let queryParameters = target.queryParameters {

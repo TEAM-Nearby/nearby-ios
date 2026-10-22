@@ -17,14 +17,17 @@ final class MyPageCoordinator {
 
     private let navigationController: UINavigationController
 
+    private let isGuest: Bool
     private let appDIContainer: AppDIContainer
 
+    var onLoginRequested: (() -> Void)?
     var onLogoutDidFinish: (() -> Void)?
     var onFindCompanionDidTap: (() -> Void)?
 
     // MARK: - Initializer
 
-    init(navigationController: UINavigationController, appDIContainer: AppDIContainer) {
+    init(navigationController: UINavigationController, appDIContainer: AppDIContainer, isGuest: Bool = false) {
+        self.isGuest = isGuest
         self.navigationController = navigationController
         self.appDIContainer = appDIContainer
     }
@@ -34,7 +37,9 @@ final class MyPageCoordinator {
 
 extension MyPageCoordinator: Coordinator {
     func start() {
-        let myPageViewController = appDIContainer.myPage.makeMyPageViewController()
+        let myPageViewController = appDIContainer.myPage.makeMyPageViewController(isGuest: isGuest)
+
+        myPageViewController.onLoginRequested = { [weak self] in self?.onLoginRequested?() }
 
         myPageViewController.onAlarmButtonDidTap = { [weak self] in
             self?.showAlarm()
@@ -90,7 +95,7 @@ private extension MyPageCoordinator {
     }
 
     func showSetting() {
-        let settingViewController = appDIContainer.myPage.makeSettingViewController()
+        let settingViewController = appDIContainer.myPage.makeSettingViewController(isGuest: isGuest)
 
         settingViewController.hidesBottomBarWhenPushed = true
 

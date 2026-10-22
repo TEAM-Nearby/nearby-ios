@@ -7,11 +7,11 @@
 
 import UIKit
 
-final class MyPageViewController:
-    BaseViewController<MyPageViewModel> {
+final class MyPageViewController: BaseViewController<MyPageViewModel> {
 
     // MARK: - Properties
 
+    var onLoginRequested: (() -> Void)?
     var onAlarmButtonDidTap: (() -> Void)?
     var onSettingButtonDidTap: (() -> Void)?
     var onWrittenPostRowDidTap: (() -> Void)?
@@ -20,9 +20,18 @@ final class MyPageViewController:
     private let initialLoadingTracker = InitialLoadingTracker()
     var onEditProfileRequested: ((Int) -> Void)?
 
+    private let isGuest: Bool
+
     // MARK: - UI Component
 
-    private let myPageView = MyPageView()
+    private lazy var myPageView = MyPageView(isGuest: isGuest)
+
+    // MARK: - Initializer
+
+    init(viewModel: MyPageViewModel, isGuest: Bool = false) {
+        self.isGuest = isGuest
+        super.init(viewModel: viewModel)
+    }
 
     // MARK: - Life Cycles
 
@@ -33,6 +42,7 @@ final class MyPageViewController:
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        guard !isGuest else { return }
         initialLoadingTracker.begin(in: self)
         viewModel.action(.viewWillAppear)
     }
@@ -41,7 +51,7 @@ final class MyPageViewController:
 
     override func setAddTarget() {
         myPageView.navigationBar.rightFirstButtonAction = { [weak self] in
-            self?.viewModel.action(.alarmButtonDidTap)
+            self?.performMemberAction(.alarmButtonDidTap)
         }
 
         myPageView.navigationBar.rightSecondButtonAction = { [weak self] in
@@ -49,19 +59,19 @@ final class MyPageViewController:
         }
 
         myPageView.onWrittenPostRowDidTap = { [weak self] in
-            self?.viewModel.action(.writtenPostRowDidTap)
+            self?.performMemberAction(.writtenPostRowDidTap)
         }
 
         myPageView.onSentRequestRowDidTap = { [weak self] in
-            self?.viewModel.action(.sentRequestRowDidTap)
+            self?.performMemberAction(.sentRequestRowDidTap)
         }
 
         myPageView.onReceivedRequestRowDidTap = { [weak self] in
-            self?.viewModel.action(.receivedRequestRowDidTap)
+            self?.performMemberAction(.receivedRequestRowDidTap)
         }
         
         myPageView.onEditProfileButtonDidTap = { [weak self] in
-            self?.viewModel.action(.editProfileButtonDidTap)
+            self?.performMemberAction(.editProfileButtonDidTap)
         }
     }
 
@@ -102,11 +112,26 @@ final class MyPageViewController:
             self?.onEditProfileRequested?(profileID)
         }
     }
-}
-
-// MARK: - Private Methods
-
-private extension MyPageViewController {
+    
+    // MARK: - Methods
+    
+    func performMemberAction(_ action: MyPageViewModel.Input) {
+        guard isGuest else {
+            viewModel.action(action)
+            return
+        }
+        guard presentedViewController == nil else { return }
+        let isGeneralFeature: Bool
+        switch action {
+        case .alarmButtonDidTap, .writtenPostRowDidTap, .sentRequestRowDidTap, .receivedRequestRowDidTap:
+            isGeneralFeature = true
+        default:
+            isGeneralFeature = false
+        }
+        let guideViewController = GuestLoginGuideViewController(isGeneralFeature: isGeneralFeature)
+        guideViewController.onLogin = { [weak self] in self?.onLoginRequested?() }
+        present(guideViewController, animated: true)
+    }
 
     func showErrorAlert(message: String) {
         guard presentedViewController == nil else {

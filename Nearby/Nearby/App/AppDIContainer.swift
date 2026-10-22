@@ -82,8 +82,8 @@ final class AppDIContainer {
         MatchingCoordinator(navigationController: navigationController, diContainer: self)
     }
 
-    func makeMyPageCoordinator(navigationController: UINavigationController) -> MyPageCoordinator {
-        MyPageCoordinator(navigationController: navigationController, appDIContainer: self)
+    func makeMyPageCoordinator(navigationController: UINavigationController, isGuest: Bool = false) -> MyPageCoordinator {
+        MyPageCoordinator(navigationController: navigationController, appDIContainer: self, isGuest: isGuest)
     }
 
     func makeNotificationCoordinator(navigationController: UINavigationController) -> NotificationCoordinator {

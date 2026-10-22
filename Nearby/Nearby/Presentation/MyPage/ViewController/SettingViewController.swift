@@ -16,10 +16,19 @@ final class SettingViewController: BaseViewController<SettingViewModel> {
     var onAgreementButtonDidTap: (() -> Void)?
     var onWithdrawalDidComplete: (() -> Void)?
     
+    private let isGuest: Bool
+
     // MARK: - UI Component
     
-    private let settingView = SettingView()
+    private lazy var settingView = SettingView(isGuest: isGuest)
     
+    // MARK: - Initializer
+
+    init(viewModel: SettingViewModel, isGuest: Bool = false) {
+        self.isGuest = isGuest
+        super.init(viewModel: viewModel)
+    }
+
     // MARK: - Life Cycles
     
     override func loadView() {

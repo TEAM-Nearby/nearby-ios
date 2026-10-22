@@ -127,9 +127,10 @@ final class MainTabCoordinator {
     func configureMyPageCoordinator(navigationController: UINavigationController) {
         let myPageCoordinator =
         diContainer.makeMyPageCoordinator(
-            navigationController: navigationController
+            navigationController: navigationController, isGuest: isGuest
         )
         
+        myPageCoordinator.onLoginRequested = { [weak self] in self?.onLoginRequested?() }
         myPageCoordinator.parentCoordinator = self
         
         myPageCoordinator.onLogoutDidFinish = { [weak self] in

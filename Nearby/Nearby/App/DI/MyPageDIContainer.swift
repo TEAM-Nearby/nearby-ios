@@ -39,8 +39,8 @@ final class MyPageDIContainer {
 
     // MARK: - Factory Methods
 
-    func makeMyPageViewController() -> MyPageViewController {
-        MyPageViewController(viewModel: MyPageViewModel(repository: myPageRepository))
+    func makeMyPageViewController(isGuest: Bool = false) -> MyPageViewController {
+        MyPageViewController(viewModel: MyPageViewModel(repository: myPageRepository), isGuest: isGuest)
     }
 
     func makeAlarmViewController(initialTab: AlarmTab = .sent, onRoute: @escaping (AlarmViewController.Route) -> Void) -> AlarmViewController {
@@ -49,8 +49,8 @@ final class MyPageDIContainer {
         return viewController
     }
 
-    func makeSettingViewController() -> SettingViewController {
-        SettingViewController(viewModel: SettingViewModel(authRepository: authRepository))
+    func makeSettingViewController(isGuest: Bool = false) -> SettingViewController {
+        SettingViewController(viewModel: SettingViewModel(authRepository: authRepository), isGuest: isGuest)
     }
     
     func makeTermsListViewController() -> TermsListViewController {

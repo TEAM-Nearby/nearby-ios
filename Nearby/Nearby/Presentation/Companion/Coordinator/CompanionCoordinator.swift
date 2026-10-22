@@ -16,6 +16,7 @@ final class CompanionCoordinator {
     var childCoordinators = [Coordinator]()
     private let navigationController: UINavigationController
     private let diContainer: AppDIContainer
+    private var isGuest: Bool { (parentCoordinator as? MainTabCoordinator)?.isGuest ?? false }
 
     // MARK: - Initializer
 
@@ -27,7 +28,10 @@ final class CompanionCoordinator {
     // MARK: - Methods
 
     private func handle(_ route: CompanionViewModel.Route) {
+        if (parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest() == true { return }
         switch route {
+        case .loginRequired:
+            break
         case .recruitCompanion(let searchCoordinate):
             showRecruitCompanion(searchCoordinate: searchCoordinate)
         case .companionDetail(let state):
@@ -69,6 +73,7 @@ final class CompanionCoordinator {
     }
 
     private func showAlarm() {
+        if (parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest(isGeneralFeature: true) == true { return }
         makeNotificationCoordinator().showAlarm()
     }
 
@@ -84,6 +89,7 @@ final class CompanionCoordinator {
     }
 
     func showCompanionDetail(state: CompanionDetailState) {
+        if (parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest() == true { return }
         let viewController = diContainer.companionDetail.makeCompanionDetailViewController(state: state) { [weak self] route in
             self?.handle(route)
         }
@@ -96,6 +102,7 @@ final class CompanionCoordinator {
 extension CompanionCoordinator: Coordinator {
     func start() {
         let companionViewController = diContainer.companion.makeCompanionViewController(
+            isGuest: isGuest,
             onRoute: { [weak self] route in self?.handle(route) },
             onAlarmButtonDidTap: { [weak self] in self?.showAlarm() }
         )

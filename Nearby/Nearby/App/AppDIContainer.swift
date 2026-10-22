@@ -31,7 +31,7 @@ final class AppDIContainer {
     lazy var pushNotificationManager = PushNotificationManager(repository: pushEndpointRepository, tokenStorage: tokenStorage)
 
     lazy var auth = AuthDIContainer(authRepository: authRepository)
-    lazy var companion = CompanionDIContainer(networkProvider: networkProvider, myPageRepository: myPageRepository)
+    lazy var companion = CompanionDIContainer(networkProvider: networkProvider, guestNetworkProvider: guestNetworkProvider, myPageRepository: myPageRepository)
     lazy var companionDetail = CompanionDetailDIContainer(tokenStorage: tokenStorage, networkProvider: networkProvider)
     lazy var diningMap = DiningMapDIContainer(networkProvider: networkProvider, myPageRepository: myPageRepository)
     lazy var matching = MatchingDIContainer(repository: matchingRepository, eventCenter: meetingEventCenter)

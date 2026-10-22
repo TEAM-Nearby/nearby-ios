@@ -165,6 +165,16 @@ final class MainTabCoordinator {
         meetingCoordinator?.showNotification(for: route)
     }
     
+    @discardableResult
+    func requireLoginIfGuest(isGeneralFeature: Bool = false) -> Bool {
+        guard isGuest else { return false }
+        guard rootViewController.presentedViewController == nil else { return true }
+        let guide = GuestLoginGuideViewController(isGeneralFeature: isGeneralFeature)
+        guide.onLogin = { [weak self] in self?.onLoginRequested?() }
+        rootViewController.present(guide, animated: true)
+        return true
+    }
+    
     func switchTab(to item: NearbyTabItem) {
         guard let index = NearbyTabItem.allCases.firstIndex(of: item) else { return }
         rootViewController.selectedIndex = index

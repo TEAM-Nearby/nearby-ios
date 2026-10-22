@@ -208,7 +208,7 @@ private extension AlarmViewModel {
         }
 
         switch item.actionType {
-        case .confirmSchedule:
+        case .confirmSchedule, .scheduleUpdated:
             handleConfirmSchedule(item)
 
         case .viewRejection:

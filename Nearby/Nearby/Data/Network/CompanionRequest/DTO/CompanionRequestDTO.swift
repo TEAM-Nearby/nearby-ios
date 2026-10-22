@@ -24,6 +24,7 @@ enum CompanionRequestActionType: String, Decodable {
     case viewRejection = "VIEW_REJECTION"
     case viewResult = "VIEW_RESULT"
     case acceptRequest = "ACCEPT_REQUEST"
+    case scheduleUpdated = "SCHEDULE_UPDATED"
     case none = "NONE"
 }
 

@@ -18,6 +18,8 @@ enum AlarmRequestDisplayType {
     case receivedRejected
     case receivedCanceled
 
+    case scheduleUpdated
+
     // MARK: - Properties
 
     var title: String {
@@ -45,6 +47,9 @@ enum AlarmRequestDisplayType {
 
         case .receivedCanceled:
             return "취소된 동행 요청이에요"
+
+        case .scheduleUpdated:
+            return "동행 일정이 수정되었어요"
         }
     }
 
@@ -53,6 +58,9 @@ enum AlarmRequestDisplayType {
         case .sentAccepted,
              .receivedAccepted:
             return "일정 확정하기"
+
+        case .scheduleUpdated:
+            return "일정 확인하기"
 
         case .sentRejected:
             return "확인하기"
@@ -73,6 +81,9 @@ enum AlarmRequestDisplayType {
         case .sentAccepted,
              .receivedAccepted:
             return .imgCheckPurple
+
+        case .scheduleUpdated:
+            return .calendarFillPurple
 
         case .sentRejected:
             return .imgCancelRed
@@ -95,7 +106,8 @@ enum AlarmRequestDisplayType {
              .receivedAccepted:
             return CGSize(width: 20, height: 20)
 
-        case .receivedPending:
+        case .receivedPending,
+             .scheduleUpdated:
             return CGSize(width: 24, height: 24)
 
         case .sentPending,
@@ -110,7 +122,8 @@ enum AlarmRequestDisplayType {
         switch self {
         case .sentAccepted,
              .receivedAccepted,
-             .receivedPending:
+             .receivedPending,
+             .scheduleUpdated:
             return .primary40
 
         case .sentRejected:
@@ -128,7 +141,8 @@ enum AlarmRequestDisplayType {
         switch self {
         case .sentAccepted,
              .receivedPending,
-             .receivedAccepted:
+             .receivedAccepted,
+             .scheduleUpdated:
             return true
 
         case .sentPending,

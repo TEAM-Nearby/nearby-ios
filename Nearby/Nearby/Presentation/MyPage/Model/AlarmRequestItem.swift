@@ -32,7 +32,7 @@ struct AlarmRequestItem: Identifiable {
     var isActionEnabled: Bool {
         guard isRead else { return true }
         switch actionType {
-        case .acceptRequest, .confirmSchedule:
+        case .acceptRequest, .confirmSchedule, .scheduleUpdated:
             return true
         case .viewResult, .viewRejection, .none:
             return false
@@ -47,7 +47,9 @@ struct AlarmRequestItem: Identifiable {
         applicationId = dto.applicationId
         self.tab = tab
 
-        displayType = AlarmRequestDisplayType(tab: tab, status: dto.applicationStatus)
+        displayType = dto.actionType == .scheduleUpdated
+            ? .scheduleUpdated
+            : AlarmRequestDisplayType(tab: tab, status: dto.applicationStatus)
 
         hostUserId = dto.host.userId
         nickname = dto.host.nickname

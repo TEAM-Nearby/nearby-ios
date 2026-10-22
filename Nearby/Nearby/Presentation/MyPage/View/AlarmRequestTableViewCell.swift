@@ -247,7 +247,7 @@ private extension AlarmRequestTableViewCell {
             statusIconHeightConstraint?.update(offset: 20)
             statusIconImageView.image = isRead ? .imgCheckGrey : .imgCheckPurple
 
-        case .receivedAccepted:
+        case .receivedAccepted, .scheduleUpdated:
             statusIconWidthConstraint?.update(offset: 24)
             statusIconHeightConstraint?.update(offset: 24)
 

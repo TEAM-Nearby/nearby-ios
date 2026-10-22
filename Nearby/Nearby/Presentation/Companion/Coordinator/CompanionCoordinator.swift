@@ -30,8 +30,6 @@ final class CompanionCoordinator {
     private func handle(_ route: CompanionViewModel.Route) {
         if (parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest() == true { return }
         switch route {
-        case .loginRequired:
-            break
         case .recruitCompanion(let searchCoordinate):
             showRecruitCompanion(searchCoordinate: searchCoordinate)
         case .companionDetail(let state):

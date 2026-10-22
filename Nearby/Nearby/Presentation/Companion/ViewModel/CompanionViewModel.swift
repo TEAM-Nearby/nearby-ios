@@ -48,7 +48,6 @@ final class CompanionViewModel: BaseViewModelType {
     // MARK: - Route
 
     enum Route {
-        case loginRequired
         case recruitCompanion(CLLocationCoordinate2D?)
         case companionDetail(CompanionDetailState)
     }
@@ -136,10 +135,6 @@ final class CompanionViewModel: BaseViewModelType {
         case .categoryDidSelect(let index):
             updateCategory(at: index)
         case .markerDidSelect(let placeId):
-            guard !isGuest else {
-                route?(.loginRequired)
-                return
-            }
             updateSelectedPlace(placeId)
         case .bottomSheetDidChange(let bottomSheet):
             updateBottomSheet(bottomSheet)

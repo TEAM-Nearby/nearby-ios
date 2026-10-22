@@ -205,4 +205,3 @@ extension CompanionProfileViewController: UITextFieldDelegate {
         viewModel.action(.nicknameDidChange(text))
     }
 }
-

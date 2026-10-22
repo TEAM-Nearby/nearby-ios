@@ -62,8 +62,8 @@ final class AppDIContainer {
         AppCoordinator(window: window, diContainer: self, appIntroductionStorage: appIntroductionStorage)
     }
 
-    func makeMainTabCoordinator() -> MainTabCoordinator {
-        MainTabCoordinator(diContainer: self)
+    func makeMainTabCoordinator(isGuest: Bool = false) -> MainTabCoordinator {
+        MainTabCoordinator(diContainer: self, isGuest: isGuest)
     }
 
     func makeMeetingCoordinator(navigationController: UINavigationController) -> MeetingTabCoordinator {

@@ -11,6 +11,9 @@ final class MainTabBarController: UITabBarController {
 
     // MARK: - Properties
 
+    var onFirstAppearance: (() -> Void)?
+    var requiresGuestAgreement = false
+
     private let tabBarItemWidth: CGFloat = 64
     private let tabBarItemSpacing: CGFloat = 6
     private var didRefreshInitialTabBarLayout = false
@@ -22,6 +25,13 @@ final class MainTabBarController: UITabBarController {
         view.backgroundColor = .clear
         delegate = self
         configureTabBarAppearance()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let callback = onFirstAppearance
+        onFirstAppearance = nil
+        callback?()
     }
 
     override func viewDidLayoutSubviews() {
@@ -87,6 +97,7 @@ final class MainTabBarController: UITabBarController {
 
 extension MainTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        guard !requiresGuestAgreement else { return false }
         guard selectedViewController !== viewController else { return true }
 
         let currentViewController = (selectedViewController as? UINavigationController)?.visibleViewController

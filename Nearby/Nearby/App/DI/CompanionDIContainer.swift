@@ -35,7 +35,7 @@ final class CompanionDIContainer {
 
     // MARK: - Factory Method
 
-    func makeCompanionViewController(onRoute: @escaping (CompanionViewModel.Route) -> Void, onAlarmButtonDidTap: @escaping () -> Void) -> CompanionViewController {
+    func makeCompanionViewController(isGuest: Bool = false, onRoute: @escaping (CompanionViewModel.Route) -> Void, onAlarmButtonDidTap: @escaping () -> Void) -> CompanionViewController {
         let viewModel = CompanionViewModel(myPageRepository: myPageRepository, notificationRepository: notificationRepository)
         viewModel.route = onRoute
         let bottomSheetController = CompanionBottomSheetController(
@@ -43,7 +43,7 @@ final class CompanionDIContainer {
             specificSheetViewController: SpecificCompanionSheetViewController(viewModel: SpecificCompanionSheetViewModel()),
             emptySheetViewController: EmptyCompanionSheetViewController()
         )
-        let viewController = CompanionViewController(viewModel: viewModel, bottomSheetController: bottomSheetController)
+        let viewController = CompanionViewController(viewModel: viewModel, bottomSheetController: bottomSheetController, isGuest: isGuest)
         viewController.onAlarmButtonDidTap = onAlarmButtonDidTap
         return viewController
     }

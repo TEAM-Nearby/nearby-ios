@@ -119,6 +119,10 @@ private extension AppCoordinator {
         
         let loginViewController = diContainer.auth.makeLoginViewController()
 
+        loginViewController.onGuestDidTap = { [weak self] in
+            self?.showMainTab(isGuest: true)
+        }
+
         loginViewController.onLoginDidSucceed = { [weak self] onboardingStatus in guard let self else { return }
             
             switch onboardingStatus {
@@ -241,12 +245,13 @@ private extension AppCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showMainTab() {
+    func showMainTab(isGuest: Bool = false) {
         childCoordinators.removeAll()
-        diContainer.pushNotificationManager.start()
+        if !isGuest { diContainer.pushNotificationManager.start() }
         
-        let mainTabCoordinator = diContainer.makeMainTabCoordinator()
+        let mainTabCoordinator = diContainer.makeMainTabCoordinator(isGuest: isGuest)
         
+        mainTabCoordinator.onLoginRequested = { [weak self] in self?.showLogin() }
         mainTabCoordinator.parentCoordinator = self
         mainTabCoordinator.onLogoutDidFinish = { [weak self, weak mainTabCoordinator] in guard let self else { return }
             

@@ -207,16 +207,6 @@ private extension AppCoordinator {
         }
         
         let viewController = diContainer.auth.makeCompanionProfileViewController()
-
-        viewController.onBackButtonDidTap = { [weak self] in
-            guard let navigationController = self?.window.rootViewController as? UINavigationController else { return }
-            navigationController.popViewController(animated: true)
-        }
-        
-        viewController.onBackButtonDidTap = { [weak navigationController] in
-            navigationController?.popViewController(animated: true)
-        }
-        
         viewController.onProfileCompleted = { [weak self] in
             self?.showEmergencyContact()
         }

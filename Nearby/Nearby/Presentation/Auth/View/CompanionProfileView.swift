@@ -61,7 +61,7 @@ final class CompanionProfileView: BaseView {
         backgroundColor = .white
         
         navigationBar.do {
-            $0.configure(leftItem: .back)
+            $0.configure()
         }
         
         progressContainerView.do {

@@ -13,9 +13,11 @@ final class AgreementViewModel: BaseViewModelType {
 
     enum Input {
         case allAgreementDidTap
+        case serviceAgreementDidTap
         case locationAgreementDidTap
         case privacyAgreementDidTap
         case marketingAgreementDidTap
+        case serviceDetailDidTap
         case locationDetailDidTap
         case privacyDetailDidTap
         case marketingDetailDidTap
@@ -30,6 +32,7 @@ final class AgreementViewModel: BaseViewModelType {
 
     struct AgreementState {
         let isAllAgreed: Bool
+        let isServiceAgreed: Bool
         let isLocationAgreed: Bool
         let isPrivacyAgreed: Bool
         let isMarketingAgreed: Bool
@@ -39,17 +42,18 @@ final class AgreementViewModel: BaseViewModelType {
     // MARK: - Properties
 
     var output = Output()
-
+    
+    private var isServiceAgreed = false
     private var isLocationAgreed = false
     private var isPrivacyAgreed = false
     private var isMarketingAgreed = false
 
     private var isAllAgreed: Bool {
-        isLocationAgreed && isPrivacyAgreed && isMarketingAgreed
+        isServiceAgreed && isLocationAgreed && isPrivacyAgreed && isMarketingAgreed
     }
 
     private var isAgreeButtonEnabled: Bool {
-        isLocationAgreed && isPrivacyAgreed
+        isServiceAgreed && isLocationAgreed && isPrivacyAgreed
     }
 
     // MARK: - Action
@@ -59,9 +63,13 @@ final class AgreementViewModel: BaseViewModelType {
         case .allAgreementDidTap:
             let isAgreed = !isAllAgreed
 
+            isServiceAgreed = isAgreed
             isLocationAgreed = isAgreed
             isPrivacyAgreed = isAgreed
             isMarketingAgreed = isAgreed
+
+        case .serviceAgreementDidTap:
+            isServiceAgreed.toggle()
 
         case .locationAgreementDidTap:
             isLocationAgreed.toggle()
@@ -71,6 +79,10 @@ final class AgreementViewModel: BaseViewModelType {
 
         case .marketingAgreementDidTap:
             isMarketingAgreed.toggle()
+        
+        case .serviceDetailDidTap:
+            output.onAgreementDetailRequested?(.service)
+            return
 
         case .locationDetailDidTap:
             output.onAgreementDetailRequested?(.location)
@@ -93,6 +105,7 @@ final class AgreementViewModel: BaseViewModelType {
     private func updateAgreementState() {
         let state = AgreementState(
             isAllAgreed: isAllAgreed,
+            isServiceAgreed: isServiceAgreed,
             isLocationAgreed: isLocationAgreed,
             isPrivacyAgreed: isPrivacyAgreed,
             isMarketingAgreed: isMarketingAgreed,

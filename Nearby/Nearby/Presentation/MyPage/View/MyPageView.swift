@@ -628,7 +628,7 @@ private extension MyPageView {
             $0.centerX.equalToSuperview()
 
             if hasSecondLine {
-                $0.top.equalTo(personalityFirstLineStackView.snp.bottom).offset(4)
+                $0.top.equalTo(personalityFirstLineStackView.snp.bottom).offset(8)
                 $0.height.equalTo(36)
                 $0.bottom.equalToSuperview()
             } else {
@@ -645,7 +645,7 @@ private extension MyPageView {
                 let hasIntroduction = !introductionContainerView.isHidden
 
                 if hasIntroduction {
-                    $0.top.equalTo(introductionContainerView.snp.bottom).offset(24)
+                    $0.top.equalTo(introductionContainerView.snp.bottom).offset(17)
                 } else {
                     $0.top.equalTo(verificationChip.snp.bottom).offset(32)
                 }

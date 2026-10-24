@@ -26,12 +26,16 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
 
     override func setAddTarget() {
         agreementView.allAgreementButton.addTarget(self, action: #selector(allAgreementDidTap), for: .touchUpInside)
+        
+        agreementView.serviceAgreementButton.addTarget(self, action: #selector(serviceAgreementDidTap), for: .touchUpInside)
 
         agreementView.locationAgreementButton.addTarget(self, action: #selector(locationAgreementDidTap), for: .touchUpInside)
 
         agreementView.privacyAgreementButton.addTarget(self, action: #selector(privacyAgreementDidTap), for: .touchUpInside)
 
         agreementView.marketingAgreementButton.addTarget(self, action: #selector(marketingAgreementDidTap), for: .touchUpInside)
+        
+        agreementView.serviceDetailButton.addTarget(self, action: #selector(serviceDetailButtonDidTap), for: .touchUpInside)
         
         agreementView.locationDetailButton.addTarget(self, action: #selector(locationDetailButtonDidTap), for: .touchUpInside)
 
@@ -48,6 +52,8 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
             guard let self else { return }
 
             agreementView.updateAgreementButton(agreementView.allAgreementButton, isSelected: state.isAllAgreed)
+            
+            agreementView.updateAgreementButton(agreementView.serviceAgreementButton, isSelected: state.isServiceAgreed)
 
             agreementView.updateAgreementButton(agreementView.locationAgreementButton, isSelected: state.isLocationAgreed)
 
@@ -78,6 +84,11 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
     private func allAgreementDidTap() {
         viewModel.action(.allAgreementDidTap)
     }
+    
+    @objc
+    private func serviceAgreementDidTap() {
+        viewModel.action(.serviceAgreementDidTap)
+    }
 
     @objc
     private func locationAgreementDidTap() {
@@ -92,6 +103,11 @@ final class AgreementViewController: BaseViewController<AgreementViewModel> {
     @objc
     private func marketingAgreementDidTap() {
         viewModel.action(.marketingAgreementDidTap)
+    }
+    
+    @objc
+    private func serviceDetailButtonDidTap() {
+        viewModel.action(.serviceDetailDidTap)
     }
     
     @objc

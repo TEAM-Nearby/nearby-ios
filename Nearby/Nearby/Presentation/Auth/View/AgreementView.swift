@@ -22,10 +22,12 @@ final class AgreementView: BaseView {
     private let agreementStackView = UIStackView()
 
     let allAgreementButton = UIButton(type: .system)
+    let serviceAgreementButton = UIButton(type: .system)
     let locationAgreementButton = UIButton(type: .system)
     let privacyAgreementButton = UIButton(type: .system)
     let marketingAgreementButton = UIButton(type: .system)
 
+    let serviceDetailButton = UIButton(type: .system)
     let locationDetailButton = UIButton(type: .system)
     let privacyDetailButton = UIButton(type: .system)
     let marketingDetailButton = UIButton(type: .system)
@@ -73,6 +75,13 @@ final class AgreementView: BaseView {
         configuration.attributedTitle = AttributedString("전체 약관 동의", attributes: AttributeContainer([.font: NearbyFont.b1M18.font, .foregroundColor: UIColor.grey80]))
 
         allAgreementButton.configuration = configuration
+        
+        serviceAgreementButton.do {
+            $0.contentHorizontalAlignment = .leading
+            $0.setTitle("서비스 이용약관 동의 (필수)", for: .normal)
+            $0.setTitleColor(.grey80, for: .normal)
+            $0.titleLabel?.font = NearbyFont.b2R16.font
+        }
 
         locationAgreementButton.do {
             $0.contentHorizontalAlignment = .leading
@@ -95,12 +104,12 @@ final class AgreementView: BaseView {
             $0.titleLabel?.font = NearbyFont.b2R16.font
         }
 
-        [locationDetailButton, privacyDetailButton, marketingDetailButton].forEach {
+        [serviceDetailButton, locationDetailButton, privacyDetailButton, marketingDetailButton].forEach {
             $0.setImage(UIImage.chevronRightIcon.withRenderingMode(.alwaysOriginal), for: .normal)
             $0.imageView?.contentMode = .scaleAspectFit
         }
 
-        [locationAgreementButton, privacyAgreementButton, marketingAgreementButton].forEach {
+        [serviceAgreementButton, locationAgreementButton, privacyAgreementButton, marketingAgreementButton].forEach {
             var configuration = UIButton.Configuration.plain()
 
             configuration.image = fixedSizeCheckboxImage(.icCheckDefault).withRenderingMode(.alwaysOriginal)
@@ -125,12 +134,13 @@ final class AgreementView: BaseView {
 
     override func setUI() {
         addSubviews(navigationBar, progressImageView, titleLabel, agreementStackView, bottomButton)
-
+        
+        let serviceRow = makeAgreementRow(agreementButton: serviceAgreementButton, detailButton: serviceDetailButton)
         let locationRow = makeAgreementRow(agreementButton: locationAgreementButton, detailButton: locationDetailButton)
         let privacyRow = makeAgreementRow(agreementButton: privacyAgreementButton, detailButton: privacyDetailButton)
         let marketingRow = makeAgreementRow(agreementButton: marketingAgreementButton, detailButton: marketingDetailButton)
 
-        agreementStackView.addArrangedSubviews(allAgreementButton, locationRow, privacyRow, marketingRow)
+        agreementStackView.addArrangedSubviews(allAgreementButton, serviceRow, locationRow, privacyRow, marketingRow)
     }
 
     override func setLayout() {

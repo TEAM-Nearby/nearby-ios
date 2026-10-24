@@ -40,6 +40,7 @@ final class RecruitCompanionDIContainer {
         let viewController = RecruitCompanionViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
+        viewController.hidesBottomBarWhenPushed = true
         return viewController
     }
 }

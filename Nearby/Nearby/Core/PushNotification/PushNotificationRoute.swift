@@ -23,6 +23,7 @@ nonisolated enum PushNotificationRoute {
         case applicationCreated = "COMPANION_APPLICATION_CREATED"
         case applicationAccepted = "COMPANION_APPLICATION_ACCEPTED"
         case applicationRejected = "COMPANION_APPLICATION_REJECTED"
+        case scheduleUpdated = "COMPANION_SCHEDULE_UPDATED"
     }
 
     // MARK: - Initializer
@@ -36,7 +37,7 @@ nonisolated enum PushNotificationRoute {
         case .applicationCreated:
             guard let applicationId else { return nil }
             self = .hostRequestReceive(applicationId: applicationId)
-        case .applicationAccepted:
+        case .applicationAccepted, .scheduleUpdated:
             guard let applicationId else { return nil }
             self = .companionRequestAccept(applicationId: applicationId)
         case .applicationRejected:

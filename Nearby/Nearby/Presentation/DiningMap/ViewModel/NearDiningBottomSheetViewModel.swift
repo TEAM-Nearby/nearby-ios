@@ -14,6 +14,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     enum Input {
         case refresh
+        case cityDidUpdate(String)
         case locationDidUpdate(CLLocationCoordinate2D)
         case categoryDidSelect(DiningCategory)
         case restaurantDidSelect(Int)
@@ -32,6 +33,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     // MARK: - Output
     
     struct Output {
+        let showsPaella = CurrentValueSubject<Bool, Never>(false)
         let selectedCategory = CurrentValueSubject<DiningCategory, Never>(.restaurant)
         let viewState = CurrentValueSubject<ViewState, Never>(.idle)
         let selectedRestaurant = PassthroughSubject<NearDiningCellItem, Never>()
@@ -72,12 +74,15 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     func action(_ trigger: Input) {
         switch trigger {
+        case .cityDidUpdate(let cityName):
+            updateCity(cityName)
         case .refresh:
             fetchRestaurants()
         case .locationDidUpdate(let coordinate):
             currentCoordinate = coordinate
             fetchRestaurants()
         case .categoryDidSelect(let category):
+            guard category != .paella || output.showsPaella.value else { return }
             output.selectedCategory.send(category)
             fetchRestaurants()
         case .restaurantDidSelect(let index):
@@ -90,6 +95,15 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     // MARK: - Methods
     
+    private func updateCity(_ cityName: String) {
+        let showsPaella = cityName == "바르셀로나"
+        output.showsPaella.send(showsPaella)
+        if !showsPaella, output.selectedCategory.value == .paella {
+            output.selectedCategory.send(.restaurant)
+            fetchRestaurants()
+        }
+    }
+
     private func fetchRestaurants() {
         guard let currentCoordinate else { return }
         

@@ -38,6 +38,14 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     }
 
     override func bindState() {
+        viewModel.output.showsPaella
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isVisible in
+                self?.nearDiningBottomSheetView.updatePaellaVisibility(isVisible: isVisible)
+            }
+            .store(in: &cancellables)
+
         viewModel.output.selectedCategory
             .receive(on: DispatchQueue.main)
             .sink { [weak self] category in
@@ -96,12 +104,7 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
     func updateCityName(_ cityName: String) {
         nearDiningBottomSheetView.updateCityName(cityName)
         
-        let showsPaella = cityName == "바르셀로나"
-        nearDiningBottomSheetView.updatePaellaVisibility(isVisible: showsPaella)
-        
-        if !showsPaella, viewModel.output.selectedCategory.value == .paella {
-            viewModel.action(.categoryDidSelect(.restaurant))
-        }
+        viewModel.action(.cityDidUpdate(cityName))
     }
 
     func restaurant(placeId: Int) -> NearDiningCellItem? {

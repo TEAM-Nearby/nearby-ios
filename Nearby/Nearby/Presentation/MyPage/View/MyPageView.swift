@@ -18,6 +18,7 @@ final class MyPageView: BaseView {
     var onSentRequestRowDidTap: (() -> Void)?
     var onReceivedRequestRowDidTap: (() -> Void)?
     var onEditProfileButtonDidTap: (() -> Void)?
+    var onGuestNicknameDidTap: (() -> Void)?
 
     private let isGuest: Bool
     private let gradientLayer = CAGradientLayer()
@@ -436,6 +437,11 @@ final class MyPageView: BaseView {
     }
 
     override func setAddTarget() {
+        if isGuest {
+            nameStackView.isUserInteractionEnabled = true
+            nameStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(guestNicknameDidTap)))
+        }
+        
         writtenPostRowView.onTap = { [weak self] in
             self?.onWrittenPostRowDidTap?()
         }
@@ -476,6 +482,11 @@ final class MyPageView: BaseView {
     }
 
     // MARK: - Action
+
+    @objc
+    private func guestNicknameDidTap() {
+        onGuestNicknameDidTap?()
+    }
 
     @objc
     private func editProfileButtonDidTap() {

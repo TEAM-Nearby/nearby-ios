@@ -37,6 +37,10 @@ final class MyPageCoordinator {
 extension MyPageCoordinator: Coordinator {
     func start() {
         let myPageViewController = appDIContainer.myPage.makeMyPageViewController(isGuest: isGuest)
+        
+        myPageViewController.onGuestLoginRequested = { [weak self] in
+            (self?.parentCoordinator as? MainTabCoordinator)?.onLoginRequested?()
+        }
 
         myPageViewController.onLoginRequired = { [weak self] isGeneralFeature in
             (self?.parentCoordinator as? MainTabCoordinator)?.requireLoginIfGuest(isGeneralFeature: isGeneralFeature)

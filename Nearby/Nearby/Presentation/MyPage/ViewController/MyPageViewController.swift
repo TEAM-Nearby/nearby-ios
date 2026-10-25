@@ -12,6 +12,7 @@ final class MyPageViewController: BaseViewController<MyPageViewModel> {
     // MARK: - Properties
 
     var onLoginRequired: ((Bool) -> Void)?
+    var onGuestLoginRequested: (() -> Void)?
     var onAlarmButtonDidTap: (() -> Void)?
     var onSettingButtonDidTap: (() -> Void)?
     var onWrittenPostRowDidTap: (() -> Void)?
@@ -50,6 +51,10 @@ final class MyPageViewController: BaseViewController<MyPageViewModel> {
     // MARK: - Custom Methods
 
     override func setAddTarget() {
+        myPageView.onGuestNicknameDidTap = { [weak self] in
+            guard let self, isGuest, presentedViewController == nil else { return }
+            onGuestLoginRequested?()
+        }
         myPageView.navigationBar.rightFirstButtonAction = { [weak self] in
             self?.performMemberAction(.alarmButtonDidTap)
         }

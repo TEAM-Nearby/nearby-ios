@@ -45,11 +45,8 @@ final class GuestAgreementViewController: BaseViewController<EmptyViewModel> {
     override func bindAction() {
         super.bindAction()
         
-        let serviceTapGesture = UITapGestureRecognizer(target: self, action: #selector(serviceTermsDidTap))
-        agreementView.serviceTermsStackView.addGestureRecognizer(serviceTapGesture)
-        
-        let termsTapGesture = UITapGestureRecognizer(target: self, action: #selector(locationTermsDidTap))
-        agreementView.locationTermsStackView.addGestureRecognizer(termsTapGesture)
+        agreementView.serviceTermsButton.addTarget(self, action: #selector(serviceTermsDidTap), for: .touchUpInside)
+        agreementView.locationTermsButton.addTarget(self, action: #selector(locationTermsDidTap), for: .touchUpInside)
         agreementView.agreeButton.addTarget(self, action: #selector(agreeButtonDidTap), for: .touchUpInside)
     }
 

@@ -14,12 +14,15 @@ final class GuestAgreementView: BaseView {
 
     // MARK: - UI Components
 
+    let serviceTermsStackView = UIStackView()
     let locationTermsStackView = UIStackView()
     let agreeButton = NearbyButton(style: .primary, title: "동의하기")
 
     private let contentView = UIView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
+    private let serviceTermsLabel = UILabel()
+    private let serviceTermsChevronImageView = UIImageView()
     private let locationTermsLabel = UILabel()
     private let locationTermsChevronImageView = UIImageView()
 
@@ -45,6 +48,24 @@ final class GuestAgreementView: BaseView {
             $0.numberOfLines = 0
         }
         
+        serviceTermsStackView.do {
+            $0.axis = .horizontal
+            $0.alignment = .center
+            $0.spacing = 4
+            $0.isUserInteractionEnabled = true
+        }
+
+        serviceTermsLabel.do {
+            $0.setFont(.b3R14, text: "서비스 이용약관 동의 (필수)", textColor: .grey40)
+            $0.numberOfLines = 0
+        }
+
+        serviceTermsChevronImageView.do {
+            $0.image = .chevronRightIcon.withRenderingMode(.alwaysTemplate)
+            $0.tintColor = .grey40
+            $0.contentMode = .scaleAspectFit
+        }
+
         locationTermsStackView.do {
             $0.axis = .horizontal
             $0.alignment = .center
@@ -65,9 +86,10 @@ final class GuestAgreementView: BaseView {
     }
 
     override func setUI() {
+        serviceTermsStackView.addArrangedSubviews(serviceTermsLabel, serviceTermsChevronImageView)
         locationTermsStackView.addArrangedSubviews(locationTermsLabel, locationTermsChevronImageView)
         addSubview(contentView)
-        contentView.addSubviews(titleLabel, descriptionLabel, locationTermsStackView, agreeButton)
+        contentView.addSubviews(titleLabel, descriptionLabel, serviceTermsStackView, locationTermsStackView, agreeButton)
     }
 
     override func setLayout() {
@@ -87,8 +109,19 @@ final class GuestAgreementView: BaseView {
             $0.trailing.equalToSuperview().inset(46)
         }
         
-        locationTermsStackView.snp.makeConstraints {
+        serviceTermsStackView.snp.makeConstraints {
             $0.top.equalTo(descriptionLabel.snp.bottom).offset(16)
+            $0.leading.equalTo(titleLabel)
+            $0.trailing.lessThanOrEqualToSuperview().inset(24)
+            $0.height.greaterThanOrEqualTo(20)
+        }
+
+        serviceTermsChevronImageView.snp.makeConstraints {
+            $0.size.equalTo(12)
+        }
+
+        locationTermsStackView.snp.makeConstraints {
+            $0.top.equalTo(serviceTermsStackView.snp.bottom).offset(4)
             $0.leading.equalTo(titleLabel)
             $0.trailing.lessThanOrEqualToSuperview().inset(24)
             $0.height.greaterThanOrEqualTo(20)

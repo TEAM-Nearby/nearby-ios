@@ -178,6 +178,14 @@ final class MainTabCoordinator {
     
     func switchTab(to item: NearbyTabItem) {
         guard let index = NearbyTabItem.allCases.firstIndex(of: item) else { return }
+        
+        if item == .companion,
+           let navigationController = rootViewController.viewControllers?[index] as? UINavigationController,
+           let companionViewController = navigationController.viewControllers.first as? CompanionViewController {
+            companionViewController.loadViewIfNeeded()
+            navigationController.popToRootViewController(animated: false)
+            companionViewController.selectRestaurantCategory()
+        }
         rootViewController.selectedIndex = index
     }
 }

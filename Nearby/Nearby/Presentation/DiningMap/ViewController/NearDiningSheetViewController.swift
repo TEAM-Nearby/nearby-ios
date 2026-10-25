@@ -95,6 +95,13 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
 
     func updateCityName(_ cityName: String) {
         nearDiningBottomSheetView.updateCityName(cityName)
+        
+        let showsPaella = cityName == "바르셀로나"
+        nearDiningBottomSheetView.updatePaellaVisibility(isVisible: showsPaella)
+        
+        if !showsPaella, viewModel.output.selectedCategory.value == .paella {
+            viewModel.action(.categoryDidSelect(.restaurant))
+        }
     }
 
     func restaurant(placeId: Int) -> NearDiningCellItem? {

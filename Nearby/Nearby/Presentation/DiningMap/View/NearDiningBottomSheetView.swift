@@ -115,6 +115,7 @@ final class NearDiningBottomSheetView: BaseView {
             }, for: .touchUpInside)
 
             categoryChips[category] = chip
+            chip.isHidden = category == .paella
             categoryChipStackView.addArrangedSubview(chip)
         }
     }
@@ -134,6 +135,10 @@ final class NearDiningBottomSheetView: BaseView {
         categoryChips.forEach { category, chip in
             chip.updateSelected(category == selectedCategory)
         }
+    }
+
+    func updatePaellaVisibility(isVisible: Bool) {
+        categoryChips[.paella]?.isHidden = !isVisible
     }
 
     func updateCityName(_ cityName: String) {

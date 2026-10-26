@@ -25,7 +25,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         static let informationTopOffset: CGFloat = 4
         static let informationHeight: CGFloat = 20
         static let contentTopOffset: CGFloat = 12
-        static let contentHeight: CGFloat = 20
+        static let contentLineHeight: CGFloat = 20
     }
 
     // MARK: - UI Components
@@ -45,6 +45,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
     private let dotLabel = UILabel()
     private var informationTrailingToButtonConstraint: Constraint?
     private var informationTrailingToSuperviewConstraint: Constraint?
+    private var displayMode: MatchingMatchedCardDisplayMode = .list
 
     // MARK: - Initializer
 
@@ -302,8 +303,17 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
                 $0.trailing.equalTo(nextButton.snp.leading).offset(-8)
             }
 
-            $0.height.equalTo(Metric.contentHeight)
+            $0.height.equalTo(Self.contentHeight(for: displayMode))
             $0.bottom.equalToSuperview().inset(Metric.verticalInset)
+        }
+    }
+
+    private static func contentHeight(for displayMode: MatchingMatchedCardDisplayMode) -> CGFloat {
+        switch displayMode {
+        case .list:
+            return Metric.contentLineHeight
+        case .scheduleDetail:
+            return Metric.contentLineHeight * 2
         }
     }
 
@@ -346,7 +356,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         return Metric.verticalInset
             + profileHeight
             + Metric.contentTopOffset
-            + Metric.contentHeight
+            + contentHeight(for: displayMode)
             + Metric.verticalInset
     }
 
@@ -394,6 +404,7 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         content: MatchingMatchedCardContentModel,
         displayMode: MatchingMatchedCardDisplayMode = .list
     ) {
+        self.displayMode = displayMode
         contentView.backgroundColor = .bgSurfaceGrey0
         setNextButtonHidden(false)
         updateProfile(content: content, displayMode: displayMode)
@@ -457,6 +468,14 @@ final class MatchingMatchedCardCell: UICollectionViewCell {
         paragraphStyle.lineBreakMode = .byTruncatingTail
 
         let baselineOffset = (nearbyFont.property.lineHeight - nearbyFont.font.lineHeight) / 4
+
+        switch displayMode {
+        case .list:
+            contentLabel.numberOfLines = 1
+        case .scheduleDetail:
+            contentLabel.numberOfLines = 2
+        }
+        contentLabel.lineBreakMode = .byTruncatingTail
 
         contentLabel.attributedText = NSAttributedString(
             string: text,

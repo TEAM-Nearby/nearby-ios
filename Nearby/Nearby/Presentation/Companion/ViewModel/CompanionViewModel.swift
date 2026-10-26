@@ -64,6 +64,7 @@ final class CompanionViewModel: BaseViewModelType {
         case currentLocationButtonDidTap
         case locationDidUpdate(CLLocationCoordinate2D)
         case reset
+        case selectRestaurantCategory
         case recruitCompanionButtonDidTap
         case companionDidSelect(CompanionDetailState)
         case companionAvailabilityDidChange(Bool)
@@ -146,6 +147,8 @@ final class CompanionViewModel: BaseViewModelType {
             currentCoordinate = coordinate
         case .reset:
             reset()
+        case .selectRestaurantCategory:
+            selectRestaurantCategory()
         case .recruitCompanionButtonDidTap:
             guard output.viewState.value.category.content.shouldShowCompanions else { return }
             route?(.recruitCompanion(currentCoordinate))
@@ -162,6 +165,14 @@ final class CompanionViewModel: BaseViewModelType {
         var viewState = output.viewState.value
         viewState.category = CategoryState(selectedIndex: 0, previousIndex: viewState.category.selectedIndex, content: .companions(.restaurant))
         viewState.bottomSheet = BottomSheetState(content: .nearbyCompanionList, level: .compact)
+        viewState.selectedPlaceId = nil
+        output.viewState.send(viewState)
+    }
+
+    private func selectRestaurantCategory() {
+        var viewState = output.viewState.value
+        viewState.category = CategoryState(selectedIndex: 0, previousIndex: viewState.category.selectedIndex, content: .companions(.restaurant))
+        viewState.bottomSheet = BottomSheetState(content: .nearbyCompanionList, level: viewState.bottomSheet.level)
         viewState.selectedPlaceId = nil
         output.viewState.send(viewState)
     }

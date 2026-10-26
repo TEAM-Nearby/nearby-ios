@@ -98,6 +98,9 @@ final class MainTabBarController: UITabBarController {
 extension MainTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         guard !requiresGuestAgreement else { return false }
+        let rootController = (viewController as? UINavigationController)?.viewControllers.first ?? viewController
+        (rootController as? CompanionViewController)?.selectRestaurantCategory()
+        
         guard selectedViewController !== viewController else { return true }
 
         let currentViewController = (selectedViewController as? UINavigationController)?.visibleViewController

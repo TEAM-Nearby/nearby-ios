@@ -18,6 +18,7 @@ final class MyPageView: BaseView {
     var onSentRequestRowDidTap: (() -> Void)?
     var onReceivedRequestRowDidTap: (() -> Void)?
     var onEditProfileButtonDidTap: (() -> Void)?
+    var onGuestNicknameDidTap: (() -> Void)?
 
     private let isGuest: Bool
     private let gradientLayer = CAGradientLayer()
@@ -34,6 +35,7 @@ final class MyPageView: BaseView {
     private let guestProfileImageView = UIImageView(image: .imgProfileDefault)
     private let profileImageView = GradientCircleView(diameter: 80)
     private let nameStackView = UIStackView()
+    private let guestNicknameButton = UIButton(type: .custom)
     private let nicknameLabel = UILabel()
     private let genderLabel = UILabel()
     private let introductionContainerView = UIView()
@@ -217,6 +219,13 @@ final class MyPageView: BaseView {
             $0.clipsToBounds = true
         }
 
+        guestNicknameButton.do {
+            $0.isHidden = !isGuest
+            $0.accessibilityLabel = "로그인이 필요해요"
+            $0.accessibilityHint = "로그인 화면으로 이동합니다"
+        }
+        if isGuest { nameStackView.accessibilityElementsHidden = true }
+
         guestProfileImageView.contentMode = .scaleAspectFit
         guestProfileImageView.isHidden = !isGuest
 
@@ -254,6 +263,7 @@ final class MyPageView: BaseView {
         boardingPassImageView.addLayoutGuide(personalityVerticalGuide)
 
         nameStackView.addArrangedSubviews(nicknameLabel, genderLabel)
+        nameStackView.superview?.addSubview(guestNicknameButton)
 
         personalityChipContainerView.addSubviews(
             personalityFirstLineStackView, personalitySecondLineStackView
@@ -306,6 +316,8 @@ final class MyPageView: BaseView {
         guestProfileImageView.snp.makeConstraints {
             $0.edges.equalTo(profileImageView)
         }
+
+        guestNicknameButton.snp.makeConstraints { $0.edges.equalTo(nameStackView) }
 
         nameStackView.snp.makeConstraints {
             $0.top.equalTo(profileImageView.snp.bottom).offset(12)
@@ -436,6 +448,10 @@ final class MyPageView: BaseView {
     }
 
     override func setAddTarget() {
+        if isGuest {
+            guestNicknameButton.addTarget(self, action: #selector(guestNicknameDidTap), for: .touchUpInside)
+        }
+        
         writtenPostRowView.onTap = { [weak self] in
             self?.onWrittenPostRowDidTap?()
         }
@@ -476,6 +492,11 @@ final class MyPageView: BaseView {
     }
 
     // MARK: - Action
+
+    @objc
+    private func guestNicknameDidTap() {
+        onGuestNicknameDidTap?()
+    }
 
     @objc
     private func editProfileButtonDidTap() {

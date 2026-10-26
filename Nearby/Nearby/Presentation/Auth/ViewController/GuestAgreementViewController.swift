@@ -44,22 +44,34 @@ final class GuestAgreementViewController: BaseViewController<EmptyViewModel> {
 
     override func bindAction() {
         super.bindAction()
-        let termsTapGesture = UITapGestureRecognizer(target: self, action: #selector(locationTermsDidTap))
-        agreementView.locationTermsStackView.addGestureRecognizer(termsTapGesture)
+        
+        agreementView.serviceTermsButton.addTarget(self, action: #selector(serviceTermsDidTap), for: .touchUpInside)
+        agreementView.locationTermsButton.addTarget(self, action: #selector(locationTermsDidTap), for: .touchUpInside)
         agreementView.agreeButton.addTarget(self, action: #selector(agreeButtonDidTap), for: .touchUpInside)
     }
 
-    // MARK: - Actions
+    // MARK: - Methods
 
-    @objc
-    private func locationTermsDidTap() {
-        let detailViewController = AgreementDetailViewController(viewModel: AgreementDetailViewModel(agreementType: .location))
+    private func showAgreementDetail(type: AgreementDetailType) {
+        let detailViewController = AgreementDetailViewController(viewModel: AgreementDetailViewModel(agreementType: type))
         detailViewController.onBackButtonDidTap = { [weak detailViewController] in
             detailViewController?.dismiss(animated: true)
         }
         detailViewController.modalPresentationStyle = .fullScreen
         detailViewController.transitioningDelegate = self
         present(detailViewController, animated: true)
+    }
+
+    // MARK: - Actions
+
+    @objc
+    private func serviceTermsDidTap() {
+        showAgreementDetail(type: .service)
+    }
+
+    @objc
+    private func locationTermsDidTap() {
+        showAgreementDetail(type: .location)
     }
 
     @objc
@@ -99,7 +111,6 @@ private final class GuestAgreementDetailTransition: NSObject {
 // MARK: - UIViewControllerAnimatedTransitioning
 
 extension GuestAgreementDetailTransition: UIViewControllerAnimatedTransitioning {
-
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         0.3
     }

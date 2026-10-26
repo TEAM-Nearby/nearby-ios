@@ -109,6 +109,8 @@ final class NearDiningBottomSheetView: BaseView {
             let style: NearbyChipStyle = index == 0 ? .diningCategorySelected : .diningCategoryUnselected
             let chip = NearbyIconChip(style: style, title: category.title, icon: category.icon)
 
+            chip.do { $0.isHidden = category == .paella }
+
             chip.addAction(UIAction { [weak self] _ in
                 self?.updateCategoryChipSelection(category)
                 self?.categoryDidTap?(category)
@@ -134,6 +136,10 @@ final class NearDiningBottomSheetView: BaseView {
         categoryChips.forEach { category, chip in
             chip.updateSelected(category == selectedCategory)
         }
+    }
+
+    func updatePaellaVisibility(isVisible: Bool) {
+        categoryChips[.paella]?.isHidden = !isVisible
     }
 
     func updateCityName(_ cityName: String) {

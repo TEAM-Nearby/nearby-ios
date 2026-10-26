@@ -399,6 +399,11 @@ final class CompanionViewController: BaseViewController<CompanionViewModel> {
         viewModel.action(.reset)
     }
 
+    func selectRestaurantCategory() {
+        loadViewIfNeeded()
+        viewModel.action(.selectRestaurantCategory)
+    }
+
     // MARK: - Actions
 
     @objc

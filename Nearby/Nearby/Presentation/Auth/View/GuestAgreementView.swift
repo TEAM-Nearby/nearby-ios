@@ -14,12 +14,17 @@ final class GuestAgreementView: BaseView {
 
     // MARK: - UI Components
 
-    let locationTermsStackView = UIStackView()
+    let serviceTermsButton = UIButton(type: .custom)
+    let locationTermsButton = UIButton(type: .custom)
+    private let serviceTermsStackView = UIStackView()
+    private let locationTermsStackView = UIStackView()
     let agreeButton = NearbyButton(style: .primary, title: "동의하기")
 
     private let contentView = UIView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
+    private let serviceTermsLabel = UILabel()
+    private let serviceTermsChevronImageView = UIImageView()
     private let locationTermsLabel = UILabel()
     private let locationTermsChevronImageView = UIImageView()
 
@@ -28,6 +33,15 @@ final class GuestAgreementView: BaseView {
     override func setStyle() {
         backgroundColor = UIColor.black.withAlphaComponent(0.3)
         accessibilityViewIsModal = true
+
+        serviceTermsButton.do {
+            $0.accessibilityLabel = "서비스 이용약관 동의 (필수)"
+            $0.accessibilityHint = "약관 상세 내용을 엽니다"
+        }
+        locationTermsButton.do {
+            $0.accessibilityLabel = AgreementDetailType.location.title
+            $0.accessibilityHint = "약관 상세 내용을 엽니다"
+        }
 
         contentView.do {
             $0.backgroundColor = .white
@@ -45,11 +59,31 @@ final class GuestAgreementView: BaseView {
             $0.numberOfLines = 0
         }
         
+        serviceTermsStackView.do {
+            $0.axis = .horizontal
+            $0.alignment = .center
+            $0.spacing = 4
+            $0.isUserInteractionEnabled = false
+            $0.accessibilityElementsHidden = true
+        }
+
+        serviceTermsLabel.do {
+            $0.setFont(.b3R14, text: "서비스 이용약관 동의 (필수)", textColor: .grey40)
+            $0.numberOfLines = 0
+        }
+
+        serviceTermsChevronImageView.do {
+            $0.image = .chevronRightIcon.withRenderingMode(.alwaysTemplate)
+            $0.tintColor = .grey40
+            $0.contentMode = .scaleAspectFit
+        }
+
         locationTermsStackView.do {
             $0.axis = .horizontal
             $0.alignment = .center
             $0.spacing = 4
-            $0.isUserInteractionEnabled = true
+            $0.isUserInteractionEnabled = false
+            $0.accessibilityElementsHidden = true
         }
 
         locationTermsLabel.do {
@@ -65,12 +99,18 @@ final class GuestAgreementView: BaseView {
     }
 
     override func setUI() {
+        serviceTermsStackView.addArrangedSubviews(serviceTermsLabel, serviceTermsChevronImageView)
         locationTermsStackView.addArrangedSubviews(locationTermsLabel, locationTermsChevronImageView)
         addSubview(contentView)
-        contentView.addSubviews(titleLabel, descriptionLabel, locationTermsStackView, agreeButton)
+        contentView.addSubviews(titleLabel, descriptionLabel, serviceTermsButton, locationTermsButton, agreeButton)
+        serviceTermsButton.addSubview(serviceTermsStackView)
+        locationTermsButton.addSubview(locationTermsStackView)
     }
 
     override func setLayout() {
+        serviceTermsStackView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        locationTermsStackView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
         contentView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.horizontalEdges.equalToSuperview().inset(31)
@@ -87,8 +127,19 @@ final class GuestAgreementView: BaseView {
             $0.trailing.equalToSuperview().inset(46)
         }
         
-        locationTermsStackView.snp.makeConstraints {
+        serviceTermsButton.snp.makeConstraints {
             $0.top.equalTo(descriptionLabel.snp.bottom).offset(16)
+            $0.leading.equalTo(titleLabel)
+            $0.trailing.lessThanOrEqualToSuperview().inset(24)
+            $0.height.greaterThanOrEqualTo(20)
+        }
+
+        serviceTermsChevronImageView.snp.makeConstraints {
+            $0.size.equalTo(12)
+        }
+
+        locationTermsButton.snp.makeConstraints {
+            $0.top.equalTo(serviceTermsButton.snp.bottom).offset(4)
             $0.leading.equalTo(titleLabel)
             $0.trailing.lessThanOrEqualToSuperview().inset(24)
             $0.height.greaterThanOrEqualTo(20)
@@ -99,7 +150,7 @@ final class GuestAgreementView: BaseView {
         }
         
         agreeButton.snp.makeConstraints {
-            $0.top.equalTo(locationTermsStackView.snp.bottom).offset(13)
+            $0.top.equalTo(locationTermsButton.snp.bottom).offset(13)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(52)
             $0.bottom.equalToSuperview().inset(24)

@@ -97,6 +97,10 @@ final class NearDiningSheetViewController: BaseViewController<NearDiningBottomSh
         viewModel.action(.locationDidUpdate(coordinate))
     }
 
+    func updateMapBounds(_ bounds: DiningMapBounds) {
+        viewModel.action(.mapBoundsDidUpdate(bounds))
+    }
+
     func refresh() {
         viewModel.action(.refresh)
     }

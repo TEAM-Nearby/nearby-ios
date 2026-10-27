@@ -12,6 +12,7 @@ final class CompanionMapController: NSObject {
     
     // MARK: - Properties
     
+    var onVisibleBoundsUpdate: ((GMSCoordinateBounds) -> Void)?
     var onMarkerTap: ((Int) -> Void)?
     var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
 
@@ -21,6 +22,7 @@ final class CompanionMapController: NSObject {
     private var hasResolvedInitialLocation = false
     private var hasCompletedInitialMap = false
     private var isRunning = false
+    private var hasPublishedVisibleBounds = false
     private var locationTimeoutTask: Task<Void, Never>?
     private var renderingTimeoutTask: Task<Void, Never>?
     private let locationManager = CLLocationManager()
@@ -139,6 +141,16 @@ final class CompanionMapController: NSObject {
         markerManager.updateCurrentLocation(to: coordinate)
     }
 
+    private func publishVisibleBounds() {
+        guard isRunning, currentCoordinate != nil,
+              mapView.bounds.width > 0, mapView.bounds.height > 0 else { return }
+        let bounds = GMSCoordinateBounds(region: mapView.projection.visibleRegion())
+        guard bounds.isValid, bounds.southWest.latitude < bounds.northEast.latitude,
+              bounds.southWest.longitude != bounds.northEast.longitude else { return }
+        hasPublishedVisibleBounds = true
+        onVisibleBoundsUpdate?(bounds)
+    }
+
     func start() {
         isRunning = true
         if hasResolvedInitialLocation, !hasCompletedInitialMap { waitForInitialMap() }
@@ -180,6 +192,11 @@ extension CompanionMapController: GMSMapViewDelegate {
     func mapViewSnapshotReady(_ mapView: GMSMapView) {
         guard isRunning else { return }
         completeInitialMap()
+        if !hasPublishedVisibleBounds { publishVisibleBounds() }
+    }
+
+    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
+        publishVisibleBounds()
     }
 
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {

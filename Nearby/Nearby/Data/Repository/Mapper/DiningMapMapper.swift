@@ -76,7 +76,7 @@ enum DiningMapMapper {
 
     static func map(_ criteria: DiningPlaceSearchCriteria) -> DiningListQuery {
         DiningListQuery(latitude: criteria.latitude, longitude: criteria.longitude,
-                        category: serverKey(for: criteria.category))
+                        category: serverKey(for: criteria.category), bounds: criteria.bounds)
     }
 
     static func map(_ criteria: DiningPlaceDetailCriteria) -> DiningDetailQuery {

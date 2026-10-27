@@ -13,6 +13,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     // MARK: - Input
     
     enum Input {
+        case mapBoundsDidUpdate(DiningMapBounds)
         case refresh
         case cityDidUpdate(String)
         case locationDidUpdate(CLLocationCoordinate2D)
@@ -48,6 +49,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     private let onLoginRequired: (() -> Void)?
     private let repository: DiningMapRepository
     private var restaurants: [NearDiningCellItem] = []
+    private var currentBounds: DiningMapBounds?
     private var currentCoordinate: CLLocationCoordinate2D?
     private var fetchTask: Task<Void, Never>?
     private var favoriteTasks: [Int: Task<Void, Never>] = [:]
@@ -74,6 +76,10 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     
     func action(_ trigger: Input) {
         switch trigger {
+        case .mapBoundsDidUpdate(let bounds):
+            guard currentBounds != bounds else { return }
+            currentBounds = bounds
+            fetchRestaurants()
         case .cityDidUpdate(let cityName):
             updateCity(cityName)
         case .refresh:
@@ -105,7 +111,7 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
     }
 
     private func fetchRestaurants() {
-        guard let currentCoordinate else { return }
+        guard let currentCoordinate, let currentBounds else { return }
         
         fetchTask?.cancel()
         let category = output.selectedCategory.value
@@ -118,7 +124,8 @@ final class NearDiningBottomSheetViewModel: BaseViewModelType {
                 let places = try await repository.fetchPlaces(
                     criteria: DiningPlaceSearchCriteria(latitude: currentCoordinate.latitude,
                                                         longitude: currentCoordinate.longitude,
-                                                        category: category.diningPlaceCategory))
+                                                        category: category.diningPlaceCategory,
+                                                        bounds: currentBounds))
                 guard !Task.isCancelled else { return }
                 restaurants = places.map(NearDiningCellItem.init(place:))
                 publishRestaurants()

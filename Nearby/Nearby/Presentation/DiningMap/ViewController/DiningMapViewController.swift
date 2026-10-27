@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import CoreLocation
 
 import Combine
+import GoogleMaps
 
 final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
     
@@ -86,6 +88,15 @@ final class DiningMapViewController: BaseViewController<DiningMapViewModel> {
             self?.bottomSheetController.selectRestaurant(placeId: placeId)
         }
         
+        mapController.onVisibleBoundsUpdate = { [weak self] bounds in
+            self?.bottomSheetController.updateMapBounds(DiningMapBounds(
+                southLatitude: bounds.southWest.latitude,
+                northLatitude: bounds.northEast.latitude,
+                westLongitude: bounds.southWest.longitude,
+                eastLongitude: bounds.northEast.longitude
+            ))
+        }
+
         mapController.onLocationUpdate = { [weak self] coordinate in
             self?.viewModel.action(.locationDidUpdate(coordinate))
             self?.bottomSheetController.updateLocation(coordinate)

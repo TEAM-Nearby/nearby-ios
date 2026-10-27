@@ -11,6 +11,7 @@ struct DiningListQuery {
     let latitude: Double
     let longitude: Double
     let category: String?
+    let bounds: DiningMapBounds
 }
 
 struct DiningDetailQuery {
@@ -64,7 +65,11 @@ extension DiningMapTarget: BaseTargetType {
         case .list(let query):
             var parameters: Parameters = [
                 "latitude": query.latitude,
-                "longitude": query.longitude
+                "longitude": query.longitude,
+                "southLatitude": query.bounds.southLatitude,
+                "northLatitude": query.bounds.northLatitude,
+                "westLongitude": query.bounds.westLongitude,
+                "eastLongitude": query.bounds.eastLongitude
             ]
             if let category = query.category {
                 parameters["category"] = category

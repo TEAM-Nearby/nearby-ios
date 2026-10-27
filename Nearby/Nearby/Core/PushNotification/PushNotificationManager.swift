@@ -135,11 +135,13 @@ extension PushNotificationManager: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        let route = PushNotificationRoute(userInfo: response.notification.request.content.userInfo)
-        completionHandler()
-        guard let route else { return }
+        guard let route = PushNotificationRoute(userInfo: response.notification.request.content.userInfo) else {
+            completionHandler()
+            return
+        }
         Task { @MainActor in
             handle(route)
+            completionHandler()
         }
     }
 }

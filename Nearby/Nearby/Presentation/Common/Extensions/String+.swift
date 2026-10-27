@@ -18,8 +18,12 @@ extension String {
 
     private static let withdrawnUserName = "탈퇴한 사용자"
 
+    var isWithdrawnUserName: Bool {
+        hasPrefix(Self.withdrawnUserName)
+    }
+
     var displayNickname: String {
-        hasPrefix(Self.withdrawnUserName) ? Self.withdrawnUserName : self
+        isWithdrawnUserName ? Self.withdrawnUserName : self
     }
 
     func truncated(limit: Int, trailingText: String = "...") -> String {

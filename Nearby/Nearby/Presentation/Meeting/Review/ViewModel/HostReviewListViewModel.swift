@@ -98,8 +98,8 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
 
                 if let first = reviewees.first {
                     let people = reviewees.count == 1
-                        ? "\(first.nickname) 님과의 동행"
-                        : "\(first.nickname) 외 \(reviewees.count - 1)명과의 동행"
+                        ? "\(first.nickname.displayNickname) 님과의 동행"
+                        : "\(first.nickname.displayNickname) 외 \(reviewees.count - 1)명과의 동행"
                     output.headerInfo.send(
                         HeaderInfo(
                             people: people,

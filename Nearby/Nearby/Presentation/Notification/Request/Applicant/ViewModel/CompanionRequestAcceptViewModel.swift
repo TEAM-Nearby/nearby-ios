@@ -114,13 +114,13 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
 
                 let data = DisplayData(
                     hostProfileImageUrl: result.host.profileImageUrl,
-                    title: "\(result.host.nickname) 님과 동행이 매칭됐어요!",
+                    title: "\(result.host.nickname.displayNickname) 님과 동행이 매칭됐어요!",
                     location: result.place.name,
                     date: result.meetingAt?.toDate()?.meetingDisplayText ?? "",
                     people: "\(result.participantCount)/\(result.maxParticipants)명",
                     buttonTitle: "확인했어요",
                     avatarImageURLs: avatarImageURLs,
-                    chatDescription: "\(result.host.nickname) 님이 만남 약속을 위한 오픈채팅방을 열어뒀어요. 입장해서 인사를 나눠보세요!"
+                    chatDescription: "\(result.host.nickname.displayNickname) 님이 만남 약속을 위한 오픈채팅방을 열어뒀어요. 입장해서 인사를 나눠보세요!"
                 )
                 output.displayData.send(data)
             } catch {

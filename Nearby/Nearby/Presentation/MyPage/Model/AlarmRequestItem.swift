@@ -27,9 +27,11 @@ struct AlarmRequestItem: Identifiable {
 
     let matchId: Int?
     let actionType: CompanionRequestActionType
+    let isHostWithdrawn: Bool
     var isRead: Bool
 
     var isActionEnabled: Bool {
+        guard !isHostWithdrawn else { return false }
         guard isRead else { return true }
         switch actionType {
         case .acceptRequest, .confirmSchedule, .scheduleUpdated:
@@ -52,7 +54,8 @@ struct AlarmRequestItem: Identifiable {
             : AlarmRequestDisplayType(tab: tab, status: dto.applicationStatus)
 
         hostUserId = dto.host.userId
-        nickname = dto.host.nickname
+        nickname = dto.host.nickname.displayNickname
+        isHostWithdrawn = dto.host.nickname.isWithdrawnUserName
         profileImageURL = dto.host.profileImageUrl.flatMap(URL.init(string:))
 
         placeName = dto.placeName ?? "장소 미정"

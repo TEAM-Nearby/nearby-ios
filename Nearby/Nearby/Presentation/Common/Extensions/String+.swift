@@ -16,6 +16,12 @@ extension String {
         trimmed.isEmpty
     }
 
+    private static let withdrawnUserName = "탈퇴한 사용자"
+
+    var displayNickname: String {
+        hasPrefix(Self.withdrawnUserName) ? Self.withdrawnUserName : self
+    }
+
     func truncated(limit: Int, trailingText: String = "...") -> String {
         guard count > limit else {
             return self

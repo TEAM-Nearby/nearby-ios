@@ -159,7 +159,8 @@ final class ReportPostView: BaseView {
         reportButton.isEnabled = isEnabled
     }
 
-    func updateDetailInput(isEnabled: Bool) {
+    func updateDetailInput(isEnabled: Bool, placeholder: String) {
+        reasonTextView.setPlaceholder(placeholder)
         reasonTextView.textView.isEditable = isEnabled
         guard !isEnabled else { return }
         reasonTextView.textView.resignFirstResponder()

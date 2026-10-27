@@ -40,7 +40,10 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
     private var isSubmitting = false
     
     var detailPlaceholder: String {
-        isNicknameRequired ? "신고할 사용자의 닉네임과 상세 내용을 입력해주세요" : "신고와 관련된 상세 내용을 입력해주세요. (선택)"
+        if isNicknameRequired {
+            return "신고할 사용자의 닉네임과 상세 내용을 입력해주세요"
+        }
+        return isEtcSelected ? "신고와 관련된 상세 내용을 입력해주세요." : "신고와 관련된 상세 내용을 입력해주세요. (선택)"
     }
     
     private var isNicknameRequired: Bool {

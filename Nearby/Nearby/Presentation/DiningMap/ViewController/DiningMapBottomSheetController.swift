@@ -168,6 +168,10 @@ final class DiningMapBottomSheetController {
         diningInfoSheetViewController.updateLocation(coordinate)
     }
 
+    func updateMapBounds(_ bounds: DiningMapBounds) {
+        nearDiningSheetViewController.updateMapBounds(bounds)
+    }
+
     func refreshCurrentList() {
         switch screenState.listType {
         case .nearby:

@@ -49,10 +49,18 @@ struct DiningFavoriteList {
     let places: [DiningPlace]
 }
 
+struct DiningMapBounds: Equatable {
+    let southLatitude: Double
+    let northLatitude: Double
+    let westLongitude: Double
+    let eastLongitude: Double
+}
+
 struct DiningPlaceSearchCriteria {
     let latitude: Double
     let longitude: Double
     let category: DiningPlace.Category
+    let bounds: DiningMapBounds
 }
 
 struct DiningPlaceDetailCriteria {

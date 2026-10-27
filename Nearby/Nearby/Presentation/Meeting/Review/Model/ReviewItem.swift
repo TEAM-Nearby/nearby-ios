@@ -23,7 +23,7 @@ extension ReviewItem {
             meetingId: meetingId,
             revieweeUserId: reviewee.userID,
             profileImageUrl: reviewee.profileImageURL,
-            name: reviewee.nickname,
+            name: reviewee.nickname.displayNickname,
             information: "\(reviewee.cityName) · \(reviewee.meetingDisplayDate)"
         )
     }

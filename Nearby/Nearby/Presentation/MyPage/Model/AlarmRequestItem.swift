@@ -52,7 +52,7 @@ struct AlarmRequestItem: Identifiable {
             : AlarmRequestDisplayType(tab: tab, status: dto.applicationStatus)
 
         hostUserId = dto.host.userId
-        nickname = dto.host.nickname
+        nickname = dto.host.nickname.displayNickname
         profileImageURL = dto.host.profileImageUrl.flatMap(URL.init(string:))
 
         placeName = dto.placeName ?? "장소 미정"

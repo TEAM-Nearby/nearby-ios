@@ -149,7 +149,7 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
 
                 let data = MeetingProgressDisplayData(
                     profileImageURL: detail.hostProfileImageURL,
-                    name: detail.hostNickname,
+                    name: detail.hostNickname.displayNickname,
                     gender: detail.hostGender.genderDisplayText,
                     information: MeetingItem.makeInformation(placeName: detail.placeName, meetingDate: meetingDate, timeZoneID: detail.timeZoneID)
                 )

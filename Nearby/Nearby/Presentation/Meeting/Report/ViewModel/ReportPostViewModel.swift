@@ -24,6 +24,7 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
     struct Output {
         let reloadReasons = PassthroughSubject<[Int], Never>()
         let isReportButtonEnabled = CurrentValueSubject<Bool, Never>(false)
+        let isDetailInputEnabled = CurrentValueSubject<Bool, Never>(false)
         let submitSuccess = PassthroughSubject<Void, Never>()
     }
     
@@ -68,6 +69,7 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
     init(target: MeetingReportTarget, repository: MeetingRepository) {
         self.target = target
         self.repository = repository
+        output.isDetailInputEnabled.send(isDetailRequired)
     }
     
     // MARK: - Action
@@ -77,6 +79,10 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
         case .reasonDidTap(let index):
             let changed = toggleReason(index)
             output.reloadReasons.send(changed)
+            if !isDetailRequired {
+                detailText = ""
+            }
+            output.isDetailInputEnabled.send(isDetailRequired)
             updateReportState()
             
         case .detailTextChanged(let text):

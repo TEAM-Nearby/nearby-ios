@@ -38,6 +38,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     private var timerCancellable: AnyCancellable?
     private var fetchTask: Task<Void, Never>?
     private var notificationTask: Task<Void, Never>?
+    private static let notificationRetryDelays: [Duration] = [.seconds(3), .seconds(10)]
     
     var items: [MeetingItem] { output.items.value }
     
@@ -109,7 +110,7 @@ final class MeetingTabViewModel: BaseViewModelType {
         }
     }
 
-    private func refreshNotifications() {
+    private func refreshNotifications(retryIndex: Int = 0) {
         guard !isGuest else { return }
         notificationTask?.cancel()
         notificationTask = Task { [weak self] in
@@ -121,6 +122,11 @@ final class MeetingTabViewModel: BaseViewModelType {
             if results.0 == false, results.1 == false {
                 output.hasUnreadNotifications.send(false)
             }
+            guard results.0 == nil || results.1 == nil,
+                  retryIndex < Self.notificationRetryDelays.count else { return }
+            try? await Task.sleep(for: Self.notificationRetryDelays[retryIndex])
+            guard !Task.isCancelled else { return }
+            refreshNotifications(retryIndex: retryIndex + 1)
         }
     }
 

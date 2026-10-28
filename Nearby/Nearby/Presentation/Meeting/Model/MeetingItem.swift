@@ -16,6 +16,8 @@ struct MeetingItem {
     let gender: String
     let profileImageUrl: String?
     let information: String
+    let cityName: String?
+    let placeName: String
     let meetingDate: Date?
     let postType: PostType
     let isCheckedIn: Bool
@@ -29,6 +31,8 @@ struct MeetingItem {
         gender: "여성",
         profileImageUrl: nil,
         information: "시우다드 콘달 · 오후 4시 30분",
+        cityName: "바르셀로나",
+        placeName: "시우다드 콘달",
         meetingDate: nil,
         postType: .scheduled,
         isCheckedIn: false

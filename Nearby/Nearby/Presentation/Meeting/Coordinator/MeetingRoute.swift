@@ -14,7 +14,7 @@ enum MeetingRoute {
     case reportCompletion
     case dismissReport
     case participantReview(ReviewItem)
-    case hostReviewList(Int)
+    case hostReviewList(ReviewMeetingInfo)
     case hostReview(ReviewItem, Bool)
     case reviewCompletion
     case checkInSuccess

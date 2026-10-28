@@ -32,7 +32,7 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
     }
     
     enum ReviewRoute {
-        case hostReviewList(meetingId: Int)
+        case hostReviewList(ReviewMeetingInfo)
         case participantReview(ReviewItem)
     }
     
@@ -215,19 +215,20 @@ final class MeetingProgressViewModel: BaseViewModelType, RequestRunning {
                 try await reviewRepository.fetchReviewTargets(meetingId: meetingId)
             },
             onSuccess: { [self] reviewTargets in
+                let meeting = ReviewMeetingInfo(meetingId: meetingId, cityName: item.cityName, placeName: item.placeName)
                 switch reviewTargets.currentUserRole {
                 case .host:
                     guard !reviewTargets.reviewees.isEmpty else {
                         showVerificationWaiting()
                         return
                     }
-                    output.showReview.send(.hostReviewList(meetingId: meetingId))
+                    output.showReview.send(.hostReviewList(meeting))
                 case .participant:
                     guard let reviewee = reviewTargets.reviewees.first else {
                         showVerificationWaiting()
                         return
                     }
-                    output.showReview.send(.participantReview(ReviewItem(reviewee: reviewee, meetingId: meetingId)))
+                    output.showReview.send(.participantReview(ReviewItem(reviewee: reviewee, meeting: meeting)))
                 }
             },
             onFailure: { [self] error in

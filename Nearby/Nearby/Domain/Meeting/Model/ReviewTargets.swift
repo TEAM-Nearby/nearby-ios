@@ -17,7 +17,6 @@ struct Reviewee {
     let userID: Int
     let nickname: String
     let profileImageURL: String?
-    let cityName: String
     let meetingDate: Date?
     let isCheckedIn: Bool
     let hasWrittenReview: Bool

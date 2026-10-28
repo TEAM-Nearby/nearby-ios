@@ -35,7 +35,7 @@ extension NearCompanionCellItem {
                 postType: .scheduled,
                 isApplicationEnabled: false,
                 tags: [],
-                hostName: post.host.nickname,
+                hostName: post.host.nickname.displayNickname,
                 genderTitle: post.host.gender.title,
                 profileImageURL: post.participants.first?.profileImageURL.flatMap(URL.init(string:)),
                 placeName: post.place.name,

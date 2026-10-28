@@ -149,7 +149,7 @@ private extension CompanionDetail {
             postType: postType,
             isApplicationEnabled: isRecruiting && hasNotApplied && participantCount < maxParticipants && hostUserID != currentUserId,
             tags: TravelStyleKeyword.titles(for: hostProfile.keywords),
-            hostName: hostProfile.nickname,
+            hostName: hostProfile.nickname.displayNickname,
             genderTitle: hostProfile.gender.title,
             profileImageURL: hostProfile.profileImageURL,
             hostIntroduction: hostProfile.introduction,

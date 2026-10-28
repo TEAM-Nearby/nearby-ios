@@ -31,7 +31,7 @@ final class MeetingTabView: BaseView {
         backgroundColor = .white
         
         navigationBar.do {
-            $0.configure(centerItem: .logo, rightItems: [.alarm], logoLeadingInset: 20)
+            $0.configure(centerItem: .logo, rightItems: [.alarmButton], logoLeadingInset: 20)
         }
         
         titleLabel.do {
@@ -104,6 +104,10 @@ final class MeetingTabView: BaseView {
         return UICollectionViewCompositionalLayout(section: section)
     }
     
+    func updateAlarm(hasUnread: Bool) {
+        navigationBar.configure(centerItem: .logo, rightItems: [hasUnread ? .alarmPoint : .alarmButton], logoLeadingInset: 20)
+    }
+
     func updateState(isEmpty: Bool) {
         titleLabel.isHidden = isEmpty
         collectionView.isHidden = isEmpty

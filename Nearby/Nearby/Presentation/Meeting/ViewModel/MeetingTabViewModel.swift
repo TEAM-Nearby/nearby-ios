@@ -15,12 +15,14 @@ final class MeetingTabViewModel: BaseViewModelType {
     enum Input {
         case viewWillAppear
         case viewDidDisappear
+        case refreshNotifications
     }
     
     // MARK: - Output
     
     struct Output {
         let items = CurrentValueSubject<[MeetingItem], Never>([])
+        let hasUnreadNotifications = CurrentValueSubject<Bool, Never>(false)
         let errorMessage = PassthroughSubject<String, Never>()
     }
     
@@ -30,18 +32,21 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     private let isGuest: Bool
     private let repository: MeetingRepository
+    private let notificationRepository: CompanionRequestRepository
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
     private var timerCancellable: AnyCancellable?
     private var fetchTask: Task<Void, Never>?
+    private var notificationTask: Task<Void, Never>?
     
     var items: [MeetingItem] { output.items.value }
     
     // MARK: - Initializer
 
-    init(repository: MeetingRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
+    init(repository: MeetingRepository, notificationRepository: CompanionRequestRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
         self.isGuest = isGuest
         self.repository = repository
+        self.notificationRepository = notificationRepository
         self.eventCenter = eventCenter
         if !isGuest { bindMeetingEvents() }
     }
@@ -52,11 +57,16 @@ final class MeetingTabViewModel: BaseViewModelType {
         switch trigger {
         case .viewWillAppear:
             fetchMeetings()
+            refreshNotifications()
             startTimer()
             
         case .viewDidDisappear:
             timerCancellable = nil
             fetchTask?.cancel()
+            notificationTask?.cancel()
+            
+        case .refreshNotifications:
+            refreshNotifications()
         }
     }
     
@@ -83,6 +93,37 @@ final class MeetingTabViewModel: BaseViewModelType {
         }
     }
     
+    private func fetchUnreadNotifications(direction: CompanionRequestDirection) async -> Bool? {
+        do {
+            let response = try await notificationRepository.fetchRequests(direction: direction)
+            guard !Task.isCancelled else { return nil }
+            let hasUnread = response.requests.contains { !$0.isRead }
+            if hasUnread {
+                output.hasUnreadNotifications.send(true)
+            }
+            return hasUnread
+        } catch {
+            guard !Task.isCancelled else { return nil }
+            AppLogger.error(error)
+            return nil
+        }
+    }
+
+    private func refreshNotifications() {
+        guard !isGuest else { return }
+        notificationTask?.cancel()
+        notificationTask = Task { [weak self] in
+            guard let self else { return }
+            async let sent = fetchUnreadNotifications(direction: .sent)
+            async let received = fetchUnreadNotifications(direction: .received)
+            let results = await (sent, received)
+            guard !Task.isCancelled else { return }
+            if results.0 == false, results.1 == false {
+                output.hasUnreadNotifications.send(false)
+            }
+        }
+    }
+
     private func startTimer() {
         guard !isGuest else { return }
         timerCancellable = Timer.publish(every: 60, on: .main, in: .common)

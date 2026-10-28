@@ -76,6 +76,22 @@ final class MeetingTabViewController: BaseViewController<MeetingTabViewModel> {
                 }
             }
             .store(in: &cancellables)
+
+        viewModel.output.hasUnreadNotifications
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hasUnread in
+                self?.meetingTabView.updateAlarm(hasUnread: hasUnread)
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .merge(with: NotificationCenter.default.publisher(for: .companionNotificationDidChange))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.action(.refreshNotifications)
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Method

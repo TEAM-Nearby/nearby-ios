@@ -21,11 +21,13 @@ final class MeetingDIContainer {
 
     private lazy var meetingService: MeetingService = DefaultMeetingService(networkProvider: networkProvider)
     private lazy var reviewService: ReviewService = DefaultReviewService(networkProvider: networkProvider)
+    private lazy var notificationService: CompanionRequestService = DefaultCompanionRequestService(networkProvider: networkProvider)
 
     // MARK: - Repositories
 
     private lazy var meetingRepository: MeetingRepository = DefaultMeetingRepository(meetingService: meetingService)
     private lazy var reviewRepository: ReviewRepository = DefaultReviewRepository(service: reviewService)
+    private lazy var notificationRepository: CompanionRequestRepository = DefaultCompanionRequestRepository(service: notificationService)
 
     // MARK: - Initializer
 
@@ -40,7 +42,7 @@ final class MeetingDIContainer {
     // MARK: - Factory Methods
 
     func makeMeetingViewController(isGuest: Bool = false, onRoute: @escaping (MeetingRoute) -> Void) -> UIViewController {
-        let viewController = MeetingTabViewController(viewModel: MeetingTabViewModel(repository: meetingRepository, eventCenter: eventCenter, isGuest: isGuest))
+        let viewController = MeetingTabViewController(viewModel: MeetingTabViewModel(repository: meetingRepository, notificationRepository: notificationRepository, eventCenter: eventCenter, isGuest: isGuest))
         viewController.onRoute = onRoute
         return viewController
     }

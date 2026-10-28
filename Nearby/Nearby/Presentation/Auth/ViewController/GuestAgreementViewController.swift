@@ -9,9 +9,10 @@ import UIKit
 
 final class GuestAgreementViewController: BaseViewController<EmptyViewModel> {
 
-    // MARK: - Property
+    // MARK: - Properties
 
     var onAgree: (() -> Void)?
+    private var detailDismissInteraction: UIPercentDrivenInteractiveTransition?
 
     // MARK: - UI Component
 
@@ -57,12 +58,45 @@ final class GuestAgreementViewController: BaseViewController<EmptyViewModel> {
         detailViewController.onBackButtonDidTap = { [weak detailViewController] in
             detailViewController?.dismiss(animated: true)
         }
+        let backGesture = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(detailBackDidSwipe(_:)))
+        backGesture.edges = .left
+        detailViewController.view.addGestureRecognizer(backGesture)
         detailViewController.modalPresentationStyle = .fullScreen
         detailViewController.transitioningDelegate = self
         present(detailViewController, animated: true)
     }
 
     // MARK: - Actions
+
+    @objc
+    private func detailBackDidSwipe(_ gesture: UIScreenEdgePanGestureRecognizer) {
+        guard let detailView = gesture.view else { return }
+        let progress = min(max(gesture.translation(in: detailView).x / max(detailView.bounds.width, 1), 0), 1)
+
+        switch gesture.state {
+        case .began:
+            guard let detail = presentedViewController,
+                  !detail.isBeingPresented, !detail.isBeingDismissed else { return }
+            let interaction = UIPercentDrivenInteractiveTransition()
+            interaction.completionCurve = .easeOut
+            detailDismissInteraction = interaction
+            detail.dismiss(animated: true)
+        case .changed:
+            detailDismissInteraction?.update(progress)
+        case .ended:
+            if progress > 0.3 || gesture.velocity(in: detailView).x > 500 {
+                detailDismissInteraction?.finish()
+            } else {
+                detailDismissInteraction?.cancel()
+            }
+            detailDismissInteraction = nil
+        case .cancelled, .failed:
+            detailDismissInteraction?.cancel()
+            detailDismissInteraction = nil
+        default:
+            break
+        }
+    }
 
     @objc
     private func serviceTermsDidTap() {
@@ -84,6 +118,10 @@ final class GuestAgreementViewController: BaseViewController<EmptyViewModel> {
 // MARK: - UIViewControllerTransitioningDelegate
 
 extension GuestAgreementViewController: UIViewControllerTransitioningDelegate {
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        detailDismissInteraction
+    }
+
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         GuestAgreementDetailTransition(isPresenting: true)
     }

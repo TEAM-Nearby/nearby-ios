@@ -142,7 +142,7 @@ private extension ProfileResponseDTO {
 
         return HostProfileViewModel.DisplayData(
             profileImageURL: profileImageUrl.flatMap(URL.init(string:)),
-            nickname: nickname,
+            nickname: nickname.displayNickname,
             gender: gender == "FEMALE" ? "여성" : "남성",
             personalityKeywords: TravelStyleKeyword.titles(for: keywords),
             mannerScore: Int(mannerScore.rounded()),

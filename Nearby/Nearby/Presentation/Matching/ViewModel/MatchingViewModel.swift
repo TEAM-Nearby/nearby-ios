@@ -123,7 +123,7 @@ private extension MatchedCompanion {
         return MatchingMatchedCardItem(
             matchId: matchID,
             content: MatchingMatchedCardContentModel(
-                profileImageUrl: hostProfileImageURL, name: hostNickname, participantCount: 1,
+                profileImageUrl: hostProfileImageURL, name: hostNickname.displayNickname, participantCount: 1,
                 gender: hostGender.displayTitle, uploadedTime: createdAt.uploadedTimeTitle, place: placeName ?? "",
                 meetingTime: meetingAt?.meetingTimeTitle ?? meetingTimeType.displayTitle, description: content
             ),

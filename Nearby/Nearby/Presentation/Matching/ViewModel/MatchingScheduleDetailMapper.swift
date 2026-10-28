@@ -34,7 +34,7 @@ private extension MatchingScheduleDetailMapper {
             return MatchingMatchedCardItem(
                 matchId: scheduleDetail.matchID,
                 content: MatchingMatchedCardContentModel(
-                    name: scheduleDetail.userNickname ?? "",
+                    name: scheduleDetail.userNickname?.displayNickname ?? "",
                     participantCount: 1,
                     gender: "",
                     uploadedTime: "",
@@ -54,7 +54,7 @@ private extension MatchingScheduleDetailMapper {
             content: MatchingMatchedCardContentModel(
                 profileImageUrl: preview.host.hostProfileImageURL,
                 profileImageUrls: [preview.host.hostProfileImageURL] + preview.members.map(\.profileImageURL),
-                name: preview.host.hostName,
+                name: preview.host.hostName.displayNickname,
                 participantCount: preview.members.count + 1,
                 gender: "",
                 uploadedTime: "",

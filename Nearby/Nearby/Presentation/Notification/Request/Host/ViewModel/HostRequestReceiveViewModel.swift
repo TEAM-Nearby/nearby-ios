@@ -100,7 +100,7 @@ final class HostRequestReceiveViewModel: BaseViewModelType, RequestRunning {
                 let DTO = try await repository.fetchHostCompanionDetail(applicationId: applicationId)
                 let data = DisplayData(
                     image: .illustLetterProfile,
-                    name: DTO.applicantProfile.nickname,
+                    name: DTO.applicantProfile.nickname.displayNickname,
                     profileImageUrl: DTO.applicantProfile.profileImageUrl,
                     gender: DTO.applicantProfile.gender.genderDisplayText,
                     level: String(format: "%.1f", DTO.applicantProfile.mannerScore),
@@ -109,7 +109,7 @@ final class HostRequestReceiveViewModel: BaseViewModelType, RequestRunning {
                     location: DTO.placeName,
                     date: DTO.meetingAt.toDate()?.meetingDisplayText ?? ""
                 )
-                applicantNickname = DTO.applicantProfile.nickname
+                applicantNickname = DTO.applicantProfile.nickname.displayNickname
                 applicantProfileImageURL = DTO.applicantProfile.profileImageUrl
                 applicantProfileId = DTO.applicantProfile.profileId
                 placeName = DTO.placeName

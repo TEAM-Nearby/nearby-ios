@@ -27,6 +27,7 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         setTableView()
+        setKeyboardObserver()
     }
     
     // MARK: - Custom Methods
@@ -37,7 +38,7 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
     }
     
     override func setAddTarget() {
-        addKeyboardDismissGesture()
+        setKeyboardDismissGesture()
 
         reportPostView.onBackButtonDidTap = { [weak self] in
             self?.onRoute?(.previous)
@@ -84,10 +85,41 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
             .store(in: &cancellables)
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     private func setTableView() {
         reportPostView.reasonTableView.register(ReportReasonCell.self, forCellReuseIdentifier: ReportReasonCell.identifier)
+    }
+
+    private func setKeyboardDismissGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.delegate = self
+        view.addGestureRecognizer(tapGesture)
+    }
+
+    private func setKeyboardObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow(_:)),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+    }
+
+    // MARK: - Action
+
+    @objc
+    private func keyboardWillShow(_ notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        reportPostView.revealDetailInput(keyboardFrame: keyboardFrame)
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+
+extension ReportPostViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        reportPostView.shouldDismissKeyboard(for: touch)
     }
 }
 

@@ -31,6 +31,10 @@ final class ReportPostView: BaseView {
     
     // MARK: - Properties
     
+    private static let buttonKeyboardSpacing: CGFloat = 16
+    private static let scrollViewButtonSpacing: CGFloat = 12
+    private static let contentBottomInset: CGFloat = 24
+    
     var onTextChanged: ((String) -> Void)?
     var onBackButtonDidTap: (() -> Void)?
     var onReportButtonDidTap: (() -> Void)?
@@ -109,7 +113,7 @@ final class ReportPostView: BaseView {
         scrollView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
-            $0.bottom.equalTo(reportButton.snp.top).offset(-12)
+            $0.bottom.equalTo(reportButton.snp.top).offset(-Self.scrollViewButtonSpacing)
         }
         
         contentView.snp.makeConstraints {
@@ -131,7 +135,7 @@ final class ReportPostView: BaseView {
             $0.top.equalTo(reasonTableView.snp.bottom).offset(8)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(153)
-            $0.bottom.equalToSuperview().offset(-24)
+            $0.bottom.equalToSuperview().offset(-Self.contentBottomInset)
         }
         
         reportButton.snp.makeConstraints {
@@ -141,7 +145,7 @@ final class ReportPostView: BaseView {
         }
         
         keyboardLayoutGuide.setConstraints(
-            [reportButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -16)],
+            [reportButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -Self.buttonKeyboardSpacing)],
             activeWhenAwayFrom: .bottom
         )
     }
@@ -157,6 +161,22 @@ final class ReportPostView: BaseView {
     
     func updateReportButton(isEnabled: Bool) {
         reportButton.isEnabled = isEnabled
+    }
+
+    func shouldDismissKeyboard(for touch: UITouch) -> Bool {
+        guard reasonTextView.textView.isFirstResponder else { return false }
+        guard let touchedView = touch.view else { return true }
+        return !(touchedView is UIControl) && !touchedView.isDescendant(of: reasonTextView)
+    }
+
+    func revealDetailInput(keyboardFrame: CGRect) {
+        guard reasonTextView.textView.isFirstResponder else { return }
+        let keyboardTop = convert(keyboardFrame, from: nil).minY
+        let scrollViewBottom = keyboardTop - Self.buttonKeyboardSpacing - reportButton.bounds.height - Self.scrollViewButtonSpacing
+        let visibleHeight = scrollViewBottom - scrollView.frame.minY
+        let targetOffsetY = reasonTextView.frame.maxY + Self.contentBottomInset - visibleHeight
+        guard targetOffsetY > scrollView.contentOffset.y else { return }
+        scrollView.setContentOffset(CGPoint(x: 0, y: targetOffsetY), animated: true)
     }
 
     func updateDetailInput(isEnabled: Bool, placeholder: String) {

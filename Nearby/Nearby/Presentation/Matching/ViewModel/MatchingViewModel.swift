@@ -182,6 +182,4 @@ private extension String {
     var meetingTimeTitle: String {
         return NearbyDateParser.reservationText(self, hourFormat: "a h시", minuteFormat: "a h시 m분") ?? self
     }
-    
-
 }

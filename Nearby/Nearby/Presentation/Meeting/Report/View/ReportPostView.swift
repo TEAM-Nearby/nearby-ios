@@ -190,10 +190,11 @@ final class ReportPostView: BaseView {
         scrollView.setContentOffset(offset, animated: true)
     }
 
-    func updateDetailInput(isEnabled: Bool, placeholder: String) {
+    func updateDetailPlaceholder(_ placeholder: String) {
         reasonTextView.setPlaceholder(placeholder)
-        reasonTextView.textView.isEditable = isEnabled
-        guard !isEnabled else { return }
+    }
+
+    func clearDetailText() {
         reasonTextView.textView.resignFirstResponder()
         reasonTextView.clearText()
     }

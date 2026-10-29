@@ -69,11 +69,17 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
             }
             .store(in: &cancellables)
 
-        viewModel.output.isDetailInputEnabled
+        viewModel.output.detailPlaceholder
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isEnabled in
-                guard let self else { return }
-                reportPostView.updateDetailInput(isEnabled: isEnabled, placeholder: viewModel.detailPlaceholder)
+            .sink { [weak self] placeholder in
+                self?.reportPostView.updateDetailPlaceholder(placeholder)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.clearDetailText
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.reportPostView.clearDetailText()
             }
             .store(in: &cancellables)
         

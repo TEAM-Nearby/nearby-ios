@@ -47,7 +47,7 @@ extension MatchingCoordinator: Coordinator {
     }
 
     func showManageScheduleDetail(matchId: Int) {
-        let viewController = diContainer.matching.makeManageScheduleDetailViewController(matchId: matchId) { [weak self] route in
+        let viewController = diContainer.matching.makeManageScheduleDetailViewController(matchId: matchId, disablesSwipeBack: parentCoordinator is NotificationCoordinator) { [weak self] route in
             self?.handle(route)
         }
         navigationController.pushViewController(viewController, animated: true)

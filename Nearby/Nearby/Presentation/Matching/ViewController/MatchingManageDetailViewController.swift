@@ -13,6 +13,7 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
     // MARK: - Properties
 
     var onRoute: ((MatchingRoute) -> Void)?
+    var isSwipeBackDisabled = false
     private let rootView = MatchingManageScheduleDetailView()
 
     // MARK: - Initializer
@@ -85,3 +86,7 @@ final class MatchingManageDetailViewController: BaseViewController<MatchingManag
         viewModel.action(.viewDidLoad)
     }
 }
+
+// MARK: - SwipeBackDisabled
+
+extension MatchingManageDetailViewController: SwipeBackDisabled {}

@@ -79,33 +79,3 @@ extension CompanionMapper {
         }
     }
 }
-
-enum CompanionDateParser {
-    static func parse(_ value: String?) -> Date? {
-        guard let value else { return nil }
-
-        let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = isoFormatter.date(from: value) {
-            return date
-        }
-
-        isoFormatter.formatOptions = [.withInternetDateTime]
-        if let date = isoFormatter.date(from: value) {
-            return date
-        }
-
-        let localFormatter = DateFormatter()
-        localFormatter.locale = Locale(identifier: "en_US_POSIX")
-        localFormatter.timeZone = .nearbyAPITimeZone
-
-        for dateFormat in ["yyyy-MM-dd'T'HH:mm:ss.SSSSSS", "yyyy-MM-dd'T'HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm"] {
-            localFormatter.dateFormat = dateFormat
-            if let date = localFormatter.date(from: value) {
-                return date
-            }
-        }
-
-        return nil
-    }
-}

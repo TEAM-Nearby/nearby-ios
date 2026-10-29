@@ -109,14 +109,15 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                 matchStatus = MatchStatus(rawValue: result.matchStatus)
 
                 let preview = try? await matchingRepository.fetchMatchPreview(matchId: result.matchId)
+                let schedule = try? await matchingRepository.fetchMatchMySchedule(matchId: result.matchId)
                 let avatarImageURLs = preview.map { [$0.host.hostProfileImageURL] + $0.members.map(\.profileImageURL) }
                     ?? [String?](repeating: nil, count: result.participantCount)
 
                 let data = DisplayData(
                     hostProfileImageUrl: result.host.profileImageUrl,
                     title: "\(result.host.nickname.displayNickname) 님과 동행이 매칭됐어요!",
-                    location: result.place.name,
-                    date: NearbyDateParser.reservationText(result.meetingAt, hourFormat: "M월 d일 (E) a h시", minuteFormat: "M월 d일 (E) a h시 m분") ?? "",
+                    location: schedule?.schedule?.place.name ?? result.place.name,
+                    date: NearbyDateParser.reservationText(schedule?.schedule?.scheduledAt ?? result.meetingAt, hourFormat: "M월 d일 (E) a h시", minuteFormat: "M월 d일 (E) a h시 m분") ?? "",
                     people: "\(result.participantCount)/\(result.maxParticipants)명",
                     buttonTitle: "확인했어요",
                     avatarImageURLs: avatarImageURLs,

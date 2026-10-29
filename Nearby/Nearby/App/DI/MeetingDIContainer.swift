@@ -56,7 +56,7 @@ final class MeetingDIContainer {
     }
 
     func makeHostReviewListViewController(meetingId: Int, onRoute: @escaping (MeetingRoute) -> Void) -> HostReviewListViewController {
-        let viewModel = HostReviewListViewModel(meetingId: meetingId, repository: reviewRepository, myPageRepository: myPageRepository, eventCenter: eventCenter)
+        let viewModel = HostReviewListViewModel(meetingId: meetingId, repository: reviewRepository, myPageRepository: myPageRepository, notificationRepository: notificationRepository, eventCenter: eventCenter)
         let viewController = HostReviewListViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true

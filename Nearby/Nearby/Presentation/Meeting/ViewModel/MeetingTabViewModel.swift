@@ -32,13 +32,12 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     private let isGuest: Bool
     private let repository: MeetingRepository
-    private let notificationRepository: CompanionRequestRepository
+    private let notificationChecker: UnreadNotificationChecker
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
     private var timerCancellable: AnyCancellable?
     private var fetchTask: Task<Void, Never>?
     private var notificationTask: Task<Void, Never>?
-    private static let notificationRetryDelays: [Duration] = [.seconds(3), .seconds(10)]
     
     var items: [MeetingItem] { output.items.value }
     
@@ -47,7 +46,7 @@ final class MeetingTabViewModel: BaseViewModelType {
     init(repository: MeetingRepository, notificationRepository: CompanionRequestRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
         self.isGuest = isGuest
         self.repository = repository
-        self.notificationRepository = notificationRepository
+        self.notificationChecker = UnreadNotificationChecker(repository: notificationRepository)
         self.eventCenter = eventCenter
         if !isGuest { bindMeetingEvents() }
     }
@@ -94,39 +93,12 @@ final class MeetingTabViewModel: BaseViewModelType {
         }
     }
     
-    private func fetchUnreadNotifications(direction: CompanionRequestDirection) async -> Bool? {
-        do {
-            let response = try await notificationRepository.fetchRequests(direction: direction)
-            guard !Task.isCancelled else { return nil }
-            let hasUnread = response.requests.contains { !$0.isRead }
-            if hasUnread {
-                output.hasUnreadNotifications.send(true)
-            }
-            return hasUnread
-        } catch {
-            guard !Task.isCancelled else { return nil }
-            AppLogger.error(error)
-            return nil
-        }
-    }
-
-    private func refreshNotifications(retryIndex: Int = 0) {
+    private func refreshNotifications() {
         guard !isGuest else { return }
         notificationTask?.cancel()
         notificationTask = Task { [weak self] in
-            guard let self else { return }
-            async let sent = fetchUnreadNotifications(direction: .sent)
-            async let received = fetchUnreadNotifications(direction: .received)
-            let results = await (sent, received)
-            guard !Task.isCancelled else { return }
-            if results.0 == false, results.1 == false {
-                output.hasUnreadNotifications.send(false)
-            }
-            guard results.0 == nil || results.1 == nil,
-                  retryIndex < Self.notificationRetryDelays.count else { return }
-            try? await Task.sleep(for: Self.notificationRetryDelays[retryIndex])
-            guard !Task.isCancelled else { return }
-            refreshNotifications(retryIndex: retryIndex + 1)
+            guard let self, let hasUnread = await notificationChecker.hasUnread() else { return }
+            output.hasUnreadNotifications.send(hasUnread)
         }
     }
 

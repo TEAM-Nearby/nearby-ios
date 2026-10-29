@@ -23,6 +23,16 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
     override func loadView() {
         view = hostReviewListView
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.action(.viewWillAppear)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.action(.viewDidDisappear)
+    }
     
     // MARK: - Custom Methods
 
@@ -75,6 +85,22 @@ final class HostReviewListViewController: BaseViewController<HostReviewListViewM
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.onRoute?(.reviewCompletion)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.hasUnreadNotifications
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hasUnread in
+                self?.hostReviewListView.updateAlarm(hasUnread: hasUnread)
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .merge(with: NotificationCenter.default.publisher(for: .companionNotificationDidChange))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.action(.refreshNotifications)
             }
             .store(in: &cancellables)
 

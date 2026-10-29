@@ -15,6 +15,9 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
     
     enum Input {
         case viewDidLoad
+        case viewWillAppear
+        case viewDidDisappear
+        case refreshNotifications
         case profileDidTap(ReviewItem)
         case reviewSaved(ReviewItem)
         case completionButtonDidTap
@@ -28,6 +31,7 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
         let showReviewWrite = PassthroughSubject<(item: ReviewItem, isLast: Bool), Never>()
         let showCompletion = PassthroughSubject<Void, Never>()
         let reviewedIDs = CurrentValueSubject<Set<Int>, Never>([])
+        let hasUnreadNotifications = CurrentValueSubject<Bool, Never>(false)
     }
     
     struct HeaderInfo {
@@ -44,9 +48,11 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
     private let meetingId: Int
     private let repository: ReviewRepository
     private let myPageRepository: MyPageRepository
+    private let notificationChecker: UnreadNotificationChecker
     private let eventCenter: MeetingEventCenter
 
     private var cancellables = Set<AnyCancellable>()
+    private var notificationTask: Task<Void, Never>?
     private var isCompleting = false
 
     var items: [ReviewItem] { output.items.value }
@@ -57,10 +63,11 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
 
     // MARK: - Initializer
 
-    init(meetingId: Int, repository: ReviewRepository, myPageRepository: MyPageRepository, eventCenter: MeetingEventCenter) {
+    init(meetingId: Int, repository: ReviewRepository, myPageRepository: MyPageRepository, notificationRepository: CompanionRequestRepository, eventCenter: MeetingEventCenter) {
         self.meetingId = meetingId
         self.repository = repository
         self.myPageRepository = myPageRepository
+        self.notificationChecker = UnreadNotificationChecker(repository: notificationRepository)
         self.eventCenter = eventCenter
     }
 
@@ -70,6 +77,12 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
         switch trigger {
         case .viewDidLoad:
             fetchReviewTargets()
+
+        case .viewWillAppear, .refreshNotifications:
+            refreshNotifications()
+
+        case .viewDidDisappear:
+            notificationTask?.cancel()
 
         case .profileDidTap(let item):
             guard !output.reviewedIDs.value.contains(item.id) else { return }
@@ -118,6 +131,14 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
         }
     }
     
+    private func refreshNotifications() {
+        notificationTask?.cancel()
+        notificationTask = Task { [weak self] in
+            guard let self, let hasUnread = await notificationChecker.hasUnread() else { return }
+            output.hasUnreadNotifications.send(hasUnread)
+        }
+    }
+
     private func completeMeeting() {
         guard !isCompleting else { return }
 

@@ -104,14 +104,25 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
             name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
     }
 
-    // MARK: - Action
+    // MARK: - Actions
 
     @objc
     private func keyboardWillShow(_ notification: Notification) {
         guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
         reportPostView.revealDetailInput(keyboardFrame: keyboardFrame)
+    }
+
+    @objc
+    private func keyboardWillHide() {
+        reportPostView.restoreContentOffset()
     }
 }
 

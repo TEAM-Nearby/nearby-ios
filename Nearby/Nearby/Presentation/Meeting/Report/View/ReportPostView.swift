@@ -35,6 +35,8 @@ final class ReportPostView: BaseView {
     private static let scrollViewButtonSpacing: CGFloat = 12
     private static let contentBottomInset: CGFloat = 24
     
+    private var contentOffsetBeforeReveal: CGPoint?
+    
     var onTextChanged: ((String) -> Void)?
     var onBackButtonDidTap: (() -> Void)?
     var onReportButtonDidTap: (() -> Void)?
@@ -176,7 +178,16 @@ final class ReportPostView: BaseView {
         let visibleHeight = scrollViewBottom - scrollView.frame.minY
         let targetOffsetY = reasonTextView.frame.maxY + Self.contentBottomInset - visibleHeight
         guard targetOffsetY > scrollView.contentOffset.y else { return }
+        if contentOffsetBeforeReveal == nil {
+            contentOffsetBeforeReveal = scrollView.contentOffset
+        }
         scrollView.setContentOffset(CGPoint(x: 0, y: targetOffsetY), animated: true)
+    }
+
+    func restoreContentOffset() {
+        guard let offset = contentOffsetBeforeReveal else { return }
+        contentOffsetBeforeReveal = nil
+        scrollView.setContentOffset(offset, animated: true)
     }
 
     func updateDetailInput(isEnabled: Bool, placeholder: String) {

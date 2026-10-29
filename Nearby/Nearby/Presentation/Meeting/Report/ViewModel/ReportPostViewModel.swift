@@ -91,7 +91,7 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
             
         case .detailTextChanged(let text):
             detailText = text
-            selectEtcIfNeeded()
+            syncEtcWithDetailText()
             updateReportState()
             
         case .reportButtonDidTap:
@@ -111,9 +111,15 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
         return [index]
     }
     
-    private func selectEtcIfNeeded() {
-        guard !isNicknameRequired, !isEtcSelected, !trimmedDetailText.isEmpty else { return }
-        selectedReasons.insert(ReportReason.extra.rawValue)
+    private func syncEtcWithDetailText() {
+        guard !isNicknameRequired else { return }
+        let shouldSelectEtc = !trimmedDetailText.isEmpty
+        guard shouldSelectEtc != isEtcSelected else { return }
+        if shouldSelectEtc {
+            selectedReasons.insert(ReportReason.extra.rawValue)
+        } else {
+            selectedReasons.remove(ReportReason.extra.rawValue)
+        }
         output.reloadReasons.send([ReportReason.extra.rawValue])
         output.detailPlaceholder.send(detailPlaceholder)
     }

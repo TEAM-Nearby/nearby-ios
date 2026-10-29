@@ -76,7 +76,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
                 profileImageUrl: profileImageUrl,
                 title: "\(applicantName) 님과 동행이 매칭됐어요!",
                 location: "\(locationName)",
-                date: meetingAt.toDate()?.meetingDisplayText ?? "",
+                date: NearbyDateParser.reservationText(meetingAt, hourFormat: "M월 d일 (E) a h시", minuteFormat: "M월 d일 (E) a h시 m분") ?? "",
                 chatTitle: "\(applicantName) 님과 대화를 나눠보세요"
             )
             output.displayData.send(data)

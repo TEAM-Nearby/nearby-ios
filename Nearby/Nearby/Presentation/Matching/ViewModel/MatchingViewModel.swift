@@ -180,8 +180,7 @@ private extension String {
     }
     
     var meetingTimeTitle: String {
-        guard let date = isoDate else { return self }
-        return date.timeDisplayText
+        return NearbyDateParser.reservationText(self, hourFormat: "a h시", minuteFormat: "a h시 m분") ?? self
     }
     
     var isoDate: Date? {

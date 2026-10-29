@@ -116,7 +116,7 @@ final class CompanionRequestAcceptViewModel: BaseViewModelType {
                     hostProfileImageUrl: result.host.profileImageUrl,
                     title: "\(result.host.nickname.displayNickname) 님과 동행이 매칭됐어요!",
                     location: result.place.name,
-                    date: result.meetingAt?.toDate()?.meetingDisplayText ?? "",
+                    date: NearbyDateParser.reservationText(result.meetingAt, hourFormat: "M월 d일 (E) a h시", minuteFormat: "M월 d일 (E) a h시 m분") ?? "",
                     people: "\(result.participantCount)/\(result.maxParticipants)명",
                     buttonTitle: "확인했어요",
                     avatarImageURLs: avatarImageURLs,

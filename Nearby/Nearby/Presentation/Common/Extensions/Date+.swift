@@ -16,6 +16,17 @@ enum NearbyDateParser {
         "yyyy-MM-dd'T'HH:mm"
     ]
 
+    static func reservationText(_ value: String?, hourFormat: String, minuteFormat: String) -> String? {
+        guard let date = parseLocal(value, timeZoneID: "UTC") else { return nil }
+        let timeZone = TimeZone(secondsFromGMT: 0)!
+        let minute = Calendar(identifier: .gregorian).dateComponents(in: timeZone, from: date).minute
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = timeZone
+        formatter.dateFormat = minute == 0 ? hourFormat : minuteFormat
+        return formatter.string(from: date)
+    }
+
     static func parseInstant(_ value: String?) -> Date? {
         guard let value else { return nil }
 

@@ -39,14 +39,14 @@ extension CompanionMapper {
             ),
             contentPreview: dto.contentPreview,
             meetingTimeType: mapMeetingTimeType(dto.meetingTimeType),
-            meetingAt: CompanionDateParser.parse(dto.meetingAt),
+            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: "UTC"),
             meetingAtText: dto.meetingAtText,
             participantCount: dto.participantCount,
             participants: dto.participants.map {
                 CompanionParticipant(userID: $0.userId, profileImageURL: $0.profileImageUrl)
             },
             participantSummaryText: dto.participantSummaryText,
-            createdAt: CompanionDateParser.parse(dto.createdAt),
+            createdAt: NearbyDateParser.parseInstant(dto.createdAt),
             createdAgoText: dto.createdAgoText
         )
     }

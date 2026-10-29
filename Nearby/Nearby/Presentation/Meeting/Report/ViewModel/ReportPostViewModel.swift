@@ -112,7 +112,6 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
     }
     
     private func syncEtcWithDetailText() {
-        guard !isNicknameRequired else { return }
         let shouldSelectEtc = !trimmedDetailText.isEmpty
         guard shouldSelectEtc != isEtcSelected else { return }
         if shouldSelectEtc {

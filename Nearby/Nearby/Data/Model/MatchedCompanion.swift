@@ -61,7 +61,7 @@ struct MatchedCompanionScheduleDetail {
 
     struct Schedule {
         let place: Place
-        let scheduledAt: String
+        let scheduledAt: String?
     }
 
     struct Place {

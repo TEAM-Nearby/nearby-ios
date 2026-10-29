@@ -96,7 +96,7 @@ struct MatchMyScheduleResponseDTO: Decodable {
 
     struct Schedule: Decodable {
         let place: Place
-        let scheduledAt: String
+        let scheduledAt: String?
     }
 
     struct Place: Decodable {

@@ -15,12 +15,14 @@ final class MeetingTabViewModel: BaseViewModelType {
     enum Input {
         case viewWillAppear
         case viewDidDisappear
+        case refreshNotifications
     }
     
     // MARK: - Output
     
     struct Output {
         let items = CurrentValueSubject<[MeetingItem], Never>([])
+        let hasUnreadNotifications = CurrentValueSubject<Bool, Never>(false)
         let errorMessage = PassthroughSubject<String, Never>()
     }
     
@@ -30,18 +32,21 @@ final class MeetingTabViewModel: BaseViewModelType {
     
     private let isGuest: Bool
     private let repository: MeetingRepository
+    private let notificationChecker: UnreadNotificationChecker
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
     private var timerCancellable: AnyCancellable?
     private var fetchTask: Task<Void, Never>?
+    private var notificationTask: Task<Void, Never>?
     
     var items: [MeetingItem] { output.items.value }
     
     // MARK: - Initializer
 
-    init(repository: MeetingRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
+    init(repository: MeetingRepository, notificationRepository: CompanionRequestRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
         self.isGuest = isGuest
         self.repository = repository
+        self.notificationChecker = UnreadNotificationChecker(repository: notificationRepository)
         self.eventCenter = eventCenter
         if !isGuest { bindMeetingEvents() }
     }
@@ -52,11 +57,16 @@ final class MeetingTabViewModel: BaseViewModelType {
         switch trigger {
         case .viewWillAppear:
             fetchMeetings()
+            refreshNotifications()
             startTimer()
             
         case .viewDidDisappear:
             timerCancellable = nil
             fetchTask?.cancel()
+            notificationTask?.cancel()
+            
+        case .refreshNotifications:
+            refreshNotifications()
         }
     }
     
@@ -83,6 +93,15 @@ final class MeetingTabViewModel: BaseViewModelType {
         }
     }
     
+    private func refreshNotifications() {
+        guard !isGuest else { return }
+        notificationTask?.cancel()
+        notificationTask = Task { [weak self] in
+            guard let self, let hasUnread = await notificationChecker.hasUnread() else { return }
+            output.hasUnreadNotifications.send(hasUnread)
+        }
+    }
+
     private func startTimer() {
         guard !isGuest else { return }
         timerCancellable = Timer.publish(every: 60, on: .main, in: .common)

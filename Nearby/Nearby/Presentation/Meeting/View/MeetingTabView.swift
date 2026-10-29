@@ -104,6 +104,10 @@ final class MeetingTabView: BaseView {
         return UICollectionViewCompositionalLayout(section: section)
     }
     
+    func updateAlarm(hasUnread: Bool) {
+        navigationBar.configure(centerItem: .logo, rightItems: [hasUnread ? .alarmDot : .alarm], logoLeadingInset: 20)
+    }
+
     func updateState(isEmpty: Bool) {
         titleLabel.isHidden = isEmpty
         collectionView.isHidden = isEmpty

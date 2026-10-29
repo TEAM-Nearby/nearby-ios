@@ -43,7 +43,7 @@ final class HostReviewListView: BaseView {
     
     override func setStyle() {
         navigationBar.do {
-            $0.configure(leftItem: .back, centerItem: .title("동행 후기"), rightItems: [.alarmButton])
+            $0.configure(leftItem: .back, centerItem: .title("동행 후기"), rightItems: [.alarm])
         }
         
         contentView.do {
@@ -156,6 +156,10 @@ final class HostReviewListView: BaseView {
     
     // MARK: - Methods
     
+    func updateAlarm(hasUnread: Bool) {
+        navigationBar.configure(leftItem: .back, centerItem: .title("동행 후기"), rightItems: [hasUnread ? .alarmDot : .alarm])
+    }
+
     func configure(people: String, information: String, location: String, avatarImageUrls: [String?]) {
         avatarClusterView.configure(withImageURLs: avatarImageUrls)
         peopleLabel.text = people

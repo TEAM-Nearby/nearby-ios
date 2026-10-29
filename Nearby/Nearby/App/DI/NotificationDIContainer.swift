@@ -71,7 +71,7 @@ final class NotificationDIContainer {
     }
 
     func makeHostRequestAllowViewController(applicantName: String, applicantProfileImageUrl: String?, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String, onRoute: @escaping (NotificationRoute) -> Void) -> UIViewController {
-        let viewController = HostRequestAllowViewController(viewModel: HostRequestAllowViewModel(applicantProfileImageUrl: applicantProfileImageUrl, applicantName: applicantName, locationName: locationName, meetingAt: meetingAt, matchId: matchId, postType: postType, openChatUrl: openChatUrl))
+        let viewController = HostRequestAllowViewController(viewModel: HostRequestAllowViewModel(applicantProfileImageUrl: applicantProfileImageUrl, applicantName: applicantName, locationName: locationName, meetingAt: meetingAt, matchId: matchId, postType: postType, openChatUrl: openChatUrl, matchingRepository: matchingRepository))
         viewController.onRoute = onRoute
         viewController.hidesBottomBarWhenPushed = true
         return viewController

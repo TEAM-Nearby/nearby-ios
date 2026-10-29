@@ -223,6 +223,7 @@ final class RecruitCompanionTopView: BaseView {
     }
 
     func update(state: RecruitCompanionViewModel.State) {
+        datePicker.updateTimeZone(state.placeTimeZone)
         let isNow = state.meetingTimeType == .now
         nowButton.setSelected(isNow)
         timeButton.setSelected(!isNow)

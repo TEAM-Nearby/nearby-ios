@@ -158,8 +158,8 @@ private extension MatchedCompanionTimeType {
 
 private extension String {
     var uploadedTimeTitle: String {
-        guard let date = isoDate else { return self }
-        let elapsedTime = abs(date.timeIntervalSinceNow)
+        guard let date = NearbyDateParser.parseInstant(self) else { return self }
+        let elapsedTime = max(0, Date().timeIntervalSince(date))
         let minute = Int(elapsedTime / 60)
         
         if minute < 1 {
@@ -180,40 +180,8 @@ private extension String {
     }
     
     var meetingTimeTitle: String {
-        guard let date = isoDate else { return self }
-        return date.timeDisplayText
+        return NearbyDateParser.reservationText(self, hourFormat: "a h시", minuteFormat: "a h시 m분") ?? self
     }
     
-    var isoDate: Date? {
-        let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = isoFormatter.date(from: self) {
-            return date
-        }
-        
-        isoFormatter.formatOptions = [.withInternetDateTime]
-        if let date = isoFormatter.date(from: self) {
-            return date
-        }
-        
-        let localFormatter = DateFormatter()
-        localFormatter.locale = Locale(identifier: "en_US_POSIX")
-        localFormatter.timeZone = .nearbyAPITimeZone
 
-        let dateFormats = [
-            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
-            "yyyy-MM-dd'T'HH:mm:ss.SSS",
-            "yyyy-MM-dd'T'HH:mm:ss",
-            "yyyy-MM-dd'T'HH:mm"
-        ]
-        
-        for dateFormat in dateFormats {
-            localFormatter.dateFormat = dateFormat
-            if let date = localFormatter.date(from: self) {
-                return date
-            }
-        }
-        
-        return nil
-    }
 }

@@ -48,6 +48,7 @@ final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
         let selectedPlaceID: String?
         let selectedPlaceLatitude: Double?
         let selectedPlaceLongitude: Double?
+        let placeTimeZone: TimeZone
         let content: String
         let openChatURL: String
         let isSubmitting: Bool
@@ -62,6 +63,7 @@ final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
             selectedPlaceID: nil,
             selectedPlaceLatitude: nil,
             selectedPlaceLongitude: nil,
+            placeTimeZone: .nearbyFallbackTimeZone,
             content: "",
             openChatURL: "",
             isSubmitting: false
@@ -214,6 +216,11 @@ final class RecruitCompanionViewModel: BaseViewModelType, RequestRunning {
                 selectedPlaceID: draft.selectedPlaceID,
                 selectedPlaceLatitude: draft.selectedPlaceLatitude,
                 selectedPlaceLongitude: draft.selectedPlaceLongitude,
+                placeTimeZone: draft.selectedPlaceLatitude.flatMap { latitude in
+                    draft.selectedPlaceLongitude.map { longitude in
+                        TimeZone.nearbyPlaceTimeZone(latitude: latitude, longitude: longitude)
+                    }
+                } ?? .nearbyFallbackTimeZone,
                 content: draft.content,
                 openChatURL: draft.openChatURL,
                 isSubmitting: isSubmitting

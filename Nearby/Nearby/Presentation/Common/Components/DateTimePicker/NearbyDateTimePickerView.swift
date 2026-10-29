@@ -21,7 +21,12 @@ final class NearbyDateTimePickerView: BaseView {
 
     var dateDidChange: ((Date) -> Void)?
     
-    private let calendar = Calendar.current
+    private var timeZone = TimeZone.nearbyFallbackTimeZone
+    private var calendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return calendar
+    }
     private let months = Array(1...12)
     private let hours = Array(0...23)
     private let minutes = stride(from: 0, through: 55, by: 5).map { $0 }
@@ -54,8 +59,10 @@ final class NearbyDateTimePickerView: BaseView {
     // MARK: - Initializer
 
     init(date: Date = Date()) {
-        let roundedDate = Self.nextSelectableDate(from: date)
-        let components = Calendar.current.dateComponents([.month, .day, .hour, .minute], from: roundedDate)
+        let roundedDate = Self.nextSelectableDate(from: date, timeZone: .nearbyFallbackTimeZone)
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .nearbyFallbackTimeZone
+        let components = calendar.dateComponents([.month, .day, .hour, .minute], from: roundedDate)
         selectedMonth = components.month ?? 1
         selectedDay = components.day ?? 1
         selectedHour = components.hour ?? 0
@@ -112,6 +119,15 @@ final class NearbyDateTimePickerView: BaseView {
     
     // MARK: - Methods
 
+    func updateTimeZone(_ newTimeZone: TimeZone) {
+        guard timeZone.identifier != newTimeZone.identifier else { return }
+        timeZone = newTimeZone
+        updateSelection(from: Self.nextSelectableDate(timeZone: newTimeZone))
+        pickerView.reloadAllComponents()
+        setPickerPosition()
+        dateDidChange?(selectedDate)
+    }
+
     private func setPickerPosition() {
         pickerView.do {
             $0.selectRow(selectedMonth - 1, inComponent: 0, animated: false)
@@ -132,7 +148,7 @@ final class NearbyDateTimePickerView: BaseView {
     private func clampSelectionToFutureIfNeeded() {
         guard calendar.compare(selectedDate, to: Date(), toGranularity: .minute) == .orderedAscending else { return }
 
-        updateSelection(from: Self.nextSelectableDate())
+        updateSelection(from: Self.nextSelectableDate(timeZone: timeZone))
         pickerView.reloadAllComponents()
         setPickerPosition()
     }
@@ -167,8 +183,9 @@ final class NearbyDateTimePickerView: BaseView {
         }
     }
 
-    private static func nextSelectableDate(from date: Date = Date()) -> Date {
-        let calendar = Calendar.current
+    private static func nextSelectableDate(from date: Date = Date(), timeZone: TimeZone) -> Date {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
         let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         let minute = components.minute ?? 0
         let remainder = minute % 5

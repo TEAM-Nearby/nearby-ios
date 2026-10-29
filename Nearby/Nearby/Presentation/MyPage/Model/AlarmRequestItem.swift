@@ -60,7 +60,7 @@ struct AlarmRequestItem: Identifiable {
 
         placeName = dto.placeName ?? "장소 미정"
         meetingAt = dto.meetingAt ?? ""
-        dateText = dto.meetingAt?.toDate()?.alarmMeetingDisplayText ?? "시간 미정"
+        dateText = NearbyDateParser.reservationText(dto.meetingAt, hourFormat: "yyyy년 M월 d일 예정", minuteFormat: "yyyy년 M월 d일 예정") ?? "시간 미정"
 
         matchId = dto.matchId
         actionType = dto.actionType

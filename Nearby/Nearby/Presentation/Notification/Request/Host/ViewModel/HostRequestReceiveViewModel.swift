@@ -107,7 +107,7 @@ final class HostRequestReceiveViewModel: BaseViewModelType, RequestRunning {
                     title: "함께 동행을 원하는 분이 있어요",
                     subtitle: "대화를 나눈 후 일정을 확정해보세요",
                     location: DTO.placeName,
-                    date: DTO.meetingAt.toDate()?.meetingDisplayText ?? ""
+                    date: NearbyDateParser.reservationText(DTO.meetingAt, hourFormat: "M월 d일 (E) a h시", minuteFormat: "M월 d일 (E) a h시 m분") ?? ""
                 )
                 applicantNickname = DTO.applicantProfile.nickname.displayNickname
                 applicantProfileImageURL = DTO.applicantProfile.profileImageUrl

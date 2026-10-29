@@ -39,14 +39,14 @@ extension CompanionMapper {
             ),
             contentPreview: dto.contentPreview,
             meetingTimeType: mapMeetingTimeType(dto.meetingTimeType),
-            meetingAt: CompanionDateParser.parse(dto.meetingAt),
+            meetingAt: NearbyDateParser.parseLocal(dto.meetingAt, timeZoneID: "UTC"),
             meetingAtText: dto.meetingAtText,
             participantCount: dto.participantCount,
             participants: dto.participants.map {
                 CompanionParticipant(userID: $0.userId, profileImageURL: $0.profileImageUrl)
             },
             participantSummaryText: dto.participantSummaryText,
-            createdAt: CompanionDateParser.parse(dto.createdAt),
+            createdAt: NearbyDateParser.parseInstant(dto.createdAt),
             createdAgoText: dto.createdAgoText
         )
     }
@@ -77,35 +77,5 @@ extension CompanionMapper {
         case "UNDECIDED": .undecided
         default: .unknown
         }
-    }
-}
-
-enum CompanionDateParser {
-    static func parse(_ value: String?) -> Date? {
-        guard let value else { return nil }
-
-        let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = isoFormatter.date(from: value) {
-            return date
-        }
-
-        isoFormatter.formatOptions = [.withInternetDateTime]
-        if let date = isoFormatter.date(from: value) {
-            return date
-        }
-
-        let localFormatter = DateFormatter()
-        localFormatter.locale = Locale(identifier: "en_US_POSIX")
-        localFormatter.timeZone = .nearbyAPITimeZone
-
-        for dateFormat in ["yyyy-MM-dd'T'HH:mm:ss.SSSSSS", "yyyy-MM-dd'T'HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm"] {
-            localFormatter.dateFormat = dateFormat
-            if let date = localFormatter.date(from: value) {
-                return date
-            }
-        }
-
-        return nil
     }
 }

@@ -53,11 +53,13 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     private let matchId: Int?
     private let postType: PostType
     private let profileImageUrl: String?
+    private let matchingRepository: MatchedCompanionListRepository
+    private var scheduleTask: Task<Void, Never>?
     let openChatURLString: String
 
     // MARK: - Initializer
 
-    init(applicantProfileImageUrl: String?, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String) {
+    init(applicantProfileImageUrl: String?, applicantName: String, locationName: String, meetingAt: String, matchId: Int?, postType: PostType, openChatUrl: String, matchingRepository: MatchedCompanionListRepository) {
         self.profileImageUrl = applicantProfileImageUrl
         self.applicantName = applicantName
         self.locationName = locationName
@@ -65,6 +67,11 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         self.matchId = matchId
         self.postType = postType
         self.openChatURLString = openChatUrl
+        self.matchingRepository = matchingRepository
+    }
+
+    deinit {
+        scheduleTask?.cancel()
     }
     
     // MARK: - Action
@@ -72,14 +79,7 @@ final class HostRequestAllowViewModel: BaseViewModelType {
     func action(_ trigger: Input) {
         switch trigger {
         case .viewDidLoad:
-            let data = DisplayData(
-                profileImageUrl: profileImageUrl,
-                title: "\(applicantName) 님과 동행이 매칭됐어요!",
-                location: "\(locationName)",
-                date: meetingAt.toDate()?.meetingDisplayText ?? "",
-                chatTitle: "\(applicantName) 님과 대화를 나눠보세요"
-            )
-            output.displayData.send(data)
+            fetchConfirmedSchedule()
             
         case .confirmButtonDidTap:
             switch output.step.value {
@@ -104,6 +104,43 @@ final class HostRequestAllowViewModel: BaseViewModelType {
         case .chatHelpButtonDidTap:
             sendChatLinkPopup()
         }
+    }
+
+    // MARK: - Methods
+
+    private func fetchConfirmedSchedule() {
+        guard let matchId else {
+            output.displayData.send(makeDisplayData(meetingAt: meetingAt, locationName: locationName))
+            return
+        }
+
+        scheduleTask?.cancel()
+        scheduleTask = Task { [weak self] in
+            guard let self else { return }
+            let schedule: MatchedCompanionScheduleDetail.Schedule?
+            do {
+                let detail = try await matchingRepository.fetchMatchMySchedule(matchId: matchId)
+                schedule = detail.schedule
+            } catch {
+                schedule = nil
+                AppLogger.error(error, message: "확정된 동행 일정을 불러오지 못했습니다.")
+            }
+            guard !Task.isCancelled else { return }
+            output.displayData.send(makeDisplayData(
+                meetingAt: schedule?.scheduledAt ?? meetingAt,
+                locationName: schedule?.place.name ?? locationName
+            ))
+        }
+    }
+
+    private func makeDisplayData(meetingAt: String, locationName: String) -> DisplayData {
+        DisplayData(
+            profileImageUrl: profileImageUrl,
+            title: "\(applicantName) 님과 동행이 매칭됐어요!",
+            location: locationName,
+            date: NearbyDateParser.reservationText(meetingAt, hourFormat: "M월 d일 (E) a h시", minuteFormat: "M월 d일 (E) a h시 m분") ?? "",
+            chatTitle: "\(applicantName) 님과 대화를 나눠보세요"
+        )
     }
 }
 

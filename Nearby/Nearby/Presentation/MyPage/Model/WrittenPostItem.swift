@@ -96,7 +96,7 @@ extension WrittenPostItem {
 private extension WrittenPostItem {
     static func meetingDateText(_ date: Date, timeZoneID: String?) -> String {
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
+        calendar.timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyFallbackTimeZone
         let minute = calendar.component(.minute, from: date)
         let formatString = minute == 0 ? "M월 d일 (E) a h시" : "M월 d일 (E) a h시 m분"
         return formatDate(date, format: formatString, timeZoneID: timeZoneID)
@@ -105,7 +105,7 @@ private extension WrittenPostItem {
     static func formatDate(_ date: Date, format: String, timeZoneID: String?) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
-        formatter.timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
+        formatter.timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyFallbackTimeZone
         formatter.dateFormat = format
         return formatter.string(from: date)
     }

@@ -103,6 +103,8 @@ final class MeetingTabViewModel: BaseViewModelType {
             gender: meeting.companion.gender.genderDisplayText,
             profileImageUrl: meeting.companion.profileImageURL,
             information: MeetingItem.makeInformation(placeName: meeting.placeName, meetingDate: meeting.meetingAt, timeZoneID: meeting.timeZoneID),
+            cityName: NearbyCity.koreanName(for: meeting.city),
+            placeName: meeting.placeName,
             meetingDate: meeting.meetingAt,
             postType: meeting.meetingTimeType,
             isCheckedIn: meeting.isCheckedIn

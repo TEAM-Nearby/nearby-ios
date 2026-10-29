@@ -182,6 +182,10 @@ final class NearbyTextView: BaseView {
         placeholderLabel.isHidden = isHidden
     }
 
+    func setPlaceholder(_ text: String) {
+        placeholderLabel.text = text
+    }
+
     func clearText() {
         textView.text = nil
         placeholderLabel.isHidden = false

@@ -76,8 +76,8 @@ final class MeetingProgressViewController: BaseViewController<MeetingProgressVie
             .receive(on: DispatchQueue.main)
             .sink { [weak self] route in
                 switch route {
-                case .hostReviewList(let meetingId):
-                    self?.onRoute?(.hostReviewList(meetingId))
+                case .hostReviewList(let meeting):
+                    self?.onRoute?(.hostReviewList(meeting))
                 case .participantReview(let item):
                     self?.onRoute?(.participantReview(item))
                 }

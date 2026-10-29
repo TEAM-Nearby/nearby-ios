@@ -41,7 +41,7 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
 
     let output = Output()
 
-    private let meetingId: Int
+    private let meeting: ReviewMeetingInfo
     private let repository: ReviewRepository
     private let myPageRepository: MyPageRepository
     private let eventCenter: MeetingEventCenter
@@ -57,8 +57,8 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
 
     // MARK: - Initializer
 
-    init(meetingId: Int, repository: ReviewRepository, myPageRepository: MyPageRepository, eventCenter: MeetingEventCenter) {
-        self.meetingId = meetingId
+    init(meeting: ReviewMeetingInfo, repository: ReviewRepository, myPageRepository: MyPageRepository, eventCenter: MeetingEventCenter) {
+        self.meeting = meeting
         self.repository = repository
         self.myPageRepository = myPageRepository
         self.eventCenter = eventCenter
@@ -92,7 +92,7 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
         Task {
             do {
                 async let myPage = myPageRepository.fetchMyPage()
-                let reviewTargets = try await repository.fetchReviewTargets(meetingId: meetingId)
+                let reviewTargets = try await repository.fetchReviewTargets(meetingId: meeting.meetingId)
                 let reviewees = reviewTargets.reviewees
                 let myProfileImageUrl = (try? await myPage)?.profileImageUrl
 
@@ -103,15 +103,15 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
                     output.headerInfo.send(
                         HeaderInfo(
                             people: people,
-                            information: first.meetingDisplayDate,
-                            location: first.cityName,
+                            information: ReviewItem.makeInformation(cityName: meeting.cityName, dateText: first.meetingDisplayDate),
+                            location: meeting.placeName,
                             avatarImageUrls: [myProfileImageUrl] + reviewees.map(\.profileImageURL)
                         )
                     )
                 }
 
                 output.reviewedIDs.send(Set(reviewees.filter(\.hasWrittenReview).map(\.userID)))
-                output.items.send(reviewees.map { ReviewItem(reviewee: $0, meetingId: meetingId) })
+                output.items.send(reviewees.map { ReviewItem(reviewee: $0, meeting: meeting) })
             } catch {
                 AppLogger.error(error)
             }
@@ -126,7 +126,7 @@ final class HostReviewListViewModel: BaseViewModelType, RequestRunning {
                 isCompleting = true
             },
             operation: { [self] in
-                try await repository.completeMeeting(meetingId: meetingId)
+                try await repository.completeMeeting(meetingId: meeting.meetingId)
             },
             onSuccess: { [self] completion in
                 eventCenter.notifyCompleted(matchId: completion.matchID)

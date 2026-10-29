@@ -17,15 +17,22 @@ struct ReviewItem {
 }
 
 extension ReviewItem {
-    init(reviewee: Reviewee, meetingId: Int) {
+    init(reviewee: Reviewee, meeting: ReviewMeetingInfo) {
         self.init(
             id: reviewee.userID,
-            meetingId: meetingId,
+            meetingId: meeting.meetingId,
             revieweeUserId: reviewee.userID,
             profileImageUrl: reviewee.profileImageURL,
             name: reviewee.nickname.displayNickname,
-            information: "\(reviewee.cityName) · \(reviewee.meetingDisplayDate)"
+            information: Self.makeInformation(cityName: meeting.cityName, dateText: reviewee.meetingDisplayDate)
         )
+    }
+
+    static func makeInformation(cityName: String?, dateText: String) -> String {
+        [cityName, dateText]
+            .compactMap { $0 }
+            .filter { !$0.isEmpty }
+            .joined(separator: " · ")
     }
 }
 

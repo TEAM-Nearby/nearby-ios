@@ -22,7 +22,6 @@ struct ReviewTargetDTO: Decodable {
     let revieweeUserId: Int
     let profileImageUrl: String?
     let nickname: String
-    let cityName: String
     let meetingDate: String
     let isCheckedIn: Bool
     let hasWrittenReview: Bool

@@ -38,7 +38,6 @@ enum ReviewMapper {
             userID: dto.revieweeUserId,
             nickname: dto.nickname,
             profileImageURL: dto.profileImageUrl,
-            cityName: dto.cityName,
             meetingDate: DateFormatter.cached(format: "yyyy-MM-dd").date(from: dto.meetingDate),
             isCheckedIn: dto.isCheckedIn,
             hasWrittenReview: dto.hasWrittenReview

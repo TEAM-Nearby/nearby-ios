@@ -121,21 +121,27 @@ extension PushNotificationManager: MessagingDelegate {
 extension PushNotificationManager: UNUserNotificationCenterDelegate {
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification
-    ) async -> UNNotificationPresentationOptions {
-        await MainActor.run {
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        Task { @MainActor in
             NotificationCenter.default.post(name: .companionNotificationDidChange, object: nil)
         }
-        return [.banner, .list, .sound]
+        completionHandler([.banner, .list, .sound])
     }
 
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse
-    ) async {
-        guard let route = PushNotificationRoute(userInfo: response.notification.request.content.userInfo) else { return }
-        await MainActor.run {
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        guard let route = PushNotificationRoute(userInfo: response.notification.request.content.userInfo) else {
+            completionHandler()
+            return
+        }
+        Task { @MainActor in
             handle(route)
+            completionHandler()
         }
     }
 }

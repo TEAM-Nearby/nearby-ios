@@ -57,17 +57,8 @@ extension MeetingTabCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showReview(type: NearbyUserType, item: ReviewItem) {
-        switch type {
-        case .host:
-            showHostReviewList(meetingId: item.meetingId)
-        case .participant:
-            showReviewPost(for: item, type: type, isLast: false, onSaved: nil)
-        }
-    }
-    
-    func showHostReviewList(meetingId: Int) {
-        let viewController = diContainer.meeting.makeHostReviewListViewController(meetingId: meetingId) { [weak self] route in
+    func showHostReviewList(meeting: ReviewMeetingInfo) {
+        let viewController = diContainer.meeting.makeHostReviewListViewController(meeting: meeting) { [weak self] route in
             self?.handle(route)
         }
         hostReviewListViewController = viewController
@@ -156,9 +147,9 @@ private extension MeetingTabCoordinator {
         case .dismissReport:
             dismissReportFlow()
         case .participantReview(let item):
-            showReview(type: .participant, item: item)
-        case .hostReviewList(let meetingId):
-            showHostReviewList(meetingId: meetingId)
+            showReviewPost(for: item, type: .participant, isLast: false, onSaved: nil)
+        case .hostReviewList(let meeting):
+            showHostReviewList(meeting: meeting)
         case .hostReview(let item, let isLast):
             showReviewPost(for: item, type: .host, isLast: isLast) { [weak self] in
                 self?.hostReviewListViewController?.reviewDidSave(item)

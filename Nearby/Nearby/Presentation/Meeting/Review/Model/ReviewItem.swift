@@ -38,6 +38,14 @@ extension ReviewItem {
 
 extension Reviewee {
     var meetingDisplayDate: String {
-        meetingDate?.toFormattedString("yyyy년 M월 d일") ?? ""
+        let components = meetingDate.split(separator: "-")
+        guard components.count == 3,
+              let year = Int(components[0]),
+              let month = Int(components[1]),
+              let day = Int(components[2]),
+              (1...12).contains(month), (1...31).contains(day) else {
+            return meetingDate
+        }
+        return "\(year)년 \(month)월 \(day)일"
     }
 }

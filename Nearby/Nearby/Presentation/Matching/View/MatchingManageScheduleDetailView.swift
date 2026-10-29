@@ -19,6 +19,8 @@ final class MatchingManageScheduleDetailView: BaseView {
     var dateDidChange: ((Date) -> Void)?
     var confirmButtonAction: (() -> Void)?
     private var isDatePickerVisible = false
+    private var isConfiguringDatePicker = false
+    private var hasConfiguredDatePicker = false
     private var matchedCardViewHeightConstraint: Constraint?
     private var placeTitleTopFromDateAndTimeButtonConstraint: Constraint?
     private var placeTitleTopFromDatePickerConstraint: Constraint?
@@ -86,8 +88,7 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.backgroundColor = .white
             $0.datePickerMode = .dateAndTime
             $0.preferredDatePickerStyle = .inline
-            $0.minuteInterval = 5
-            $0.minimumDate = Date()
+            $0.minuteInterval = 1
             $0.locale = Locale(identifier: "ko_KR")
             $0.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             $0.tintColor = .btnPrimaryBg
@@ -255,8 +256,11 @@ final class MatchingManageScheduleDetailView: BaseView {
                 displayMode: .scheduleDetail
             )
         )
+        isConfiguringDatePicker = true
         datePicker.timeZone = output.timeZone
         datePicker.date = output.selectedDate
+        isConfiguringDatePicker = false
+        hasConfiguredDatePicker = true
         placeDetailLabel.setFont(.b3M14, text: output.placeAddress, textColor: .grey30)
         mapView.configure(latitude: output.latitude, longitude: output.longitude, placeName: output.placeName, placeID: output.googlePlaceId)
         updateDateAndTimeButtonTitle(output.dateButtonTitle)
@@ -302,6 +306,7 @@ final class MatchingManageScheduleDetailView: BaseView {
 
     @objc
     private func datePickerValueDidChange() {
+        guard hasConfiguredDatePicker, isDatePickerVisible, !isConfiguringDatePicker else { return }
         dateDidChange?(datePicker.date)
     }
 

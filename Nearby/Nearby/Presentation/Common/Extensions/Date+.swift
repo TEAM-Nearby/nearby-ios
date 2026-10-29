@@ -39,7 +39,7 @@ enum NearbyDateParser {
     }
 
     static func parseLocal(_ value: String?, timeZoneID: String?) -> Date? {
-        parseLocal(value, timeZone: timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone)
+        parseLocal(value, timeZone: timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyFallbackTimeZone)
     }
 
     private static func parseLocal(_ value: String?, timeZone: TimeZone?) -> Date? {
@@ -105,6 +105,8 @@ extension Date {
 }
 
 extension TimeZone {
+    static let nearbyFallbackTimeZone = TimeZone(secondsFromGMT: 0)!
+
     static var nearbyAPITimeZone: TimeZone {
         TimeZone(identifier: "Asia/Seoul") ?? current
     }

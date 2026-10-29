@@ -93,7 +93,7 @@ private extension MatchingScheduleDetailMapper {
     }
 
     static func format(_ date: Date, timeZoneID: String?, hourFormat: String, minuteFormat: String) -> String {
-        let timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
+        let timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyFallbackTimeZone
         let minute = Calendar(identifier: .gregorian).dateComponents(in: timeZone, from: date).minute
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")

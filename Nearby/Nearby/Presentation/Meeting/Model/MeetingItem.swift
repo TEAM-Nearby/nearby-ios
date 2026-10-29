@@ -49,7 +49,7 @@ struct MeetingItem {
     
     static func makeInformation(placeName: String, meetingDate: Date?, timeZoneID: String? = nil) -> String {
         let timeText = meetingDate.map { date in
-            let timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyAPITimeZone
+            let timeZone = timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyFallbackTimeZone
             let calendar = Calendar(identifier: .gregorian)
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "ko_KR")

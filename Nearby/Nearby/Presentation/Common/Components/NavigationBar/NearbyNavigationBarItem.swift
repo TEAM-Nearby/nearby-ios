@@ -11,6 +11,7 @@ enum NearbyNavigationBarItem: Equatable {
     case back
     case down
     case alarm
+    case alarmDot
     case alarmPoint
     case setting
     case alarmButton
@@ -29,6 +30,8 @@ extension NearbyNavigationBarItem {
             return .chevronDownIcon
         case .alarm:
             return .alarmIcon
+        case .alarmDot:
+            return .alarmIconDot.withRenderingMode(.alwaysOriginal)
         case .setting:
             return .settingIcon
         case .alarmButton:

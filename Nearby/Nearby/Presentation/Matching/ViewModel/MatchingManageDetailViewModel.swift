@@ -39,6 +39,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType, RequestRunning {
         let longitude: Double
         let selectedDate: Date
         let dateButtonTitle: String
+        let timeZone: TimeZone
     }
 
     // MARK: - Properties
@@ -92,7 +93,7 @@ final class MatchingManageDetailViewModel: BaseViewModelType, RequestRunning {
 
         case .dateDidChange(let date):
             selectedDate = date
-            output.dateButtonTitle.send(selectedDate.displayDateString)
+            output.dateButtonTitle.send(dateButtonTitle)
 
         case .confirmButtonDidTap:
             confirmSchedule()
@@ -100,6 +101,18 @@ final class MatchingManageDetailViewModel: BaseViewModelType, RequestRunning {
     }
 
     // MARK: - Methods
+
+    private var scheduleTimeZone: TimeZone {
+        displayData.timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .nearbyFallbackTimeZone
+    }
+
+    private var dateButtonTitle: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = scheduleTimeZone
+        formatter.dateFormat = "yyyy-MM-dd  HH:mm"
+        return formatter.string(from: selectedDate)
+    }
 
     private func makeDisplayData() -> DisplayData {
         return DisplayData(
@@ -109,7 +122,8 @@ final class MatchingManageDetailViewModel: BaseViewModelType, RequestRunning {
             googlePlaceId: displayData.googlePlaceId,
             latitude: displayData.latitude,
             longitude: displayData.longitude,
-            selectedDate: selectedDate, dateButtonTitle: selectedDate.displayDateString
+            selectedDate: selectedDate, dateButtonTitle: dateButtonTitle,
+            timeZone: scheduleTimeZone
         )
     }
 
@@ -132,12 +146,11 @@ final class MatchingManageDetailViewModel: BaseViewModelType, RequestRunning {
     }
 
     private func makeScheduledAt() -> String {
-        let normalizedDate = Calendar.current.date(
-            bySetting: .second,
-            value: 0,
-            of: selectedDate
-        ) ?? selectedDate
-        return normalizedDate.apiDateString
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = scheduleTimeZone
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:00"
+        return formatter.string(from: selectedDate)
     }
     
     private func fetchDisplayData() {
@@ -167,14 +180,5 @@ final class MatchingManageDetailViewModel: BaseViewModelType, RequestRunning {
                 AppLogger.error(error, message: "매칭 상세 조회에 실패했습니다.")
             }
         }
-    }
-}
-
-private extension Date {
-    var displayDateString: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy-MM-dd  HH:mm"
-        return formatter.string(from: self)
     }
 }

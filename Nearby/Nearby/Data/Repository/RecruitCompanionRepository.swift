@@ -63,7 +63,9 @@ extension DefaultRecruitCompanionRepository: RecruitCompanionRepository {
                 category: submission.place.category
             ),
             meetingTimeType: submission.meetingAt == nil ? .now : .scheduled,
-            meetingAt: submission.meetingAt?.apiDateString,
+            meetingAt: submission.meetingAt?.nearbyReservationRequestString(
+                timeZone: .nearbyPlaceTimeZone(latitude: submission.place.latitude, longitude: submission.place.longitude)
+            ),
             recruitmentCapacity: submission.maxParticipants,
             departEvenIfNotFull: true,
             styleKeywords: submission.styleKeywords,

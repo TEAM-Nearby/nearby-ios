@@ -255,6 +255,7 @@ final class MatchingManageScheduleDetailView: BaseView {
                 displayMode: .scheduleDetail
             )
         )
+        datePicker.timeZone = output.timeZone
         datePicker.date = output.selectedDate
         placeDetailLabel.setFont(.b3M14, text: output.placeAddress, textColor: .grey30)
         mapView.configure(latitude: output.latitude, longitude: output.longitude, placeName: output.placeName, placeID: output.googlePlaceId)

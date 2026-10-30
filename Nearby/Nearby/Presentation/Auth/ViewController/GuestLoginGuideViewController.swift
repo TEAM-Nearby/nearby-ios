@@ -27,17 +27,12 @@ final class GuestLoginGuideViewController: BaseViewController<EmptyViewModel> {
         sheetPresentationController?.do {
             $0.detents = [.custom { [weak self] context in
                 guard let self else { return nil }
-                self.loadViewIfNeeded()
-                let width = self.view.bounds.width > 0
-                    ? self.view.bounds.width
-                    : (self.presentingViewController?.view.bounds.width ?? 0)
+                loadViewIfNeeded()
+                let width = view.bounds.width > 0 ? view.bounds.width : (presentingViewController?.view.bounds.width ?? 0)
                 guard width > 0 else { return nil }
-                let size = self.guideView.systemLayoutSizeFitting(
-                    CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
-                    withHorizontalFittingPriority: .required,
-                    verticalFittingPriority: .fittingSizeLevel
-                )
-                return min(size.height - self.guideView.safeAreaInsets.bottom, context.maximumDetentValue)
+                let size = guideView.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
+                                                             withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+                return min(size.height - guideView.safeAreaInsets.bottom, context.maximumDetentValue)
             }]
             $0.prefersGrabberVisible = false
             $0.preferredCornerRadius = 24

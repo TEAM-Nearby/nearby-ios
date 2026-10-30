@@ -32,3 +32,7 @@ final class ReportCompletionViewController: BaseViewController<EmptyViewModel> {
         }
     }
 }
+
+// MARK: - SwipeBackDisabled
+
+extension ReportCompletionViewController: SwipeBackDisabled {}

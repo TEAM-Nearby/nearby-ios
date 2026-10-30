@@ -244,7 +244,6 @@ final class DiningInfoSheetView: BaseView {
         placeStackView.snp.makeConstraints {
             $0.top.equalTo(timeStackView.snp.bottom).offset(12)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(NearbyFont.b3M14.property.lineHeight * 2)
         }
         
         phoneStackView.snp.makeConstraints {

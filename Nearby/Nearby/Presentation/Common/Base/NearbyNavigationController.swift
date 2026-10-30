@@ -7,6 +7,14 @@
 
 import UIKit
 
+protocol SwipeBackDisabled {
+    var isSwipeBackDisabled: Bool { get }
+}
+
+extension SwipeBackDisabled {
+    var isSwipeBackDisabled: Bool { true }
+}
+
 final class NearbyNavigationController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,6 +26,6 @@ final class NearbyNavigationController: UINavigationController {
 
 extension NearbyNavigationController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        viewControllers.count > 1 && transitionCoordinator == nil
+        viewControllers.count > 1 && transitionCoordinator == nil && (topViewController as? SwipeBackDisabled)?.isSwipeBackDisabled != true
     }
 }

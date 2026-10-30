@@ -123,12 +123,12 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
     @objc
     private func keyboardWillShow(_ notification: Notification) {
         guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-        reportPostView.revealDetailInput(keyboardFrame: keyboardFrame)
+        reportPostView.adjustForKeyboard(frame: keyboardFrame)
     }
 
     @objc
     private func keyboardWillHide() {
-        reportPostView.restoreContentOffset()
+        reportPostView.resetKeyboardAdjustment()
     }
 }
 

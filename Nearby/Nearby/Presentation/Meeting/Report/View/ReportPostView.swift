@@ -31,10 +31,9 @@ final class ReportPostView: BaseView {
     
     // MARK: - Properties
     
-    private static let buttonKeyboardSpacing: CGFloat = 16
     private static let scrollViewButtonSpacing: CGFloat = 12
     private static let contentBottomInset: CGFloat = 24
-    private static let revealBottomSpacing: CGFloat = 8
+    private static let keyboardSpacing: CGFloat = 20
     
     private var contentOffsetBeforeReveal: CGPoint?
     
@@ -144,13 +143,8 @@ final class ReportPostView: BaseView {
         reportButton.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
-            $0.bottom.equalTo(safeAreaLayoutGuide).priority(.high)
+            $0.bottom.equalTo(safeAreaLayoutGuide)
         }
-        
-        keyboardLayoutGuide.setConstraints(
-            [reportButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -Self.buttonKeyboardSpacing)],
-            activeWhenAwayFrom: .bottom
-        )
     }
     
     override func setAddTarget() {
@@ -172,12 +166,15 @@ final class ReportPostView: BaseView {
         return !(touchedView is UIControl) && !touchedView.isDescendant(of: reasonTextView)
     }
 
-    func revealDetailInput(keyboardFrame: CGRect) {
-        guard reasonTextView.textView.isFirstResponder else { return }
+    func adjustForKeyboard(frame keyboardFrame: CGRect) {
         let keyboardTop = convert(keyboardFrame, from: nil).minY
-        let scrollViewBottom = keyboardTop - Self.buttonKeyboardSpacing - reportButton.bounds.height - Self.scrollViewButtonSpacing
-        let visibleHeight = scrollViewBottom - scrollView.frame.minY
-        let targetOffsetY = reasonTextView.frame.maxY + Self.revealBottomSpacing - visibleHeight
+        let overlap = max(0, scrollView.frame.maxY - keyboardTop)
+        scrollView.contentInset.bottom = overlap
+        scrollView.verticalScrollIndicatorInsets.bottom = overlap
+
+        guard reasonTextView.textView.isFirstResponder else { return }
+        let visibleHeight = keyboardTop - Self.keyboardSpacing - scrollView.frame.minY
+        let targetOffsetY = reasonTextView.frame.maxY - visibleHeight
         guard targetOffsetY > scrollView.contentOffset.y else { return }
         if contentOffsetBeforeReveal == nil {
             contentOffsetBeforeReveal = scrollView.contentOffset
@@ -185,7 +182,9 @@ final class ReportPostView: BaseView {
         scrollView.setContentOffset(CGPoint(x: 0, y: targetOffsetY), animated: true)
     }
 
-    func restoreContentOffset() {
+    func resetKeyboardAdjustment() {
+        scrollView.contentInset.bottom = 0
+        scrollView.verticalScrollIndicatorInsets.bottom = 0
         guard let offset = contentOffsetBeforeReveal else { return }
         contentOffsetBeforeReveal = nil
         scrollView.setContentOffset(offset, animated: true)

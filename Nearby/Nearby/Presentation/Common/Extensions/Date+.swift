@@ -19,7 +19,7 @@ enum NearbyDateParser {
 
     static func reservationText(_ value: String?, hourFormat: String, minuteFormat: String) -> String? {
         guard let date = parseLocal(value, timeZoneID: "UTC") else { return nil }
-        let timeZone = TimeZone(secondsFromGMT: 0)!
+        let timeZone = TimeZone.nearbyFallbackTimeZone
         let minute = Calendar(identifier: .gregorian).dateComponents(in: timeZone, from: date).minute
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
@@ -107,7 +107,7 @@ extension Date {
 }
 
 extension TimeZone {
-    static let nearbyFallbackTimeZone = TimeZone(secondsFromGMT: 0)!
+    static let nearbyFallbackTimeZone = TimeZone(secondsFromGMT: 0) ?? TimeZone(identifier: "UTC") ?? .current
 
     static func nearbyPlaceTimeZone(latitude: Double, longitude: Double) -> TimeZone {
         let place = CLLocation(latitude: latitude, longitude: longitude)

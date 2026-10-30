@@ -132,3 +132,7 @@ final class MatchingScheduleDetailViewController: BaseViewController<MatchingSch
         }
     }
 }
+
+// MARK: - SwipeBackDisabled
+
+extension MatchingScheduleDetailViewController: SwipeBackDisabled {}

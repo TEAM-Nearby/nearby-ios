@@ -19,6 +19,8 @@ final class MatchingManageScheduleDetailView: BaseView {
     var dateDidChange: ((Date) -> Void)?
     var confirmButtonAction: (() -> Void)?
     private var isDatePickerVisible = false
+    private var isConfiguringDatePicker = false
+    private var hasConfiguredDatePicker = false
     private var matchedCardViewHeightConstraint: Constraint?
     private var placeTitleTopFromDateAndTimeButtonConstraint: Constraint?
     private var placeTitleTopFromDatePickerConstraint: Constraint?
@@ -66,6 +68,7 @@ final class MatchingManageScheduleDetailView: BaseView {
 
         dateAndTimeButton.do {
             $0.contentHorizontalAlignment = .left
+            $0.isEnabled = false
         }
 
         dateAndTimeImageView.do {
@@ -86,11 +89,11 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.backgroundColor = .white
             $0.datePickerMode = .dateAndTime
             $0.preferredDatePickerStyle = .inline
-            $0.minuteInterval = 5
-            $0.minimumDate = Date()
+            $0.minuteInterval = 1
             $0.locale = Locale(identifier: "ko_KR")
             $0.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             $0.tintColor = .btnPrimaryBg
+            $0.isEnabled = false
         }
 
         placeTitleLabel.do {
@@ -112,6 +115,8 @@ final class MatchingManageScheduleDetailView: BaseView {
         confirmExplainLabel.do {
             $0.setFont(.b3M14, text: "일정을 확정하면 동행에게 알림이 가요!", textColor: .grey30)
         }
+
+        confirmButton.isEnabled = false
 
     }
 
@@ -255,14 +260,23 @@ final class MatchingManageScheduleDetailView: BaseView {
                 displayMode: .scheduleDetail
             )
         )
+        isConfiguringDatePicker = true
         datePicker.timeZone = output.timeZone
         datePicker.date = output.selectedDate
+        isConfiguringDatePicker = false
+        hasConfiguredDatePicker = true
         placeDetailLabel.setFont(.b3M14, text: output.placeAddress, textColor: .grey30)
         mapView.configure(latitude: output.latitude, longitude: output.longitude, placeName: output.placeName, placeID: output.googlePlaceId)
         updateDateAndTimeButtonTitle(output.dateButtonTitle)
     }
 
     // MARK: - Methods
+
+    func setScheduleInteractionEnabled(_ isEnabled: Bool) {
+        dateAndTimeButton.isEnabled = isEnabled
+        datePicker.isEnabled = isEnabled
+        confirmButton.isEnabled = isEnabled
+    }
 
     func updateDateAndTimeButtonTitle(_ title: String) {
         dateAndTimeButton.setPaddedTitle(
@@ -302,6 +316,7 @@ final class MatchingManageScheduleDetailView: BaseView {
 
     @objc
     private func datePickerValueDidChange() {
+        guard hasConfiguredDatePicker, isDatePickerVisible, !isConfiguringDatePicker else { return }
         dateDidChange?(datePicker.date)
     }
 

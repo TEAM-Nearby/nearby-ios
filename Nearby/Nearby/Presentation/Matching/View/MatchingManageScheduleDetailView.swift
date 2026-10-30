@@ -68,6 +68,7 @@ final class MatchingManageScheduleDetailView: BaseView {
 
         dateAndTimeButton.do {
             $0.contentHorizontalAlignment = .left
+            $0.isEnabled = false
         }
 
         dateAndTimeImageView.do {
@@ -92,6 +93,7 @@ final class MatchingManageScheduleDetailView: BaseView {
             $0.locale = Locale(identifier: "ko_KR")
             $0.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             $0.tintColor = .btnPrimaryBg
+            $0.isEnabled = false
         }
 
         placeTitleLabel.do {
@@ -113,6 +115,8 @@ final class MatchingManageScheduleDetailView: BaseView {
         confirmExplainLabel.do {
             $0.setFont(.b3M14, text: "일정을 확정하면 동행에게 알림이 가요!", textColor: .grey30)
         }
+
+        confirmButton.isEnabled = false
 
     }
 
@@ -267,6 +271,12 @@ final class MatchingManageScheduleDetailView: BaseView {
     }
 
     // MARK: - Methods
+
+    func setScheduleInteractionEnabled(_ isEnabled: Bool) {
+        dateAndTimeButton.isEnabled = isEnabled
+        datePicker.isEnabled = isEnabled
+        confirmButton.isEnabled = isEnabled
+    }
 
     func updateDateAndTimeButtonTitle(_ title: String) {
         dateAndTimeButton.setPaddedTitle(

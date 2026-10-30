@@ -87,8 +87,8 @@ private extension CompanionPost {
 
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "ko_KR")
-            formatter.timeZone = TimeZone(secondsFromGMT: 0)
-            formatter.dateFormat = Calendar(identifier: .gregorian).dateComponents(in: TimeZone(secondsFromGMT: 0)!, from: meetingAt).minute ?? 0 == 0
+            formatter.timeZone = .nearbyFallbackTimeZone
+            formatter.dateFormat = Calendar(identifier: .gregorian).dateComponents(in: .nearbyFallbackTimeZone, from: meetingAt).minute ?? 0 == 0
                 ? hourDateFormat
                 : minuteDateFormat
             return formatter.string(from: meetingAt)

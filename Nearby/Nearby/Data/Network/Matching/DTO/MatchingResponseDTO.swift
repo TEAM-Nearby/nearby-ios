@@ -28,7 +28,7 @@ struct MatchedCompanionPreviewResponseDTO: Decodable {
     let matchId: Int
     let host: Host
     let members: [Member]
-    let companionPost: CompanionPost
+    let companionPost: MatchedCompanionPostResponseDTO
 
     struct Host: Decodable {
         let hostName: String
@@ -41,26 +41,27 @@ struct MatchedCompanionPreviewResponseDTO: Decodable {
         let nickname: String
     }
 
-    struct CompanionPost: Decodable {
-        let postId: Int
-        let content: String
-        let placeName: String
-        let city: String?
-        let timeZoneID: String?
-        let currentLocalTime: String?
-        let meetingTimeType: MeetingTimeType
-        let meetingAt: String?
+}
 
-        enum CodingKeys: String, CodingKey {
-            case postId
-            case content
-            case placeName
-            case city
-            case timeZoneID = "timeZoneId"
-            case currentLocalTime
-            case meetingTimeType
-            case meetingAt
-        }
+struct MatchedCompanionPostResponseDTO: Decodable {
+    let postId: Int
+    let content: String
+    let placeName: String
+    let city: String?
+    let timeZoneID: String?
+    let currentLocalTime: String?
+    let meetingTimeType: MeetingTimeType
+    let meetingAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case postId
+        case content
+        case placeName
+        case city
+        case timeZoneID = "timeZoneId"
+        case currentLocalTime
+        case meetingTimeType
+        case meetingAt
     }
 }
 

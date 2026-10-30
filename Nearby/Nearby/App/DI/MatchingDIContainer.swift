@@ -41,10 +41,11 @@ final class MatchingDIContainer {
         return viewController
     }
 
-    func makeManageScheduleDetailViewController(matchId: Int, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
+    func makeManageScheduleDetailViewController(matchId: Int, disablesSwipeBack: Bool = false, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
         let viewModel = MatchingManageDetailViewModel(matchId: matchId, repository: matchingRepository)
         let viewController = MatchingManageDetailViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
+        viewController.isSwipeBackDisabled = disablesSwipeBack
         viewController.hidesBottomBarWhenPushed = true
         return viewController
     }

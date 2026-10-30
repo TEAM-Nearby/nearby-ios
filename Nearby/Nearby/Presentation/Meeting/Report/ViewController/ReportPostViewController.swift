@@ -69,11 +69,17 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
             }
             .store(in: &cancellables)
 
-        viewModel.output.isDetailInputEnabled
+        viewModel.output.detailPlaceholder
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isEnabled in
-                guard let self else { return }
-                reportPostView.updateDetailInput(isEnabled: isEnabled, placeholder: viewModel.detailPlaceholder)
+            .sink { [weak self] placeholder in
+                self?.reportPostView.updateDetailPlaceholder(placeholder)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.clearDetailText
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.reportPostView.clearDetailText()
             }
             .store(in: &cancellables)
         
@@ -104,14 +110,25 @@ final class ReportPostViewController: BaseViewController<ReportPostViewModel> {
             name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
     }
 
-    // MARK: - Action
+    // MARK: - Actions
 
     @objc
     private func keyboardWillShow(_ notification: Notification) {
         guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-        reportPostView.revealDetailInput(keyboardFrame: keyboardFrame)
+        reportPostView.adjustForKeyboard(frame: keyboardFrame)
+    }
+
+    @objc
+    private func keyboardWillHide() {
+        reportPostView.resetKeyboardAdjustment()
     }
 }
 

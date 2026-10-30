@@ -24,7 +24,8 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
     struct Output {
         let reloadReasons = PassthroughSubject<[Int], Never>()
         let isReportButtonEnabled = CurrentValueSubject<Bool, Never>(false)
-        let isDetailInputEnabled = CurrentValueSubject<Bool, Never>(false)
+        let detailPlaceholder = PassthroughSubject<String, Never>()
+        let clearDetailText = PassthroughSubject<Void, Never>()
         let submitSuccess = PassthroughSubject<Void, Never>()
     }
     
@@ -72,7 +73,6 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
     init(target: MeetingReportTarget, repository: MeetingRepository) {
         self.target = target
         self.repository = repository
-        output.isDetailInputEnabled.send(isDetailRequired)
     }
     
     // MARK: - Action
@@ -84,12 +84,14 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
             output.reloadReasons.send(changed)
             if !isDetailRequired {
                 detailText = ""
+                output.clearDetailText.send(())
             }
-            output.isDetailInputEnabled.send(isDetailRequired)
+            output.detailPlaceholder.send(detailPlaceholder)
             updateReportState()
             
         case .detailTextChanged(let text):
             detailText = text
+            syncEtcWithDetailText()
             updateReportState()
             
         case .reportButtonDidTap:
@@ -109,6 +111,18 @@ final class ReportPostViewModel: BaseViewModelType, RequestRunning {
         return [index]
     }
     
+    private func syncEtcWithDetailText() {
+        let shouldSelectEtc = !trimmedDetailText.isEmpty
+        guard shouldSelectEtc != isEtcSelected else { return }
+        if shouldSelectEtc {
+            selectedReasons.insert(ReportReason.extra.rawValue)
+        } else {
+            selectedReasons.remove(ReportReason.extra.rawValue)
+        }
+        output.reloadReasons.send([ReportReason.extra.rawValue])
+        output.detailPlaceholder.send(detailPlaceholder)
+    }
+
     private func updateReportState() {
         output.isReportButtonEnabled.send(isReportValid)
     }

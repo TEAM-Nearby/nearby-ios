@@ -190,7 +190,7 @@ final class MatchingManageScheduleDetailView: BaseView {
         datePickerContainerView.snp.makeConstraints {
             $0.top.equalTo(dateAndTimeButton.snp.bottom).offset(8)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(380)
+            $0.height.equalTo(410)
         }
 
         datePicker.snp.makeConstraints {

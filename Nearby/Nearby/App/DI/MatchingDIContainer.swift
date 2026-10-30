@@ -12,19 +12,22 @@ final class MatchingDIContainer {
     // MARK: - Dependencies
 
     private let matchingRepository: MatchedCompanionListRepository
+    private let notificationRepository: CompanionRequestRepository
     private let eventCenter: MeetingEventCenter
 
     // MARK: - Initializer
 
-    init(repository: MatchedCompanionListRepository, eventCenter: MeetingEventCenter) {
+    init(networkProvider: NetworkProvider, repository: MatchedCompanionListRepository, eventCenter: MeetingEventCenter) {
         self.matchingRepository = repository
+        let notificationService = DefaultCompanionRequestService(networkProvider: networkProvider)
+        self.notificationRepository = DefaultCompanionRequestRepository(service: notificationService)
         self.eventCenter = eventCenter
     }
 
     // MARK: - Factory Methods
 
     func makeMatchingViewController(isGuest: Bool = false, onRoute: @escaping (MatchingRoute) -> Void) -> UIViewController {
-        let viewModel = MatchingViewModel(repository: matchingRepository, eventCenter: eventCenter, isGuest: isGuest)
+        let viewModel = MatchingViewModel(repository: matchingRepository, notificationRepository: notificationRepository, eventCenter: eventCenter, isGuest: isGuest)
         let viewController = MatchingViewController(viewModel: viewModel)
         viewController.onRoute = onRoute
         return viewController

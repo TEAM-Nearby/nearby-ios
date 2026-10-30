@@ -14,6 +14,7 @@ final class MatchingViewModel: BaseViewModelType {
     
     enum Input {
         case viewDidLoad
+        case refreshNotifications
         case cardDidTap(Int)
         case alarmButtonDidTap
         case findCompanionButtonDidTap
@@ -23,6 +24,7 @@ final class MatchingViewModel: BaseViewModelType {
     
     struct Output {
         let items = CurrentValueSubject<[MatchingMatchedCardItem], Never>([])
+        let hasUnreadNotifications = CurrentValueSubject<Bool, Never>(false)
         let showScheduleDetail = PassthroughSubject<Int, Never>()
         let showAlarm = PassthroughSubject<Void, Never>()
         let showCompanionTab = PassthroughSubject<Void, Never>()
@@ -34,9 +36,11 @@ final class MatchingViewModel: BaseViewModelType {
     
     private let isGuest: Bool
     private let repository: MatchedCompanionListRepository
+    private let notificationChecker: UnreadNotificationChecker
     private let eventCenter: MeetingEventCenter
     private var cancellables = Set<AnyCancellable>()
     private var fetchTask: Task<Void, Never>?
+    private var notificationTask: Task<Void, Never>?
     
     var items: [MatchingMatchedCardItem] {
         return output.items.value
@@ -44,15 +48,17 @@ final class MatchingViewModel: BaseViewModelType {
     
     // MARK: - Initializer
     
-    init(repository: MatchedCompanionListRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
+    init(repository: MatchedCompanionListRepository, notificationRepository: CompanionRequestRepository, eventCenter: MeetingEventCenter, isGuest: Bool = false) {
         self.isGuest = isGuest
         self.repository = repository
+        self.notificationChecker = UnreadNotificationChecker(repository: notificationRepository)
         self.eventCenter = eventCenter
         if !isGuest { bindMeetingEvents() }
     }
 
     deinit {
         fetchTask?.cancel()
+        notificationTask?.cancel()
     }
     
     // MARK: - Action
@@ -61,6 +67,10 @@ final class MatchingViewModel: BaseViewModelType {
         switch trigger {
         case .viewDidLoad:
             fetchMatches()
+            refreshNotifications()
+
+        case .refreshNotifications:
+            refreshNotifications()
             
         case .cardDidTap(let index):
             guard items.indices.contains(index) else { return }
@@ -104,6 +114,15 @@ final class MatchingViewModel: BaseViewModelType {
                 AppLogger.error(error, message: "매칭된 동행 목록 조회에 실패했습니다.")
                 output.items.send([])
             }
+        }
+    }
+
+    private func refreshNotifications() {
+        guard !isGuest else { return }
+        notificationTask?.cancel()
+        notificationTask = Task { [weak self] in
+            guard let self, let hasUnread = await notificationChecker.hasUnread() else { return }
+            output.hasUnreadNotifications.send(hasUnread)
         }
     }
     

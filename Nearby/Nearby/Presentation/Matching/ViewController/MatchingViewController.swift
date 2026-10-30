@@ -64,6 +64,22 @@ final class MatchingViewController: BaseViewController<MatchingViewModel> {
             }
             .store(in: &cancellables)
 
+        viewModel.output.hasUnreadNotifications
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hasUnread in
+                self?.matchedCardView.updateAlarm(hasUnread: hasUnread)
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .merge(with: NotificationCenter.default.publisher(for: .companionNotificationDidChange))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.action(.refreshNotifications)
+            }
+            .store(in: &cancellables)
+
         viewModel.output.showScheduleDetail
             .receive(on: DispatchQueue.main)
             .sink { [weak self] matchId in

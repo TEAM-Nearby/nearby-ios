@@ -34,6 +34,7 @@ final class ReportPostView: BaseView {
     private static let buttonKeyboardSpacing: CGFloat = 16
     private static let scrollViewButtonSpacing: CGFloat = 12
     private static let contentBottomInset: CGFloat = 24
+    private static let revealBottomSpacing: CGFloat = 8
     
     private var contentOffsetBeforeReveal: CGPoint?
     
@@ -176,7 +177,7 @@ final class ReportPostView: BaseView {
         let keyboardTop = convert(keyboardFrame, from: nil).minY
         let scrollViewBottom = keyboardTop - Self.buttonKeyboardSpacing - reportButton.bounds.height - Self.scrollViewButtonSpacing
         let visibleHeight = scrollViewBottom - scrollView.frame.minY
-        let targetOffsetY = reasonTextView.frame.maxY + Self.contentBottomInset - visibleHeight
+        let targetOffsetY = reasonTextView.frame.maxY + Self.revealBottomSpacing - visibleHeight
         guard targetOffsetY > scrollView.contentOffset.y else { return }
         if contentOffsetBeforeReveal == nil {
             contentOffsetBeforeReveal = scrollView.contentOffset
